@@ -10,19 +10,19 @@ import {
   makeCSRUID,
   documentContentsPost,
   documentContentsNonPII,
-  documentContentsPII
+  documentContentsPII,
 } from "../util/sample_data";
 import {
   VisitUpdater,
   VisitNonPIIUpdater,
-  VisitPIIUpdater
+  VisitPIIUpdater,
 } from "../../scripts/util/visit_updater";
 import { ScriptLogger } from "../../scripts/util/script_logger";
 import { VisitDocument } from "audere-lib/snifflesProtocol";
 import { createSplitSql } from "../../src/util/sql";
 import {
   defineSnifflesModels,
-  VisitAttributes
+  VisitAttributes,
 } from "../../src/models/db/sniffles";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
 import { EncounterDetailsService } from "../../src/services/encounterDetailsService";
@@ -49,7 +49,7 @@ describe("VisitUpdater", () => {
   async function cleanup(...csruids: string[]): Promise<void> {
     await Promise.all([
       updaterNonPII.cleanupForTesting(...csruids),
-      updaterPII.cleanupForTesting(...csruids)
+      updaterPII.cleanupForTesting(...csruids),
     ]);
   }
 
@@ -65,7 +65,7 @@ describe("VisitUpdater", () => {
     hutchUploadModel = defineHutchUpload(sql);
     accessKey = await snifflesModels.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
     done();
   });

@@ -12,19 +12,19 @@ import {
   SurveyModel,
   defineSurvey,
   BatchDiscardAttributes,
-  defineKitDiscard
+  defineKitDiscard,
 } from "../../src/models/db/fever";
 import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
 import { SurveyNonPIIInfo } from "audere-lib/feverProtocol";
 import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
 import {
   defineGaplessSeq,
-  GaplessSeqAttributes
+  GaplessSeqAttributes,
 } from "../../src/models/db/gaplessSeq";
 import {
   KitRecipientsDataAccess,
   KIT_BATCH_NAMESPACE,
-  KIT_ITEMS_NAMESPACE
+  KIT_ITEMS_NAMESPACE,
 } from "../../src/services/fever/kitOrdersData";
 
 describe("survey batch data access", () => {
@@ -49,11 +49,11 @@ describe("survey batch data access", () => {
     dao = new KitRecipientsDataAccess(sql, seq, kitBatch, kitItems, kitDiscard);
 
     batchSeq = await seq.find({
-      where: { name: KIT_BATCH_NAMESPACE }
+      where: { name: KIT_BATCH_NAMESPACE },
     });
 
     itemSeq = await seq.find({
-      where: { name: KIT_ITEMS_NAMESPACE }
+      where: { name: KIT_ITEMS_NAMESPACE },
     });
 
     done();
@@ -75,7 +75,7 @@ describe("survey batch data access", () => {
     await Promise.all([
       nonPii.destroy({ where: {} }).then(() => {}),
       batchSeq.update({ index: 0 }).then(() => {}),
-      itemSeq.update({ index: 0 }).then(() => {})
+      itemSeq.update({ index: 0 }).then(() => {}),
     ]);
 
     await kitBatch.destroy({ where: {} }).then(() => {});
@@ -90,7 +90,7 @@ describe("survey batch data access", () => {
       _.cloneDeep(surveyNonPIIInDb("0")),
       _.cloneDeep(surveyNonPIIInDb("1")),
       _.cloneDeep(surveyNonPIIInDb("2")),
-      _.cloneDeep(surveyNonPIIInDb("3"))
+      _.cloneDeep(surveyNonPIIInDb("3")),
     ];
     if (!screeningComplete) {
       surveys.forEach(
@@ -106,14 +106,14 @@ describe("survey batch data access", () => {
 
     await kitBatch.create({
       id: 1,
-      uploaded: batchUploaded
+      uploaded: batchUploaded,
     });
 
     const batchKeys = Array.from(s.keys()).slice(0, 2);
     const batchItems = batchKeys.map(i => ({
       id: i,
       batchId: 1,
-      surveyId: +s[i].id
+      surveyId: +s[i].id,
     }));
     await kitItems.bulkCreate(batchItems);
   }
@@ -129,7 +129,7 @@ describe("survey batch data access", () => {
       [0, 1].forEach(key =>
         expect(out.items).toContainEqual(
           expect.objectContaining({
-            workflowId: key
+            workflowId: key,
           })
         )
       );
@@ -154,7 +154,7 @@ describe("survey batch data access", () => {
       [2, 3].forEach(key =>
         expect(out).toContainEqual(
           expect.objectContaining({
-            csruid: key.toString()
+            csruid: key.toString(),
           })
         )
       );
@@ -176,7 +176,7 @@ describe("survey batch data access", () => {
       expect(out).toHaveLength(1);
       expect(out).toContainEqual(
         expect.objectContaining({
-          csruid: "2"
+          csruid: "2",
         })
       );
     });
@@ -192,12 +192,12 @@ describe("survey batch data access", () => {
       expect(out).toHaveLength(2);
       expect(out).toContainEqual(
         expect.objectContaining({
-          csruid: "0"
+          csruid: "0",
         })
       );
       expect(out).toContainEqual(
         expect.objectContaining({
-          csruid: "1"
+          csruid: "1",
         })
       );
     });
@@ -218,12 +218,12 @@ describe("survey batch data access", () => {
       expect(batch.items).toHaveLength(2);
       expect(batch.items).toContainEqual(
         expect.objectContaining({
-          workflowId: 46
+          workflowId: 46,
         })
       );
       expect(batch.items).toContainEqual(
         expect.objectContaining({
-          workflowId: 47
+          workflowId: 47,
         })
       );
     });
@@ -236,7 +236,7 @@ describe("survey batch data access", () => {
       await dao.commitUploadedBatch(1, []);
 
       const batch = await kitBatch.find({
-        where: { id: 1 }
+        where: { id: 1 },
       });
 
       expect(batch).not.toBeNull();
@@ -254,21 +254,21 @@ describe("survey batch data access", () => {
       await dao.commitUploadedBatch(batch.id, itemIds);
 
       const db = await kitBatch.find({
-        where: { id: batch.id }
+        where: { id: batch.id },
       });
 
       expect(db).not.toBeNull();
       expect(db.uploaded).toBe(true);
 
       const discarded = await kitDiscard.findAll({
-        where: { batchId: batch.id }
+        where: { batchId: batch.id },
       });
 
       expect(discarded).toHaveLength(2);
       itemIds.forEach(id => {
         expect(discarded).toContainEqual(
           expect.objectContaining({
-            workflowId: id
+            workflowId: id,
           })
         );
       });

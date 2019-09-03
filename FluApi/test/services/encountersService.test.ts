@@ -8,12 +8,12 @@ import { anything, instance, mock, verify, when } from "ts-mockito";
 import { HutchUploader } from "../../src/external/hutchUploader";
 import {
   canonicalizeName,
-  EncountersService
+  EncountersService,
 } from "../../src/services/encountersService";
 import { GeocodingService } from "../../src/services/geocodingService";
 import {
   EncounterDetailsService,
-  Release
+  Release,
 } from "../../src/services/encounterDetailsService";
 import { PIIEncounterDetails } from "../../src/models/encounterDetails";
 import { AddressInfoUse, PatientInfoGender } from "audere-lib/common";
@@ -34,12 +34,12 @@ describe("encounters service", () => {
             text: "Do you like cookies?",
             answer: [
               {
-                valueString: "Yes"
-              }
-            ]
-          }
-        ]
-      }
+                valueString: "Yes",
+              },
+            ],
+          },
+        ],
+      },
     ],
     addresses: [
       {
@@ -49,15 +49,15 @@ describe("encounters service", () => {
           city: "Seattle",
           state: "WA",
           postalCode: "98101",
-          country: "US"
-        }
-      }
+          country: "US",
+        },
+      },
     ],
     samples: [],
     events: [],
     birthDate: "1960-01-01",
     gender: PatientInfoGender.Unknown,
-    fullName: "Patient Zero"
+    fullName: "Patient Zero",
   };
 
   describe("get encounters", () => {
@@ -69,8 +69,8 @@ describe("encounters service", () => {
       when(detailsMock.retrieveDetails()).thenResolve([
         {
           key: { id: details.id, release: Release.Sniffles },
-          encounter: details
-        }
+          encounter: details,
+        },
       ]);
 
       const encountersService = new EncountersService(
@@ -85,7 +85,7 @@ describe("encounters service", () => {
       expect(result.length).toBe(1);
       expect(result[0].key).toEqual({
         id: details.id,
-        release: Release.Sniffles
+        release: Release.Sniffles,
       });
 
       const birthDate = new Date(details.birthDate);
@@ -118,8 +118,8 @@ describe("encounters service", () => {
       when(detailsMock.retrieveDetails()).thenResolve([
         {
           key: { id: details.id, release: Release.Sniffles },
-          encounter: olderDetails
-        }
+          encounter: olderDetails,
+        },
       ]);
 
       const encountersService = new EncountersService(
@@ -143,8 +143,8 @@ describe("encounters service", () => {
       when(detailsMock.retrieveDetails()).thenResolve([
         {
           key: { id: details.id, release: Release.Sniffles },
-          encounter: badDetails
-        }
+          encounter: badDetails,
+        },
       ]);
 
       const encountersService = new EncountersService(
@@ -167,8 +167,8 @@ describe("encounters service", () => {
           city: "Seattle",
           state: "WA",
           postalCode: "98101",
-          country: "US"
-        }
+          country: "US",
+        },
       });
       detailsClone.addresses.push({
         use: AddressInfoUse.Work,
@@ -177,15 +177,15 @@ describe("encounters service", () => {
           city: "Tacoma",
           state: "WA",
           postalCode: "98102",
-          country: "US"
-        }
+          country: "US",
+        },
       });
       const detailsMock = mock(EncounterDetailsService);
       when(detailsMock.retrieveDetails()).thenResolve([
         {
           key: { id: details.id, release: Release.Sniffles },
-          encounter: detailsClone
-        }
+          encounter: detailsClone,
+        },
       ]);
 
       const encountersService = new EncountersService(
@@ -212,9 +212,9 @@ describe("encounters service", () => {
             latitude: 10,
             longitude: -10,
             postalCode: "99999",
-            censusTract: "12345"
-          }
-        ]
+            censusTract: "12345",
+          },
+        ],
       };
       const workAddress: GeocodingResponse = {
         id: details.id + "_" + Release.Sniffles,
@@ -228,9 +228,9 @@ describe("encounters service", () => {
             latitude: -20,
             longitude: 20,
             postalCode: "99999",
-            censusTract: "54321"
-          }
-        ]
+            censusTract: "54321",
+          },
+        ],
       };
       const tempAddress: GeocodingResponse = {
         id: details.id + "_" + Release.Sniffles,
@@ -244,16 +244,16 @@ describe("encounters service", () => {
             latitude: 0,
             longitude: 100,
             postalCode: "99997",
-            censusTract: "88888"
-          }
-        ]
+            censusTract: "88888",
+          },
+        ],
       };
 
       const geocoderMock = mock(GeocodingService);
       when(geocoderMock.geocodeAddresses(anything())).thenResolve([
         homeAddress,
         workAddress,
-        tempAddress
+        tempAddress,
       ]);
 
       const detailsClone = _.cloneDeep(details);
@@ -264,8 +264,8 @@ describe("encounters service", () => {
           city: "Seattle",
           state: "WA",
           postalCode: "98101",
-          country: "US"
-        }
+          country: "US",
+        },
       });
       detailsClone.addresses.push({
         use: AddressInfoUse.Temp,
@@ -274,15 +274,15 @@ describe("encounters service", () => {
           city: "Tacoma",
           state: "WA",
           postalCode: "98102",
-          country: "US"
-        }
+          country: "US",
+        },
       });
       const detailsMock = mock(EncounterDetailsService);
       when(detailsMock.retrieveDetails()).thenResolve([
         {
           key: { id: details.id, release: Release.Sniffles },
-          encounter: detailsClone
-        }
+          encounter: detailsClone,
+        },
       ]);
 
       const encountersService = new EncountersService(
@@ -305,7 +305,7 @@ describe("encounters service", () => {
           id: expect.not.stringContaining(
             homeAddress.addresses[0].canonicalAddress
           ),
-          region: homeAddress.addresses[0].censusTract
+          region: homeAddress.addresses[0].censusTract,
         })
       );
 
@@ -315,7 +315,7 @@ describe("encounters service", () => {
           id: expect.not.stringContaining(
             workAddress.addresses[0].canonicalAddress
           ),
-          region: workAddress.addresses[0].censusTract
+          region: workAddress.addresses[0].censusTract,
         })
       );
 
@@ -325,7 +325,7 @@ describe("encounters service", () => {
           id: expect.not.stringContaining(
             tempAddress.addresses[0].canonicalAddress
           ),
-          region: tempAddress.addresses[0].censusTract
+          region: tempAddress.addresses[0].censusTract,
         })
       );
     });
@@ -343,8 +343,8 @@ describe("encounters service", () => {
       when(detailsMock.retrieveDetails()).thenResolve([
         {
           key: { id: details.id, release: Release.Sniffles },
-          encounter: details
-        }
+          encounter: details,
+        },
       ]);
       when(detailsMock.commitUploads(anything())).thenResolve();
 

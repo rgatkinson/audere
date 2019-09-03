@@ -8,6 +8,7 @@ import { crashlytics } from "../crashReporter";
 import { logFirebaseEvent, AppEvents, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
+  advanceRDTCaptureOnMemoryWarning: boolean;
   showRDTInterpretation: string;
   rdtTimeoutSeconds: number;
   skipSurveyNotification: boolean;
@@ -23,6 +24,7 @@ interface RemoteConfig {
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
   showRDTInterpretation: "Ubicomp",
+  advanceRDTCaptureOnMemoryWarning: false,
   rdtTimeoutSeconds: 30,
   skipSurveyNotification: false,
 };

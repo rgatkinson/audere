@@ -9,7 +9,7 @@ import {
   Batch,
   BatchItem,
   SurveyBatchDataAccess,
-  BatchItemWithCsruid
+  BatchItemWithCsruid,
 } from "./surveyBatchData";
 import logger from "../../util/logger";
 

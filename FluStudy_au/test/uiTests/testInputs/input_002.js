@@ -6,9 +6,9 @@
 import strings from "../../../src/i18n/locales/en.json";
 
 export const inputs = {
+  ConsentDeclined: true,
   [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.no,
   [strings.barcode.placeholder]: "00200200",
-  [strings.barcode.secondPlaceholder]: "00200200",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.cough,
     strings.surveyOption.muscleOrBodyAches,
@@ -45,6 +45,7 @@ export const inputs = {
     strings.surveyOption.whiteAustralian,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
-  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBlue + " ?",
+  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBlue,
+  [strings.surveyTitle.numLinesSeen]: strings.surveyButton.twoLines,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.confusingCorrect,
 };

@@ -1,15 +1,19 @@
 import * as common from "./common";
 import { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo } from "./common";
-export { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo };
+export { ClientVersionInfo, SampleInfo, PatientInfoGender, QuestionInfo, QuestionAnswerOption, OtherValueInfo, };
 export interface ProtocolDocumentBase {
     documentType: string;
     schemaId: number;
     docId: string;
     device: DeviceInfo;
 }
+interface RDTVersionInfo {
+    rdtVersionAndroid?: string;
+    rdtVersionIos?: string;
+}
 export interface DeviceInfo {
     installation: string;
-    clientVersion: ClientVersionInfo;
+    clientVersion: ClientVersionInfo & RDTVersionInfo;
     clientBuild: number;
     yearClass: string;
     idiomText: string;
@@ -106,12 +110,18 @@ export interface RDTInfo {
     interpreter?: string;
     totalTestStripTime?: number;
     captureTime?: number;
+    flashEnabled?: boolean;
+    flashDisabledAutomatically?: boolean;
     rdtTotalTime?: number;
     resultShown?: string;
     resultShownExplanation?: string;
 }
 export interface RDTReaderResult {
     testStripFound: boolean;
+    testStripBoundary?: {
+        x: number;
+        y: number;
+    }[];
     skippedDueToMemWarning?: boolean;
     isCentered?: boolean;
     sizeResult?: RDTReaderSizeResult;

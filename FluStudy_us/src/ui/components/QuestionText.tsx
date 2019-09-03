@@ -5,45 +5,53 @@
 
 import React from "react";
 import { StyleSheet, View } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { ERROR_COLOR, FONT_BOLD, FONT_ITALIC, GUTTER } from "../styles";
+import { SurveyQuestion } from "audere-lib/chillsQuestionConfig";
 
 interface Props {
-  backgroundColor?: string;
-  required?: boolean;
-  subtext?: string;
-  text: string;
+  question: SurveyQuestion;
 }
 
-export default class QuestionText extends React.Component<Props> {
+class QuestionText extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return props.question != this.props.question;
+  }
+
   render() {
+    const { question, t } = this.props;
+    const description = t("surveyDescription:" + question.description);
+    const content = !!question.subquestion
+      ? description
+      : t("surveyTitle:" + question.title);
+
     return (
-      <View
-        style={[
-          styles.container,
-          !!this.props.backgroundColor && {
-            backgroundColor: this.props.backgroundColor,
-          },
-        ]}
-      >
-        <View style={{ flexDirection: "row", alignSelf: "stretch" }}>
-          {!!this.props.required && (
+      <View style={styles.container}>
+        <View style={styles.textContainer}>
+          {!question.subquestion && !!question.required && (
             <Text content="* " style={[styles.text, { color: ERROR_COLOR }]} />
           )}
-          <Text content={this.props.text} style={styles.text} />
+          <Text content={content} style={styles.text} />
         </View>
-        {!!this.props.subtext && (
-          <Text content={this.props.subtext} style={styles.subtext} />
+        {!question.subquestion && !!question.description && (
+          <Text content={description} style={styles.subtext} />
         )}
       </View>
     );
   }
 }
 
+export default withNamespaces()(QuestionText);
+
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
     marginVertical: GUTTER / 2,
+  },
+  textContainer: {
+    alignSelf: "stretch",
+    flexDirection: "row",
   },
   text: {
     fontFamily: FONT_BOLD,

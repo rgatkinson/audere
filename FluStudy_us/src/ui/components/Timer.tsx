@@ -4,341 +4,181 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Platform, PushNotificationIOS, View } from "react-native";
-import { NavigationScreenProp } from "react-navigation";
+import { withNavigation, NavigationScreenProp } from "react-navigation";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { withNavigation } from "react-navigation";
-import PushNotification from "react-native-push-notification";
-import i18n from "i18next";
-import { setPushNotificationState, Action, StoreState } from "../../store";
-import PushNotificationModal from "./PushNotificationModal";
+import { Action, StoreState } from "../../store";
 import {
-  PushNotificationState,
-  PushRegistrationError,
-} from "audere-lib/feverProtocol";
-import { tracker, notificationEvent } from "../../util/tracker";
+  BORDER_RADIUS,
+  BUTTON_WIDTH,
+  GUTTER,
+  SECONDARY_COLOR,
+  INPUT_HEIGHT,
+} from "../styles";
+import BorderView from "./BorderView";
+import ContinueButton from "./ContinueButton";
+import Text from "./Text";
+import MultiTapContainer from "./MultiTapContainer";
 
 const SECOND_MS = 1000;
+const SECONDS_MINUTE = 60;
+const MINUTE_MS = SECONDS_MINUTE * SECOND_MS;
+const FAST_FORWARD_MS = 5 * SECOND_MS;
 
-interface TimerState {
-  done: boolean;
-  remaining: Date | null | undefined;
-  showPushModal: boolean;
+interface State {
+  remainingLabel: string;
 }
 
-export interface ConfigProps {
-  nextScreen: string;
-  startTimeConfig: string;
-  totalTimeMs: number;
-}
-
-export interface TimerProps {
+interface Props {
+  isDemo: boolean;
   navigation: NavigationScreenProp<any, any>;
-  pushState: PushNotificationState;
+  next: string;
+  startTimeConfig: string;
   startTimeMs: number;
+  totalTimeMs: number;
   dispatch(action: Action): void;
-  done(): boolean;
-  getRemainingLabel(): string;
-  getRemainingTime(): number;
-  onFastForward(): void;
-  onNext(): void;
+  dispatchOnDone?: () => Action;
 }
 
-if (Platform.OS === "ios") {
-  PushNotificationIOS.getInitialNotification().then(notification => {
-    // Executed with non null notification when the app is launched (not from background) with
-    // the notification
-    if (notification != null) {
-      tracker.logEvent(notificationEvent, {
-        appLaunch: true,
-        message: notification.getMessage(),
-      });
-    }
-  });
-}
+class Timer extends React.Component<Props & WithNamespaces> {
+  state = {
+    remainingLabel: this._getRemainingLabel(),
+  };
 
-const timerWithConfigProps = (configProps: ConfigProps) => (
-  WrappedComponent: any
-) => {
-  class Timer extends React.Component<TimerProps, TimerState> {
-    state = {
-      done: false,
-      remaining: undefined,
-      showPushModal: false,
-    };
+  _timer: NodeJS.Timeout | undefined;
+  _willFocus: any;
+  _willBlur: any;
+  _startTimeMs: number = 0;
 
-    constructor(props: TimerProps) {
-      super(props);
-      this._isDone = this._isDone.bind(this);
-      this.getRemainingLabel = this.getRemainingLabel.bind(this);
-      this.getRemainingTime = this.getRemainingTime.bind(this);
-      this._onFastForward = this._onFastForward.bind(this);
-      this._removeNotificationListeners = this._removeNotificationListeners.bind(
-        this
-      );
-    }
-
-    _userInfo = { id: configProps.startTimeConfig };
-    _timer: NodeJS.Timeout | undefined;
-    _willFocus: any;
-    _fastForwardMillis = 0;
-
-    _onFastForward(): void {
-      this._fastForwardMillis =
-        this.props.startTimeMs +
-        configProps.totalTimeMs -
-        new Date().getTime() -
-        5 * SECOND_MS;
-      this._scheduleNotification();
-    }
-
-    _getRemaining(): Date | null {
-      // @ts-ignore
-      const remaining = new Date(null);
-      if (this.props.startTimeMs == null) {
-        remaining.setMilliseconds(configProps.totalTimeMs);
-        return remaining;
-      } else {
-        const deltaMillis =
-          this.props.startTimeMs +
-          configProps.totalTimeMs -
-          new Date().getTime() -
-          this._fastForwardMillis;
-        if (deltaMillis > 0) {
-          remaining.setMilliseconds(deltaMillis);
-          return remaining;
-        } else {
-          return null;
-        }
-      }
-    }
-
-    _setTimer() {
-      if (this.props.navigation.isFocused() && !this.state.done) {
-        setTimeout(() => {
-          if (this.props.navigation.isFocused() && !this.state.done) {
-            const remaining = this._getRemaining();
-            this.setState({ remaining, done: remaining === null });
-            if (remaining != null) {
-              this._setTimer();
-            }
-          }
-        }, 1000);
-      }
-    }
-
-    getRemainingLabel(): string {
-      if (this.state.remaining == null) {
-        return "00:00";
-      }
-      // @ts-ignore
-      return this.state.remaining!.toISOString().substr(14, 5);
-    }
-
-    getRemainingTime(): number | null {
-      if (this.state.remaining == null) {
-        return 0;
-      } else {
-        // @ts-ignore
-        return this.state.remaining.getTime();
-      }
-    }
-
-    _scheduleNotification(): void {
-      const remaining = this._getRemaining();
-      if (remaining != null) {
-        if (Platform.OS === "ios") {
-          PushNotification.cancelLocalNotifications(this._userInfo);
-        } else {
-          PushNotification.cancelAllLocalNotifications();
-        }
-        PushNotification.localNotificationSchedule({
-          date: new Date(Date.now() + remaining.getTime()),
-          title: i18n.t("common:notifications:title"),
-          message: i18n.t(
-            "common:notifications:" + configProps.startTimeConfig
-          ),
-          userInfo: this._userInfo,
-        });
-      }
-    }
-
-    _registrationEvent = (token: string) => {
-      const newPushState = { ...this.props.pushState, token };
-      this.props.dispatch(setPushNotificationState(newPushState));
-      this._scheduleNotification();
-    };
-
-    _registrationErrorEvent = (result: PushRegistrationError) => {
-      const newPushState = {
-        ...this.props.pushState,
-        registrationError: result,
-      };
-      this.props.dispatch(setPushNotificationState(newPushState));
-    };
-
-    componentDidMount() {
-      if (Platform.OS === "ios") {
-        PushNotificationIOS.removeEventListener(
-          "register",
-          this._registrationEvent
-        );
-        PushNotificationIOS.addEventListener(
-          "register",
-          this._registrationEvent
-        );
-        PushNotificationIOS.removeEventListener(
-          "registrationError",
-          this._registrationErrorEvent
-        );
-        PushNotificationIOS.addEventListener(
-          "registrationError",
-          this._registrationErrorEvent
-        );
-      } else {
-        const handleNotificationAndroid = this._handleNotificationAndroid;
-        PushNotification.configure({
-          onNotification: function(notification) {
-            handleNotificationAndroid(notification);
-          },
-
-          requestPermissions: false,
-        });
-      }
-
-      this._willFocus = this.props.navigation.addListener("willFocus", () =>
-        this._setTimer()
-      );
-
-      const remaining = this._getRemaining();
-      this.setState({ remaining, done: remaining === null });
-
-      if (Platform.OS === "ios" && remaining != null) {
-        PushNotificationIOS.removeEventListener(
-          "localNotification",
-          this._handleNotificationIOS
-        );
-        PushNotificationIOS.addEventListener(
-          "localNotification",
-          this._handleNotificationIOS
-        );
-      }
-
-      this._scheduleNotification();
-
-      if (this.props.navigation.isFocused() && remaining != null) {
-        this._setTimer();
-
-        if (Platform.OS === "ios" && !this.props.pushState.showedSystemPrompt) {
-          setTimeout(() => {
-            this.setState({ showPushModal: true });
-          }, 3000);
-        }
-      }
-    }
-
-    _handleNotificationIOS = (notification: any) => {
-      if (
-        JSON.stringify(notification.getData()) ===
-        JSON.stringify(this._userInfo)
-      ) {
-        this.props.navigation.push(configProps.nextScreen);
-        tracker.logEvent(notificationEvent, {
-          appLaunch: false,
-          timerConfig: configProps.startTimeConfig,
-          message: notification.getMessage(),
-          appStatus: notification.getCategory(),
-        });
-        this._removeNotificationListeners();
-      }
-    };
-
-    _handleNotificationAndroid = (notification: any) => {
-      this.props.navigation.push(configProps.nextScreen);
-      tracker.logEvent(notificationEvent, {
-        appLaunch: false,
-        timerConfig: configProps.startTimeConfig,
-        message: notification.message,
-      });
-    };
-
-    _removeNotificationListeners = () => {
-      if (Platform.OS === "ios") {
-        PushNotificationIOS.removeEventListener(
-          "localNotification",
-          this._handleNotificationIOS
-        );
-        PushNotificationIOS.removeEventListener(
-          "register",
-          this._registrationEvent
-        );
-        PushNotificationIOS.removeEventListener(
-          "registrationError",
-          this._registrationErrorEvent
-        );
-      }
-    };
-
-    componentWillUnmount() {
-      if (this._willFocus != null) {
-        this._willFocus.remove();
-        this._willFocus = null;
-      }
-    }
-
-    _onNo = () => {
-      const newPushState = {
-        ...this.props.pushState,
-        softResponse: false,
-      };
-      this.props.dispatch(setPushNotificationState(newPushState));
-      this.setState({ showPushModal: false });
-    };
-
-    _onYes = () => {
-      PushNotificationIOS.requestPermissions();
-      const newPushState = {
-        ...this.props.pushState,
-        softResponse: true,
-        showedSystemPrompt: true,
-      };
-      this.props.dispatch(setPushNotificationState(newPushState));
-      this.setState({ showPushModal: false });
-    };
-
-    _isDone = () => {
-      return this.state.done;
-    };
-
-    render() {
-      return (
-        <View style={{ alignSelf: "stretch", flex: 1 }}>
-          <PushNotificationModal
-            visible={this.state.showPushModal}
-            onDismiss={this._onNo}
-            onSubmit={this._onYes}
-          />
-          <WrappedComponent
-            {...this.props}
-            done={this._isDone}
-            getRemainingLabel={this.getRemainingLabel}
-            getRemainingTime={this.getRemainingTime}
-            onFastForward={this._onFastForward}
-            onNext={this._removeNotificationListeners}
-          />
-        </View>
-      );
-    }
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return (
+      state != this.state ||
+      props.isDemo != this.props.isDemo ||
+      props.startTimeMs != this.props.startTimeMs ||
+      props.totalTimeMs != this.props.totalTimeMs
+    );
   }
 
-  const timerWithNavigation = withNavigation(Timer);
+  componentDidMount() {
+    this._startTimeMs = this.props.startTimeMs;
+    this._willFocus = this.props.navigation.addListener("willFocus", () => {
+      this._startClock();
+    });
+    this._willBlur = this.props.navigation.addListener(
+      "willBlur",
+      this._clearClock
+    );
 
-  return connect((state: StoreState) => {
-    return {
-      startTimeMs: state.survey[configProps.startTimeConfig],
-      pushState: state.survey.pushState,
-    };
-  })(timerWithNavigation);
-};
+    this._startClock();
+  }
 
-export default timerWithConfigProps;
+  componentWillUnmount() {
+    if (this._willFocus != null) {
+      this._willFocus.remove();
+      this._willFocus = null;
+    }
+    if (this._willBlur != null) {
+      this._willBlur.remove();
+      this._willBlur = null;
+    }
+    this._clearClock();
+  }
+
+  _clearClock = () => {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = undefined;
+    }
+  };
+
+  _onFastForward = () => {
+    // Just pretend we started 5 secs before the original target end time.
+    this._startTimeMs =
+      new Date().getTime() - this.props.totalTimeMs + FAST_FORWARD_MS;
+    this.setState({
+      remainingLabel: this._getRemainingLabel(),
+    });
+  };
+
+  _getRemainingMs(): number | null {
+    const { totalTimeMs } = this.props;
+    const deltaMillis = this._startTimeMs + totalTimeMs - new Date().getTime();
+    return deltaMillis > SECOND_MS ? deltaMillis : null;
+  }
+
+  _getRemainingLabel(): string {
+    const remainingMs = this._getRemainingMs();
+    if (remainingMs == null) {
+      return "00:00";
+    }
+
+    const minutes = Math.floor(remainingMs / MINUTE_MS).toString();
+    const seconds = Math.floor((remainingMs % MINUTE_MS) / SECOND_MS).toFixed();
+
+    // @ts-ignore
+    return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
+  }
+
+  _startClock = () => {
+    this._clearClock();
+    if (this.props.navigation.isFocused()) {
+      this.setState({ remainingLabel: this._getRemainingLabel() });
+      if (this._getRemainingMs()) {
+        this._timer = global.setInterval(this._onTimer, SECOND_MS);
+      } else {
+        this._timerDone();
+      }
+    }
+  };
+
+  _onTimer = () => {
+    if (this.props.navigation.isFocused()) {
+      this.setState({ remainingLabel: this._getRemainingLabel() });
+      if (!this._getRemainingMs()) {
+        this._timerDone();
+      }
+    }
+  };
+
+  _timerDone() {
+    const { dispatch, dispatchOnDone } = this.props;
+    this._clearClock();
+    dispatchOnDone && dispatch(dispatchOnDone());
+  }
+
+  render() {
+    const { isDemo, next } = this.props;
+    return this._getRemainingMs() === null ? (
+      <ContinueButton next={next} />
+    ) : (
+      <MultiTapContainer
+        active={isDemo}
+        taps={3}
+        onMultiTap={this._onFastForward}
+      >
+        <BorderView
+          style={{
+            alignItems: "center",
+            alignSelf: "center",
+            borderRadius: BORDER_RADIUS,
+            height: INPUT_HEIGHT,
+            justifyContent: "center",
+            marginBottom: GUTTER * 2,
+            width: BUTTON_WIDTH,
+          }}
+        >
+          <Text
+            bold={true}
+            content={this._getRemainingLabel()}
+            style={{ color: SECONDARY_COLOR }}
+          />
+        </BorderView>
+      </MultiTapContainer>
+    );
+  }
+}
+
+export default connect((state: StoreState, props: Props & WithNamespaces) => ({
+  isDemo: state.meta.isDemo,
+  startTimeMs: state.survey[props.startTimeConfig],
+}))(withNavigation(withNamespaces()(Timer)));

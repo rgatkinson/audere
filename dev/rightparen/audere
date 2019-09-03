@@ -2,24 +2,36 @@
 set -o pipefail
 
 function audere-init() {
-  _au_self="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"/audere
+  _au_self_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+  _au_self="$_au_self_dir/audere"
   _au_github="$HOME/github"
   AUDERE="$HOME/audere"
-  FLU_TS="$AUDERE/FluTrack"
+  AUDERE_TF="$HOME/audere_tf"
+  FLU_CLINIC="$AUDERE/FluTrack"
+  FLU_HOME_AU="$AUDERE/FluStudy_au"
+  FLU_HOME_US="$AUDERE/FluStudy_us"
+  FLU_HOME="$FLU_HOME_AU"
+  FLU_LAMBDA="$AUDERE/FluLambda"
+  FLU_WEB="$AUDERE/FluApi"
   GITHUB_MEDIC="$_au_github/medic"
   GITHUB_MEDIC_WEBAPP="$GITHUB_MEDIC/medic-webapp"
   GITHUB_DIMAGI="$_au_github/dimagi"
   GITHUB_COMMCARE_HQ="$GITHUB_DIMAGI/commcare-hq"
-  export AWS_PROFILE="audere"
+
+  ( node --version && npm --version && yarn --version; ) &>/dev/null \
+    || nvm use v10 && node --version && npm --version && yarn --version
 
   [[ -f "$HOME/.couch-env" ]] && \
       . "$HOME/.couch-env"
 
   function echo2() { echo 1>&2 "$@"; }
   function audere() { source "$_au_self" "$@"; }
+  function audereq() { ( export _au_quiet=true; source "$_au_self" "$@"; ); }
   function jqraw() { jq --raw-output "$@"; }
   function die() { echo2 "$@"; exit 1; }
 
+  export AWS_PROFILE="audere"
+  export AWS_SHARED_CREDENTIALS_FILE="$HOME/.aws/audere-session-token"
   AUDERE_AWS_USER="ubuntu"
   AUDERE_AWS_INSTANCE_TYPE="t3.small"
 
@@ -45,25 +57,49 @@ case "$_au_subcommand" in
   "" | init)
     audere-init
     ;;
+  noinit)
+    _au_quiet=true
+    _au_subcommand="$1" && shift
+    ;;
   *)
-    [[ -z "$_au_self" ]] && audere-init
+    [[ -n "$AUDERE" ]] || audere-init
     ;;
 esac
+
+# Don't use echorun.  Subshells inherit this environment, but echorun
+# starts a new shell that doesn't have node, npm, yarn, etc.
+if ! "${_au_quiet:-false}"; then
+  (
+    BRIGHT='\033[1m'
+    NORMAL='\033[0m'
+    echo2 -e "$ ${BRIGHT}audere $_au_subcommand ${*}${NORMAL}"
+  )
+fi
 
 case "$_au_subcommand" in
   init) true;;
 
   cd)      cd "$AUDERE${1:+/}$1";;
-  cdm)     cd "$GITHUB_MEDIC${1:+/}$1";;
-  cdmw)    cd "$GITHUB_MEDIC_WEBAPP${1:+/}$1";;
-  cdmwa)   cd "$GITHUB_MEDIC_WEBAPP${1:+/}$1";;
-  cdcc)    cd "$GITHUB_COMMCARE_HQ${1:+/}$1";;
-  cdrn)    cd "$FLU_TS${1:+/}$1";;
-  cdfluts) cd "$FLU_TS${1:+/}$1";;
-  cdweb)   cd "$AUDERE/FluApi${1:+/}$1";;
+  cdtf)    cd "$AUDERE_TF/terraform${1:+/}$1";;
+  cdtff)   cd "$AUDERE_TF/terraform/flu${1:+/}$1";;
+  cdtfg)   cd "$AUDERE_TF/terraform/global${1:+/}$1";;
+  cdtfm)   cd "$AUDERE_TF/terraform/modules${1:+/}$1";;
+  cdft)    cd "$FLU_CLINIC${1:+/}$1";;
+  cdcli)   cd "$FLU_CLINIC${1:+/}$1";;
+  cdfs)    cd "$FLU_HOME${1:+/}$1";;
+  cdfa)    cd "$FLU_WEB${1:+/}$1";;
+  cdfl)    cd "$FLU_LAMBDA${1:+/}$1";;
+  cdweb)   cd "$FLU_WEB${1:+/}$1";;
 
   # --------------------------------------------------------------------------------
   # learn
+
+  pr)
+    (
+      branch="${1:-$(git symbolic-ref --short -q HEAD)}"
+      open "https://github.com/AudereNow/audere/pull/new/$branch"
+    )
+    ;;
 
   webenv)
     audere cdweb
@@ -73,29 +109,61 @@ case "$_au_subcommand" in
     ) && exit
     ;;
 
-  rs | rws | run-web-service)
+  rs | rfa | runfa | run-flu-api)
     (set -euo pipefail
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       export DEBUG="express:*"
       cd "$AUDERE/FluApi"
       nvm use v10
-      yarn install
-      yarn start
+      yarn install --frozen-lockfile
+      yarn setup
+      NODE_ENV=development yarn run nodemon --watch src --exec ts-node src/server.ts
     )
     ;;
 
-  rc | rnr | tsrun | rnrun | react-native-run)
+  rfsc)
     (set -euo pipefail
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+      nvm use v10
+      set -x
+      rm -rf "$FLU_HOME/node_modules"
+      cd "$FLU_HOME"
+      yarn install --frozen-lockfile
+      cd "$FLU_HOME/ios"
+      /usr/local/bin/pod install --repo-update
+      audere rfs
+    )
+    ;;
+
+  rh | rfs | runfs | run-home | run-flu-study)
+    (set -euo pipefail
+      set +x
+      nvm use v10
+      set -x
+      cd "$FLU_HOME"
+      yarn install --frozen-lockfile
+      cd "$FLU_HOME/ios"
+      /usr/local/bin/pod install
+      cd "$FLU_HOME"
+      yarn start-localapi
+    )
+    ;;
+
+  rc | rft | runft | run-clinic | run-flu-track)
+    (set -euo pipefail
       export NODE_ENV="development"
       export REACT_NATIVE_API_SERVER="http://$(lanip):3000/api"
-      cd "$FLU_TS"
+      cd "$FLU_CLINIC"
       sudo sysctl -w kern.maxfiles=5242880
       sudo sysctl -w kern.maxfilesperproc=524288
       nvm use v10
-      yarn install
-      yarn start
+      yarn install --frozen-lockfile
+      yarn start-localapi
     )
+    ;;
+
+  nvm10)
+    nvm install v10
+    npm install -g npm yarn
+    yarn global add expo expo-cli
     ;;
 
   nmb)          ./node_modules/.bin/"$@";;
@@ -103,100 +171,461 @@ case "$_au_subcommand" in
   tsr | tsrepl) ./node_modules/.bin/ts-node "$@";;
   tsc)          ./node_modules/.bin/tsc "$@";;
 
-  # --------------------------------------------------------------------------------
-  # Commcare HQ
-
-  ccinit)
-    audere cdcc
-    workon commcare-hq
-    ;;
-
-  ccrun)
-    audere ccstart
-    audere ccmanage runserver 0.0.0.0:8000
-    ;;
-
-  ccstart)
-    audere ccinit
-    audere ccdocker up -d
-    ;;
-
-  ccstop)
-    audere ccdocker stop
-    ;;
-
-  ccpatch)
-    (
-      cd "$GITHUB_COMMCARE_HQ" || die "Could not cd to '$GITHUB_COMMCARE_HQ'"
-
-      diff --unified localsettings{.example,}.py >~/audere/scripts/onenode-localsettings.py.patch
-      _au_status="$?"
-      [[ "$_au_status" == 1 ]] || die "Expected diff would return 1 but got '$_au_status'"
+  lib | tclib)
+    (set -xeuo pipefail
+      cd "$AUDERE/lib"
+      yarn install --frozen-lockfile
+      yarn build
+      for d in "$FLU_WEB" "$FLU_HOME_AU" "$FLU_CLINIC" "$FLU_HOME_US"; do
+        cd "$d" && echo "=== $d ===" && yarn install --frozen-lockfile && yarn typecheck
+      done
     )
     ;;
 
-  ccd | ccdocker) echorun "$GITHUB_COMMCARE_HQ/scripts/docker" "$@";;
-  ccm | ccmanage) echorun "$GITHUB_COMMCARE_HQ/manage.py" "$@";;
-
-  # --------------------------------------------------------------------------------
-  # Medic Mobile
-
-  halt0) ssh -t audere0 sudo halt;;
-
-  minit)
-    if [[ -z "$COUCH_USER" || -z "$COUCH_PWD" ]]; then
-      echo2 "COUCH_USER and COUCH_PWD are not set."
-      echo2 "Nothing changed."
-    else
-      export COUCH_URL=http://$COUCH_USER:$COUCH_PWD@localhost:5984/medic
-      export API_URL=http://$COUCH_USER:$COUCH_PWD@localhost:5988
-      export COUCH_NODE_NAME=couchdb@localhost
-    fi
+  pm2log)
+    (set -euo pipefail
+      cd ~/.pm2/logs
+      tail --lines=0 --follow api-{error,out}.log
+    )
     ;;
 
-  mclean)
-    cd "$GITHUB_MEDIC_WEBAPP"
-    git clean -xdf
-    cat >"$GITHUB_MEDIC_WEBAPP/.env" <<-EOF
-			COUCH_URL=http://admin:pass@localhost:5984/medic
-			COUCH_NODE_NAME=couchdb@localhost
-		EOF
-    audere minit &&
-    npm update -g npm &&
-    npm install -g grunt-cli &&
-    cd "$GITHUB_MEDIC_WEBAPP" && yarn install &&
-    cd "$GITHUB_MEDIC_WEBAPP/webapp" && yarn install &&
-    cd "$GITHUB_MEDIC_WEBAPP/admin" && yarn install &&
-    cd "$GITHUB_MEDIC_WEBAPP/api" && yarn install &&
-    cd "$GITHUB_MEDIC_WEBAPP/sentinel" && yarn install &&
-    cd "$GITHUB_MEDIC_WEBAPP"
+  s3reports | s3-reports)
+    (set -xeuo pipefail
+      dir="$HOME/Downloads/audere/flu-prod-api-reports"
+      mkdir -p "$dir"
+      aws s3 cp --recursive "s3://flu-prod-api-reports/" "$dir"
+      rsync -az "$dir" pdev:
+    )
     ;;
 
-  medic-test-init)
-    cd "$GITHUB_MEDIC_WEBAPP"
-    export COUCH_URL=http://admin:pass@localhost:5984/medic
-    export API_URL=http://admin:pass@localhost:5988
-    export COUCH_NODE_NAME=nonode@nohost
-    export CHROME_BIN="$(type -P chromium-browser || type -P chromium)"
+  pods3)
+    "$AUDERE/scripts/update-pods"
     ;;
 
-  mgrunt | medic-test) ( audere medic-test-init && grunt "$@" );;
-  mtest) audere medic-test test;;
-  munit) audere medic-test unit;;
-  me2e)  audere medic-test ci-integration-e2e;;
-  mci)   audere medic-test ci;;
+  alocal | tfloc | tflocal | archive-local)
+    (set -euo pipefail
+      cd "$AUDERE_TF"
+      dir="$HOME/Downloads/audere"
+      archive="$dir/audere-local.tar.bz2"
+      mkdir -p "$dir"
+      rm -f "$dir/audere-local.tar"*
+      tar chjf "$archive" \
+        ./local/flu* \
+        ./local/random_seed \
+        ./terraform/global/terraform.tfstate \
+        $(find terraform/flu -name '*.auto.tfvars')
+      echo "Created $archive"
+      osascript -e 'tell application "Finder"' -e activate -e "reveal POSIX file \"$archive\"" -e end tell
+    )
+    ;;
+
+  fbn | fname | fever-by-name)
+    ssh pdev ./sql/fever-csruid-by-name "$@"
+    ;;
+  fbe | femail | fever-by-email)
+    ssh pdev ./sql/fever-csruid-by-email "$@"
+    ;;
+  dbcli)
+    ssh pdev ./sql/dbcli "$@"
+    ;;
+  sp | show-path)
+    audereq dbcli show-path "$@"
+    ;;
+  fpo | fever-photo-of)
+    ssh pdev ./sql/dbcli photo-of fever "$@" \
+      | base64 -d \
+      | open -f -a /Applications/Preview.app
+    ;;
+  fse | survey-events)
+    audereq dbcli show-path fever nonpii survey.events "$@" | jq .
+    ;;
+  fcheckuid)
+    audere fever-photo-of "$@" \
+      && audere survey-events "$@"
+    ;;
+
+  nonpii) (. "$AUDERE/FluApi/.env" && psql "$NONPII_DATABASE_URL");;
+  pii)    (. "$AUDERE/FluApi/.env" && psql    "$PII_DATABASE_URL");;
+
+  psql-over-tunnel)
+    (set -euo pipefail
+      psql "$("$_au_self_dir/audere-db-tunnel-const" "$1" url)" "$@"
+    )
+    ;;
+
+  snpii | staging-nonpii) audereq psql-over-tunnel staging-nonpii;;
+  spii  | staging-pii)    audereq psql-over-tunnel staging-pii;;
+  pnpii | prod-nonpii)    audereq psql-over-tunnel prod-nonpii;;
+  ppii  | prod-pii)       audereq psql-over-tunnel prod-pii;;
+
+  reset-db | resetdb)
+    (set -euo pipefail
+      . "$AUDERE/FluApi/.env"
+      audereq nonpii <<-EOF
+        \c postgres
+        drop database ${NONPII_DATABASE_URL##*/};
+        create database ${NONPII_DATABASE_URL##*/};
+			EOF
+      audereq pii <<-EOF
+        \c postgres
+        drop database ${PII_DATABASE_URL##*/};
+        create database ${PII_DATABASE_URL##*/};
+			EOF
+    )
+    ;;
+
+  healthcheck)
+    case "$1" in
+      staging) curl -f https://api.staging.auderenow.io/health-check;;
+      prod)    curl -f      https://api.auderenow.io/health-check;;
+      *) echo2 "Expected argument 'prod' or 'staging', got '$1'";;
+    esac
+    ;;
+
+  vpn) openvpn2 --config /etc/audere-vpn/client.conf;;
+
+  setup-easyrsa | install-easyrsa)
+    (set -euo pipefail
+      EASYRSA_VERSION="v3.0.6"
+      EASYRSA_SHA256="cb29aed2d27824e59dbaad547f11dcab380a53c9fe05681249e804af436f1396"
+
+      EASYRSA_NAME="EasyRSA-$EASYRSA_VERSION"
+      EASYRSA_DIR="$HOME/devtools/$EASYRSA_NAME"
+      if [[ -d "$EASYRSA_DIR" ]]; then
+        echo 1>&2 "'$EASYRSA_DIR' already exists.  Nothing changed"
+        exit 0
+      fi
+
+      EASYRSA_TGZ="EasyRSA-unix-$EASYRSA_VERSION.tgz"
+      EASYRSA_URL="https://github.com/OpenVPN/easy-rsa/releases/download/$EASYRSA_VERSION/$EASYRSA_TGZ"
+      mkdir -p "$HOME/devtools"
+      cd "$HOME/devtools"
+      wget "$EASYRSA_URL"
+      if [[ "$(sha256sum "$EASYRSA_TGZ" | awk '{print $1}')" != "$EASYRSA_SHA256" ]]; then
+        echo 1>&2 "Huh? Mismatched sha256 for '$EASYRSA_TGZ'."
+        exit 1
+      fi
+      tar xzf "$EASYRSA_TGZ"
+      rm "$EASYRSA_TGZ"
+
+      ln -f -s "$EASYRSA_DIR" "$HOME/devtools/EasyRSA"
+    ) && append-path "$HOME/devtools/EasyRSA"
+    ;;
+
+  makevpn)
+    (set -euo pipefail
+      function ovpn() { openvpn2 "$@" || openvpn "$@"; }
+      function init-pki() {
+        local dir="$1"
+        mkdir -p "$dir"
+        easyrsa --pki-dir "$dir" init-pki
+        head -c 256 /dev/urandom >"$dir/.rnd"
+        cp "$(dirname "$(type -p easyrsa)")"/openssl-easyrsa.conf "$dir"
+      }
+      ROOT="${VPN_BUILD_ROOT:-$HOME/openvpn2}"
+      PKIS="$ROOT/pkis"
+      CLIENTS="$ROOT/clients"
+      _vpn_cmd="$1"; shift
+      case "$_vpn_cmd" in
+        ca)
+          init-pki "$PKIS/ca"
+          echo "============ Setting up CA (requires CA password) ============"
+          easyrsa --pki-dir "$PKIS/ca" --keysize 4096 build-ca
+          ovpn --genkey --secret "$PKIS/ta.key"
+          ;;
+        server)
+          SERVER="${1:-audere-vpn}"
+          init-pki "$PKIS/$SERVER"
+          easyrsa --pki-dir "$PKIS/$SERVER" --keysize 4096 gen-req $SERVER nopass
+          easyrsa --pki-dir "$PKIS/ca" import-req "$PKIS/$SERVER/pki/reqs/$SERVER.req"
+          echo "============ Signing server cert (requires CA password) ============"
+          easyrsa --pki-dir "$PKIS/ca" sign-req server $SERVER
+          echo "============ Generating DH parameters (takes forever) ============"
+
+          # TODO easyrsa --pki-dir "$PKIS/$SERVER" --keysize 4096 gen-dh
+          cp ~/easyrsa/audere-vpn/pki/dh.pem "$PKIS/$SERVER"
+
+          mkdir -p "$ROOT/$SERVER"
+          cp "$PKIS/ca/pki/issued/$SERVER.crt" "$SERVER/$ROOT/$SERVER.crt"
+          cp "$PKIS/ca/pki/issued/$SERVER.key" "$SERVER/$ROOT/$SERVER.key"
+          cp "$PKIS/ca/pki/ca.crt" "$ROOT/$SERVER/ca.crt"
+          cp "$PKIS/ta.key" "$ROOT/$SERVER/ta.key"
+          cp "$PKIS/$SERVER/dh.pem" "$ROOT/$SERVER/dh.pem"
+          cat >"$ROOT/$SERVER/server.conf" <<EOF
+port 13832
+proto udp
+dev tun
+ca ca.crt
+cert $SERVER.crt
+key $SERVER.key
+dh dh.pem .
+server 10.65.117.0 255.255.255.0
+ifconfig-pool-persist /var/log/openvpn/ipp.txt
+push "redirect-gateway def1 bypass-dhcp"
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 208.67.222.222"
+push "dhcp-option DNS 208.67.220.220"
+keepalive 10 120
+tls-auth ta.key 0
+cipher AES-256-CBC
+user nobody
+group nogroup
+persist-key
+persist-tun
+status /var/log/openvpn/openvpn-status.log
+explicit-exit-notify 1
+EOF
+          ;;
+        client)
+          CLIENT="$1"
+          init-pki "$PKIS/$CLIENT"
+          easyrsa --pki-dir "$PKIS/$CLIENT" --keysize 4096 gen-req $CLIENT nopass
+          easyrsa --pki-dir "$PKIS/ca" import-req "$PKIS/$CLIENT/pki/reqs/$CLIENT.req"
+          echo "============ Signing client cert (requires CA password) ============"
+          easyrsa --pki-dir "$PKIS/ca" sign-req client $CLIENT
+          mkdir -p "$ROOT/$CLIENT"
+          cp "$PKIS/ca/pki/issued/$CLIENT.crt" "$CLIENT/$ROOT/$CLIENT.crt"
+          cp "$PKIS/ca/pki/issued/$CLIENT.key" "$CLIENT/$ROOT/$CLIENT.key"
+          cp "$PKIS/ca/pki/ca.crt" "$ROOT/$CLIENT/ca.crt"
+          cp "$PKIS/ta.key" "$ROOT/$SERVER/ta.key"
+          cat >"$ROOT/$CLIENT/client.conf" <<EOF
+client
+dev tun
+proto udp
+remote 35.163.194.15 13832
+resolv-retry infinite
+nobind
+user nobody
+group nobody
+persist-key
+persist-tun
+ca /etc/audere-vpn/ca.crt
+cert /etc/audere-vpn/client.crt
+key /etc/audere-vpn/client.key
+remote-cert-tls server
+tls-auth /etc/audere-vpn/ta.key 1
+cipher AES-256-CBC
+EOF
+          ;;
+        *) echo "Expected one of 'ca', 'server', 'client', but got '$_vpn_cmd'"; exit 1;;
+      esac
+    )
+    ;;
 
   # --------------------------------------------------------------------------------
   # AWS
 
+  2fa) "$AUDERE/scripts/get-session-token" "$@";;
+
+  2fad)
+    (set -euo pipefail
+      "$AUDERE/scripts/get-session-token" "$@"
+      scp "$AWS_SHARED_CREDENTIALS_FILE" "$(audere dns audev-$USER):.aws/"
+    )
+    ;;
+
+  recurl | curls)
+    while true; do
+      sleep 5 && audereq curl || break
+    done
+    ;;
+
+  curl)
+    (
+      date
+      audereq curl-status "https://api.auderenow.io/api"
+      audereq curl-status "https://api.staging.auderenow.io/api"
+    ) | tail -1000
+    ;;
+
+  curl-status)
+    echo "$(curl -Ss "$1" 2>&1) | $1"
+    ;;
+
+  devoff | devstop | dev-off | dev-stop)
+    audere stop audev-mmarucheck
+    ;;
+
+  devon | devstart | dev-on | dev-start)
+    (set -euo pipefail
+      audere start audev-mmarucheck
+      audere dev-home
+      audere bind-dns audev-mmarucheck
+    )
+    ;;
+
+  devmnt | devcreds | dev-home)
+    "$AUDERE/scripts/ssh-with-dot-aws" \
+      "$(audere dns audev-$USER)" \
+      "sudo cryptsetup luksOpen .creds-luks CredsLUKS --key-file .local-aws/luks && sudo mount /dev/mapper/CredsLUKS .creds"
+    ;;
+
+  sshapi | ssh-api) ssh1 -t ubuntu@"$1" sudo -H --login --user=api bash;;
+
+  pmet | prod-metrics | metrics)
+    (set -euo pipefail
+      d="${1:-$(date +%F)}"
+      [[ -d "$HOME/metrics" ]] && cd "$HOME/metrics"
+      ssh -f -o ExitOnForwardFailure=yes -L 3000:localhost:3000 pdev sleep 2
+      sleep 1
+      curl --silent --show-error --output "sfs-$d.xlsx" \
+         "http://localhost:3000/saveMetrics?startDate=$d&endDate=$d"
+      echo "Wrote ~/metrics/sfs-$d.xlsx"
+      #curl --silent --show-error --output "sfs-$d-stats.xlsx" \
+      #   "http://localhost:3000/saveDataSummary?startDate=2019-01-01&endDate=$d"
+      #echo "Wrote sfs-$d-summary.xlsx"
+      sleep 2
+    )
+    ;;
+
+  pmetu | prod-metrics-update | metrics-update)
+    (set -euo pipefail
+      d="${1:-$(date +%F)}"
+      [[ -d "$HOME/metrics" ]] && cd "$HOME/metrics"
+      ssh pdev -t "(n10 && set -x && cd ~/audere/FluApi && pm2 stop process.json && git checkout metrics && gpr && yarn build && pm2 start process.json)"
+      ssh -f -o ExitOnForwardFailure=yes -L 3000:localhost:3000 pdev sleep 2
+      sleep 1
+      curl --silent --show-error --output "sfs-$d.xlsx" \
+         "http://localhost:3000/saveMetrics?startDate=$d&endDate=$d"
+      echo "Wrote ~/metrics/sfs-$d.xlsx"
+      #curl --silent --show-error --output "sfs-$d-stats.xlsx" \
+      #   "http://localhost:3000/saveDataSummary?startDate=2019-01-01&endDate=$d"
+      #echo "Wrote sfs-$d-summary.xlsx"
+      sleep 2
+    )
+    ;;
+
+  tar-local)
+    (set -euo pipefail
+      cd "$AUDERE"
+      tar cj local | gpg --symmetric >"$HOME/Dropbox/work/audere-local.tar"
+    )
+    ;;
+
+  tfs | tf-staging) audere tfd-staging "$@" && audere tfa-staging "$@";;
+  tfp | tf-prod)    audere tfd-prod    "$@" && audere tfa-prod    "$@";;
+
+  tfdall | tfd-all)
+    audere tfd-staging "$@"
+    audere tfd-prod "$@"
+    ;;
+
+  tfaall | tfa-all) audere tfa-staging "$@" && audere tfa-prod "$@";;
+
+  tfds | tfd-staging) audere terraform-destroy "$AUDERE_TF/terraform/flu/"{api,1-db}-staging;;
+  tfas | tfa-staging) audere tfa-e2e "staging" "$AUDERE_TF/terraform/flu" "$@";;
+
+  tfdp | tfd-prod) audere terraform-destroy "$AUDERE_TF/terraform/flu/"{api,1-db}-prod;;
+  tfap | tfa-prod) audere tfa-e2e "prod" "$AUDERE_TF/terraform/flu" "$@";;
+
+  tfa-e2e)
+    (set -euo pipefail
+      environment="$1"
+      dir="${2:-$AUDERE_TF/terraform/flu}"
+      commit="${3:-master}"
+      cd "$AUDERE_TF/terraform/modules/flu-api" && pwd
+      ./init-local
+      audere tfa-db  "$environment" "$dir/1-db-$environment"
+      audere tfa-web "$environment" "$dir/api-$environment"
+    )
+    ;;
+
+  tfd-db) audere terraform-destroy "$AUDERE_TF/terraform/flu/1-db-$1";;
+  tfd-web) audere terraform-destroy "$AUDERE_TF/terraform/flu/api-$1";;
+
+  tfa-db)
+    (set -euo pipefail
+      environment="$1"
+      dir="${2:-$AUDERE_TF/terraform/flu/1-db-$1}"
+      cd "$dir"
+      pwd
+
+      audere terraform init                                     -var 'admins=["mmarucheck"]'
+      audere terraform apply -auto-approve -var mode=provision0 -var 'admins=["mmarucheck"]'
+      audere aws-wait-for-itag-state "flu-${environment}-db-provision0" stopped
+      audere terraform apply -auto-approve -var mode=provision1 -var 'admins=["mmarucheck"]'
+
+      audere terraform apply -auto-approve -var mode=add-admin  -var 'admins=["mmarucheck", "ram"]'
+      audere aws-wait-for-itag-state "flu-${environment}-db-add-admin-ram" stopped
+
+      case "$environment" in
+        staging)
+          audere terraform apply -auto-approve -var mode=add-admin  -var 'admins=["mmarucheck", "ram", "terri"]'
+          audere aws-wait-for-itag-state "flu-${environment}-db-add-admin-terri" stopped
+          ;;
+        prod)
+          # No additional admins in prod
+          ;;
+        *) echo2 "audere tfa-db: unrecognized environment '$environment'"; false;;
+      esac
+
+      audere terraform apply -auto-approve
+    )
+    ;;
+
+  tfa-web)
+    (set -euo pipefail
+      environment="$1"
+      dir="${2:-$AUDERE_TF/terraform/flu/api-$1}"
+      commit="${3:-master}"
+      service_mode="${4:-elb}"
+      "$AUDERE_TF/terraform/modules/flu-api/init-local"
+      cd "$dir" && pwd
+      audere terraform init
+      audere terraform apply -auto-approve -var "commit=$commit" -var "service=offline" -var migrate=true
+      migrate_tag="flu-${environment}-api-migrate"
+      echo "Looking up 'audere vmid $migrate_tag'.."
+      migrate="$(audere vmid $migrate_tag)"
+      echo "  ..got '$migrate'"
+      audere aws-wait-for-instance-state "$migrate" stopped
+      audere terraform apply -auto-approve -var "commit=$commit" -var "service=$service_mode"
+    )
+    ;;
+
+  tfd | terraform-destroy)
+    (set -euo pipefail
+      for dir in "$@"; do
+        cd "$dir" && pwd
+        audere terraform init
+        audere terraform destroy -auto-approve || true
+      done
+    )
+    ;;
+
+  tf | terraform)
+    echo "============================ Running terraform command ==============================="
+    echo "== Running: 'terraform $*'"
+    echo "==   ...in: '$(pwd)'"
+    terraform "$@"
+    echo "== Finished 'terraform $*'"
+    echo "==   ...in: '$(pwd)'"
+    echo "============================ Terraform command returned $? ============================"
+    ;;
+
   ssh-retry-true)
     (set -euo pipefail
-      _au_addr="${1:-$_au_user@$_au_ip}"
-      echo "Waiting for (accept-new) ssh to '$_au_addr'.."
-      until ssh "-oStrictHostKeyChecking=accept-new" "$_au_addr" true; do
-        sleep 1
-        echo "  retrying.."
-      done
+      user="$1"
+      itag="$2"
+
+      function dns() { audere aws-dns "$itag" 2>/dev/null; }
+      if ! ip="$(dns)"; then
+        echo2 "Waiting for aws-dns to '$user@$itag'.."
+        until ip="$(dns)"; do
+          sleep 1
+          printf 1>&2 "."
+        done
+      fi
+      addr="$user@$ip"
+
+      function connect() { ssh 1>&2 "-oConnectTimeout=3" "-oStrictHostKeyChecking=accept-new" "$addr" true; }
+      if ! connect; then
+        echo2 "Waiting for (accept-new) ssh to '$addr'.."
+        until connect; do
+          sleep 1
+          printf 1>&2 "."
+        done
+      fi
+      echo "$ip"
     )
     ;;
 
@@ -205,9 +634,8 @@ case "$_au_subcommand" in
       _au_user="$(audere get-ssh-user "$1")"
       _au_itag="$(audere get-ssh-itag "$1")"
       shift
-      _au_ip="$(audere aws-dns "$_au_itag")"
+      _au_ip="$(audere ssh-retry-true "$_au_user" "$_au_itag")"
       echo "Syncing audere to '$_au_user@$_au_ip' ('$_au_itag')"
-      audere ssh-retry-true "$_au_user@${_au_ip}"
       rsync -a "$@" "$HOME/audere" "$_au_user@${_au_ip}:"
     )
     ;;
@@ -235,17 +663,6 @@ case "$_au_subcommand" in
     (set -euo pipefail
       audere env api
       audere ssh api ./audere/scripts/aws-api-teardown
-    )
-    ;;
-
-  rsync-web)
-    (set -euo pipefail
-      _au_user="$(audere get-ssh-user "$1")"
-      _au_itag="$(audere get-ssh-itag "$1")"
-      shift
-      _au_ip="$(audere aws-dns "$_au_itag")"
-      echo "Syncing DjangoWebService to api"
-      rsync -a "$HOME/audere/learn/DjangoWebService" "$_au_user@${_au_ip}:"
     )
     ;;
 
@@ -285,6 +702,17 @@ case "$_au_subcommand" in
       _au_itag="$(audere get-ssh-itag "$1")"
       shift
       _au_ip="$(audere aws-dns "$_au_itag")"
+      echo "Connecting to '$_au_user@$_au_ip' ('$_au_itag')"
+      ssh -t "$_au_user@$_au_ip" "$@"
+    )
+    ;;
+
+  sshr | ssh-retry-tag)
+    (set -euo pipefail
+      _au_user="$(audere get-ssh-user "$1")"
+      _au_itag="$(audere get-ssh-itag "$1")"
+      shift
+      _au_ip="$(audere ssh-retry-true "$_au_user" "$_au_itag")"
       echo "Connecting to '$_au_user@$_au_ip' ('$_au_itag')"
       ssh -t "$_au_user@$_au_ip" "$@"
     )
@@ -345,12 +773,12 @@ case "$_au_subcommand" in
             'ResourceType=volume,Tags=[{Key=Name,Value='"$1"'}]' \
           | tee ~/.aws-last-run-instances | jq '.Instances' \
         )"
-      _au_instance="$(audere jq-unique "instances created" "$_au_instances")"
+      _au_instance="$(audereq jq-unique "instances created" "$_au_instances")"
       _au_instance_id="$(echo "$_au_instance" | jqraw '.InstanceId')"
       _au_instance_private_ip="$(echo "$_au_instance" | jqraw '.PrivateIpAddress')"
       echo "Instance ID: '$_au_instance_id', private ip='$_au_instance_private_ip'"
 
-      audere aws-wait-for-instance-state running "$_au_instance_id"
+      audere aws-wait-for-instance-state "$_au_instance_id" running
 
       if _au_elastic_ip="$(audere aws-elastic-address "$1" 2>/dev/null)"; then
         _au_allocation_id="$(echo "$_au_elastic_ip" | jqraw ".AllocationId")"
@@ -365,7 +793,7 @@ case "$_au_subcommand" in
       fi
 
       echo "Resizing root volume"
-      _au_instance="$(audere aws-instance-by-id "$_au_instance_id")"
+      _au_instance="$(audereq aws-instance-by-id "$_au_instance_id")"
       _au_volume="$(echo "$_au_instance" | jqraw '.BlockDeviceMappings[].Ebs.VolumeId')"
       echo "  Volume ID: '$_au_volume'"
       aws ec2 modify-volume --volume-id "$_au_volume" --size 15
@@ -398,11 +826,11 @@ case "$_au_subcommand" in
           echo "Moshing to '$_au_addr'.."
           mosh "$_au_addr"
         else
-          echo 1>&2 "Sub-command processing for '$_au_subcommand' is out of sync"
+          echo2 "Sub-command processing for '$_au_subcommand' is out of sync"
           false
         fi
       else
-        echo 1>&2 "Invalid status ('$_au_status') for instance (tag='$_au_itag' id='$_au_id')"
+        echo2 "Invalid status ('$_au_status') for instance (tag='$_au_itag' id='$_au_id')"
         false
       fi
     )
@@ -420,12 +848,12 @@ case "$_au_subcommand" in
       _au_id="$(audere vmid "$1")"
       echo "Starting tag '$1' (vmid='$_au_id').."
       aws ec2 start-instances --instance-ids "$_au_id"
-      audere aws-wait-for-instance-state running "$_au_id"
+      audere aws-wait-for-instance-state "$_au_id" running
       echo "Waiting for IP assignment.."
       until _au_ip="$(audere dns "$1" 2>/dev/null)"; do
         sleep 1
       done
-      audere ssh-retry-true "$USER@$_au_ip"
+      audere ssh-retry-true "$USER" "$1"
     )
     ;;
 
@@ -483,7 +911,7 @@ case "$_au_subcommand" in
     ;;
 
   aws-security-group)
-    audere jq-unique "security groups match '$1'" "$(audere aws-security-groups "$1")"
+    audereq jq-unique "security groups match '$1'" "$(audere aws-security-groups "$1")"
     ;;
 
   aws-security-groups)
@@ -516,17 +944,17 @@ case "$_au_subcommand" in
       jq '[.[].Tags[] | [{key:.Key,value:.Value}] | from_entries | select(.Name != null) | .Name]'
     ;;
 
-  ip   | aws-ip)         audere aws-running "$@" | jqraw ".PublicIpAddress";;
-  iip  | aws-private-ip) audere aws-running "$@" | jqraw ".PrivateIpAddress";;
-  dns  | aws-dns)        audere aws-running "$@" | jqraw ".PublicIpAddress";;
-  vmid | aws-vmid)       audere aws-iknown "$@" | jqraw ".InstanceId";;
+  ip   | aws-ip)         audereq aws-running "$@" | jqraw ".PublicIpAddress";;
+  iip  | aws-private-ip) audereq aws-running "$@" | jqraw ".PrivateIpAddress";;
+  dns  | aws-dns)        audereq aws-running "$@" | jqraw ".PublicIpAddress";;
+  vmid | aws-vmid)       audereq aws-iknown  "$@" | jqraw ".InstanceId";;
 
-  eip  | aws-elastic-ip)            audere aws-elastic-address "$@" | jqraw ".PublicIp";;
-  eaid | aws-elastic-allocation-id) audere aws-elastic-address "$@" | jqraw ".AllocationId";;
-  eiid | aws-elastic-instance-id)   audere aws-elastic-address "$@" | jqraw ".InstanceId";;
+  eip  | aws-elastic-ip)            audereq aws-elastic-address "$@" | jqraw ".PublicIp";;
+  eaid | aws-elastic-allocation-id) audereq aws-elastic-address "$@" | jqraw ".AllocationId";;
+  eiid | aws-elastic-instance-id)   audereq aws-elastic-address "$@" | jqraw ".InstanceId";;
 
   aws-key-pair)
-    audere jq-unique "key-pairs found that match '$1'" "$(audere aws-key-pairs "$1")"
+    audereq jq-unique "key-pairs found that match '$1'" "$(audere aws-key-pairs "$1")"
     ;;
 
   aws-key-pairs)
@@ -539,33 +967,71 @@ case "$_au_subcommand" in
     ;;
 
   aws-running)
-    audere jq-unique "instances found" \
+    audereq jq-unique "instances found" \
       "$(audere aws-running-list "$@")"
     ;;
 
   aws-iknown)
-    audere jq-unique "instances found" \
+    audereq jq-unique "instances found" \
       "$(audere aws-instance-list "running,stopped,stopping,pending" "$@")"
     ;;
 
+  aws-wait-for-instance)
+    (set -euo pipefail
+     if ! audere vmid "$1" >/dev/null; then
+       printf "Waiting for '$1' to exist: ["
+       sleep 1
+       until audereq vmid "$1" >/dev/null; do
+         printf "."
+         sleep 1
+       done
+       echo ".]"
+     fi
+    )
+    ;;
+
+  aws-wait-for-itag-state)
+    (set -euo pipefail
+     itag="$1"
+     state="$2"
+     printf "Looking up itag '$itag'.."
+     vmid="$(audereq vmid "$itag")"
+     echo "found vmid '$vmid'"
+     audere aws-wait-for-instance-state "$vmid" "$state"
+    )
+    ;;
+
   aws-wait-for-instance-state)
-    _au_instance_state="$(audere aws-instance-state "$2")"
-    if [[ "$_au_instance_state" != "$1" ]]; then
-      echo "Waiting for instance to be '$1' (currently '$_au_instance_state')"
-      while [[ "$_au_instance_state" != "$1" ]]; do
-        sleep 1
-        _au_instance_state="$(audere aws-instance-state "$2")"
-        echo " instance is '$_au_instance_state'"
-      done
-    fi
+    (set -euo pipefail
+      instance="$1"
+      state="$2"
+      itag="$(audereq aws-instance-by-id "$instance" | jqraw '.Tags[] | select(.Key == "Name") | .Value')"
+      previous=""
+      current="$(audereq aws-instance-state "$instance")"
+      if [[ "$current" != "$state" ]]; then
+        echo "Waiting for '$itag' ($instance) to be '$state' (currently '$current')"
+        while [[ "$current" != "$state" ]]; do
+          if [[ "$current" == "$previous" ]]; then
+            printf "."
+          else
+            [[ "$previous" != "" ]] && printf "]\n"
+            printf "  currently '$current' [."
+          fi
+          sleep 1
+          previous="$current"
+          current="$(audereq aws-instance-state "$instance")"
+        done
+        echo "]"
+      fi
+    )
     ;;
 
   istate | aws-instance-state)
-    audere aws-instance-by-id "$1" | jqraw '.State.Name'
+    audereq aws-instance-by-id "$1" | jqraw '.State.Name'
     ;;
 
   aws-instance-by-id)
-    audere jq-unique "instances by id '$1'" "$(aws ec2 describe-instances --instance-ids "$@" | jq '[.Reservations[].Instances[]]')"
+    audereq jq-unique "instances by id '$1'" "$(aws ec2 describe-instances --instance-ids "$@" | jq '[.Reservations[].Instances[]]')"
     ;;
 
   aws-running-list) audere aws-instance-list running "$@";;
@@ -590,7 +1056,7 @@ case "$_au_subcommand" in
     ;;
 
   ela | aws-elastic-address)
-    audere jq-unique "elastic ips found" \
+    audereq jq-unique "elastic ips found" \
       "$(audere aws-elastic-addresses "$1")"
     ;;
 
@@ -645,3 +1111,108 @@ esac
 #     select(.Tags[] | [{key:.Key,value:.Value}] | from_entries | .Name == "'"$1"'") |
 #     .PublicIpAddress
 #   ]'
+
+
+# Old stuff from CommCare and Medic:
+
+#  # --------------------------------------------------------------------------------
+#  # Commcare HQ
+#
+#  ccinit)
+#    audere cdcc
+#    workon commcare-hq
+#    ;;
+#
+#  ccrun)
+#    audere ccstart
+#    audere ccmanage runserver 0.0.0.0:8000
+#    ;;
+#
+#  ccstart)
+#    audere ccinit
+#    audere ccdocker up -d
+#    ;;
+#
+#  ccstop)
+#    audere ccdocker stop
+#    ;;
+#
+#  ccpatch)
+#    (
+#      cd "$GITHUB_COMMCARE_HQ" || die "Could not cd to '$GITHUB_COMMCARE_HQ'"
+#
+#      diff --unified localsettings{.example,}.py >~/audere/scripts/onenode-localsettings.py.patch
+#      _au_status="$?"
+#      [[ "$_au_status" == 1 ]] || die "Expected diff would return 1 but got '$_au_status'"
+#    )
+#    ;;
+#
+#  ccd | ccdocker) echorun "$GITHUB_COMMCARE_HQ/scripts/docker" "$@";;
+#  ccm | ccmanage) echorun "$GITHUB_COMMCARE_HQ/manage.py" "$@";;
+#
+#  # --------------------------------------------------------------------------------
+#  # Medic Mobile
+#
+#  halt0) ssh -t audere0 sudo halt;;
+#
+#  minit)
+#    if [[ -z "$COUCH_USER" || -z "$COUCH_PWD" ]]; then
+#      echo2 "COUCH_USER and COUCH_PWD are not set."
+#      echo2 "Nothing changed."
+#    else
+#      export COUCH_URL=http://$COUCH_USER:$COUCH_PWD@localhost:5984/medic
+#      export API_URL=http://$COUCH_USER:$COUCH_PWD@localhost:5988
+#      export COUCH_NODE_NAME=couchdb@localhost
+#    fi
+#    ;;
+#
+#  mclean)
+#    cd "$GITHUB_MEDIC_WEBAPP"
+#    git clean -xdf
+#    cat >"$GITHUB_MEDIC_WEBAPP/.env" <<-EOF
+#			COUCH_URL=http://admin:pass@localhost:5984/medic
+#			COUCH_NODE_NAME=couchdb@localhost
+#		EOF
+#    audere minit &&
+#    npm update -g npm &&
+#    npm install -g grunt-cli &&
+#    cd "$GITHUB_MEDIC_WEBAPP" && yarn install &&
+#    cd "$GITHUB_MEDIC_WEBAPP/webapp" && yarn install &&
+#    cd "$GITHUB_MEDIC_WEBAPP/admin" && yarn install &&
+#    cd "$GITHUB_MEDIC_WEBAPP/api" && yarn install &&
+#    cd "$GITHUB_MEDIC_WEBAPP/sentinel" && yarn install &&
+#    cd "$GITHUB_MEDIC_WEBAPP"
+#    ;;
+#
+#  medic-test-init)
+#    cd "$GITHUB_MEDIC_WEBAPP"
+#    export COUCH_URL=http://admin:pass@localhost:5984/medic
+#    export API_URL=http://admin:pass@localhost:5988
+#    export COUCH_NODE_NAME=nonode@nohost
+#    export CHROME_BIN="$(type -P chromium-browser || type -P chromium)"
+#    ;;
+#
+#  mgrunt | medic-test) ( audere medic-test-init && grunt "$@" );;
+#  mtest) audere medic-test test;;
+#  munit) audere medic-test unit;;
+#  me2e)  audere medic-test ci-integration-e2e;;
+#  mci)   audere medic-test ci;;
+#
+# 2fa)
+#   export AWS_SHARED_CREDENTIALS_FILE="$HOME/.aws/credentials"
+#   (set -euo pipefail
+#    json="$HOME/.aws/audere-credentials.json"
+#    creds="$HOME/.aws/audere-credentials"
+#    umask 077
+#    read -p "Enter 2-factor auth code for '$USER': " auth_code
+#    echorun aws sts get-session-token \
+#            --serial-number "arn:aws:iam::475613123583:mfa/$USER" \
+#            --token-code "$auth_code" \
+#            > "$json"
+#    echo  >"$creds" "[audere]"
+#    echo >>"$creds" "aws_access_key_id=$(    jqraw <"$json" ".Credentials.AccessKeyId")"
+#    echo >>"$creds" "aws_secret_access_key=$(jqraw <"$json" ".Credentials.SecretAccessKey")"
+#    echo >>"$creds" "aws_session_token=$(    jqraw <"$json" ".Credentials.SessionToken")"
+#   )
+#   export AWS_SHARED_CREDENTIALS_FILE="$HOME/.aws/audere-credentials"
+#   ;;

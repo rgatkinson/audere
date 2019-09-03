@@ -8,13 +8,15 @@ import { Store } from "redux";
 import { Persistor } from "redux-persist";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { I18nextProvider } from "react-i18next";
 import { getStore, getPersistor } from "./src/store/";
 import AppController from "./src/ui/AppController";
 import Splash from "./src/ui/Splash";
+import i18n from "./src/i18n";
 
 export default class App extends React.Component {
   state = {
-    appReady: false
+    appReady: false,
   };
 
   store?: Store;
@@ -27,7 +29,7 @@ export default class App extends React.Component {
   async _loadAssets() {
     await Promise.all([
       getStore().then(store => (this.store = store)),
-      getPersistor().then(persistor => (this.persistor = persistor))
+      getPersistor().then(persistor => (this.persistor = persistor)),
     ]);
 
     this.setState({ appReady: true });
@@ -39,13 +41,13 @@ export default class App extends React.Component {
     }
 
     return (
-      <Provider store={this.store}>
-        <PersistGate loading={null} persistor={this.persistor!}>
-          <Fragment>
+      <I18nextProvider i18n={i18n}>
+        <Provider store={this.store}>
+          <PersistGate loading={null} persistor={this.persistor!}>
             <AppController />
-          </Fragment>
-        </PersistGate>
-      </Provider>
+          </PersistGate>
+        </Provider>
+      </I18nextProvider>
     );
   }
 }

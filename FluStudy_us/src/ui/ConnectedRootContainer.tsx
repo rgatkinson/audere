@@ -6,10 +6,11 @@
 import React from "react";
 import {
   ActivityIndicator,
+  Alert,
   AppState,
+  AsyncStorage,
   Dimensions,
   StyleSheet,
-  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import NetInfo from "@react-native-community/netinfo";
@@ -20,21 +21,23 @@ import {
   clearState,
   setActiveRouteName,
   setCSRUIDIfUnset,
-  setMarketingProperties,
   setShownOfflineWarning,
   setConnectivity,
+  resetTimestamp,
 } from "../store/";
-import { AppEventsLogger } from "react-native-fbsdk";
-import { Camera, Permissions } from "expo";
+import * as Permissions from "expo-permissions";
 import { crashlytics } from "../crashReporter";
+import { notificationLaunchHandler } from "../util/notifications";
 import {
-  tracker,
+  logFirebaseEvent,
   onCSRUIDEstablished,
+  logCurrentScreen,
   NavEvents,
   DrawerEvents,
   AppEvents,
 } from "../util/tracker";
 import { connect } from "react-redux";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   DrawerActions,
   NavigationAction,
@@ -44,13 +47,14 @@ import {
   StackActions,
   createAppContainer,
 } from "react-navigation";
-import { EventInfoKind, WorkflowInfo } from "audere-lib/feverProtocol";
+import { EventInfoKind, WorkflowInfo } from "audere-lib/chillsProtocol";
 import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
-import { newCSRUID } from "../util/csruid";
+import { newUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import { getMarketingProperties, AppHealthEvents } from "../util/tracker";
-import { getRemoteConfig, loadAllRemoteConfigs } from "../util/remoteConfig";
+import MultiTapContainer from "./components/MultiTapContainer";
+
+notificationLaunchHandler();
 
 const AppContainer = createAppContainer(AppNavigator);
 
@@ -58,7 +62,7 @@ interface SplashProps {
   onUnmount(): void;
 }
 
-class SplashScreen extends React.Component<SplashProps> {
+class SplashScreen extends React.PureComponent<SplashProps> {
   componentWillUnmount() {
     this.props.onUnmount();
   }
@@ -74,51 +78,37 @@ class SplashScreen extends React.Component<SplashProps> {
 
 interface Props {
   activeRouteName: string;
-  isConnected: boolean;
   isDemo: boolean;
   lastUpdate?: number;
   workflow: WorkflowInfo;
   csruid?: string;
-  appState: string;
   dispatch(action: Action): void;
+  cameraSettingsGrantedPage: string;
 }
 
-class ConnectedRootContainer extends React.Component<Props> {
+const persistenceKey = "NavigationStateAus";
+const persistNavigationState = async (navState: NavigationState) => {
+  try {
+    await AsyncStorage.setItem(persistenceKey, JSON.stringify(navState));
+  } catch (err) {
+    // handle the error according to your needs
+  }
+};
+const loadNavigationState = async () => {
+  const jsonString = await AsyncStorage.getItem(persistenceKey);
+  return !!jsonString ? JSON.parse(jsonString) : "";
+};
+
+class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props) {
+    return props.isDemo != this.props.isDemo;
+  }
+
   state = {
     appState: "active",
   };
 
-  constructor(props: Props) {
-    super(props);
-    this._handleNavChange = this._handleNavChange.bind(this);
-    this._loadingIndicator = this._loadingIndicator.bind(this);
-    this._onLaunch = this._onLaunch.bind(this);
-  }
-
   navigator = React.createRef<NavigationContainerComponent>();
-
-  QUAD_PRESS_DELAY = 600;
-  lastTap: number | null = null;
-  secondLastTap: number | null = null;
-  thirdLastTap: number | null = null;
-
-  handleQuadTap = () => {
-    if (this.props.isDemo) {
-      const now = Date.now();
-      if (
-        this.lastTap != null &&
-        this.secondLastTap != null &&
-        this.thirdLastTap != null &&
-        now - this.thirdLastTap! < this.QUAD_PRESS_DELAY
-      ) {
-        this._handleAppStateChange("quadTap");
-      } else {
-        this.thirdLastTap = this.secondLastTap;
-        this.secondLastTap = this.lastTap;
-        this.lastTap = now;
-      }
-    }
-  };
 
   _handleConnectivityChange = async (isConnected: boolean) => {
     this.props.dispatch(setConnectivity(isConnected));
@@ -132,15 +122,14 @@ class ConnectedRootContainer extends React.Component<Props> {
 
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
-    this.props.dispatch(setMarketingProperties(getMarketingProperties()));
     if (this.props.csruid) {
       onCSRUIDEstablished(this.props.csruid);
     }
-    this._getConnectivity();
     NetInfo.isConnected.addEventListener(
       "connectionChange",
       this._handleConnectivityChange
     );
+    this._getConnectivity();
   }
 
   componentWillUnmount() {
@@ -178,7 +167,7 @@ class ConnectedRootContainer extends React.Component<Props> {
       nextAppState === "active"
     ) {
       this._getConnectivity();
-      tracker.logEvent(AppEvents.APP_FOREGROUNDED, {
+      logFirebaseEvent(AppEvents.APP_FOREGROUNDED, {
         screen: this.props.activeRouteName,
       });
       this.setState({ appState: nextAppState });
@@ -187,126 +176,70 @@ class ConnectedRootContainer extends React.Component<Props> {
       nextAppState.match(/inactive|background/)
     ) {
       this.props.dispatch!(setShownOfflineWarning(false));
-      tracker.logEvent(AppEvents.APP_BACKGROUNDED, {
+      logFirebaseEvent(AppEvents.APP_BACKGROUNDED, {
         screen: this.props.activeRouteName,
       });
       this.setState({ appState: nextAppState });
     }
 
-    const MILLIS_IN_SECOND = 1000.0;
-    const SECONDS_IN_MINUTE = 60;
-    const MINUTES_IN_HOUR = 60;
-    const HOURS_IN_DAY = 24;
+    if (nextAppState === "quadTap") {
+      this.props.dispatch(
+        appendEvent(
+          EventInfoKind.TimeoutNav,
+          "app:" + nextAppState + ":redirectToScreeningStart"
+        )
+      );
+      this.clearState();
+    } else if (nextAppState === "launch" || nextAppState === "active") {
+      const MILLIS_IN_SECOND = 1000.0;
+      const SECONDS_IN_MINUTE = 60;
+      const MINUTES_IN_HOUR = 60;
+      const HOURS_IN_DAY = 24;
 
-    const intervalMilis = currentDate.getTime() - this.props.lastUpdate;
-    const elapsedMinutes =
-      intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE);
-    const elapsedHours =
-      intervalMilis / (MILLIS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
+      const intervalMilis = currentDate.getTime() - this.props.lastUpdate;
+      const elapsedHours =
+        intervalMilis /
+        (MILLIS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
 
-    if (
-      nextAppState === "launch" ||
-      nextAppState === "active" ||
-      nextAppState === "quadTap"
-    ) {
-      if (
-        this.props.workflow.screeningCompletedAt &&
-        !this.props.workflow.surveyStartedAt &&
-        (nextAppState === "quadTap" || elapsedMinutes > 3 * MINUTES_IN_HOUR)
-      ) {
-        // Have completed screening but not started survey and at least 3 hours have passed,
-        // redirect to welcome back (survey)
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" + nextAppState + ":screeningCompleteRedirectToSurveyStart"
-          )
+      if (elapsedHours > 3 * HOURS_IN_DAY) {
+        const { t } = this.props;
+        Alert.alert(
+          t("relaunch:returningOrNewTitle"),
+          t("relaunch:returningOrNewBody"),
+          [
+            {
+              text: t("relaunch:button:newUser"),
+              onPress: () => {
+                logFirebaseEvent(AppEvents.APP_IDLE_NEW_USER);
+                this.props.dispatch(
+                  appendEvent(
+                    EventInfoKind.TimeoutNav,
+                    "app:" + nextAppState + ":newUserRedirectToScreeningStart"
+                  )
+                );
+                this.clearState();
+              },
+            },
+            {
+              text: t("relaunch:button:returningUser"),
+              onPress: () => {
+                logFirebaseEvent(AppEvents.APP_IDLE_SAME_USER);
+                this.props.dispatch(resetTimestamp());
+              },
+            },
+          ],
+          { cancelable: false }
         );
-        this.navigator &&
-          this.navigator.current &&
-          this.navigator.current.dispatch(
-            StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({ routeName: "WelcomeBack" }),
-              ],
-            })
-          );
-      } else if (
-        (this.props.activeRouteName === "AgeIneligible" ||
-          this.props.activeRouteName === "SymptomsIneligible" ||
-          this.props.activeRouteName === "StateIneligible" ||
-          this.props.activeRouteName === "ConsentIneligible") &&
-        (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
-      ) {
-        // Was on ineligible screen for at least 24 hours, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" +
-              nextAppState +
-              ":ineligibleExpirationRedirectToScreeningStart"
-          )
-        );
-        this.clearState();
-      } else if (
-        !this.props.workflow.screeningCompletedAt &&
-        !this.props.workflow.skippedScreeningAt &&
-        (nextAppState === "quadTap" || elapsedHours > 2 * HOURS_IN_DAY)
-      ) {
-        // Have not completed screening (not ordered kit) and 2 days have passed, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" +
-              nextAppState +
-              ":screeningExpirationRedirectToScreeningStart"
-          )
-        );
-        this.clearState();
-      } else if (
-        this.props.workflow.surveyCompletedAt &&
-        (nextAppState === "quadTap" || elapsedHours > HOURS_IN_DAY)
-      ) {
-        // Successfully completed survey and 1 day has passed, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" + nextAppState + ":surveyCompleteRedirectToScreeningStart"
-          )
-        );
-        this.clearState();
-      } else if (
-        this.props.workflow.surveyStartedAt &&
-        (nextAppState === "quadTap" || elapsedHours > 4 * HOURS_IN_DAY)
-      ) {
-        // Started survey but did not finish, at least 4 days have passed, clear state
-        this.props.dispatch(
-          appendEvent(
-            EventInfoKind.TimeoutNav,
-            "app:" +
-              nextAppState +
-              ":surveyIncompleteExpirationRedirectToScreeningStart"
-          )
-        );
-        this.clearState();
-      } else if (this.props.activeRouteName === "OutOfKits") {
-        await loadAllRemoteConfigs();
-        if (!getRemoteConfig("blockKitOrders")) {
-          tracker.logEvent(AppHealthEvents.KIT_ORDER_UNBLOCKED);
-          this.navigator &&
-            this.navigator.current &&
-            this.navigator.current.dispatch(
-              StackActions.replace({ routeName: "What" })
-            );
-        }
       } else if (this.props.activeRouteName === "CameraSettings") {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        const { status } = await Permissions.getAsync(Permissions.CAMERA);
         if (status === "granted") {
           this.navigator &&
             this.navigator.current &&
+            !!this.props.cameraSettingsGrantedPage &&
             this.navigator.current.dispatch(
-              StackActions.replace({ routeName: "RDTReader" })
+              StackActions.replace({
+                routeName: this.props.cameraSettingsGrantedPage,
+              })
             );
         }
       }
@@ -327,7 +260,7 @@ class ConnectedRootContainer extends React.Component<Props> {
   }
 
   async initializeCSRUID(): Promise<void> {
-    const csruid = await newCSRUID();
+    const csruid = await newUID();
     this.props.dispatch(setCSRUIDIfUnset(csruid));
   }
 
@@ -343,87 +276,37 @@ class ConnectedRootContainer extends React.Component<Props> {
     }
   }
 
-  _firebaseLogging(
+  _handleNavChange = (
     prevState: NavigationState,
     newState: NavigationState,
     action: NavigationAction
-  ) {
+  ) => {
+    const currentScreen = this.props.activeRouteName;
+    const nextScreen = getActiveRouteName(newState);
+
+    if (nextScreen != null && nextScreen !== currentScreen) {
+      this.props.dispatch(setActiveRouteName(nextScreen));
+      this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
+      crashlytics.log("Navigating from " + currentScreen + " to " + nextScreen);
+      logCurrentScreen(nextScreen);
+      const navEvent = this._getNavEvent(action);
+      if (navEvent) {
+        logFirebaseEvent(navEvent, { from: currentScreen, to: nextScreen });
+      }
+    }
+
     switch (action.type) {
       case DrawerActions.OPEN_DRAWER:
       case DrawerActions.CLOSE_DRAWER:
-        const screen = getActiveRouteName(newState);
-        tracker.logEvent(
+        logFirebaseEvent(
           action.type == DrawerActions.OPEN_DRAWER
             ? DrawerEvents.OPEN
             : DrawerEvents.CLOSE,
-          { screen }
+          { screen: nextScreen }
         );
         break;
-      case NavigationActions.NAVIGATE:
-      case NavigationActions.BACK:
-      case StackActions.POP:
-      case StackActions.POP_TO_TOP:
-      case StackActions.PUSH:
-      case StackActions.RESET:
-        const currentScreen = getActiveRouteName(prevState);
-        const nextScreen = getActiveRouteName(newState);
-
-        if (nextScreen && nextScreen !== currentScreen) {
-          const navEvent = this._getNavEvent(action);
-
-          tracker.setCurrentScreen(nextScreen);
-          if (navEvent) {
-            tracker.logEvent(navEvent, { from: currentScreen, to: nextScreen });
-          }
-        }
     }
-  }
-
-  _navLogging(
-    prevState: NavigationState,
-    newState: NavigationState,
-    action: NavigationAction
-  ) {
-    switch (action.type) {
-      case NavigationActions.NAVIGATE:
-      case NavigationActions.BACK:
-      case DrawerActions.OPEN_DRAWER:
-      case DrawerActions.CLOSE_DRAWER:
-      case DrawerActions.TOGGLE_DRAWER:
-      case StackActions.POP:
-      case StackActions.POP_TO_TOP:
-      case StackActions.PUSH:
-      case StackActions.RESET:
-        const currentScreen = getActiveRouteName(prevState);
-        const nextScreen = getActiveRouteName(newState);
-        if (nextScreen != null && nextScreen !== currentScreen) {
-          this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));
-          AppEventsLogger.logEvent(`navigation:${action.type}`, {
-            from: currentScreen,
-            to: nextScreen,
-          });
-          crashlytics.log(
-            "Navigating from " + currentScreen + " to " + nextScreen
-          );
-        }
-    }
-  }
-
-  _handleNavChange(
-    prevState: NavigationState,
-    newState: NavigationState,
-    action: NavigationAction
-  ) {
-    const activeRouteName = getActiveRouteName(newState);
-    if (
-      this.props.activeRouteName != activeRouteName &&
-      activeRouteName != null
-    ) {
-      this.props.dispatch(setActiveRouteName(activeRouteName));
-      this._firebaseLogging(prevState, newState, action);
-      this._navLogging(prevState, newState, action);
-    }
-  }
+  };
 
   _onLaunch = async () => {
     await this._handleAppStateChange("launch");
@@ -433,18 +316,26 @@ class ConnectedRootContainer extends React.Component<Props> {
     return <SplashScreen onUnmount={this._onLaunch} />;
   };
 
+  _handleQuadTap = () => {
+    this._handleAppStateChange("quadTap");
+  };
+
   render() {
     return (
       <View style={{ flex: 1 }}>
         <AppContainer
-          persistenceKey={"NavigationState"}
+          loadNavigationState={loadNavigationState}
+          persistNavigationState={persistNavigationState}
           ref={this.navigator}
           onNavigationStateChange={this._handleNavChange}
           renderLoadingExperimental={this._loadingIndicator}
         />
-        <TouchableWithoutFeedback onPress={this.handleQuadTap}>
-          <View style={styles.touchable} />
-        </TouchableWithoutFeedback>
+        <MultiTapContainer
+          active={this.props.isDemo}
+          style={styles.touchable}
+          taps={4}
+          onMultiTap={this._handleQuadTap}
+        />
       </View>
     );
   }
@@ -464,22 +355,22 @@ export default connect((state: StoreState) => {
   try {
     return {
       activeRouteName: state.meta.activeRouteName,
-      isConnected: state.meta.isConnected,
       isDemo: state.meta.isDemo,
       lastUpdate: state.survey.timestamp,
       workflow: state.survey.workflow,
       csruid: state.survey.csruid,
+      cameraSettingsGrantedPage: state.meta.cameraSettingsGrantedPage,
     };
   } catch (e) {
     uploadingErrorHandler(e, true, "StoreState corrupted");
 
     const defaults = {
       activeRouteName: "Welcome",
-      isConnected: false,
       isDemo: false,
       lastUpdate: undefined,
       workflow: {},
       csruid: undefined,
+      cameraSettingsGrantedPage: "",
     };
 
     if (state == null) {
@@ -490,11 +381,13 @@ export default connect((state: StoreState) => {
       activeRouteName: !!state.meta
         ? state.meta.activeRouteName
         : defaults.activeRouteName,
-      isConnected: !!state.meta ? state.meta.isConnected : defaults.isConnected,
       isDemo: !!state.meta ? state.meta.isDemo : defaults.isDemo,
       lastUpdate: !!state.survey ? state.survey.timestamp : defaults.lastUpdate,
       workflow: !!state.survey ? state.survey.workflow : defaults.workflow,
       csruid: !!state.survey ? state.survey.csruid : defaults.csruid,
+      cameraSettingsGrantedPage: !!state.meta
+        ? state.meta.cameraSettingsGrantedPage
+        : defaults.cameraSettingsGrantedPage,
     };
   }
-})(ConnectedRootContainer);
+})(withNamespaces()(ConnectedRootContainer));

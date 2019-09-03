@@ -12,7 +12,7 @@ import {
   VisitNonPIIDbInfo,
   VisitPIIInfo,
   VisitCommonInfo,
-  EventInfoKind
+  EventInfoKind,
 } from "audere-lib/snifflesProtocol";
 import { SurveyAttributes } from "../../src/models/db/fever";
 import { PIIInfo } from "audere-lib/feverProtocol";
@@ -23,44 +23,44 @@ export const DEVICE: DeviceInfo = {
     buildDate: "buildDate",
     hash: "hash",
     name: "name",
-    version: "version"
+    version: "version",
   },
   deviceName: "My Phone",
   yearClass: "2020",
   idiomText: "handset",
   platform: JSON.stringify({
-    ios: {}
-  })
+    ios: {},
+  }),
 };
 
 export const PATIENT_INFO = {
   name: "Fake Name",
   birthDate: "1900-01-01",
   telecom: [],
-  address: []
+  address: [],
 };
 
 const SAMPLE_INFO = {
   sample_type: "SampleType",
-  code: "Code"
+  code: "Code",
 };
 
 const NONPII_RESPONSE_ITEM = {
   id: "CakeVeracity",
   text: "Is the cake a lie?",
-  answer: [{ valueString: "yes" }]
+  answer: [{ valueString: "yes" }],
 };
 
 export const BED_ASSIGNMENT_RESPONSE_ITEM = {
   id: "BedAssignment",
   text: "Bed Assignment",
-  answer: [{ valueString: "yes" }]
+  answer: [{ valueString: "yes" }],
 };
 
 export const PII_RESPONSE_ITEM = {
   id: "BirthDate",
   text: "What is your birth date?",
-  answer: [{ valueString: "1900-01-01" }]
+  answer: [{ valueString: "1900-01-01" }],
 };
 
 const VISIT_COMMON_INFO: VisitCommonInfo = {
@@ -72,14 +72,14 @@ const VISIT_COMMON_INFO: VisitCommonInfo = {
     {
       kind: EventInfoKind.Visit,
       at: "2019-01-01T00:00:00Z",
-      until: "2019-01-01T01:00:00Z"
+      until: "2019-01-01T01:00:00Z",
     },
     {
       kind: EventInfoKind.Visit,
       at: "2019-01-01T01:00:00Z",
-      refId: "CompletedQuestionnaire"
-    }
-  ]
+      refId: "CompletedQuestionnaire",
+    },
+  ],
 };
 export const VISIT_NONPII: VisitNonPIIDbInfo = {
   ...VISIT_COMMON_INFO,
@@ -89,9 +89,9 @@ export const VISIT_NONPII: VisitNonPIIDbInfo = {
   responses: [
     {
       id: "Questionnaire",
-      item: [NONPII_RESPONSE_ITEM]
-    }
-  ]
+      item: [NONPII_RESPONSE_ITEM],
+    },
+  ],
 };
 export const VISIT_PII: VisitPIIInfo = {
   ...VISIT_COMMON_INFO,
@@ -100,9 +100,9 @@ export const VISIT_PII: VisitPIIInfo = {
   responses: [
     {
       id: "Questionnaire",
-      item: [PII_RESPONSE_ITEM]
-    }
-  ]
+      item: [PII_RESPONSE_ITEM],
+    },
+  ],
 };
 export const VISIT_INFO: VisitInfo = {
   ...VISIT_NONPII,
@@ -110,9 +110,9 @@ export const VISIT_INFO: VisitInfo = {
   responses: [
     {
       id: "Questionnaire",
-      item: [PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM]
-    }
-  ]
+      item: [PII_RESPONSE_ITEM, NONPII_RESPONSE_ITEM],
+    },
+  ],
 };
 
 export function documentContentsPost(csruid: string): VisitDocument {
@@ -121,7 +121,7 @@ export function documentContentsPost(csruid: string): VisitDocument {
     csruid,
     documentType: DocumentType.Visit,
     device: DEVICE,
-    visit: VISIT_INFO
+    visit: VISIT_INFO,
   };
 }
 

@@ -1,22 +1,12 @@
 **CircleCI build status**
 
-[![CircleCI](https://circleci.com/gh/AudereNow/learn.svg?style=svg&circle-token=58430dd777deb478fd971a19ae00e94e5b0d9977)](https://circleci.com/gh/AudereNow/learn)
+[![CircleCI](https://circleci.com/gh/AudereNow/audere.svg?style=svg&circle-token=c97dd3b896e5aceacec319919414658655db7037)](https://circleci.com/gh/AudereNow/audere)
 
 # Audere
 
 Welcome to the Audere repo!
 
-This repo hosts our code as we work to make it open-source.
-
 To contribute, please see [CONTRIBUTING](CONTRIBUTING.md).
-
-## Under Construction
-
-Please pardon the mess.
-
-We are in the process of transitioning our code from a private repo called "learn" to a public repo called "audere".
-This is happening gradually to minimize disruption for our developers.
-During the transition there will be (apparently broken) links that refer back to the private repo.
 
 ## Code of Conduct
 
@@ -34,18 +24,18 @@ The flu apps track consent and survey information about flu symptoms in particip
 The application has two primary components, a React Native application for participants and a data collection API that persists participant data.
 These applications are built using CircleCI and deployed to AWS.
 
-* [FluStudy_au](https://github.com/AudereNow/learn/tree/master/FluStudy_au)
-* [FluStudy_us](https://github.com/AudereNow/learn/tree/master/FluStudy_us)
-* [FluTrack](https://github.com/AudereNow/learn/tree/master/FluTrack)
-* [FluApi](https://github.com/AudereNow/learn/tree/master/FluApi)
-* [Terraform scripts](https://github.com/AudereNow/learn/tree/master/terraform)
+- [FluStudy_au](https://github.com/AudereNow/audere/tree/master/FluStudy_au)
+- [FluStudy_us](https://github.com/AudereNow/audere/tree/master/FluStudy_us)
+- [FluTrack](https://github.com/AudereNow/audere/tree/master/FluTrack)
+- [FluApi](https://github.com/AudereNow/audere/tree/master/FluApi)
+- [Terraform scripts](https://github.com/AudereNow/audere/tree/master/terraform)
 
 ### Development setup
 
 Building this project requires the following dependencies:
 
-* [CircleCI](https://circleci.com/)
-* [Docker](https://www.docker.com/)
+- [CircleCI](https://circleci.com/)
+- [Docker](https://www.docker.com/)
 
 The project can be built locally by executing the CircleCI target `circleci local execute --job build`.
 This will execute the configured build action within a local Docker CircleCI server, which builds and tests the application modules.

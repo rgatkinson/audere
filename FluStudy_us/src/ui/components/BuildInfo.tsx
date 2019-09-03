@@ -13,16 +13,14 @@ import {
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { Constants } from "expo";
+import Constants from "expo-constants";
 import { DEVICE_INFO } from "../../transport/DeviceInfo";
 import Button from "./Button";
 import Text from "./Text";
 import { getApiBaseUrl } from "../../transport";
 import { GUTTER } from "../styles";
 
-interface Props {}
-
-class BuildInfo extends React.Component<Props & WithNamespaces> {
+class BuildInfo extends React.Component<WithNamespaces> {
   _copyToClipboard = async () => {
     await Clipboard.setString(this._getBuildContent());
   };
@@ -61,7 +59,6 @@ class BuildInfo extends React.Component<Props & WithNamespaces> {
           primary={true}
           onPress={this._copyToClipboard}
         />
-        <Text content={t("copyright")} style={styles.footer} />
       </View>
     );
   }
@@ -71,9 +68,10 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     alignSelf: "stretch",
+    marginBottom: GUTTER,
   },
   content: {
-    marginVertical: GUTTER,
+    marginBottom: GUTTER,
   },
   footer: {
     alignSelf: "stretch",

@@ -17,7 +17,7 @@ describe("authManager", () => {
     afterAll(async done => {
       await Promise.all([
         authManager.deleteUser("auth_test_user1"),
-        authManager.deleteUser("auth_test_user2")
+        authManager.deleteUser("auth_test_user2"),
       ]);
       done();
     });

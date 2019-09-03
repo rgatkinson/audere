@@ -17,14 +17,14 @@ import {
   primaryKey,
   nullable,
   foreignIdKey,
-  jsonbColumn
+  jsonbColumn,
 } from "../../util/sql";
 import {
   DeviceInfo,
   PIIInfo,
   SurveyNonPIIDbInfo,
   AnalyticsInfo,
-  PhotoInfo
+  PhotoInfo,
 } from "audere-lib/feverProtocol";
 import { defineHutchUpload } from "./hutchUpload";
 import { FollowUpSurveyData } from "../../external/redCapClient";
@@ -52,30 +52,30 @@ export function defineFeverModels(sql: SplitSql): FeverModels {
     receivedKit: defineReceivedKits(sql.nonPii),
     receivedKitsFile: defineReceivedKitsFiles(sql.nonPii),
     barcodes: defineBarcodes(sql.nonPii),
-    followUpSurveys: defineFollowUpSurveys(sql.pii)
+    followUpSurveys: defineFollowUpSurveys(sql.pii),
   };
 
   const hutchUpload = defineHutchUpload(sql);
 
   models.surveyNonPii.hasOne(hutchUpload, {
     foreignKey: "surveyId",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
 
   models.surveyPii.hasOne(models.consentEmail, {
     as: "fever_consent_emails",
     foreignKey: "survey_id",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
 
   models.receivedKitsFile.hasMany(models.receivedKit, {
     foreignKey: "fileId",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
 
   models.surveyNonPii.hasOne(models.receivedKit, {
     foreignKey: "surveyId",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
 
   return models;
@@ -112,7 +112,7 @@ export interface FeverModels {
 // things straight.
 export enum PersonalInfoType {
   PII = "PII",
-  NonPII = "NON_PII"
+  NonPII = "NON_PII",
 }
 
 // Screens/Surveys can be fixed up later.  We therefore have a current
@@ -120,7 +120,7 @@ export enum PersonalInfoType {
 // if a fixup has been applied.
 export enum EditableTableType {
   CURRENT = "current",
-  BACKUP = "backup"
+  BACKUP = "backup",
 }
 
 // ---------------------------------------------------------------
@@ -133,7 +133,7 @@ interface AccessKeyAttributes {
 export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
   return defineModel<AccessKeyAttributes>(sql.nonPii, "fever_access_keys", {
     key: stringColumn(),
-    valid: booleanColumn()
+    valid: booleanColumn(),
   });
 }
 
@@ -153,7 +153,7 @@ export function defineLogBatch(sql: SplitSql): Model<AnalyticsAttributes> {
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
-      analytics: jsonColumn()
+      analytics: jsonColumn(),
     }
   );
 }
@@ -170,7 +170,7 @@ export function defineFeedback(sql: SplitSql): Model<FeedbackAttributes> {
   return defineModel<FeedbackAttributes>(sql.nonPii, "fever_feedback", {
     device: jsonColumn(),
     subject: stringColumn(),
-    body: stringColumn()
+    body: stringColumn(),
   });
 }
 
@@ -186,7 +186,7 @@ export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
   return defineModel<PhotoAttributes>(sql.nonPii, "fever_photos", {
     device: jsonColumn(),
     csruid: unique(stringColumn()),
-    photo: jsonColumn()
+    photo: jsonColumn(),
   });
 }
 
@@ -208,7 +208,7 @@ export function defineSurvey<Info>(
     {
       device: jsonColumn(),
       csruid: unique(stringColumn()),
-      survey: jsonColumn()
+      survey: jsonColumn(),
     }
   );
 }
@@ -237,7 +237,7 @@ export interface BatchDiscardAttributes {
 export function defineIncentiveBatch(sql: Sequelize): Model<BatchAttributes> {
   return defineModel<BatchAttributes>(sql, "fever_incentive_batch", {
     id: primaryKey(integerColumn()),
-    uploaded: booleanColumn()
+    uploaded: booleanColumn(),
   });
 }
 
@@ -247,7 +247,7 @@ export function defineIncentiveItem(
   return defineModel<BatchItemAttributes>(sql, "fever_incentive_item", {
     id: primaryKey(integerColumn()),
     batchId: integerColumn(),
-    surveyId: integerColumn()
+    surveyId: integerColumn(),
   });
 }
 
@@ -256,14 +256,14 @@ export function defineIncentiveDiscard(
 ): Model<BatchDiscardAttributes> {
   return defineModel<BatchDiscardAttributes>(sql, "fever_incentive_discard", {
     batchId: integerColumn(),
-    workflowId: integerColumn()
+    workflowId: integerColumn(),
   });
 }
 
 export function defineKitBatch(sql: Sequelize): Model<BatchAttributes> {
   return defineModel<BatchAttributes>(sql, "fever_kit_batches", {
     id: primaryKey(integerColumn()),
-    uploaded: booleanColumn()
+    uploaded: booleanColumn(),
   });
 }
 
@@ -271,7 +271,7 @@ export function defineKitItem(sql: Sequelize): Model<BatchItemAttributes> {
   return defineModel<BatchItemAttributes>(sql, "fever_kit_items", {
     id: primaryKey(integerColumn()),
     batchId: integerColumn(),
-    surveyId: integerColumn()
+    surveyId: integerColumn(),
   });
 }
 
@@ -280,14 +280,14 @@ export function defineKitDiscard(
 ): Model<BatchDiscardAttributes> {
   return defineModel<BatchDiscardAttributes>(sql, "fever_kit_discards", {
     batchId: integerColumn(),
-    workflowId: integerColumn()
+    workflowId: integerColumn(),
   });
 }
 
 export function defineFollowUpBatch(sql: Sequelize): Model<BatchAttributes> {
   return defineModel<BatchAttributes>(sql, "fever_followup_batches", {
     id: primaryKey(integerColumn()),
-    uploaded: booleanColumn()
+    uploaded: booleanColumn(),
   });
 }
 
@@ -295,7 +295,7 @@ export function defineFollowUpItem(sql: Sequelize): Model<BatchItemAttributes> {
   return defineModel<BatchItemAttributes>(sql, "fever_followup_items", {
     id: primaryKey(integerColumn()),
     batchId: integerColumn(),
-    surveyId: integerColumn()
+    surveyId: integerColumn(),
   });
 }
 
@@ -304,7 +304,7 @@ export function defineFollowUpDiscard(
 ): Model<BatchDiscardAttributes> {
   return defineModel<BatchDiscardAttributes>(sql, "fever_followup_discards", {
     batchId: integerColumn(),
-    workflowId: integerColumn()
+    workflowId: integerColumn(),
   });
 }
 
@@ -334,7 +334,7 @@ export function defineReceivedKits(
     recordId: nullable(integerColumn()),
     linked: booleanColumn(),
     boxBarcode: stringColumn(),
-    dateReceived: nullable(stringColumn())
+    dateReceived: nullable(stringColumn()),
   });
 }
 
@@ -345,7 +345,7 @@ export function defineReceivedKitsFiles(
     sql,
     "fever_processed_kit_files",
     {
-      file: stringColumn()
+      file: stringColumn(),
     }
   );
 }
@@ -362,7 +362,7 @@ export function defineConsentEmail(
 ): Model<ConsentEmailAttributes> {
   return defineModel<ConsentEmailAttributes>(sql, "fever_consent_emails", {
     survey_id: foreignIdKey(stringColumn(), "fever_current_surveys"),
-    completed: nullable(stringColumn())
+    completed: nullable(stringColumn()),
   });
 }
 
@@ -389,9 +389,9 @@ export async function querySurveyJoinConsentEmail<TCustom>(
         model: models.consentEmail,
         as: "fever_consent_emails",
         required: false,
-        attributes: ["id", "completed"]
-      }
-    ]
+        attributes: ["id", "completed"],
+      },
+    ],
   });
   return <SurveyWithConsentEmail[]>(<any>items);
 }
@@ -404,7 +404,7 @@ export interface BarcodeAttributes {
 
 export function defineBarcodes(sql: Sequelize): Model<BarcodeAttributes> {
   return defineModel<BarcodeAttributes>(sql, "fever_box_barcodes", {
-    barcode: stringColumn()
+    barcode: stringColumn(),
   });
 }
 
@@ -420,6 +420,6 @@ export function defineFollowUpSurveys(
 ): Model<FollowUpSurveyAttributes> {
   return defineModel<FollowUpSurveyAttributes>(sql, "fever_follow_up_surveys", {
     email: unique(stringColumn()),
-    survey: jsonbColumn()
+    survey: jsonbColumn(),
   });
 }

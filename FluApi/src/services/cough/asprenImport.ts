@@ -37,8 +37,8 @@ export class AsprenImport {
     const processed = await this.models.asprenFile.findAll({
       where: {
         key: report.key,
-        hash: report.hash
-      }
+        hash: report.hash,
+      },
     });
 
     // If the same key and hash are present then we skip the file. If the file
@@ -92,10 +92,10 @@ export class AsprenImport {
       const destroyed = await this.models.asprenData.destroy({
         where: {
           barcode: {
-            [sequelize.Op.notIn]: report.records.map(r => r.barcode)
-          }
+            [sequelize.Op.notIn]: report.records.map(r => r.barcode),
+          },
         },
-        transaction: t
+        transaction: t,
       });
       logger.info(`Destroyed ${destroyed} prior rows from ASPREN reports.`);
     });

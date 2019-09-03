@@ -1,0 +1,213 @@
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.PatientInfoPane {
+  padding: 0px 0px 0px 0px;
+}
+
+.PatientDetailPage h2 {
+  color: #989898;
+  font-weight: lighter;
+  font-size: 30pt;
+  line-height: 32pt;
+  padding: 0px 0px 0px 0px;
+}
+
+.PatientDetailPage h3 {
+  font-weight: normal;
+  color: #4d4d4d;
+  font-size: 22pt;
+}
+
+.PatientDetailPage {
+  padding: 0px 40px 40px 40px;
+}
+
+.PatientInfoHeader {
+  display: flex;
+  align-items: center;
+}
+
+.PatientListLink {
+  text-decoration: none;
+  color: #08f;
+  font-size: 15pt;
+  font-weight: bold;
+}
+
+.DiagnosisBubble {
+  display: flex;
+  align-items: center;
+  border: black solid 2px;
+  padding: 15px;
+  position: relative;
+  margin-left: 30px;
+}
+
+.DiagnosisBubble:after,
+.DiagnosisBubble:before {
+  right: 100%;
+  top: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.DiagnosisBubble:after {
+  border-color: rgba(255, 255, 255, 0);
+  border-right-color: white;
+  border-width: 15px;
+  margin-top: -15px;
+}
+
+.DiagnosisBubble:before {
+  border-width: 18px;
+  margin-top: -18px;
+}
+
+.DiagnosisBubble.Positive:before {
+  border-color: rgba(255, 0, 0, 0);
+  border-right-color: red;
+}
+
+.DiagnosisBubble.Negative:before {
+  border-color: rgba(0, 255, 0, 0);
+  border-right-color: green;
+}
+
+.DiagnosisBubble.Positive {
+  border-color: red;
+}
+
+.DiagnosisBubble.Negative {
+  border-color: green;
+}
+
+.DiagnosisBubble .Message {
+  font-size: 20pt;
+  font-weight: medium;
+  white-space: nowrap;
+}
+
+.DiagnosisBubble .Message.Positive {
+  color: red;
+}
+
+.DiagnosisBubble .Message.Negative {
+  color: green;
+}
+
+.DiagnosisBubble .Details {
+  margin-left: 15px;
+}
+
+.DiagnosisBubble .Detail {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.PatientDetailHeader {
+  background-color: #8cb2de;
+  border-width: 0px;
+  border-color: black;
+  border: solid;
+  overflow: hidden;
+  height: 5rem;
+  line-height: 1rem;
+  text-align: center;
+}
+
+.PatientDetailHeaderTitle {
+  padding-top: 1.5rem;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-size: 1.4rem;
+  font-style: bold;
+  text-align: center;
+}
+
+.PatientListLink {
+  padding-top: 0rem;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.DetailTable {
+  font-size: 14pt;
+  color: #4d4d4d;
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 1200px;
+  table-layout: fixed;
+}
+.DetailTable .Header {
+  font-weight: bold;
+  border-bottom: 1px solid #989898;
+}
+.DetailTable td {
+  padding: 10px 0px;
+}
+
+.PhotoPane th {
+  text-align: left;
+}
+
+.PhotoPane td {
+  vertical-align: top;
+}
+
+.TriagePane {
+  margin-bottom: 1.5rem;
+}
+
+.TriagePane h3 {
+  margin-bottom: 0.5rem;
+  font-size: 21pt;
+  color: #4d4d4d;
+  font-weight: bold;
+}
+
+.TriagePane input[type="button"] {
+  border: none;
+  font-size: 16pt;
+  font-weight: bold;
+  height: 45px;
+  width: 150px;
+  margin: 5px 25px 10px 0px;
+  border-radius: 5px;
+}
+
+.TriagePane .evdPressed {
+  color: #fff;
+  background-color: #08f;
+}
+
+.TriagePane .evdUnpressed {
+  color: #989898;
+  background-color: #e5e5e5;
+}
+
+.TriagePane .triageNotes textarea {
+  margin: 5px;
+  margin-left: 0px;
+  width: 500px;
+  height: 39px;
+  padding: 2px;
+  font-size: 12pt;
+}
+
+.TriagePane .triageNotes textarea::placeholder {
+  font-style: italic;
+}
+
+.TriagePane .triageNotes {
+  display: flex;
+}

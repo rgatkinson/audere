@@ -11,21 +11,19 @@ import {
   Text,
   TextStyle,
   TouchableOpacity,
-  View,
   ViewStyle,
 } from "react-native";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Feather } from "@expo/vector-icons";
 import {
-  BORDER_COLOR,
   BORDER_RADIUS,
   BORDER_WIDTH,
   BUTTON_WIDTH,
   FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
+  INPUT_TEXT,
   PRIMARY_COLOR,
-  REGULAR_TEXT,
-  SECONDARY_COLOR,
 } from "../styles";
 
 interface Props {
@@ -34,12 +32,13 @@ interface Props {
   fontSize?: number;
   primary: boolean;
   label: string;
+  namespace?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onPress?(event: GestureResponderEvent): void;
 }
 
-export default class Button extends React.Component<Props> {
+class Button extends React.Component<Props & WithNamespaces> {
   handlePress = (event: GestureResponderEvent) => {
     this.props.enabled &&
       this.props.onPress != null &&
@@ -47,6 +46,7 @@ export default class Button extends React.Component<Props> {
   };
 
   render() {
+    const { label, namespace, t } = this.props;
     return (
       <TouchableOpacity
         disabled={!this.props.enabled}
@@ -77,7 +77,7 @@ export default class Button extends React.Component<Props> {
           ]}
           accessibilityLabel={this.props.label.toUpperCase()}
         >
-          {this.props.label.toUpperCase()}
+          {(namespace ? t(namespace + ":" + label) : label).toUpperCase()}
         </Text>
       </TouchableOpacity>
     );
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: INPUT_HEIGHT,
     justifyContent: "center",
-    marginBottom: GUTTER,
+    marginBottom: GUTTER * 2,
     width: BUTTON_WIDTH,
   },
   check: {
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: FONT_SEMI_BOLD,
-    fontSize: REGULAR_TEXT,
+    fontSize: INPUT_TEXT,
     textAlign: "center",
   },
   primaryButton: {
@@ -114,3 +114,5 @@ const styles = StyleSheet.create({
     color: PRIMARY_COLOR,
   },
 });
+
+export default withNamespaces()(Button);

@@ -17,6 +17,7 @@ import { FunnelEvents } from "../util/tracker";
 import {
   getTestStripConfirmationNextScreen,
   getTestStripSurveyNextScreen,
+  getPinkWhenBlueNextScreen,
   getPostRDTTestStripSurveyNextScreen,
   logFluResult,
   logNumLines,
@@ -735,7 +736,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: Questions,
         props: {
-          questions: [BlueLineConfig, PinkWhenBlueConfig, PinkLineConfig],
+          questions: [BlueLineConfig],
           logOnSave: logFluResult,
         },
         validate: true,
@@ -749,6 +750,28 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "TestStripSurvey",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "lookatteststrip" } },
+      { tag: Title },
+      {
+        tag: Questions,
+        props: {
+          questions: [PinkWhenBlueConfig],
+          logOnSave: logFluResult,
+        },
+        validate: true,
+      },
+    ],
+    automationNext: "TestResult",
+    footer: [
+      {
+        tag: ContinueButton,
+        props: { surveyGetNextFn: getPinkWhenBlueNextScreen },
+      },
+    ],
+    key: "TestStripSurvey2",
   },
   {
     body: [
@@ -775,19 +798,15 @@ export const Screens: ScreenConfig[] = [
     key: "PostRDTTestStripSurvey",
   },
   {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResult },
-    ],
+    body: [{ tag: Title }, { tag: TestResult }],
     footer: [
+      { tag: Divider },
       {
-        tag: ContinueButton,
+        tag: ScreenText,
         props: {
-          next: "CleanTest",
+          label: "common:testResult:urgeToContinue",
         },
       },
-      { tag: Divider },
       {
         tag: ScreenText,
         props: {
@@ -795,6 +814,12 @@ export const Screens: ScreenConfig[] = [
           style: {
             fontSize: SMALL_TEXT,
           },
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "CleanTest",
         },
       },
     ],
@@ -802,14 +827,15 @@ export const Screens: ScreenConfig[] = [
     key: "TestResult",
   },
   {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResultRDT },
-    ],
+    body: [{ tag: Title }, { tag: TestResultRDT }],
     footer: [
-      { tag: ContinueButton, props: { next: "CleanTest" } },
       { tag: Divider },
+      {
+        tag: ScreenText,
+        props: {
+          label: "common:testResult:urgeToContinue",
+        },
+      },
       {
         tag: ScreenText,
         props: {
@@ -819,6 +845,7 @@ export const Screens: ScreenConfig[] = [
           },
         },
       },
+      { tag: ContinueButton, props: { next: "CleanTest" } },
     ],
     funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResultRDT",

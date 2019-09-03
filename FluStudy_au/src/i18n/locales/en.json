@@ -28,17 +28,23 @@
     },
     "testResult": {
       "desc": "Your test strip indicates you may be:",
-      "positive": "**POSITIVE** for **INFLUENZA**",
-      "negative": "**NEGATIVE** for **INFLUENZA**",
+      "descNegative": "Your test strip indicates you **may be **",
+      "positive": "**POSITIVE for INFLUENZA**",
+      "negative": "**negative for influenza.**",
       "positiveA": "**POSITIVE** for **Flu-A**",
       "positiveB": "**POSITIVE** for **Flu-B**",
       "positiveAB": "**POSITIVE** for **Flu-A** and **Flu-B**",
       "whyTitle": "**Why did I get this result?**",
       "blueLine": "A blue line in the middle of your test strip",
-      "positive++WhatToDo": "**What should I do if my test is positive?**\n\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
-      "negative++WhatToDo": "**What should I do if my test is negative?**\n\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
-      "whatToDoCommon": "Most people with flu or other respiratory viruses will get better over a few days, but sometimes flu can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. Please visit healthdirect for more information on the flu:\n\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
-      "disclaimer": "**Medical Disclaimer:**\n\nThis app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom."
+      "positive++WhatToDo": "**What should I do if my test is positive?**\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
+      "negative++WhatToDo": "**What should I do if my test is negative?**\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
+      "whatToDoCommon": "Most people with flu or other respiratory viruses will get better over a few days, but sometimes flu can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. For more information on the flu, visit:\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
+      "urgeToContinue": "Please tap 'Continue' below to complete the final steps.",
+      "disclaimer": "**Medical Disclaimer:**\n\nThis app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom.",
+      "negativeExplanation": "Sometimes people who do have the flu can receive a negative test result because:\n",
+      "negativeExplanationBullet": "The swab did not collect enough virus to indicate a positive result.",
+      "negativeExplanationBulletAllUnder4Days": "Too much time passed between when you first felt sick and took the test.",
+      "negativeExplanationBulletOne4Days": "Your symptoms started 4+ days ago, in which case the test may be less accurate"
     }
   },
   "monthPicker": {
@@ -81,7 +87,7 @@
   },
   "Funding": {
     "title": "Study Funding & Partners",
-    "description": "This app is developed, operated, and owned by Audere, a non-profit organisation in the United States.\n\nThis study is funded by Audere, and conducted in association with the University of Adelaide in Australia, and the University of Washington in the United States. For more information about this study, visit [www.fluathome.org.au](http://fluathome.org.au).\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the app."
+    "description": "This app is developed, operated, and owned by Audere, a non-profit organisation in the United States.\n\nThis study is funded by Audere and the Brotman Baty Institute in the United States. It is conducted in association with the University of Adelaide in Australia and the University of Washington in the United States. For more information, visit [www.fluathome.org.au](http://fluathome.org.au).\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the app."
   },
   "Report": {
     "title": "Report a Complaint",
@@ -177,7 +183,7 @@
     "assignedSex": "What is the sex on your medical records?",
     "race": "How would you describe your race?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
-    "pinkLine": "Is there a pink line on your test strip?",
+    "pinkLine": "Which image below most closely matches your test strip?",
     "numLinesSeen": "How many lines (darker horizontal bars) do you see on your test strip?",
     "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
     "fluShot": "Did you receive an influenza vaccination this year (2019)?",
@@ -203,7 +209,6 @@
     "shortnessOfBreath": "Shortness of breath",
     "vomiting": "Vomiting",
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
-    "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
     "seeExample": "Tap the \"?\" below to see examples"
   },
   "Welcome": {
@@ -337,10 +342,14 @@
     "title": "What do you see?",
     "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
   },
+  "TestStripSurvey2": {
+    "title": "What do you see?",
+    "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
+  },
   "RDTInstructions": {
     "title": "Scan the test strip",
     "desc": "Next, the app will use your device's camera to scan your test strip.",
-    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan.\nThe app will guide you to make adjustments to the position, distance, and rotation, as necessary.\nYou can turn the flash off/on if needed. We start with the flash on.\nIf the test strip doesn't scan, after {{rdtTimeoutSeconds}} seconds you will be asked to take a photo using the app."
+    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan.\nThe app will guide you to make adjustments to the position, distance, and rotation, as necessary.\nIf your device has a flash, you can turn it off/on as needed.\nIf the test strip doesn't scan, after {{rdtTimeoutSeconds}} seconds you will be asked to take a photo using the app."
   },
   "NonRDTInstructions": {
     "title": "Take a photo of test strip",
@@ -534,10 +543,10 @@
     "3": "3",
     "4": "4",
     "5+": "5+",
-    "noPink": "No, there are no pink lines",
-    "yesAboveBlue": "Yes, above the blue line",
-    "yesBelowBlue": "Yes, below the blue line",
-    "yesAboveBelowBlue": "Yes, above and below the blue line",
+    "noPink": "Blue line only",
+    "yesAboveBlue": "Pink line above the blue line",
+    "yesBelowBlue": "Pink line below the blue line",
+    "yesAboveBelowBlue": "Pink line above and below the blue line",
     "yesOnePink": "Yes, there is one pink line",
     "yesTwoPink": "Yes, there are two pink lines",
     "oneLine": "One line only",

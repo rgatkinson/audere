@@ -1,0 +1,113 @@
+{
+  "common": {
+    "ok": "Ok",
+    "cancel": "Cancel",
+    "button": {
+      "yes": "Yes",
+      "submit": "Submit",
+      "cancel": "Cancel"
+    },
+    "dateTime": "{{date, DD MMMM YYYY, HH:mm}}",
+    "date": "{{date, DD MMMM YYYY}}"
+  },
+  "titleBar": {
+    "title": "EVD Track",
+    "backFull": "\u276E {{back}}",
+    "back": "Back",
+    "list": "List",
+    "detail": "Detail"
+  },
+  "appMenu": {
+    "logout": "Log Out",
+    "about": "About"
+  },
+  "buildInfo": {
+    "title": "About EVD Track",
+    "version": "Version: ",
+    "build": "\nBuild: ",
+    "commit": "\nCommit: ",
+    "date": "\nDate: ",
+    "device": "\nDevice: ",
+    "installation": "\nInstallation: ",
+    "apiServer": "\nAPI Server: "
+  },
+  "login": {
+    "signIn": "Sign In",
+    "loginLastName": "**Last name**",
+    "loginFirstName": "**First name**",
+    "loginMobileNumber": "**Mobile number**",
+    "notes": "**Notes to share with administrators**",
+    "notesPlaceholder": "E.g. your location, credentials, etc.",
+    "login": "Login"
+  },
+  "patients": {
+    "patients": "Patients",
+    "name": "NAME",
+    "id": "ID",
+    "status": "STATUS",
+    "info": "\u24D8",
+    "plus": "+",
+    "evdPositive": "Ebola +",
+    "evdNegative": "Ebola -"
+  },
+  "phoneLoginVerification": {
+    "verificationCode": "Please enter the 6-digit code sent to **{{phone}}**:",
+    "placeholder": "123456",
+    "authErrorTitle": "Authentication Error",
+    "incorrectCodeTitle": "Incorrect Code",
+    "incorrectCodeBody": "Please check that the code you entered is correct"
+  },
+  "details": {
+    "cancel": "Cancel",
+    "discard": "Discard",
+    "save": "Save",
+    "unsavedTitle": "There are unsaved changes",
+    "unsavedBody": "",
+    "details": "Patient Details",
+    "evdPositive": "Triaged as Ebola POSITIVE",
+    "evdNegative": "Triaged as Ebola NEGATIVE",
+    "reviewedBy": "Image reviewed by: **{{name}}** on **{{date}}**",
+    "patientId": "**ID:** {{id}}",
+    "patientFirstName": "**First & middle name**",
+    "patientLastName": "**Last name**",
+    "patientMobileNumber": "**Mobile number**",
+    "patientDetails": "**Contact details**",
+    "patientDetailsPlaceholder": "E.g. address, location, etc.",
+    "patientNotes": "**Notes about patient**",
+    "patientNotesPlaceholder": "Will be shared with administrators",
+    "patientTestStripImage": "**Test strip image**",
+    "addPhoto": "**Add Photo**",
+    "photoNote": "Please add a photo of the RDT strip to this record",
+    "retakePhoto": "**Retake photo**",
+    "noPhotoCaptured": "No photo captured!",
+    "capturedOn": "**Photo captured on:**\n",
+    "location": "**Location:**\n{{location}}",
+    "computingLocation": "Computing...",
+    "latLongLocation": "{{lat}}, {{long}}",
+    "followUp": "\n**Follow-up:**\nIf this patient is determined to be positive for Ebola, or an administrator has questions, you will be contacted on this phone via voice, text, or a message below.",
+    "startChat": "\n**Chat with an administrator regarding {{firstName}} {{lastName}}:**",
+    "chatPlaceholder": "Enter a note to send to an administrator",
+    "note": "\n**Note:** If this patient is determined to be positive for Ebola, you will be contacted by an administrator at {{phone}} (via voice or text)"
+  },
+  "photoCapture": {
+    "error": "There was an error capturing the photo, please try again"
+  },
+  "cameraPermissions": {
+    "alertTitle": "EVD Track Camera Permission",
+    "alertMsg": "EVD Track needs access to your camera to record patient test results.",
+    "title": "Camera Permission Required",
+    "why": "We're sorry, but access to your device's camera is required. To continue, please update your device settings.",
+    "howToUpdate": "\n**How to Update:**\n",
+    "whereUpdate": "Go to **Settings** > **Apps** > **EVD Track** > **Permissions**.",
+    "howUpdate": "\nToggle the **Camera** switch to **on**."
+  },
+  "locationPermissions": {
+    "alertTitle": "EVD Track Location Permission",
+    "alertMsg": "EVD Track needs access to your location so it can accurately report patient data.",
+    "title": "Location Permission Required",
+    "why": "We're sorry, but access to your device's location is required. To continue, please update your device settings.",
+    "howToUpdate": "\n**How to Update:**\n",
+    "whereUpdate": "Go to **Settings** > **Apps** > **EVD Track** > **Permissions**.",
+    "howUpdate": "\nToggle the **Location** switch to **on**."
+  }
+}

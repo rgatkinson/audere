@@ -6,10 +6,8 @@
 #import <Firebase.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <Crashlytics/Crashlytics.h>
-#import "RNFirebaseLinks.h"
 #import "RCTPushNotificationManager.h"
 #import <UserNotifications/UserNotifications.h>
-#import "RNBranch.h"
 
 @interface AppDelegate ()
 
@@ -21,7 +19,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [FIROptions defaultOptions].deepLinkURLScheme = @"org.auderenow.fluathome.dynlink";
     [FIRApp configure];
     [[FBSDKApplicationDelegate sharedInstance] application:application
                              didFinishLaunchingWithOptions:launchOptions];
@@ -32,8 +29,6 @@
     
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
     center.delegate = self;
-    
-    [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
     
     return handled;
 }
@@ -65,15 +60,7 @@
 #pragma mark - Handling URLs
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
 {
-    BOOL handled = [RNBranch continueUserActivity:userActivity];
-
-    if (!handled) {
-        handled = [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-    }
-    if (!handled) {
-        handled = [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
-    }
-    return handled;
+    return [super application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
 }
 
 - (BOOL)application:(UIApplication *)app
@@ -86,14 +73,6 @@
                                                                annotation:options[UIApplicationOpenURLOptionsAnnotationKey]
                     ];
     
-    if (!handled) {
-        handled = [RNBranch.branch application:app openURL:url options:options];
-    }
-
-    if (!handled) {
-        handled = [[RNFirebaseLinks instance] application:app openURL:url options:options];
-    }
-
     if (!handled) {
         handled = [super application:app openURL:url options:options];
     }
@@ -129,15 +108,7 @@ didReceiveNotificationResponse:(UNNotificationResponse *)response
     notification.timeZone = [NSTimeZone systemTimeZone];
     notification.alertBody = response.notification.request.content.body;
     notification.soundName = nil;
-    notification.applicationIconBadgeNumber = nil;
     notification.userInfo = response.notification.request.content.userInfo;
-    
-    if([[UIApplication sharedApplication] applicationState] == UIApplicationStateInactive ||
-       [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        notification.category = @"Background";
-    } else {
-        notification.category = @"Foreground";
-    }
     
     [RCTPushNotificationManager didReceiveLocalNotification:notification];
 }

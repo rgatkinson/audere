@@ -16,7 +16,7 @@ import {
   ResponseInfo,
   ResponseItemInfo,
   AnalyticsDocument,
-  PhotoDocument
+  PhotoDocument,
 } from "audere-lib/feverProtocol";
 import { defineFeverModels, FeverModels } from "../models/db/fever";
 import { sendEmail } from "../util/email";
@@ -29,9 +29,9 @@ const clientLogger = createLogger({
   transports: [
     new winston.transports.File({
       filename: "fever-clients.log",
-      level: "debug"
-    })
-  ]
+      level: "debug",
+    }),
+  ],
 });
 
 const FEEDBACK_EMAIL = "feedback@auderenow.org";
@@ -95,7 +95,7 @@ export class FeverEndpoint {
       responses,
       consents,
       patient,
-      samples
+      samples,
     } = document.survey;
 
     const common: CommonInfo = { isDemo, events, workflow };
@@ -103,18 +103,18 @@ export class FeverEndpoint {
       ...common,
       consents: deIdentifyConsents(consents),
       samples,
-      responses: responses.map(filterResponsePII(false))
+      responses: responses.map(filterResponsePII(false)),
     };
     const surveyPII: PIIInfo = {
       ...common,
       patient,
       consents,
-      responses: responses.map(filterResponsePII(true))
+      responses: responses.map(filterResponsePII(true)),
     };
 
     await Promise.all([
       this.models.surveyNonPii.upsert({ csruid, device, survey: surveyNonPII }),
-      this.models.surveyPii.upsert({ csruid, device, survey: surveyPII })
+      this.models.surveyPii.upsert({ csruid, device, survey: surveyPII }),
     ]);
   }
 
@@ -127,12 +127,12 @@ export class FeverEndpoint {
         JSON.stringify(document.device, null, 2),
       to: [FEEDBACK_EMAIL],
       from: FEEDBACK_SENDER_EMAIL,
-      replyTo: FEEDBACK_EMAIL
+      replyTo: FEEDBACK_EMAIL,
     });
     await this.models.feedback.create({
       subject: document.feedback.subject,
       body: document.feedback.body,
-      device: document.device
+      device: document.device,
     });
   }
 
@@ -155,7 +155,7 @@ function deIdentifyConsent(consent: ConsentInfo): NonPIIConsentInfo {
   return {
     terms: consent.terms,
     signerType: consent.signerType,
-    date: consent.date
+    date: consent.date,
   };
 }
 
@@ -169,7 +169,7 @@ const PII_RESPONSE_KEYS = new Set([
   "PublicSpaceAddress",
   "BedAssignment",
   "BirthDate",
-  "WorkAddress"
+  "WorkAddress",
 ]);
 
 function filterResponsePII(allowPII: boolean) {
@@ -180,7 +180,7 @@ function filterResponsePII(allowPII: boolean) {
   function mapResponse(response: ResponseInfo): ResponseInfo {
     return {
       id: response.id,
-      item: (response.item || []).filter(matchResponseItem)
+      item: (response.item || []).filter(matchResponseItem),
     };
   }
 

@@ -3,19 +3,20 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Constants } from "expo";
-import { DeviceInfo } from "audere-lib/feverProtocol";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
+import { DeviceInfo } from "audere-lib/chillsProtocol";
 
-export const ios = Constants.platform.ios;
+export const ios = Constants!.platform!.ios;
 
 export const DEVICE_INFO: DeviceInfo = {
   installation: Constants.installationId,
   clientVersion: loadBuildInfo(),
   clientBuild: getBuildNumber(),
-  yearClass: Constants.deviceYearClass,
+  yearClass: Constants.deviceYearClass + "",
   // ios.userInterfaceIdiom will return "handset" or "tablet"
   idiomText: ios ? ios.userInterfaceIdiom : "unknown",
-  platform: JSON.stringify(Constants.platform),
+  platform: getPlatformInfo(),
 };
 
 function loadBuildInfo() {
@@ -27,11 +28,20 @@ function loadBuildInfo() {
 }
 
 function getBuildNumber() {
-  if (Constants.platform.ios) {
-    return Constants.platform.ios.buildNumber;
-  } else if (Constants.platform.android) {
-    return Constants.platform.android.versionCode;
+  if (ios) {
+    return +ios.buildNumber;
+  } else if (Constants!.platform!.android) {
+    return Constants!.platform!.android!.versionCode;
   } else {
-    return undefined;
+    return 0;
   }
+}
+
+function getPlatformInfo() {
+  let info = Constants.platform!;
+  if (!!info.android) {
+    info.android!.model = Constants.deviceName;
+    info.android!.systemVersion = Platform.Version;
+  }
+  return info;
 }

@@ -1,0 +1,60 @@
+<!--
+Copyright (c) 2019 by Audere
+
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file distributed with this file.
+-->
+
+<html>
+  <head>
+    <title>flu@home Australia Photos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{static}}/css/metrics.css"/>
+    <link rel="icon" type="image/x-icon" href="{{static}}/favicon-32x32.png" />
+<style type="text/css">
+td {
+  padding: 3px;
+    border: 1px solid lightgray;
+}
+</style>
+  </head>
+  <body>
+    <h1>flu@home Australia Photos</h1>
+    {{#if hasPrevPage}}
+      <a href="{{prevPageLink}}">‹ Back</a>
+    {{else}}
+      <a>‹ Back</a>
+    {{/if}}
+    {{#if hasNextPage}}
+      <a href="{{nextPageLink}}">Next ›</a>
+    {{else}}
+      <a>Next ›</a>
+    {{/if}}
+    <table>
+      <thead>
+        <td><a href="{{dateSortLink}}">Date</a></td>
+        <td>Time</td>
+        <td><a href="{{barcodeSortLink}}">Barcode</a></td>
+      </thead>
+      <tbody>
+      {{#each barcodes}}
+        <tr>
+          <td>{{date}}</td>
+          <td>{{time}}</td>
+          <td><a href="{{url}}">{{barcode}}</a></td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+    {{#if hasPrevPage}}
+      <a href="{{prevPageLink}}">‹ Back</a>
+    {{else}}
+      <a>‹ Back</a>
+    {{/if}}
+    {{#if hasNextPage}}
+      <a href="{{nextPageLink}}">Next ›</a>
+    {{else}}
+      <a>Next ›</a>
+    {{/if}}
+  </body>
+</html>

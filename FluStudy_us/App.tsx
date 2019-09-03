@@ -15,40 +15,43 @@ YellowBox.ignoreWarnings([
   "Class EXDisabledRedBox",
 ]);
 import { I18nextProvider, withNamespaces } from "react-i18next";
-import { AppLoading, Font } from "expo";
+import { AppLoading } from "expo";
+import * as Font from "expo-font";
 import { getStore, getPersistor } from "./src/store/";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import ConnectedRootContainer from "./src/ui/ConnectedRootContainer";
 import i18n from "./src/i18n";
-import { ErrorProps } from "./src/crashReporter";
+
 import {
-  reportPreviousCrash,
   setupErrorHandler,
   uploadingErrorHandler,
 } from "./src/util/uploadingErrorHandler";
 import { startTracking } from "./src/util/tracker";
 import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
+import { initializeFirestore } from "./src/store/FirebaseStore";
+import { PubSubHub } from "./src/util/pubsub";
+import { useScreens } from "react-native-screens";
+useScreens();
 
-type AppProps = {
-  exp?: {
-    errorRecovery: ErrorProps;
-  };
-};
-
-export default class App extends React.Component<AppProps> {
+export default class App extends React.Component {
   state = {
     appReady: false,
   };
 
   async componentWillMount() {
     this._loadAssets();
-    if (this.props.exp) {
-      reportPreviousCrash(this.props.exp.errorRecovery);
-    }
     setupErrorHandler();
-    await startTracking();
+    startTracking();
+    PubSubHub.initialize();
+
+    // We do these serially, for now, because we actually log things when
+    // loading remote config, and you could in theory use remote config to
+    // change how firestore behaves.  If we become confident that we'll never
+    // use remote config to change firestore's behavior, we can
+    // parallelize those two.
     await loadAllRemoteConfigs();
+    await initializeFirestore();
   }
 
   componentDidCatch(error: Error) {

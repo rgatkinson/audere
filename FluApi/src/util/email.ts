@@ -13,7 +13,7 @@ const SHOULD_SEND_EMAIL = isAWS() || process.env.SEND_EMAIL;
 
 const SESClient = new AWS.SES({ apiVersion: "2010-12-01" });
 const SESNodemailerTransport = nodemailer.createTransport({
-  SES: SESClient
+  SES: SESClient,
 });
 
 const testNodemailerTransport = new LazyAsync(getTestNodeMailer);
@@ -31,7 +31,7 @@ async function getTestNodeMailer() {
     host: "smtp.ethereal.email",
     port: 587,
     secure: false,
-    auth: account
+    auth: account,
   });
   return {
     sendMail(config: SendMailOptions) {
@@ -42,7 +42,7 @@ async function getTestNodeMailer() {
             config.html}\nEND EMAIL BODY`
       );
       return testTransport.sendMail(config);
-    }
+    },
   };
 }
 

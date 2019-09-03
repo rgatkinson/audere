@@ -121,7 +121,7 @@ if [[ "$BUILD_IOS" = true ]]; then
      -X POST\
      --header "Content-Type: application/json"\
      -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_'$PRODUCT'", "PRODUCT": "'$PRODUCT'", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
-https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
+https://circleci.com/api/v1.1/project/github/AudereNow/audere/tree/"$BRANCH"
 fi 
 
 if [[ "$BUILD_ANDROID" = true ]]; then
@@ -130,6 +130,6 @@ if [[ "$BUILD_ANDROID" = true ]]; then
      -X POST\
      --header "Content-Type: application/json"\
      -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_'$PRODUCT'_android", "PRODUCT": "'$PRODUCT'", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
-https://circleci.com/api/v1.1/project/github/AudereNow/learn/tree/"$BRANCH"
+https://circleci.com/api/v1.1/project/github/AudereNow/audere/tree/"$BRANCH"
 fi
 

@@ -10,7 +10,7 @@ import {
   PatientInfo,
   ResponseItemInfo,
   VisitNonPIIInfo,
-  VisitPIIInfo
+  VisitPIIInfo,
 } from "audere-lib/snifflesProtocol";
 
 type emailConsentResult = {
@@ -32,13 +32,13 @@ export async function emailConsent(
   );
   if (!emailParams) {
     return {
-      emailRequsted: false
+      emailRequsted: false,
     };
   }
   await sendEmail(emailParams);
   return {
     emailRequsted: true,
-    consentsEmailed: emailParams.consentCount
+    consentsEmailed: emailParams.consentCount,
   };
 }
 
@@ -102,7 +102,7 @@ export function getConsentEmailParams(
       filename: `${cid}.png`,
       content: signature,
       cid,
-      encoding: "base64"
+      encoding: "base64",
     });
     return `<img src="cid:${cid}"/>`;
   };
@@ -126,7 +126,7 @@ export function getConsentEmailParams(
     to: patientEmailAddresses,
     from: "noreply@auderenow.org",
     attachments: signatures,
-    consentCount: visitPII.consents.length
+    consentCount: visitPII.consents.length,
   };
 }
 
@@ -143,17 +143,14 @@ export function formatConsent(
       getSignatureTag(consent.signature, index) +
       `<p>${consent.name}, ${consent.signerType}</p>` +
       (consent.signerType === ConsentInfoSignerType.Representative
-        ? `<p>Signed on behalf of ${patientName}.</p><p>Relationship of representative to participant: ${
-            consent.relation
-          }</p>`
+        ? `<p>Signed on behalf of ${patientName}.</p><p>Relationship of representative to participant: ${consent.relation}</p>`
         : "") +
       `<p>Date: ${consent.date}</p>`
     );
   } else {
     return (
-      `<p>Accepted by ${consent.signerType} ${consent.name} on ${
-        consent.date
-      }:</p>` + toHTML(consent.terms)
+      `<p>Accepted by ${consent.signerType} ${consent.name} on ${consent.date}:</p>` +
+      toHTML(consent.terms)
     );
   }
 }

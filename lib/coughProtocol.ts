@@ -25,7 +25,7 @@ import {
   PatientInfoGender,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 } from "./common";
 
 export {
@@ -34,7 +34,7 @@ export {
   PatientInfoGender,
   QuestionInfo,
   QuestionAnswerOption,
-  OtherValueInfo
+  OtherValueInfo,
 };
 
 export interface ProtocolDocumentBase {
@@ -48,9 +48,14 @@ export interface ProtocolDocumentBase {
   device: DeviceInfo;
 }
 
+interface RDTVersionInfo {
+  rdtVersionAndroid?: string;
+  rdtVersionIos?: string;
+}
+
 export interface DeviceInfo {
   installation: string;
-  clientVersion: ClientVersionInfo;
+  clientVersion: ClientVersionInfo & RDTVersionInfo;
   clientBuild: number;
   yearClass: string;
   idiomText: string;
@@ -70,7 +75,7 @@ export interface ResponseItemInfo extends QuestionInfo {
 
 export enum DocumentType {
   Survey = "SURVEY",
-  Photo = "PHOTO"
+  Photo = "PHOTO",
 }
 
 export type ProtocolDocument = SurveyDocument | PhotoDocument;
@@ -177,7 +182,7 @@ export interface EventInfo extends common.EventInfo {
 export enum EventInfoKind {
   AppNav = "appNav",
   TimeoutNav = "timeoutNav",
-  Render = "render"
+  Render = "render",
 }
 
 // ================================================================================
@@ -188,6 +193,8 @@ export interface RDTInfo {
   interpreter?: string;
   totalTestStripTime?: number;
   captureTime?: number;
+  flashEnabled?: boolean;
+  flashDisabledAutomatically?: boolean;
   rdtTotalTime?: number;
   resultShown?: string;
   resultShownExplanation?: string;
@@ -198,6 +205,7 @@ export interface RDTInfo {
 
 export interface RDTReaderResult {
   testStripFound: boolean;
+  testStripBoundary?: { x: number; y: number }[];
   skippedDueToMemWarning?: boolean;
   isCentered?: boolean;
   sizeResult?: RDTReaderSizeResult;
@@ -214,7 +222,7 @@ export interface RDTReaderResult {
 export enum RDTReaderExposureResult {
   UNDER_EXPOSED,
   NORMAL,
-  OVER_EXPOSED
+  OVER_EXPOSED,
 }
 
 // Must be kept in sync with native RDTReader/ImageProcessor.h
@@ -222,5 +230,5 @@ export enum RDTReaderSizeResult {
   RIGHT_SIZE,
   LARGE,
   SMALL,
-  INVALID
+  INVALID,
 }

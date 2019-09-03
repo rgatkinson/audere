@@ -9,7 +9,7 @@ import { S3Uploader } from "../../src/external/s3Uploader";
 import { Batch } from "../../src/services/fever/surveyBatchData";
 import {
   makeRandomKitReceipient,
-  makeRandomGeoResponse
+  makeRandomGeoResponse,
 } from "./reportTestUtil";
 import parse from "csv-parse/lib/sync";
 import { KitOrders, KitRecipient } from "../../src/services/fever/kitOrders";
@@ -39,7 +39,7 @@ describe("sending kit orders", () => {
       makeRandomKitReceipient(2),
       makeRandomKitReceipient(3),
       makeRandomKitReceipient(4),
-      makeRandomKitReceipient(5)
+      makeRandomKitReceipient(5),
     ];
     const batch = { id: 8, items: items };
 

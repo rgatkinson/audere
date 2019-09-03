@@ -16,7 +16,7 @@ import { defineFeverModels, FeverModels } from "../../src/models/db/fever";
 import { surveyPost, makeCSRUID } from "./feverSampleData";
 import {
   FeverConsentEmailerEndpoint,
-  newSurveys
+  newSurveys,
 } from "../../src/endpoints/feverConsentMailer";
 import { SurveyDocument } from "audere-lib/feverProtocol";
 import { createTestSessionStore } from "../../src/endpoints/webPortal/endpoint";
@@ -35,7 +35,7 @@ describe("FeverConsentEmailer", () => {
     models = defineFeverModels(sql);
     accessKey = await models.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
     sessionStore = createTestSessionStore(sql);
     publicApp = await createPublicApp({ sql, sessionStore });
@@ -60,7 +60,7 @@ describe("FeverConsentEmailer", () => {
       consentEmailer: new FeverConsentEmailerEndpoint(
         sql,
         instance(MockEmailer)
-      )
+      ),
     });
   });
 
@@ -237,24 +237,24 @@ describe("FeverConsentEmailer", () => {
     post.survey.responses[0].item.push({
       id: "Consent",
       text: "Do you want a copy of this consent emailed to you?",
-      answer: [{ valueBoolean: value }]
+      answer: [{ valueBoolean: value }],
     });
   }
 
   async function deleteSurvey(csruid: string): Promise<void> {
     const piiSurvey = await models.surveyPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     if (piiSurvey != null) {
       await models.consentEmail.destroy({
         where: {
-          survey_id: { [Op.eq]: piiSurvey.id }
-        }
+          survey_id: { [Op.eq]: piiSurvey.id },
+        },
       });
       await piiSurvey.destroy();
     }
     const nonPiiSurvey = await models.surveyNonPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     if (nonPiiSurvey != null) {
       await nonPiiSurvey.destroy();

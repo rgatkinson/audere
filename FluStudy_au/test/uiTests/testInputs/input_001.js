@@ -9,7 +9,6 @@ const today = new Date();
 export const inputs = {
   [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.yes,
   [strings.barcode.placeholder]: "00100100",
-  [strings.barcode.secondPlaceholder]: "00100100",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.feelingFeverish,
     strings.surveyOption.headache,
@@ -38,6 +37,7 @@ export const inputs = {
     month: "long",
   }).format(today)} ${today.getFullYear()}`,
   [strings.surveyTitle.fluShotNationalImmunization]: strings.surveyButton.yes,
+  [strings.surveyTitle.fluShotNationalImmunizationCondition]: "Asthma",
   [strings.surveyTitle.previousSeason]: strings.surveyButton.yes,
   [strings.surveyTitle.medicalCondition]: [strings.surveyOption.asthma],
   [strings.surveyTitle.healthcareWorker]: strings.surveyButton.yes,
@@ -54,5 +54,6 @@ export const inputs = {
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
+  [strings.surveyTitle.numLinesSeen]: strings.surveyButton.oneLine,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.easyCorrect,
 };

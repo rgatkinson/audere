@@ -1,39 +1,64 @@
 {
   "name": "EbPhotoStore",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "react-native start",
-    "test": "jest",
+    "start": "../scripts/generate-build-info EbPhotoStore; ./scripts/build-hacks; react-native start",
+    "test": "jest -c test/jest.config.js",
     "lint": "eslint .",
-    "lint-fix": "prettier --write *.ts{,x} 'src/**/*.ts{,x}'"
+    "lint-fix": "prettier --write *.ts{,x} 'src/**/*.ts{,x}'",
+    "postinstall": "npx jetify"
   },
   "dependencies": {
+    "@react-native-community/netinfo": "^4.1.3",
+    "@types/memoize-one": "^4.1.1",
+    "audere-lib": "file:../lib",
+    "date-fns": "^1.30.1",
+    "deep-equal": "^1.0.1",
+    "i18next": "^17.0.6",
     "immutable": "^4.0.0-rc.12",
+    "memoize-one": "^5.0.5",
     "react": "16.8.6",
+    "react-i18next": "9.0.10",
     "react-native": "0.60.4",
     "react-native-camera": "^3.0.0",
+    "react-native-device-info": "^2.3.0",
+    "react-native-firebase": "^5.5.5",
+    "react-native-fs": "^2.14.1",
+    "react-native-geolocation-service": "^3.0.0",
     "react-redux": "^7.1.0",
     "redux": "^4.0.4",
     "redux-persist": "^5.10.0",
-    "redux-persist-transform-immutable": "^5.0.0"
+    "redux-persist-transform-immutable": "^5.0.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
+    "@babel/preset-typescript": "^7.3.3",
     "@babel/runtime": "^7.5.5",
     "@react-native-community/eslint-config": "^0.0.5",
+    "@types/deep-equal": "^1.0.1",
+    "@types/i18next": "^12.1.0",
+    "@types/node": "^12.6.8",
     "@types/react": "^16.8.23",
     "@types/react-native": "^0.60.2",
+    "@types/uuid": "^3.4.5",
     "babel-jest": "^24.8.0",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.3",
     "eslint": "^6.1.0",
     "jest": "^24.8.0",
     "metro-react-native-babel-preset": "^0.55.0",
     "prettier": "^1.18.2",
     "react-native-typescript-transformer": "^1.2.12",
     "react-test-renderer": "16.8.6",
+    "redux-mock-store": "^1.5.3",
+    "ts-jest": "^24.0.2",
     "typescript": "^3.5.3"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "setUpFilesAfterEnv": [
+      "./__mocks__/react-i18next"
+    ]
   }
 }

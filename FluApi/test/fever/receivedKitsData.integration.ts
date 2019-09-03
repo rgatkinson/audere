@@ -41,7 +41,7 @@ describe("received kits data access", () => {
 
       await fever.barcodes.bulkCreate([
         { barcode: "s1" },
-        { barcode: "qwerty" }
+        { barcode: "qwerty" },
       ]);
 
       // A linked record
@@ -54,7 +54,7 @@ describe("received kits data access", () => {
         boxBarcode: "s1",
         dateReceived: "2018-09-19",
         linked: true,
-        recordId: +db1.id
+        recordId: +db1.id,
       });
 
       // An unlinked record
@@ -67,7 +67,7 @@ describe("received kits data access", () => {
         boxBarcode: "qwerty",
         dateReceived: "2018-09-19",
         linked: false,
-        recordId: +db2.id
+        recordId: +db2.id,
       });
 
       const dao = new ReceivedKitsData(sql);
@@ -96,7 +96,7 @@ describe("received kits data access", () => {
         boxBarcode: "1",
         dateReceived: "2018-09-19",
         linked: true,
-        recordId: +db1.id
+        recordId: +db1.id,
       });
 
       const s2 = _.cloneDeep(surveyNonPIIInDb("qwerty"));
@@ -113,7 +113,7 @@ describe("received kits data access", () => {
       s4.survey.events.push({
         kind: EventInfoKind.AppNav,
         at: new Date().toISOString(),
-        refId: "ScanConfirmation"
+        refId: "ScanConfirmation",
       });
       const db4 = await fever.surveyNonPii.create(s4);
 
@@ -131,12 +131,12 @@ describe("received kits data access", () => {
       s2.survey.samples.push({ sample_type: "manualEntry", code: "qwerty" });
 
       const surveys = await fever.surveyNonPii.bulkCreate([s1, s2], {
-        returning: true
+        returning: true,
       });
 
       await fever.barcodes.bulkCreate([
         { barcode: "s1" },
-        { barcode: "qwerty" }
+        { barcode: "qwerty" },
       ]);
 
       const dao = new ReceivedKitsData(sql);
@@ -149,7 +149,7 @@ describe("received kits data access", () => {
           code: surveys[1].survey.samples.find(
             s => s.sample_type === "manualEntry"
           ).code,
-          recordId: undefined
+          recordId: undefined,
         })
       );
     });
@@ -162,13 +162,13 @@ describe("received kits data access", () => {
         {
           kind: EventInfoKind.AppNav,
           at: now,
-          refId: "ScanConfirmation"
+          refId: "ScanConfirmation",
         },
         {
           kind: EventInfoKind.AppNav,
           at: "Jibber jabber",
-          refId: "Placebo"
-        }
+          refId: "Placebo",
+        },
       ];
 
       await fever.surveyNonPii.create(s);
@@ -189,13 +189,13 @@ describe("received kits data access", () => {
         {
           kind: EventInfoKind.AppNav,
           at: now,
-          refId: "ManualConfirmation"
+          refId: "ManualConfirmation",
         },
         {
           kind: EventInfoKind.AppNav,
           at: "Jibber jabber",
-          refId: "Placebo"
-        }
+          refId: "Placebo",
+        },
       ];
 
       await fever.surveyNonPii.create(s);
@@ -216,13 +216,13 @@ describe("received kits data access", () => {
         {
           kind: EventInfoKind.AppNav,
           at: now.subtract(10, "days").toISOString(),
-          refId: "ManualConfirmation"
+          refId: "ManualConfirmation",
         },
         {
           kind: EventInfoKind.AppNav,
           at: now.toISOString(),
-          refId: "ScanConfirmation"
-        }
+          refId: "ScanConfirmation",
+        },
       ];
 
       await fever.surveyNonPii.create(s);
@@ -243,7 +243,7 @@ describe("received kits data access", () => {
       s2.survey.samples.push({ sample_type: "manualEntry", code: "good" });
 
       await fever.surveyNonPii.bulkCreate([s1, s2], {
-        returning: true
+        returning: true,
       });
       await fever.barcodes.bulkCreate([{ barcode: "s1" }]);
 
@@ -269,7 +269,7 @@ describe("received kits data access", () => {
         utmBarcode: "aaaaaaaa",
         rdtBarcode: "bbbbbbbb",
         stripBarcode: "cccccccc",
-        linked: false
+        linked: false,
       };
 
       const dao = new ReceivedKitsData(sql);
@@ -282,8 +282,8 @@ describe("received kits data access", () => {
 
       const kitRecord = await fever.receivedKit.findOne({
         where: {
-          boxBarcode: barcode
-        }
+          boxBarcode: barcode,
+        },
       });
 
       expect(kitRecord.linked).toBe(true);
@@ -307,7 +307,7 @@ describe("received kits data access", () => {
         utmBarcode: "aaaaaaaa",
         rdtBarcode: "bbbbbbbb",
         stripBarcode: "cccccccc",
-        linked: false
+        linked: false,
       };
 
       const dao = new ReceivedKitsData(sql);
@@ -316,8 +316,8 @@ describe("received kits data access", () => {
 
       const kitRecord = await fever.receivedKit.findOne({
         where: {
-          boxBarcode: barcode
-        }
+          boxBarcode: barcode,
+        },
       });
 
       expect(kitRecord.linked).toBe(true);
@@ -345,10 +345,10 @@ describe("received kits data access", () => {
           boxBarcode: barcode,
           dateReceived: "2018-09-19",
           linked: true,
-          recordId: 55
+          recordId: 55,
         },
         {
-          returning: true
+          returning: true,
         }
       );
 
@@ -404,7 +404,7 @@ describe("received kits data access", () => {
       const db = [surveyNonPIIInDb("asdf"), surveyNonPIIInDb("qwerty")];
 
       const surveys = await fever.surveyNonPii.bulkCreate(db, {
-        returning: true
+        returning: true,
       });
 
       const record1 = {
@@ -414,7 +414,7 @@ describe("received kits data access", () => {
         rdtBarcode: "bbbbbbbb",
         stripBarcode: "cccccccc",
         linked: true,
-        recordId: 55
+        recordId: 55,
       };
 
       const record2 = {
@@ -424,12 +424,12 @@ describe("received kits data access", () => {
         rdtBarcode: "22222222",
         stripBarcode: "33333333",
         linked: true,
-        recordId: 66
+        recordId: 66,
       };
 
       const records = new Map([
         [+surveys[0].id, record1],
-        [+surveys[1].id, record2]
+        [+surveys[1].id, record2],
       ]);
 
       const dao = new ReceivedKitsData(sql);
@@ -437,14 +437,14 @@ describe("received kits data access", () => {
 
       const file = await fever.receivedKitsFile.findOne({
         where: {
-          file: "test.json"
-        }
+          file: "test.json",
+        },
       });
 
       const receivedKits = await fever.receivedKit.findAll({
         where: {
-          fileId: file.id
-        }
+          fileId: file.id,
+        },
       });
 
       expect(receivedKits).toHaveLength(2);
@@ -452,14 +452,14 @@ describe("received kits data access", () => {
       expect(receivedKits).toContainEqual(
         expect.objectContaining({
           boxBarcode: record1.boxBarcode,
-          dateReceived: record1.dateReceived
+          dateReceived: record1.dateReceived,
         })
       );
 
       expect(receivedKits).toContainEqual(
         expect.objectContaining({
           boxBarcode: record2.boxBarcode,
-          dateReceived: record2.dateReceived
+          dateReceived: record2.dateReceived,
         })
       );
     });
@@ -475,7 +475,7 @@ describe("received kits data access", () => {
         boxBarcode: "12345678",
         utmBarcode: "aaaaaaaa",
         rdtBarcode: "bbbbbbbb",
-        stripBarcode: "cccccccc"
+        stripBarcode: "cccccccc",
       };
 
       const insertRecords = new Map([[+survey.id, insertRecord]]);
@@ -487,7 +487,7 @@ describe("received kits data access", () => {
         utmBarcode: "aaaaaaaa",
         rdtBarcode: "bbbbbbbb",
         stripBarcode: "cccccccc",
-        recordId: 88
+        recordId: 88,
       };
 
       const updateRecords = new Map([[+survey.id, updateRecord]]);
@@ -495,8 +495,8 @@ describe("received kits data access", () => {
 
       const kit = await fever.receivedKit.findOne({
         where: {
-          surveyId: survey.id
-        }
+          surveyId: survey.id,
+        },
       });
 
       expect(kit.recordId).toBe(88);
@@ -513,7 +513,7 @@ describe("received kits data access", () => {
         boxBarcode: "12345678",
         utmBarcode: "aaaaaaaa",
         rdtBarcode: "bbbbbbbb",
-        stripBarcode: "cccccccc"
+        stripBarcode: "cccccccc",
       };
 
       const insertRecords = new Map([[+survey.id, insertRecord]]);
@@ -521,12 +521,12 @@ describe("received kits data access", () => {
 
       await fever.receivedKit.update(
         {
-          linked: true
+          linked: true,
         },
         {
           where: {
-            boxBarcode: insertRecord.boxBarcode
-          }
+            boxBarcode: insertRecord.boxBarcode,
+          },
         }
       );
 
@@ -536,7 +536,7 @@ describe("received kits data access", () => {
         utmBarcode: "aaaaaaaa",
         rdtBarcode: "bbbbbbbb",
         stripBarcode: "cccccccc",
-        recordId: 88
+        recordId: 88,
       };
 
       const updateRecords = new Map([[+survey.id, updateRecord]]);
@@ -544,8 +544,8 @@ describe("received kits data access", () => {
 
       const kit = await fever.receivedKit.findOne({
         where: {
-          surveyId: survey.id
-        }
+          surveyId: survey.id,
+        },
       });
 
       expect(kit.linked).toBe(true);
@@ -562,7 +562,7 @@ describe("received kits data access", () => {
         boxBarcode: "12345678",
         utmBarcode: "aaaaaaaa",
         rdtBarcode: "bbbbbbbb",
-        stripBarcode: "cccccccc"
+        stripBarcode: "cccccccc",
       };
 
       const insertRecords = new Map([[+survey.id, insertRecord]]);
@@ -570,12 +570,12 @@ describe("received kits data access", () => {
 
       await fever.receivedKit.update(
         {
-          linked: true
+          linked: true,
         },
         {
           where: {
-            boxBarcode: insertRecord.boxBarcode
-          }
+            boxBarcode: insertRecord.boxBarcode,
+          },
         }
       );
 
@@ -586,7 +586,7 @@ describe("received kits data access", () => {
         rdtBarcode: "bbbbbbbb",
         stripBarcode: "cccccccc",
         recordId: 88,
-        remapped: true
+        remapped: true,
       };
 
       const updateRecords = new Map([[+survey.id, updateRecord]]);
@@ -594,8 +594,8 @@ describe("received kits data access", () => {
 
       const kit = await fever.receivedKit.findOne({
         where: {
-          surveyId: survey.id
-        }
+          surveyId: survey.id,
+        },
       });
 
       expect(kit.linked).toBe(false);

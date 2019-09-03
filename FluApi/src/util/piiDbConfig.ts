@@ -9,7 +9,7 @@ import sequelizeLogger from "sequelize-log-syntax-colors";
 const CONFIG = {
   url: process.env.PII_DATABASE_URL,
   logging: (str: string) => console.log(sequelizeLogger(str)),
-  dialect: "postgres"
+  dialect: "postgres",
 };
 
 export const development = CONFIG;

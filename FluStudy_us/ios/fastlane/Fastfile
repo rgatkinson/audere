@@ -34,7 +34,7 @@ platform :ios do
   
     match(
       git_branch: "master",
-      app_identifier: "org.auderenow.fluathome.dev",
+      app_identifier: "org.auderenow.fluathome-us.dev",
       team_id: "G8UCCFY788",
       type: "development",
       readonly: readonly,
@@ -43,7 +43,7 @@ platform :ios do
   
     match(
       git_branch: "master",
-      app_identifier: "org.auderenow.fluathome",
+      app_identifier: "org.auderenow.fluathome-us",
       team_id: "G8UCCFY788",
       type: "appstore",
       readonly: readonly
@@ -85,7 +85,7 @@ platform :ios do
       # http://git-scm.com/docs/pretty-formats
       # - <short hash> <commit title>
       pretty: "- %h %s",
-      tag_match_pattern: "v0\.2\.*"
+      tag_match_pattern: "chills_v1\.0\.*"
     )
     build_app(
       scheme: "fluathome Production",
@@ -107,7 +107,7 @@ platform :ios do
     build = get_build_number
     release_type = ENV["EXPO_RELEASE_CHANNEL"]
     add_git_tag(
-      tag: "v#{version}_#{release_type}_#{build}",
+      tag: "chills_v#{version}_#{release_type}_#{build}",
       message: ENV["BUILD_DESCRIPTION"]
     )
     begin 
@@ -122,16 +122,17 @@ platform :ios do
     build = get_build_number
     destination = options[:destination]
     changelog = options[:changelog]
-    lasttag = Helper.backticks("git describe --match \"v0\\.2\\.*\" --abbrev=0 --tags")
+    lasttag = Helper.backticks("git describe --match \"chills_v1\\.0\\.*\" --abbrev=0 --tags")
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
-      message: "flu@home #{version} build #{build} has been uploaded to #{destination} :rocket:",
+      message: "flu@home Chills #{version} build #{build} has been uploaded to #{destination} :rocket:",
       default_payloads: [:git_branch, :last_git_commit_hash],
       payload: {
         "Built by" => ENV["CIRCLE_USERNAME"],
         "Description" => ENV["BUILD_DESCRIPTION"],
         "Release Type" => ENV["EXPO_RELEASE_CHANNEL"],
-        "Changelog since #{lasttag}" => changelog
+        "Changelog since #{lasttag}" => changelog,
+        "Build log" => ENV["CIRCLE_BUILD_URL"]
       }
     )
   end
@@ -143,14 +144,15 @@ platform :ios do
     build_num = increment_build_number
     # Increment Android build number too so it's always in sync
     android_build_file = "FluStudy_us/android/app/version.properties"
-    Helper.backticks("sed -i '' \"s/\\(VERSION_CODE=\\).*\\$/\\1#{build_num}/\" ../../../#{android_build_file}")
+    Helper.backticks("rm ../../../#{android_build_file}")
+    Helper.backticks("echo VERSION_CODE=#{build_num} > ../../../#{android_build_file}")
     if versionBump 
       version = increment_version_number
       Helper.backticks("yarn version --patch --no-git-tag-version")
-      message = "Build script incrementing version to #{version}, build number to #{build_num}"
+      message = "Build script incrementing Chills version to #{version}, build number to #{build_num}"
       include = ["FluStudy_us/package.json", "#{android_build_file}"]
     else 
-      message = "Build script incrementing build number to #{build_num}"
+      message = "Build script incrementing Chills build number to #{build_num}"
       include = ["#{android_build_file}"]
     end
     commit_version_bump(
@@ -158,7 +160,9 @@ platform :ios do
       xcodeproj: "fluathome.xcodeproj",
       include: include
     )
-    push_to_git_remote
+    push_to_git_remote(
+      tags: false
+    )
   end
 
   desc "Provision a device for running flu@home from source" 

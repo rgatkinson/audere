@@ -18,8 +18,8 @@ export class BarcodeValidator {
     const { barcode } = req.params;
     const rows = await this.barcodeValidator.findAll({
       where: {
-        barcode
-      }
+        barcode,
+      },
     });
 
     logger.info(`validateBarcode(${barcode})`);

@@ -7,20 +7,27 @@ import React from "react";
 import {
   Dimensions,
   Picker,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { connect } from "react-redux";
+import { getAnswer } from "../../util/survey";
+import { Action, updateAnswer, StoreState } from "../../store";
+import { MonthQuestion, SurveyQuestion } from "audere-lib/chillsQuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
 import {
   BORDER_COLOR,
+  HIGHLIGHT_STYLE,
   GUTTER,
   INPUT_HEIGHT,
   LINK_COLOR,
   SECONDARY_COLOR,
 } from "../styles";
+import { monthAsDate } from "../../util/date";
 
 const months = [
   "january",
@@ -38,14 +45,14 @@ const months = [
 ];
 
 interface MonthModalProps {
-  date: Date | null;
+  date: Date | undefined;
   options: Date[];
   visible: boolean;
-  onDismiss(date: Date | null): void;
+  onDismiss(date: Date | undefined): void;
 }
 
 interface MonthModalState {
-  date: Date | null;
+  date: Date | undefined;
 }
 
 class MonthModal extends React.Component<
@@ -56,50 +63,79 @@ class MonthModal extends React.Component<
     date: this.props.date,
   };
 
+  shouldComponentUpdate(
+    props: MonthModalProps & WithNamespaces,
+    state: MonthModalState
+  ) {
+    return (
+      state != this.state ||
+      props.date != this.props.date ||
+      props.visible != this.props.visible ||
+      props.options != this.props.options
+    );
+  }
+
   _onValueChange = (selected: number | string) => {
     if (selected === this.props.t("selectDate")) {
-      this.setState({ date: null });
+      this.setState({ date: undefined });
     } else {
+      if (Platform.OS === "android") {
+        this.props.onDismiss(new Date(selected));
+      }
       this.setState({ date: new Date(selected) });
     }
   };
 
-  render() {
+  _renderPicker() {
     const { t } = this.props;
-    const { width } = Dimensions.get("window");
     const selectDate = t("selectDate");
     return (
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <Picker
+          selectedValue={
+            this.state.date ? this.state.date!.getTime() : selectDate
+          }
+          style={{ alignSelf: "stretch", justifyContent: "center" }}
+          onValueChange={this._onValueChange}
+        >
+          {this.props.options.map(date => (
+            <Picker.Item
+              label={t(months[date.getMonth()]) + " " + date.getFullYear()}
+              value={date.getTime()}
+              key={date.getTime()}
+            />
+          ))}
+          <Picker.Item label={selectDate} value={selectDate} key={selectDate} />
+        </Picker>
+      </View>
+    );
+  }
+
+  _onCancel = () => {
+    this.setState({ date: this.props.date });
+    this.props.onDismiss(this.props.date);
+  };
+
+  _onSubmit = () => {
+    this.props.onDismiss(this.state.date);
+  };
+
+  render() {
+    const { t, visible } = this.props;
+    const { width } = Dimensions.get("window");
+    return Platform.OS === "ios" ? (
       <Modal
         height={280}
         width={width * 0.75}
         submitText={t("common:button:done")}
-        visible={this.props.visible}
-        onDismiss={() => this.props.onDismiss(this.props.date)}
-        onSubmit={() => this.props.onDismiss(this.state.date)}
+        visible={visible}
+        onDismiss={this._onCancel}
+        onSubmit={this._onSubmit}
       >
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <Picker
-            selectedValue={
-              this.state.date ? this.state.date!.getTime() : selectDate
-            }
-            style={{ alignSelf: "stretch", justifyContent: "center" }}
-            onValueChange={this._onValueChange}
-          >
-            {this.props.options.map(date => (
-              <Picker.Item
-                label={t(months[date.getMonth()]) + " " + date.getFullYear()}
-                value={date.getTime()}
-                key={date.getTime()}
-              />
-            ))}
-            <Picker.Item
-              label={selectDate}
-              value={selectDate}
-              key={selectDate}
-            />
-          </Picker>
-        </View>
+        {this._renderPicker()}
       </Modal>
+    ) : (
+      this._renderPicker()
     );
   }
 }
@@ -107,18 +143,37 @@ const TranslatedMonthModal = withNamespaces("monthPicker")(MonthModal);
 
 interface Props {
   date?: Date;
-  startDate: Date;
-  endDate: Date;
-  onDateChange(date: Date | null): void;
+  highlighted?: boolean;
+  question: MonthQuestion;
+  dispatch(action: Action): void;
 }
 
-class MonthPicker extends React.Component<Props & WithNamespaces> {
+interface State {
+  pickerOpen: boolean;
+}
+
+class MonthPicker extends React.Component<Props & WithNamespaces, State> {
   state = {
     pickerOpen: false,
   };
 
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return (
+      state != this.state ||
+      props.date != this.props.date ||
+      props.highlighted != this.props.highlighted ||
+      props.question != this.props.question
+    );
+  }
+
   _getOptions(): Date[] {
-    const { endDate, startDate } = this.props;
+    const monthRange = this.props.question.monthRange;
+    const startDate = monthAsDate(
+      new Date().getFullYear() - Math.floor(monthRange / 12),
+      new Date().getMonth() - (monthRange % 12)
+    );
+
+    const endDate = new Date(Date.now());
     const options = [];
 
     let currentMonth = startDate.getMonth();
@@ -134,7 +189,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     }
 
     while (currentYear < endYear || currentMonth <= endMonth) {
-      options.push(new Date(currentYear, currentMonth));
+      options.push(monthAsDate(currentYear, currentMonth));
       if (currentMonth < months.length - 1) {
         currentMonth += 1;
       } else {
@@ -146,33 +201,45 @@ class MonthPicker extends React.Component<Props & WithNamespaces> {
     return options;
   }
 
+  _onDateChange = (dateInput: Date | undefined) => {
+    this.setState({ pickerOpen: false });
+    this.props.dispatch(updateAnswer({ dateInput }, this.props.question));
+  };
+
+  _openModal = () => {
+    this.setState({ pickerOpen: true });
+  };
+
   render() {
-    const { date, onDateChange, t } = this.props;
-    const now = new Date();
+    const { date, highlighted, question, t } = this.props;
 
     return (
-      <View style={{ alignSelf: "stretch", marginBottom: GUTTER / 2 }}>
-        <TouchableOpacity
-          style={styles.pickerContainer}
-          onPress={() => this.setState({ pickerOpen: true })}
-        >
-          <Text
-            content={
-              !!date
-                ? t(months[date.getMonth()]) + " " + date.getFullYear()
-                : t("selectDate")
-            }
-            style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
-          />
-        </TouchableOpacity>
+      <View
+        style={[
+          { alignSelf: "stretch", marginBottom: GUTTER / 2 },
+          !!highlighted && HIGHLIGHT_STYLE,
+        ]}
+      >
+        {Platform.OS === "ios" && (
+          <TouchableOpacity
+            style={styles.pickerContainer}
+            onPress={this._openModal}
+          >
+            <Text
+              content={
+                !!date
+                  ? t(months[date.getMonth()]) + " " + date.getFullYear()
+                  : t("selectDate")
+              }
+              style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
+            />
+          </TouchableOpacity>
+        )}
         <TranslatedMonthModal
           options={this._getOptions()}
-          date={!!date ? date : null}
+          date={!!date ? date : undefined}
           visible={this.state.pickerOpen}
-          onDismiss={(date: Date | null) => {
-            this.setState({ pickerOpen: false });
-            onDateChange(date);
-          }}
+          onDismiss={this._onDateChange}
         />
       </View>
     );
@@ -189,4 +256,6 @@ const styles = StyleSheet.create({
     padding: GUTTER / 4,
   },
 });
-export default withNamespaces("monthPicker")(MonthPicker);
+export default connect((state: StoreState, props: Props) => ({
+  date: getAnswer(state, props.question),
+}))(withNamespaces("monthPicker")(MonthPicker));

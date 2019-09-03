@@ -1,0 +1,93 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function emptyDocument(rsc) {
+      return
+      	rsc.data == null
+        || !('id' in rsc)
+        || !('data' in rsc)
+        || !('docId' in rsc.data);
+    }
+
+    function encounterAssigned(doc) {
+      return
+        exists(/databases/$(database)/documents/encounters/$(doc))
+        && get(/databases/$(database)/documents/encounters/$(doc)).data.encounter.healthWorker.uid == request.auth.uid;
+    }
+
+    function hasRole(role) {
+      return
+        exists(/databases/$(database)/documents/roles/$(role))
+        && request.auth.uid in get(/databases/$(database)/documents/roles/$(role)).data.users;
+    }
+
+    function isLoggedIn() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function matchesDocumentId(rsc, doc) {
+      return rsc.data.docId == doc;
+    }
+
+    match /{document=**} {
+      allow read, write: if isLoggedIn() && hasRole('admin');
+    }
+
+    match /encounters/{document} {
+      function isSelfAssigned(rsc) {
+        return rsc.data.encounter.healthWorker.uid == request.auth.uid;
+      }
+
+      allow create: if isLoggedIn()
+        && matchesDocumentId(request.resource, document)
+        && isSelfAssigned(request.resource);
+
+      allow update: if isLoggedIn()
+        && matchesDocumentId(request.resource, document)
+        && isSelfAssigned(resource)
+        && isSelfAssigned(request.resource);
+
+      allow read: if isLoggedIn()
+        && matchesDocumentId(resource, document)
+        && isSelfAssigned(resource);
+
+      match /messages/{message} {
+        allow create: if isLoggedIn() && encounterAssigned(document);
+
+        allow list: if isLoggedIn()
+          && (emptyDocument(resource) || encounterAssigned(document));
+
+        allow read: if isLoggedIn() && encounterAssigned(document);
+      }
+    }
+
+    match /messaging_tokens/{document} {
+      function isSelfAssigned(rsc) {
+        return rsc.data.uid == request.auth.uid;
+      }
+
+      allow create: if isLoggedIn()
+        && document == request.auth.uid
+        && isSelfAssigned(request.resource);
+
+      allow update: if isLoggedIn()
+        && document == request.auth.uid
+        && isSelfAssigned(resource)
+        && isSelfAssigned(request.resource);
+
+      allow read: if isLoggedIn()
+        && document == request.auth.uid
+        && isSelfAssigned(resource);
+    }
+
+    match /triages/{document} {
+      allow create: if isLoggedIn()
+        && matchesDocumentId(request.resource, document)
+        && encounterAssigned(document);
+
+      allow list: if isLoggedIn()
+        && (emptyDocument(resource) || encounterAssigned(document));
+
+      allow read: if isLoggedIn() && encounterAssigned(document);
+    }
+  }
+}

@@ -4,15 +4,16 @@
 // can be found in the LICENSE file distributed with this file.
 
 import * as AWS from "aws-sdk";
+import { Op } from "sequelize";
 import { SplitSql } from "../util/sql";
 import {
   CoughModels,
   defineCoughModels,
-  ImportProblemAttributes
+  ImportProblemAttributes,
 } from "../models/db/cough";
 import {
   connectorFromSqlSecrets,
-  FirebaseReceiver
+  FirebaseReceiver,
 } from "../external/firebase";
 import logger from "../util/logger";
 import { requestId } from "../util/expressApp";
@@ -20,7 +21,7 @@ import {
   DocumentType,
   SurveyDocument,
   SurveyNonPIIInfo,
-  PhotoDocument
+  PhotoDocument,
 } from "audere-lib/dist/coughProtocol";
 import { DataPipelineService } from "../services/dataPipelineService";
 import { SecretConfig } from "../util/secretsConfig";
@@ -73,19 +74,10 @@ export class CoughEndpoint {
       successes: [],
       errors: [],
       timestamp: new Date().toISOString(),
-      requestId: reqId
+      requestId: reqId,
     };
 
-    // Set Content-Type now since headers have to go before body and we start
-    // streaming whitespace to keep alive.
-    res.type("json");
-    // Prevent nginx from buffering the stream so the keep-alive whitespace
-    // makes it to the ELB as well.
-    res.set("X-Accel-Buffering", "no");
-
-    // Send whitespace regularly during import so ExpressJS, nginx, and ELB
-    // don't time out.
-    const progress = () => res.write(" ");
+    const { progress, replyJson } = jsonKeepAlive(res);
 
     await this.importItems(
       progress,
@@ -106,11 +98,9 @@ export class CoughEndpoint {
     logger.info(
       `${reqId}: leave importCoughDocuments\n${JSON.stringify(result, null, 2)}`
     );
-    await this.updateDerived(reqId);
+    await this.updateDerived(progress, reqId);
 
-    res.write("\n");
-    res.write(JSON.stringify(result));
-    res.end();
+    replyJson(result);
   };
 
   public uploadCoughPhotos = async (req, res, next) => {
@@ -119,14 +109,21 @@ export class CoughEndpoint {
     );
     const surveys = await this.models.survey.findAll({
       where: {
-        "$photo_upload_log.cough_survey_id$": null
+        survey: {
+          workflow: {
+            surveyCompletedAt: {
+              [Op.ne]: null,
+            },
+          },
+        },
+        "$photo_upload_log.cough_survey_id$": null,
       },
       include: [
         {
           model: this.models.photoUploadLog,
-          required: false
-        }
-      ]
+          required: false,
+        },
+      ],
     });
     const results = await Promise.all(
       surveys.map(async survey => {
@@ -149,7 +146,7 @@ export class CoughEndpoint {
               "PhotoGUID",
               "ManualPhoto",
               rdtPhotosSecret
-            )
+            ),
           ]);
         } catch (e) {
           console.error(e);
@@ -163,7 +160,7 @@ export class CoughEndpoint {
     );
     res.json({
       success: results.filter(result => result !== null).length,
-      error: results.filter(result => result === null).length
+      error: results.filter(result => result === null).length,
     });
   };
 
@@ -186,8 +183,8 @@ export class CoughEndpoint {
     }
     const photoRecord = await this.models.photo.findOne({
       where: {
-        docId: photoSample.code
-      }
+        docId: photoSample.code,
+      },
     });
     await (await this.s3Uploader.get()).writeRDTPhoto(
       rdtPhotosSecret,
@@ -210,7 +207,7 @@ export class CoughEndpoint {
   ) {
     const connector = connectorFromSqlSecrets(this.sql);
     const receiver = new FirebaseReceiver(connector, { collection });
-    const updates = await receiver.updates();
+    const updates = await this.updatesWithRetry(receiver);
 
     for (let id of updates) {
       const spec = { id, collection };
@@ -239,6 +236,24 @@ export class CoughEndpoint {
     }
   }
 
+  // We have seen failure alerts where Firebase fails with an authentication
+  // error and then consistently succeeds one minute later.  Since we only ever
+  // see failures on the first run after a long idle, this retries in an
+  // attempt to debug and potentially work around the issue.
+  private async updatesWithRetry(
+    receiver: FirebaseReceiver
+  ): Promise<string[]> {
+    for (let i = 0; i < 5; i++) {
+      try {
+        return await receiver.updates();
+      } catch (err) {
+        logger.error(`CoughEndpoint.updatesWithRetry: '${err.message}'`);
+      }
+      await new Promise(resolve => setTimeout(resolve, 10 * 1000));
+    }
+    return await receiver.updates();
+  }
+
   private async readSnapshot(
     reqId: string,
     receiver: FirebaseReceiver,
@@ -259,15 +274,13 @@ export class CoughEndpoint {
     result: ImportResult
   ): Promise<ImportProblemAttributes> {
     logger.error(
-      `${reqId} CoughEndpoint import failed for '${spec.id}' in '${
-        spec.collection
-      }': ${err.message}`
+      `${reqId} CoughEndpoint import failed for '${spec.id}' in '${spec.collection}': ${err.message}`
     );
 
     const firebaseCollection = spec.collection;
     const firebaseId = spec.id;
     const existing = await this.models.importProblem.findOne({
-      where: { firebaseCollection, firebaseId }
+      where: { firebaseCollection, firebaseId },
     });
 
     const problem = {
@@ -275,7 +288,7 @@ export class CoughEndpoint {
       firebaseCollection,
       firebaseId,
       attempts: existing == null ? 1 : existing.attempts + 1,
-      lastError: err.message
+      lastError: err.message,
     };
     result.errors.push(asImportError(problem));
     await this.models.importProblem.upsert(problem);
@@ -308,19 +321,20 @@ export class CoughEndpoint {
       photo: {
         timestamp: doc.photo.timestamp,
         photoId: doc.photo.photoId,
-        jpegBase64
-      }
+        jpegBase64,
+      },
     });
   };
 
   public updateDerivedTables = async (req, res, next) => {
     const reqId = requestId(req);
-    await this.updateDerived(reqId);
-    res.json({});
+    const { progress, replyJson } = jsonKeepAlive(res);
+    await this.updateDerived(progress, reqId);
+    replyJson({});
   };
 
-  private async updateDerived(reqId: string) {
-    const service = new DataPipelineService(this.sql);
+  private async updateDerived(progress: () => void, reqId: string) {
+    const service = new DataPipelineService(this.sql, progress);
     logger.info(`${reqId}: enter updateDerivedTables`);
     try {
       await service.refresh();
@@ -336,7 +350,7 @@ function asImportError(problem: ImportProblemAttributes): ImportError {
     collection: problem.firebaseCollection,
     id: problem.firebaseId,
     error: problem.lastError,
-    attempts: problem.attempts
+    attempts: problem.attempts,
   };
 }
 
@@ -349,6 +363,32 @@ function booleanQueryParameter(req, name: string, dflt: boolean): boolean {
     default:
       return dflt;
   }
+}
+
+function jsonKeepAlive(res): KeepAliveJson {
+  // Set Content-Type now since headers have to go before body and we start
+  // streaming whitespace to keep alive.
+  res.type("json");
+  // Prevent nginx from buffering the stream so the keep-alive whitespace
+  // makes it to the ELB as well.
+  res.set("X-Accel-Buffering", "no");
+
+  // Send whitespace regularly during import so ExpressJS, nginx, and ELB
+  // don't time out.
+  const progress = () => res.write(" ");
+
+  const replyJson = (result: object) => {
+    res.write("\n");
+    res.write(JSON.stringify(result));
+    res.end();
+  };
+
+  return { progress, replyJson };
+}
+
+interface KeepAliveJson {
+  progress: () => void;
+  replyJson: (result: object) => void;
 }
 
 export interface ImportResult {

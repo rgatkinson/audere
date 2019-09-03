@@ -1,16 +1,10 @@
-// Copyright (c) 2019 by Audere
-//
-// Use of this source code is governed by an MIT-style license that
-// can be found in the LICENSE file distributed with this file.
-
 import React from "react";
 import { StyleSheet, View, StyleProp, ViewStyle, Platform } from "react-native";
-import { Address } from "../../store";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import NumberInput from "./NumberInput";
 import Text from "./Text";
 import TextInput from "./TextInput";
-import { states } from "../../resources/StatePickerConfig";
+
 import {
   BORDER_COLOR,
   ERROR_COLOR,
@@ -21,13 +15,11 @@ import {
   REGULAR_TEXT,
 } from "../styles";
 
-import ModalSelector from "react-native-modal-selector";
-
 interface Props {
   autoFocus?: boolean;
   shouldValidate: boolean;
-  value?: Address | null;
-  onChange(value: Address): void;
+  value?: any;
+  onChange(value: any): void;
   onSubmitEditing(): void;
 }
 
@@ -38,8 +30,7 @@ interface State {
 class AddressInput extends React.Component<Props & WithNamespaces, State> {
   lastName = React.createRef<TextInput>();
   address = React.createRef<TextInput>();
-  city = React.createRef<TextInput>();
-  stateProvince = React.createRef<TextInput>();
+  email = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
 
   constructor(props: Props & WithNamespaces) {
@@ -114,63 +105,35 @@ class AddressInput extends React.Component<Props & WithNamespaces, State> {
           {this.renderTextInput(
             t("lastName"),
             "lastName",
-            "address",
+            "email",
             true,
             styles.inputRowRight
           )}
         </View>
         {this.renderTextInput(
-          t("streetAddress"),
-          "address",
-          "city",
-          true,
-          styles.textInput
-        )}
-        {this.renderTextInput(
-          t("city"),
-          "city",
+          t("email"),
+          "email",
           "zipcode",
           true,
-          styles.textInput
+          styles.firstName,
+          false
         )}
-        <View style={{ flexDirection: "row" }}>
-          <View style={styles.pickerContainer}>
-            <ModalSelector
-              cancelContainerStyle={{ backgroundColor: "white" }}
-              data={states}
-              initValue={t("state")}
-              onChange={(option: any) => {
-                this.zipcode.current!.focus();
-                const address = this.props.value || {};
-                address.state = option.label;
-                this.props.onChange(address);
-                this.setState({ stateOpen: false });
-              }}
-              optionContainerStyle={{ backgroundColor: "white" }}
-              optionStyle={{ backgroundColor: "white" }}
-              optionTextStyle={{ color: TEXT_COLOR }}
-              selectStyle={styles.select}
-              selectTextStyle={styles.selectText}
-              style={{ alignSelf: "flex-start" }}
-              visible={this.state.stateOpen}
-            />
-          </View>
-          <NumberInput
-            maxDigits={5}
-            placeholder={t("zipcode")}
-            placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
-            ref={this.zipcode}
-            returnKeyType="done"
-            style={[styles.inputRowRight, styles.textInput]}
-            value={this.props.value ? this.props.value!.zipcode : undefined}
-            onChangeText={(text: string) => {
-              const address = this.props.value || {};
-              address.zipcode = text;
-              this.props.onChange(address);
-            }}
-            onSubmitEditing={this.props.onSubmitEditing}
-          />
-        </View>
+        <NumberInput
+          maxDigits={5}
+          placeholder={t("zipcode")}
+          placeholderTextColor={shouldValidate ? ERROR_COLOR : undefined}
+          ref={this.zipcode}
+          returnKeyType="done"
+          style={[styles.textInput]}
+          value={this.props.value ? this.props.value!.zipcode : undefined}
+          onChangeText={(text: string) => {
+            const address = this.props.value || {};
+            address.zipcode = text;
+            this.props.onChange(address);
+          }}
+          onSubmitEditing={this.props.onSubmitEditing}
+        />
+
         <Text
           content={
             this.props.value &&

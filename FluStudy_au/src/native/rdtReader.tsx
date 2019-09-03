@@ -11,6 +11,7 @@ type InternalRDTCapturedArgs = {
   img: string;
   resultWindowImg: string;
   passed: boolean;
+  testStripDetected: boolean;
   center: boolean;
   fiducial: boolean;
   sizeResult: RDTReaderSizeResult;
@@ -23,12 +24,14 @@ type InternalRDTCapturedArgs = {
   control: boolean;
   testA: boolean;
   testB: boolean;
+  boundary?: { x: number; y: number }[];
 };
 
 export type RDTCapturedArgs = {
   imgBase64: string;
   resultWindowImgBase64: string;
   testStripFound: boolean;
+  testStripDetected: boolean;
   fiducialFound: boolean;
   isCentered: boolean;
   sizeResult: RDTReaderSizeResult;
@@ -39,6 +42,7 @@ export type RDTCapturedArgs = {
   controlLineFound: boolean;
   testALineFound: boolean;
   testBLineFound: boolean;
+  testStripBoundary?: { x: number; y: number }[];
 };
 
 export type RDTCameraReadyArgs = {
@@ -56,6 +60,7 @@ type RDTReaderProps = {
   enabled: boolean;
   flashEnabled: boolean;
   showDefaultViewfinder?: boolean;
+  frameImageScale: number;
   appState: string;
   style: any;
 };
@@ -67,6 +72,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       imgBase64: capturedArgs.img,
       resultWindowImgBase64: capturedArgs.resultWindowImg,
       testStripFound: capturedArgs.passed,
+      testStripDetected: capturedArgs.testStripDetected,
       isCentered: capturedArgs.center,
       fiducialFound: capturedArgs.fiducial,
       sizeResult: capturedArgs.sizeResult,
@@ -77,6 +83,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       controlLineFound: capturedArgs.control,
       testALineFound: capturedArgs.testA,
       testBLineFound: capturedArgs.testB,
+      testStripBoundary: capturedArgs.boundary,
     });
   };
 

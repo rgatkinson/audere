@@ -2,10 +2,15 @@
 /**/local/
 /scripts/*-letsencrypt.tar.bz2
 /**/*.code-workspace
+/**/google-services.json
+/**/GoogleService-Info.plist
 /**/.idea/
 /**/*.iml
 /**/node_modules/
 /**/buildInfo.json
+/**/.project
+/**/.settings
+/**/.classpath
 /**/*.tfstate
 /**/*.tfstate.backup
 /**/*.tfstate.*.backup

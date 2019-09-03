@@ -7,7 +7,7 @@ import request from "supertest";
 import {
   DocumentType,
   VisitDocument,
-  VisitInfo
+  VisitInfo,
 } from "audere-lib/snifflesProtocol";
 import { createPublicApp } from "../../src/app";
 import {
@@ -19,7 +19,7 @@ import {
   documentContentsPost,
   documentContentsNonPII,
   documentContentsPII,
-  makeCSRUID
+  makeCSRUID,
 } from "../util/sample_data";
 import { createSplitSql } from "../../src/util/sql";
 import { defineSnifflesModels } from "../../src/models/db/sniffles";
@@ -42,7 +42,7 @@ describe("putDocument", () => {
 
     accessKey = await models.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
     done();
   });
@@ -81,7 +81,7 @@ describe("putDocument", () => {
       device: { info: "☢" },
       documentType: DocumentType.Visit,
       csruid,
-      visit: { data: "fakeVisitData" }
+      visit: { data: "fakeVisitData" },
     };
     const contentsBuffer = Buffer.from(JSON.stringify(contents));
 
@@ -116,7 +116,7 @@ describe("putDocument", () => {
       .expect(200);
 
     const visitNonPii = await models.visitNonPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(visitNonPii.csruid).toEqual(csruid);
     expect(visitNonPii.device).toEqual(contentsPost.device);
@@ -145,8 +145,8 @@ describe("putDocument", () => {
       ...contentsPost,
       visit: {
         ...VISIT_INFO,
-        patient: newPatient
-      }
+        patient: newPatient,
+      },
     };
 
     await request(publicApp)
@@ -155,7 +155,7 @@ describe("putDocument", () => {
       .expect(200);
 
     const newPIIVisit = await models.visitPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     const newVisitDoc = newPIIVisit.visit as VisitInfo;
     expect(newVisitDoc.patient.name).toEqual("New Fake Name");
@@ -163,7 +163,7 @@ describe("putDocument", () => {
     await newPIIVisit.destroy();
 
     const newNonPIIVisit = await models.visitNonPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(newNonPIIVisit.visit).toEqual(contentsNonPII.visit);
     await newNonPIIVisit.destroy();
@@ -191,7 +191,7 @@ describe("putDocument", () => {
     const where = { where: { csruid } };
     await Promise.all([
       models.visitNonPii.destroy(where),
-      models.visitPii.destroy(where)
+      models.visitPii.destroy(where),
     ]);
   });
 
@@ -240,7 +240,7 @@ describe("putDocumentWithKey", () => {
 
     const accessKey = await models.accessKey.create({
       key: "accesskey1",
-      valid: true
+      valid: true,
     });
 
     await request(publicApp)
@@ -249,12 +249,12 @@ describe("putDocumentWithKey", () => {
       .expect(200);
 
     const newVisitNonPII = await models.visitNonPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(newVisitNonPII).not.toBeNull();
 
     const newVisitPII = await models.visitPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(newVisitPII).not.toBeNull();
 
@@ -269,7 +269,7 @@ describe("putDocumentWithKey", () => {
 
     const accessKey = await models.accessKey.create({
       key: "accesskey2",
-      valid: true
+      valid: true,
     });
 
     await request(publicApp)
@@ -278,12 +278,12 @@ describe("putDocumentWithKey", () => {
       .expect(404);
 
     const newVisitNonPII = await models.visitNonPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(newVisitNonPII).toBeNull();
 
     const newVisitPII = await models.visitPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(newVisitPII).toBeNull();
 
@@ -298,7 +298,7 @@ describe("putDocumentWithKey", () => {
 
     const accessKey = await models.accessKey.create({
       key: "accesskey3",
-      valid: false
+      valid: false,
     });
 
     await request(publicApp)
@@ -307,12 +307,12 @@ describe("putDocumentWithKey", () => {
       .expect(404);
 
     const newVisitNonPII = await models.visitNonPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(newVisitNonPII).toBeNull();
 
     const newVisitPII = await models.visitPii.findOne({
-      where: { csruid }
+      where: { csruid },
     });
     expect(newVisitPII).toBeNull();
 

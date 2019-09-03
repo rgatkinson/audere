@@ -15,11 +15,11 @@ const FORMAT_WITH_TIMESTAMP = format.printf(
 const LOGGER_OPTIONS = isAWS()
   ? {
       level: "error",
-      format: FORMAT_WITH_TIMESTAMP
+      format: FORMAT_WITH_TIMESTAMP,
     }
   : {
       level: "debug",
-      format: FORMAT_WITH_TIMESTAMP
+      format: FORMAT_WITH_TIMESTAMP,
     };
 
 const logger = createLogger({
@@ -28,9 +28,9 @@ const logger = createLogger({
     new winston.transports.File({
       filename: "debug.log",
       level: "debug",
-      format: FORMAT_WITH_TIMESTAMP
-    })
-  ]
+      format: FORMAT_WITH_TIMESTAMP,
+    }),
+  ],
 });
 
 if (isAWS()) {
@@ -42,7 +42,7 @@ if (isAWS()) {
     new WinstonCloudWatch({
       logGroupName: "flu-" + awsEnv + "-api",
       logStreamName: "flu-api-instance",
-      awsRegion: "us-west-2"
+      awsRegion: "us-west-2",
     })
   );
 }

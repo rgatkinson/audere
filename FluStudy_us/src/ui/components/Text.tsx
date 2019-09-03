@@ -12,6 +12,7 @@ import {
   Text as SystemText,
   TextStyle,
   Image,
+  GestureResponderEvent,
 } from "react-native";
 import { Svg } from "expo";
 import { textActions } from "../../resources/TextConfig";
@@ -24,7 +25,7 @@ import {
   REGULAR_TEXT,
   TEXT_COLOR,
 } from "../styles";
-import i18next from "i18next";
+import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 interface Props {
   bold?: boolean;
@@ -34,7 +35,7 @@ interface Props {
   italic?: boolean;
   style?: StyleProp<TextStyle>;
   linkStyle?: StyleProp<TextStyle>;
-  onPress?: () => any;
+  onPress?: (event: GestureResponderEvent) => void;
 }
 
 interface LinkData {
@@ -72,6 +73,23 @@ function findMarkdownLinks(text: string): LinkData[] {
   return links;
 }
 
+const textActionLink = (link: LinkData, style?: StyleProp<TextStyle>) => {
+  const onPress = () => {
+    logFirebaseEvent(AppEvents.LINK_PRESSED, { link: link.title });
+    if (textActions.hasOwnProperty(link.url)) {
+      (textActions as any)[link.url](link.title);
+    } else {
+      Linking.openURL(link.url);
+    }
+  };
+
+  return (
+    <SystemText key={link.url} style={style} onPress={onPress}>
+      {link.title}
+    </SystemText>
+  );
+};
+
 function linkify(
   text: string,
   style?: StyleProp<TextStyle>
@@ -92,29 +110,7 @@ function linkify(
     }
 
     // Now the link itself
-    if (textActions.hasOwnProperty(link.url)) {
-      elements.push(
-        <SystemText
-          key={link.url}
-          style={style}
-          onPress={() => (textActions as any)[link.url]()}
-        >
-          {link.title}
-        </SystemText>
-      );
-    } else {
-      elements.push(
-        <SystemText
-          key={link.url}
-          style={style}
-          onPress={() => {
-            Linking.openURL(link.url);
-          }}
-        >
-          {link.title}
-        </SystemText>
-      );
-    }
+    elements.push(textActionLink(link, style));
 
     toProcess = toProcess.substr(link.startIndex + link.length);
   });
@@ -160,7 +156,7 @@ const circleConfigs: Map<string, CircleConfig> = new Map<string, CircleConfig>([
   ],
 ]);
 
-export default class Text extends React.Component<Props> {
+export default class Text extends React.PureComponent<Props> {
   _makeCircle(character: string) {
     const config = circleConfigs.get(character);
     if (config == null) {
@@ -221,32 +217,33 @@ export default class Text extends React.Component<Props> {
   }
 
   _makeBold(content: string, bold: boolean, contentKey: string) {
+    const { extraBold, linkStyle } = this.props;
     return bold ? (
       <SystemText
         key={contentKey + content}
-        style={this.props.extraBold ? styles.extraBold : styles.bold}
+        style={extraBold ? styles.extraBold : styles.bold}
       >
-        {linkify(content, this.props.linkStyle || styles.linkStyle)}
+        {linkify(content, linkStyle || styles.linkStyle)}
       </SystemText>
     ) : (
-      linkify(content, this.props.linkStyle || styles.linkStyle)
+      linkify(content, linkStyle || styles.linkStyle)
     );
   }
 
   render() {
-    const content = this.props.content;
+    const { bold, center, content, italic, style, onPress } = this.props;
     return (
       <SystemText
         selectable={true}
         style={[
           styles.text,
-          this.props.bold && styles.bold,
-          this.props.center && styles.center,
-          this.props.italic && styles.italic,
-          this.props.style,
+          bold && styles.bold,
+          center && styles.center,
+          italic && styles.italic,
+          style,
         ]}
-        onPress={this.props.onPress}
         accessibilityLabel={content}
+        onPress={onPress}
       >
         {content
           .split("**")
@@ -267,6 +264,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
+    lineHeight: 22,
   },
   extraBold: {
     fontFamily: FONT_EXTRA_BOLD,

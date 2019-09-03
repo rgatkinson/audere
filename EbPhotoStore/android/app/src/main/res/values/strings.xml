@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">EVD Track</string>
+    <string name="default_notification_channel_id">eb_photo_store</string>
 </resources>

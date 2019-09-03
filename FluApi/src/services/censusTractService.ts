@@ -52,7 +52,7 @@ export class CensusTractService {
     const result = await this.postGIS.query(dynamicQuery, {
       type: Sequelize.QueryTypes.SELECT,
       searchPath: "public, tiger",
-      supportsSearchPath: true
+      supportsSearchPath: true,
     });
 
     const tracts: Map<string, string> = new Map();

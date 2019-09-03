@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
+import { Platform } from "react-native";
 import {
   NavigationAction,
   NavigationActions,
@@ -13,78 +14,19 @@ import {
   createStackNavigator,
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
-import {
-  Why,
-  Age,
-  Symptoms,
-  AddressScreen,
-  AddressConfirm,
-  Consent,
-  ConsentIneligible,
-} from "./screens/ScreeningScreens";
-import {
-  WelcomeBack,
-  ScanInstructions,
-  Scan,
-  ManualEntry,
-  BarcodeContactSupport,
-  FirstTimer,
-  WhenSymptoms,
-  GeneralExposure,
-  ThankYouSurvey,
-  TestStripSurvey,
-  RDTInstructions,
-  RDTReader,
-  CameraSettings,
-  PictureInstructions,
-  TestStripCamera,
-  TestStripConfirmation,
-  SchedulePickup,
-  EmailOptIn,
-} from "./screens/SurveyScreens";
-import { Menu, generateMenuScreen } from "./screens/MenuScreens";
-import { menuScreens } from "../resources/MenuConfig";
-import {
-  simpleScreens,
-  generateSimpleScreen,
-} from "../resources/SimpleScreenConfig";
+import { Menu } from "./components/Menu";
+import { MenuScreens } from "../resources/MenuConfig";
+import { Screens } from "../resources/ScreenConfig";
+import { generateScreen } from "./components/Screen";
 
-const mainScreens = {
-  Why,
-  Age,
-  Symptoms,
-  Consent,
-  ConsentIneligible,
-  Address: AddressScreen,
-  AddressConfirm,
-  WelcomeBack,
-  ScanInstructions,
-  Scan,
-  ManualEntry,
-  BarcodeContactSupport,
-  FirstTimer,
-  WhenSymptoms,
-  GeneralExposure,
-  ThankYouSurvey,
-  TestStripSurvey,
-  RDTInstructions,
-  RDTReader,
-  CameraSettings,
-  PictureInstructions,
-  TestStripCamera,
-  TestStripConfirmation,
-  SchedulePickup,
-  EmailOptIn,
-};
-
-const homeRouteConfig = simpleScreens.reduce(
-  (homeRouteConfig, simpleScreenConfig) => ({
+const homeRouteConfig = Screens.reduce(
+  (homeRouteConfig, config) => ({
     ...homeRouteConfig,
-    [simpleScreenConfig.key]: {
-      screen: generateSimpleScreen(simpleScreenConfig),
+    [config.key]: {
+      screen: generateScreen(config),
     },
   }),
-  { ...mainScreens }
+  {}
 );
 
 const Home = createStackNavigator(homeRouteConfig, {
@@ -143,10 +85,10 @@ Home.router.getStateForAction = withNavigationPreventDuplicate(
   Home.router.getStateForAction
 );
 
-const routeConfig = menuScreens.reduce(
-  (routeConfig, menuConfig) => ({
+const routeConfig = MenuScreens.reduce(
+  (routeConfig, config) => ({
     ...routeConfig,
-    [menuConfig.key]: { screen: generateMenuScreen(menuConfig) },
+    [config.key]: { screen: generateScreen(config) },
   }),
   { Home }
 );
@@ -154,4 +96,7 @@ const routeConfig = menuScreens.reduce(
 export default createDrawerNavigator(routeConfig, {
   contentComponent: Menu,
   drawerPosition: "right",
+  // @ts-ignore
+  useNativeAnimations: Platform.OS === "ios", // Can't use on Android
+  drawerLockMode: "locked-open",
 });

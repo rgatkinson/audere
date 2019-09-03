@@ -40,7 +40,7 @@ describe("validateBarcodes", () => {
   it("returns valid", async () => {
     await cleanup(BARCODE);
     await barcodes.create({
-      barcode: BARCODE
+      barcode: BARCODE,
     });
 
     await request(publicApp)
@@ -54,8 +54,8 @@ describe("validateBarcodes", () => {
   async function cleanup(barcode: string) {
     await barcodes.destroy({
       where: {
-        barcode
-      }
+        barcode,
+      },
     });
   }
 });

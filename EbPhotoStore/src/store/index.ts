@@ -4,13 +4,14 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
+  applyMiddleware,
   createStore,
   combineReducers,
   Store,
   Middleware,
   Dispatch,
   AnyAction,
-  MiddlewareAPI
+  MiddlewareAPI,
 } from "redux";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
@@ -26,16 +27,26 @@ export * from "./meta";
 import { default as patients, PatientAction } from "./patients";
 export * from "./patients";
 
+import { default as photoUploads, PhotoUploadAction } from "./photoUploads";
+export * from "./photoUploads";
+
+import { uploaderMiddleware } from "./uploader";
+
 type ClearStateAction = { type: "CLEAR_STATE" };
 export function clearState(): ClearStateAction {
   return { type: "CLEAR_STATE" };
 }
 
-export type Action = MetaAction | PatientAction | ClearStateAction;
+export type Action =
+  | MetaAction
+  | PatientAction
+  | ClearStateAction
+  | PhotoUploadAction;
 
 const reducer = combineReducers({
   meta,
-  patients
+  patients,
+  photoUploads,
 });
 
 const rootReducer = (state: StoreState | undefined, action: Action) => {
@@ -62,9 +73,13 @@ async function getStoreImpl() {
   const persistConfig = {
     transforms: [immutableTransform()],
     key: "store",
-    storage
+    storage,
   };
-  return createStore(persistReducer(persistConfig, rootReducer));
+  const store = await createStore(
+    persistReducer(persistConfig, rootReducer),
+    applyMiddleware(uploaderMiddleware)
+  );
+  return store;
 }
 
 export async function getPersistor() {

@@ -1,0 +1,39 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# expo
+.expo/
+
+# dependencies
+/node_modules
+
+# misc
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.DS_Store
+
+#Jest
+.jest/
+
+.gradle
+android/app/build
+android/local.properties
+ios/Pods
+xcuserdata
+ios/fluathome/Supporting/EXBuildConstants.*
+android/app/src/main/java/host/exp/exponent/generated/DetachBuildConstants.java
+
+# fastlane generated files
+ios/fastlane/README.md 
+ios/fastlane/report.xml
+ios/fluathome.ipa
+ios/fluathome.app.dSYM.zip
+android/fastlane/README.md
+android/fastlane/report.xml

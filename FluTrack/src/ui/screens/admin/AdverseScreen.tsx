@@ -91,9 +91,7 @@ class AdverseScreen extends React.Component<Props & ReduxWriterProps> {
     } else {
       Alert.alert(
         "Submit?",
-        `No adverse events will be recorded for this collection for ${
-          this.props.name
-        }.`,
+        `No adverse events will be recorded for this collection for ${this.props.name}.`,
         [
           {
             text: "Cancel",

@@ -144,9 +144,7 @@ class SettingsScreen extends React.Component<Props & ReduxWriterProps> {
         : 0;
       const specimensPlural = numSpecimens == 1 ? "" : "s";
       const giftCardsPlural = numGiftCards == 1 ? "" : "s";
-      return ` (${
-        this.props.form.name
-      }: ${numSpecimens} specimen${specimensPlural}, ${numGiftCards} gift card${giftCardsPlural})`;
+      return ` (${this.props.form.name}: ${numSpecimens} specimen${specimensPlural}, ${numGiftCards} gift card${giftCardsPlural})`;
     } else {
       return "";
     }

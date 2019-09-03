@@ -12,45 +12,67 @@ import {
   Text as SystemText,
   TextStyle,
   Image,
-  GestureResponderEvent
+  GestureResponderEvent,
 } from "react-native";
 import {
   FONT_BOLD,
-  FONT_EXTRA_BOLD,
-  FONT_ITALIC,
   FONT_NORMAL,
   LINK_COLOR,
   REGULAR_TEXT,
-  TEXT_COLOR
+  TEXT_COLOR,
 } from "../styles";
 
 interface Props {
   bold?: boolean;
   center?: boolean;
   content: string;
-  extraBold?: boolean;
+  ellipsizeMode?: any;
   italic?: boolean;
+  numberOfLines?: number;
   style?: StyleProp<TextStyle>;
   onPress?: (event: GestureResponderEvent) => void;
 }
 
 export default class Text extends React.PureComponent<Props> {
+  _makeBold(content: string, bold: boolean, index: number) {
+    return bold ? (
+      <SystemText key={index + content} style={styles.bold}>
+        {content}
+      </SystemText>
+    ) : (
+      content
+    );
+  }
+
   render() {
-    const { bold, center, content, italic, style, onPress } = this.props;
+    const {
+      bold,
+      center,
+      content,
+      ellipsizeMode,
+      italic,
+      numberOfLines,
+      style,
+      onPress,
+    } = this.props;
     return (
       <SystemText
+        accessibilityLabel={content}
+        ellipsizeMode={ellipsizeMode}
+        numberOfLines={numberOfLines}
         selectable={true}
         style={[
           styles.text,
           bold && styles.bold,
           center && styles.center,
           italic && styles.italic,
-          style
+          style,
         ]}
-        accessibilityLabel={content}
         onPress={onPress}
       >
-        {content}
+        {content
+          .split("**")
+          .map((str, i) => this._makeBold(str, i % 2 == 1, i))}
       </SystemText>
     );
   }
@@ -58,25 +80,22 @@ export default class Text extends React.PureComponent<Props> {
 
 const styles = StyleSheet.create({
   bold: {
-    fontFamily: FONT_BOLD
+    fontWeight: "bold",
   },
   center: {
-    textAlign: "center"
+    textAlign: "center",
   },
   text: {
     color: TEXT_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
-    lineHeight: 22
-  },
-  extraBold: {
-    fontFamily: FONT_EXTRA_BOLD
+    lineHeight: 22,
   },
   italic: {
-    fontFamily: FONT_ITALIC
+    fontStyle: "italic",
   },
   linkStyle: {
     color: LINK_COLOR,
-    fontFamily: FONT_BOLD
-  }
+    fontFamily: FONT_BOLD,
+  },
 });

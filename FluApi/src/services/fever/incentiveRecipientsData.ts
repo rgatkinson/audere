@@ -7,7 +7,7 @@ import { SurveyCompleteDataAccess } from "./surveyCompleteData";
 import {
   BatchAttributes,
   BatchDiscardAttributes,
-  BatchItemAttributes
+  BatchItemAttributes,
 } from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";

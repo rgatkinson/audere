@@ -39,15 +39,11 @@ setenv: &setenv
     if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
       export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
       case "$PRODUCT" in
-        sniffles)
+        "sniffles")
           export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
           export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
           ;;
-        fever)
-          export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
-          export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
-          ;;
-        cough)
+        "fever"|"cough"|"chills")
           export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
           export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
           ;;
@@ -78,11 +74,28 @@ set_firebase_config: &set_firebase_config
           echo "$COUGH_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
           echo "$COUGH_STAGING_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
         fi
+        grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
+        ;;
+      chills) 
+        if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+          echo "$CHILLS_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+          echo "$CHILLS_PROD_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
+        else 
+          echo "$CHILLS_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+          echo "$CHILLS_STAGING_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
+        fi
+        grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
+        ;;
+      rash)
+        if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
+          echo "$RASH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+        else 
+          echo "$RASH_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
+        fi
         ;;
       *) echo 1>&2 "Unsupported product '$PRODUCT' for set_firebase_config"; false;;
     esac
     grep project_id android/app/google-services.json
-    grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
 
 version: 2
 jobs:
@@ -97,11 +110,15 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "FluTrack/package.json" }}
       - restore_cache:
+          key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
+      - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
       - restore_cache:
-          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }}
+          key: chills-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
+      - restore_cache:
+          key: cough-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
       - run:
           name: FluTrack Yarn Install
           command: |
@@ -113,8 +130,33 @@ jobs:
               echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
               false
             fi
+            ../scripts/generate-build-info FluTrack
       - run:
-          name: flu@home Yarn Install
+          name: Chills Yarn Install
+          command: |
+            cd FluStudy_us
+            yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Chills Tests
+          command: |
+            ./scripts/generate-build-info FluStudy_us
+            cd FluStudy_us
+            ./scripts/build-hacks 
+            yarn typecheck
+            yarn test
+      - save_cache:
+          key: chills-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
+          paths:
+            - FluStudy_us/android/openCVLibrary341-contrib
+            - FluStudy_us/android/app/src/main/jniLibs
+      - run:
+          name: Cough Yarn Install
           command: |
             cd FluStudy_au
             yarn install
@@ -125,14 +167,7 @@ jobs:
               false
             fi
       - run:
-          name: FluTrack Tests
-          command: |
-            ./scripts/generate-build-info FluTrack
-            cd FluTrack
-            yarn typecheck
-            yarn test
-      - run:
-          name: flu@home Tests
+          name: Cough Tests
           command: |
             ./scripts/generate-build-info FluStudy_au
             cd FluStudy_au
@@ -140,7 +175,7 @@ jobs:
             yarn typecheck
             yarn test
       - save_cache:
-          key: cough-android-opencv-contrib-{{ checksum "FluStudy_au/scripts/build-hacks" }}
+          key: cough-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
           paths:
             - FluStudy_au/android/openCVLibrary341-contrib
             - FluStudy_au/android/app/src/main/jniLibs
@@ -238,6 +273,8 @@ jobs:
       - restore_cache:
           key: app-node-cache-{{ checksum "FluTrack/package.json" }}
       - restore_cache:
+          key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
+      - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
@@ -267,7 +304,32 @@ jobs:
               snyk test --org=auderenow --severity-threshold=high
             fi
       - run:
-          name: flu@home Yarn Install
+          name: Chills Yarn Install
+          command: |
+            cd FluStudy_us
+            yarn install
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Snyk Chills Scan
+          command: |
+            cd FluStudy_us
+            yarn list --json > ~/current_packages
+            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
+            git show $(git merge-base HEAD origin/master):./package.json > package.json
+            yarn list --json > ~/master_packages
+            if cmp --silent ~/{current,master}_packages; then
+              echo "No new packages have been added to yarn.lock."
+            else
+              sudo npm install -g snyk
+              snyk test --org=auderenow --severity-threshold=high
+            fi
+      - run:
+          name: Cough Yarn Install
           command: |
             cd FluStudy_au
             yarn install
@@ -278,7 +340,7 @@ jobs:
               false
             fi
       - run:
-          name: Snyk flu@home Scan
+          name: Snyk Cough Scan
           command: |
             cd FluStudy_au
             yarn list --json > ~/current_packages
@@ -320,6 +382,10 @@ jobs:
           key: app-node-cache-{{ checksum "FluTrack/package.json" }}
           paths:
             - FluTrack/node_modules
+      - save_cache:
+          key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
+          paths:
+            - FluStudy_us/node_modules
       - save_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
@@ -436,12 +502,25 @@ jobs:
           command: |
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
       - restore_cache:
+          key: fluathome-gems-{{ checksum "ios/Gemfile.lock" }}
+      - run:
+          name: Bundle install
+          command: |
+            ls -l vendor/bundle
+            cd ios
+            bundle install --path ../vendor/bundle
+      - save_cache:
+          key: fluathome-gems-{{ checksum "ios/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - restore_cache:
           key: athome-prod-pod-cache-{{ checksum "ios/Podfile.lock" }}
       - run:
           name: flu@home pod install
           command: |
             cd ios
-            pod install
+            bundle exec pod --version
+            bundle exec pod install
       - save_cache:
           key: athome-prod-pod-cache-{{ checksum "ios/Podfile.lock" }}
           paths:
@@ -456,33 +535,14 @@ jobs:
           name: flu@home Tests
           command: |
             yarn test
-      - restore_cache:
-          key: 1-gems-{{ checksum "ios/Gemfile.lock" }}
-      - run:
-          name: Bundle install
-          command: |
-            cd ios
-            bundle install --path vendor/bundle
-      - save_cache:
-          key: 1-gems-{{ checksum "ios/Gemfile.lock" }}
-          paths:
-            - vendor/bundle
       - run: *setenv
-      - run:
-          name: "Install React Native dependencies"
-          command: |
-            brew update
-            brew install watchman
       - run:
           name: Setup Expo and expo publish
           command: |
-            watchman watch-del-all
-            rm -rf $TMPDIR/metro-*
-            rm -rf $TMPDIR/haste-map-*
             yarn global add expo-cli
             export PATH="$PATH:$(yarn global bin)" 
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            expo publish
+            expo publish --non-interactive
       - run:
           name: Fastlane
           command: |
@@ -564,14 +624,7 @@ jobs:
             cd android
             bundle exec fastlane internal
       - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
-      - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk
-      - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-x86_64-release.apk
-      - store_artifacts:
-          path: /tmp/repo/FluStudy_au/android/app/build/outputs/apk/release/app-x86-release.apk
-
+          path: android/app/build/outputs/bundle/release
 
   build_deploy_fever:
     working_directory: ~/repo/FluStudy_us
@@ -588,6 +641,76 @@ jobs:
   build_deploy_cough_android:
     working_directory: /tmp/repo/FluStudy_au
     <<: *build_deploy_fluathome_android
+
+  build_deploy_chills:
+    working_directory: ~/repo/FluStudy_us
+    <<: *build_deploy_fluathome
+
+  build_deploy_chills_android:
+    working_directory: /tmp/repo/FluStudy_us
+    <<: *build_deploy_fluathome_android
+
+  build_deploy_rash: &build_deploy_rash
+    environment:
+      <<: *const
+    working_directory: /tmp/repo/EbPhotoStore
+    docker:
+      - image: circleci/android:api-28-node
+    steps:
+      - checkout:
+          path: /tmp/repo
+      - restore_cache:
+          key: rash-node-cache-{{ checksum "package.json" }}
+      - run:
+          name: Rash Yarn Install
+          command: |
+            yarn install
+      - save_cache:
+          key: rash-node-cache-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+      - run: *set_firebase_config
+      - run:
+          name: Run setup scripts
+          command: |
+            ../scripts/generate-build-info `basename "$PWD"`
+            ./scripts/build-hacks
+      - restore_cache:
+          key: gradlejars-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
+      - run:
+          name: Download Android dependencies
+          command: |
+            cd android
+            ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: gradlejars-{{ checksum "android/build.gradle" }}-{{ checksum "android/app/build.gradle" }}
+      - restore_cache:
+          key: 1-gems-android-{{ checksum "android/Gemfile.lock" }}
+      - run:
+          name: Bundle install
+          command: |
+            cd android
+            bundle install --path vendor/bundle
+      - save_cache:
+          key: 1-gems-android-{{ checksum "android/Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Prepare signing artifacts
+          command: |
+            cd android
+            echo "$FEVER_SIGNING_STORE_ENCRYPTED" | base64 --decode | tee keystore.jks app/keystore.jks >/dev/null
+            echo "export FEVER_SIGNING_STORE_FILE=keystore.jks" >> $BASH_ENV
+            echo "$GOOGLE_PLAY_KEY_JSON" > google_play_key.json
+      - run:
+          name: Fastlane
+          command: |
+            cd android
+            bundle exec fastlane internal
+      - store_artifacts:
+          path: /tmp/repo/EbPhotoStore/android/app/build/outputs/bundle/release
 
 workflows:
   version: 2

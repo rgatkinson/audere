@@ -6,11 +6,11 @@
 import { Op } from "sequelize";
 import {
   EncounterDetailsService,
-  Release
+  Release,
 } from "../../src/services/encounterDetailsService";
 import {
   defineSnifflesModels,
-  SnifflesModels
+  SnifflesModels,
 } from "../../src/models/db/sniffles";
 import { createSplitSql, SplitSql } from "../../src/util/sql";
 import { defineHutchUpload } from "../../src/models/db/hutchUpload";
@@ -18,7 +18,7 @@ import {
   documentContentsNonPII,
   documentContentsPII,
   BED_ASSIGNMENT_RESPONSE_ITEM,
-  PII_RESPONSE_ITEM
+  PII_RESPONSE_ITEM,
 } from "../util/sample_data";
 import { FeverModels, defineFeverModels } from "../../src/models/db/fever";
 import _ from "lodash";
@@ -67,7 +67,7 @@ describe("encounterDetailsService", () => {
       const docNonPII = documentContentsNonPII("fakecsruid1");
       docNonPII.visit = {
         ...docNonPII.visit,
-        events: []
+        events: [],
       };
       const docPII = documentContentsPII("fakecsruid1");
       const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
@@ -87,7 +87,7 @@ describe("encounterDetailsService", () => {
       const docNonPII = documentContentsNonPII("fakecsruid2");
       docNonPII.visit = {
         ...docNonPII.visit,
-        samples: []
+        samples: [],
       };
       const docPII = documentContentsPII("fakecsruid2");
       const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
@@ -173,7 +173,7 @@ describe("encounterDetailsService", () => {
       const docNonPII = documentContentsNonPII("fakecsruid1");
       docNonPII.visit = {
         ...docNonPII.visit,
-        events: []
+        events: [],
       };
       const docPII = documentContentsPII("fakecsruid1");
       docPII.visit = {
@@ -184,10 +184,10 @@ describe("encounterDetailsService", () => {
             item: [
               ...docPII.visit.responses[0].item,
               BED_ASSIGNMENT_RESPONSE_ITEM,
-              PII_RESPONSE_ITEM
-            ]
-          }
-        ]
+              PII_RESPONSE_ITEM,
+            ],
+          },
+        ],
       };
       const visitNonPII = await snifflesModels.visitNonPii.create(docNonPII);
       const visitPII = await snifflesModels.visitPii.create(docPII);
@@ -285,13 +285,13 @@ describe("encounterDetailsService", () => {
       nonPIISurvey.survey.events.push({
         kind: EventInfoKind.Interaction,
         at: moment().toISOString(),
-        refId: "A"
+        refId: "A",
       });
 
       nonPIISurvey.survey.events.push({
         kind: EventInfoKind.AppNav,
         at: moment().toISOString(),
-        refId: "B"
+        refId: "B",
       });
 
       nonPII.push((await feverModels.surveyNonPii.create(nonPIISurvey)).id);
@@ -316,8 +316,8 @@ describe("encounterDetailsService", () => {
       PIISurvey.survey.patient.telecom = [
         {
           system: TelecomInfoSystem.Email,
-          value: "me@mail.com"
-        }
+          value: "me@mail.com",
+        },
       ];
 
       nonPII.push((await feverModels.surveyNonPii.create(nonPIISurvey)).id);
@@ -339,8 +339,8 @@ describe("encounterDetailsService", () => {
           care___7: 0,
           care___8: 0,
           care_other: undefined,
-          found_study: 3
-        }
+          found_study: 3,
+        },
       };
 
       await feverModels.followUpSurveys.create(followUp);

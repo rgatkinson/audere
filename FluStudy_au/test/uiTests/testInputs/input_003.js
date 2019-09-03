@@ -7,8 +7,8 @@ import strings from "../../../src/i18n/locales/en.json";
 
 export const inputs = {
   [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.no,
+  InvalidBarcodes: ["1234567", "123456789", "111", "222"],
   [strings.barcode.placeholder]: "00300300",
-  [strings.barcode.secondPlaceholder]: "00300300",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.fatigue,
     strings.surveyOption.runningNose,
@@ -45,6 +45,7 @@ export const inputs = {
     strings.surveyOption.southOrCentralAmerican,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
-  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesBelowBlue + " ?",
+  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesBelowBlue,
+  [strings.surveyTitle.numLinesSeen]: strings.surveyButton.threeLines,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.confusingNotCorrect,
 };

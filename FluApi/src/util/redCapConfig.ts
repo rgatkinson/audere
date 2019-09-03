@@ -29,13 +29,13 @@ async function createConfig(secrets: SecretConfig): Promise<REDCapConfig> {
     followUpSurveyToken,
     apiUrl,
     homeDataReportId,
-    surveyDataReportId
+    surveyDataReportId,
   ] = await Promise.all([
     secrets.get("REDCAP_KIT_PROCESSING_TOKEN"),
     secrets.get("REDCAP_FOLLOW_UPS_TOKEN"),
     secrets.get("REDCAP_API_URL"),
     secrets.get("REDCAP_HOME_DATA_REPORT_ID"),
-    secrets.get("REDCAP_SURVEY_DATA_REPORT_ID")
+    secrets.get("REDCAP_SURVEY_DATA_REPORT_ID"),
   ]);
 
   return {
@@ -43,6 +43,6 @@ async function createConfig(secrets: SecretConfig): Promise<REDCapConfig> {
     followUpSurveyToken,
     apiUrl,
     homeDataReportId,
-    surveyDataReportId
+    surveyDataReportId,
   };
 }

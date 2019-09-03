@@ -46,8 +46,9 @@ class WelcomeScreen extends React.Component<Props & WithNamespaces> {
       <ScreenContainer>
         <ContentContainer>
           <Title size="large" label={t("welcomeTo")} />
-          {locationType !== "publicSpace" &&
-            locationType !== "port" && <Text content={t("theGoal")} />}
+          {locationType !== "publicSpace" && locationType !== "port" && (
+            <Text content={t("theGoal")} />
+          )}
           <Text content={t("participationRequirements")} />
           <Button
             enabled={true}

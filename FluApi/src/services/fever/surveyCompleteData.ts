@@ -7,7 +7,7 @@ import { PIIInfo, SurveyNonPIIDbInfo } from "audere-lib/feverProtocol";
 import {
   BatchItem,
   SurveyBatchDataAccess,
-  BatchItemWithCsruid
+  BatchItemWithCsruid,
 } from "./surveyBatchData";
 import {
   BatchAttributes,
@@ -16,7 +16,7 @@ import {
   SurveyAttributes,
   FeverModels,
   defineFeverModels,
-  ReceivedKitAttributes
+  ReceivedKitAttributes,
 } from "../../models/db/fever";
 import { GaplessSeqAttributes } from "../../models/db/gaplessSeq";
 import { Model, SplitSql } from "../../util/sql";
@@ -54,13 +54,13 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
     this.fever.surveyNonPii.hasOne(this.itemModel, {
       foreignKey: "surveyId",
       as: "items",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
 
     this.fever.surveyNonPii.hasOne(this.fever.receivedKit, {
       foreignKey: "surveyId",
       as: "received",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
   }
 
@@ -71,16 +71,16 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
           isDemo: false,
           workflow: {
             surveyCompletedAt: {
-              [Sequelize.Op.ne]: null
-            }
-          }
-        }
+              [Sequelize.Op.ne]: null,
+            },
+          },
+        },
       };
     } else {
       return {
         survey: {
-          isDemo: false
-        }
+          isDemo: false,
+        },
       };
     }
   }
@@ -118,24 +118,24 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
     if (items != null) {
       filter = {
         ...filter,
-        ...{ id: items.map(x => x.surveyId) }
+        ...{ id: items.map(x => x.surveyId) },
       };
     } else {
       filter = {
         ...filter,
-        ...{ "$items.surveyId$": null }
+        ...{ "$items.surveyId$": null },
       };
     }
 
     const surveys = await this.fever.surveyNonPii.findAll({
       where: {
-        ...filter
+        ...filter,
       },
       include: [
         {
           model: this.itemModel,
           as: "items",
-          required: false
+          required: false,
         },
         {
           model: this.fever.receivedKit,
@@ -143,12 +143,12 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
           required: this.requireReceivedKit,
           where: {
             fileId: {
-              [Sequelize.Op.ne]: null
-            }
-          }
-        }
+              [Sequelize.Op.ne]: null,
+            },
+          },
+        },
       ],
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
     });
 
     // Need to cast the result object to access joined data
@@ -168,7 +168,7 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
           boxBarcode:
             swk.received != null ? swk.received.boxBarcode : undefined,
           dateReceived:
-            swk.received != null ? swk.received.dateReceived : undefined
+            swk.received != null ? swk.received.dateReceived : undefined,
         };
 
         if (items != null) {
@@ -198,8 +198,8 @@ export abstract class SurveyCompleteDataAccess extends SurveyBatchDataAccess<
     return await this.fever.surveyPii.findAll({
       where: {
         ...filter,
-        csruid: csruids
-      }
+        csruid: csruids,
+      },
     });
   }
 }

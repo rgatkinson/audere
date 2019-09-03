@@ -9,7 +9,7 @@ import {
   SplitSql,
   integerColumn,
   unique,
-  nullable
+  nullable,
 } from "../../util/sql";
 import { Sequelize } from "sequelize";
 
@@ -30,6 +30,6 @@ export function defineHutchUploadSequelize(
 ): HutchUploadModel {
   return defineModel<HutchUploadAttributes>(sequelize, "hutch_upload", {
     visitId: nullable(unique(integerColumn("visit_id"))),
-    surveyId: nullable(unique(integerColumn("survey_id")))
+    surveyId: nullable(unique(integerColumn("survey_id"))),
   });
 }

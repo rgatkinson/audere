@@ -4,16 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  ImageBackground,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
 import { NavigationScreenProp } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { StoreState } from "../../store";
 import Text from "./Text";
 import {
   GUTTER,
@@ -21,7 +17,6 @@ import {
   STATUS_BAR_HEIGHT,
   SYSTEM_FONT,
   SYSTEM_TEXT,
-  SPLASH_IMAGE,
 } from "../styles";
 
 interface Props {
@@ -29,10 +24,17 @@ interface Props {
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
-  onBack?: () => any;
 }
 
 class NavigationBar extends React.Component<Props & WithNamespaces> {
+  shouldComponentUpdate(props: Props & WithNamespaces) {
+    return (
+      props.demoMode != this.props.demoMode ||
+      props.hideBackButton != this.props.hideBackButton ||
+      props.menuItem != this.props.menuItem
+    );
+  }
+
   _debounce = 0;
 
   _goHome = () => {
@@ -49,11 +51,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
       this._debounce = 0;
     }, 1000);
 
-    if (this.props.onBack != null) {
-      this.props.onBack();
-    } else {
-      this.props.navigation.pop();
-    }
+    this.props.navigation.pop();
   };
 
   _onMenu = () => {
@@ -61,13 +59,13 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { t } = this.props;
+    const { demoMode, hideBackButton, menuItem } = this.props;
     return (
       <View style={styles.container}>
-        {this.props.demoMode && <View style={styles.demoView} />}
-        {!!this.props.hideBackButton ? (
+        {demoMode && <View style={styles.demoView} />}
+        {!!hideBackButton ? (
           <View style={{ width: 30 }} />
-        ) : !!this.props.menuItem ? (
+        ) : !!menuItem ? (
           <TouchableOpacity
             style={styles.actionContainer}
             onPress={this._goHome}
@@ -85,7 +83,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
         <Text
           style={styles.title}
           center={true}
-          content={this.props.demoMode ? "Demo Mode" : "flu@home"}
+          content={demoMode ? "Demo Mode" : "flu@home"}
         />
         <TouchableOpacity style={styles.actionContainer} onPress={this._onMenu}>
           <Feather color="white" name={"menu"} size={30} />
@@ -101,8 +99,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   demoView: {
-    backgroundColor: "green",
-    opacity: 0.5,
+    backgroundColor: "rgba(1, 128, 1, 0.5)",
     paddingTop: STATUS_BAR_HEIGHT,
     position: "absolute",
     top: 0,
@@ -113,7 +110,6 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    backgroundColor: "transparent",
     flexDirection: "row",
     height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
     justifyContent: "space-between",
@@ -129,4 +125,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default withNamespaces("navigationBar")(NavigationBar);
+export default connect((state: StoreState) => ({
+  demoMode: state.meta.isDemo,
+}))(withNamespaces()(NavigationBar));

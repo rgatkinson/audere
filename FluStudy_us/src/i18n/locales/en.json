@@ -6,48 +6,38 @@
       "select": "Select",
       "cancel": "Cancel",
       "submit": "Submit",
+      "tryAgain": "Try Again",
       "done": "Done",
+      "back": "Back",
       "next": "Next",
-      "getStarted": "Get Started",
       "ok": "Ok",
       "yes": "Yes",
       "no": "No"
-    },
-    "tab": {
-      "Home": "Home",
-      "Admin": "Admin"
-    },
-    "placeholder": {
-      "enterEmail": "Your email address",
-      "emailEx": "e.g. joe@gmail.com"
     },
     "notifications": {
       "title": "Timer is complete!",
       "oneMinuteStartTime": "Next you'll remove your swab from the tube.",
       "tenMinuteStartTime": "Next you'll remove your test strip from the tube.",
       "connectionErrorTitle": "Connection Error",
-      "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and press Try again.",
-      "dataUploadTitle": "Connect to upload data",
-      "dataUploadDesc": "We could not connect to upload data needed to process your gift card. Once you are connected please come back to the app and click **Try again**."
-    },
-    "validationErrors": {
-      "email": "* Please provide a valid email address",
-      "whereKit": "* Please select where you got the kit",
-      "zipcode": "* Please provide a 5-digit zipcode"
+      "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\""
     },
     "device": {
       "handset": "phone",
       "tablet": "iPad",
       "unknown": "device"
     },
-    "giftCardAmount": "$25",
-    "menu": {
-      "about": "ABOUT FLU@HOME",
-      "help": "HELP & SUPPORT"
+    "testResult": {
+      "desc": "Your test strip indicates you may be:",
+      "positive": "**POSITIVE** for **INFLUENZA**",
+      "negative": "**NEGATIVE** for **INFLUENZA**",
+      "whyTitle": "**Why did I get this result?**",
+      "blueLine": "A blue line in the middle of your test strip",
+      "positive++WhatToDo": "**What should I do if my test is positive?**\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
+      "negative++WhatToDo": "**What should I do if my test is negative?**\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
+      "whatToDoCommon": "Most people with flu or other respiratory viruses will get better over a few days, but sometimes flu can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. For more information on the flu, visit:\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
+      "urgeToContinue": "Please tap 'Continue' below to complete the final steps.",
+      "disclaimer": "**Medical Disclaimer:**\n\nThis app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom."
     }
-  },
-  "step": {
-    "step": "**Step {{step}}** of {{total}}"
   },
   "monthPicker": {
     "selectDate": "Select date",
@@ -64,46 +54,63 @@
     "november": "November",
     "december": "December"
   },
-
-  "navigationBar": {
-    "back": "Back",
-    "next": "Next"
-  },
   "pushNotificationModal": {
     "pushNotificationTitle": "May we send you notifications?",
     "pushNotificationBody": "We will notify you when timers are complete so you know to return to the flu@home app"
   },
-  "addressInput": {
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "required": " (required)",
-    "locationName": "Location name or neighborhood",
-    "streetAddress": "Street Address",
-    "city": "City",
-    "state": "State",
-    "stateProvince": "State/Province",
-    "zipcode": "Zip Code",
-    "postalCode": "Postal Code",
-    "country": "Country"
+  "PushNotifications": {
+    "followUpSurveyBody": "Your feedback is very important to the flu@home study. Please tap here to take our follow-up survey."
   },
-  "optionList": {
-    "pleaseSpecify": "Please specify:"
+  "SurveyLinkBlock": {
+    "title": "**Take the follow-up survey!**",
+    "body": "If you haven't done so already, please tap here to be directed to our follow-up survey.",
+    "link": "**Go to survey >**"
+  },
+  "relaunch": {
+    "returningOrNewTitle": "Are you returning to the app or are you a new user?",
+    "returningOrNewBody": "Selecting \"New User\" will reset the flu@home app to start over.",
+    "button": {
+      "newUser": "New User",
+      "returningUser": "Returning User"
+    }
   },
   "menu": {
-    "aboutFluAtHome": "ABOUT FLU@HOME",
-    "helpAndSupport": "HELP & SUPPORT"
-  },
-  "About": {
-    "title": "About the Study",
-    "description": "The goal of this study is to determine if you can test yourself for influenza (the 'flu') at home. The first test involves taking a swab from inside your nose, swishing that swab in a tube of liquid, putting a test strip in the tube for 10 minutes, and then removing it and telling us what you see on the test strip. The second test is just taking a swab from inside your nose and putting that swab in a tube of liquid. As one of the first people to try these tests, you'll play an important role in helping us find ways to better manage and understand the flu in the future.\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the flu@home app."
+    "fluAtHomeHelp": "FLU@HOME HELP"
   },
   "Funding": {
-    "title": "Study Funding",
-    "description": "The flu@home app is developed, operated, and owned by Audere. For questions about the app, please email **[flu-support@auderenow.org](mailto:flu-support@auderenow.org)**.\n\nThe flu study is funded by the Brotman Baty Institute at the University of Washington."
+    "title": "Study Funding & Partners",
+    "description": "This app is developed, operated, and owned by Audere, a non-profit organization in the United States.\n\nThis study is funded by Audere and the Brotman Baty Institute in the United States. It is conducted in association with the University of Adelaide in Australia and the University of Washington in the United States. For more information, visit [www.fluathome.org.au](http://fluathome.org.au).\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the app."
   },
-  "Partners": {
-    "title": "Partners",
-    "description": "This study is funded by the Brotman Baty Institute and is being conducted by the University of Washington in conjunction with Fred Hutch."
+  "Report": {
+    "title": "Report a Complaint",
+    "description": "**What if I have a complaint or any concerns?**\n\nThe study has been approved by the Human Research Ethics Committee at the University of Adelaide (approval number H-2019-116). This research project will be conducted according to the NHMRC National Statement on Ethical Conduct in Human Research 2007 (Updated 2018).\n\nIf you have questions or problems associated with the practical aspects of your participation in the project, or wish to raise a concern or complaint about the project, then you should consult the Principal Investigator, Dr. Nigel Stocks at [nigel.stocks@adelaide.edu.au](mailto:nigel.stocks@adelaide.edu.au).\n\nIf you wish to speak with an independent person regarding concerns or a complaint, the University's policy on research involving human participants, or your rights as a participant, please contact the Human Research Ethics Committee's Secretariat on:\n\n**Phone:** [+61 8 8313 6028](PHONE)\n\n**Email:** [hrec@adelaide.edu.au](mailto:hrec@adelaide.edu.au)\n\nPost: Level 4, Rundle Mall Plaza, 50 Rundle Mall, Adelaide SA 5000\n\nAny complaint or concern will be treated in confidence and fully investigated. You will be informed of the outcome."
+  },
+  "GeneralQuestions": {
+    "title": "FAQ",
+    "whyStudy": "**Why are you conducting this study?**",
+    "whyStudy++Answer": "The goal of this study is to understand if people who are sick should test themselves at home for the flu. As one of the first to try it, you'll play an important role in helping us find ways to manage flu symptoms in the future.",
+    "whoEligible": "**Who is eligible to participate in the study?**",
+    "whoEligible++Answer": "Individuals who live in Australia, are 18 years of age or older, and visit a GP participating in the ASPREN study who determines you are experiencing cold or flu-like symptoms.",
+    "howSoon": "**How soon after receiving the test kit should I perform the test?**",
+    "howSoon++Answer": "You should download the flu@home app on your own device and complete the test preferably the same day after receiving the test kit from your GP's office to ensure the most accurate results.",
+    "howComplete": "**How do I complete the test?**",
+    "howComplete++Answer": "The flu@home app will guide you through all the steps involved in taking the test.",
+    "howFindOut": "**How can I find out if the test says I have the flu?**",
+    "howFindOut++Answer": "The flu@home app will guide you through reading your test strip results and will indicate whether you likely have the flu. However, regardless of what this test indicates, please consult with your GP and take any prescribed medication as directed.",
+    "howLongTest": "**How long will the test take me?**",
+    "howLongTest++Answer": "It should take about 20 minutes from start to finish.",
+    "swabDirty": "**My completed test swab accidentally dropped or came into contact with something else. Should I still complete the test?**",
+    "swabDirty++Answer": "Yes. Even if you dropped the swab or it touched another surface, please continue with the test steps.",
+    "swabTubeLonger": "**Is it ok if I left the nasal swab in the tube longer than the designated time?**",
+    "swabTubeLonger++Answer": "Yes. If you left the swab in for a little longer than the timer, please continue with the test steps.",
+    "stripLonger": "**Is it ok if I left the test strip in the tube longer than the designated time?**",
+    "stripLonger++Answer": "Yes. If you left the test strip in for a little longer than the timer, please continue with the test steps.",
+    "whyPersonal": "**Why does the app ask me personal questions?**",
+    "whyPersonal++Answer": "Understanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information. (Many of the questions are optional, and can be skipped if you are not comfortable answering.)",
+    "willConfidential": "**Will my information be kept confidential?**",
+    "willConfidential++Answer": "You will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information. Additionally, this study does not collect information such as your name, email, or mailing address.\n\nWe will not share your data with any third party or for purposes other than this study as described in the Participant Information Sheet and Consent Form.\n\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Human Research Ethics Committee, who approved this study, and other accrediting agencies may inspect and copy your non-identifiable records. They would only do this to ensure you were treated fairly and safely during the study.",
+    "appDelete": "**After I finish the tests, can I delete the app?**",
+    "appDelete++Answer": "We will send you a single notification on your device a few days after you complete the test with a link to complete a survey about your experience using the app. Once you have received that notification and completed the survey you may delete the app."
   },
   "buildInfo": {
     "version": "**Version:** ",
@@ -113,65 +120,53 @@
     "device": "\n**Device:** ",
     "installation": "\n**Installation:** ",
     "apiServer": "\n**API Server:** ",
-    "copy": "Copy",
-    "copyright": "Copyright © 2019 Audere. All rights reserved."
+    "copy": "Copy"
   },
   "Version": {
-    "description": "",
-    "title": "App Version"
-  },
-  "GeneralQuestions": {
-    "title": "General Questions",
-    "description": "**Why are you conducting this study?**\n\nThe goal of this study is to understand if people who are sick should test themselves at home for the flu using a new test. As one of the first to try it, you'll play an important role in helping us find ways to manage flu symptoms in the future.\n\n**If I feel better by the time I receive the test kit in the mail, should I still conduct the test?**\n\nWe are very glad to hear you're feeling better, however we'd still like you to complete the tests and send the kit back to us. We can still learn from your illness.\n\n**How can I find out if the test says I have the flu?**\n\nUnfortunately, we aren’t able to provide that information as part of this study. Its purpose is to learn whether a flu test can be done from the comfort of your home. We don't have enough information yet to tell you whether you do or do not have the flu, but if you believe you might have it, we suggest you visit your personal doctor.\n\n**Are you using my swab samples to test for other conditions besides the flu?**\n\nYour sample will be stored after the completion of the study and may be used for future research. Your sample will only be labeled with a study code and will not be labeled with your name or other identifying information.  We would not be able to give you the results from any other research done using your sample. This practice of storing samples so researchers can use them in the future is called “banking.” Researchers also bank information/samples so they can share them with other researchers.\n\n**Will you share the overall study results with me?**\n\nWe’d be happy to. Once you're done with the tests, you’ll have the opportunity on the **Opt-in to messages** page to request a final copy of this study’s outcome results. Note that individual test results will not be included. If you opt in we'll be sure to email you a copy of the final study report, which should be ready in less than six months. If you missed this opt-in step, please email us at [flu-support@auderenow.org](mailto:flu-support@auderenow.org) and we'll ensure you get a copy of the final report.\n\n**Is it ok to hold onto the completed test for a few days before I send it back?**\n\nIt’s important we receive your samples as soon as possible to ensure the most accurate results. To make it easier, you can ship your box from your personal mailbox or by scheduling a pickup from your home. We appreciate you completing this step right away, preferably the same day you finish the test.\n\n**Will you consider me for future studies?**\n\nAbsolutely. Just click the “Contact me next flu season” option on the **Opt-in to messages** screen after you complete both tests. If you missed this opt-in step, please email us at [flu-support@auderenow.org](mailto:flu-support@auderenow.org) and we'll add you to the contact list for next flu season.\n\n**Who should I contact if I feel that I've been harmed by participating in this study?**\n\nIf you have questions about the study or if you have been harmed by participating in it, please contact the principal investigator, Matthew Thompson, at [fluhelp@uw.edu](mailto:fluhelp@uw.edu). If you have questions about your rights as a research subject, you can call the Human Subjects Division at (206) 543-0098. Please reference the following number when contacting the study subject adviser: Study 00006388\n\n**After I finish the tests, can I delete the app?**\n\nYes, after you finish the tests and return the kit back to us you can delete the app. You will receive an email survey a week after you return your kit, but you don't need to use the app to take the survey.\n\n**Who is eligible to participate in the study?**\n\nTo participate, you must be 18 years or older, be located in the mainland United States, and have flu-like symptoms."
-  },
-  "Problems": {
-    "title": "Problems With the App",
-    "description": "**My app unexpectedly closed in the middle of the test. What should I do?**\n\nOpen the app again on your {{device}} and it should be on the same page as when it closed. If you need to go back to a previous step, there is a **←** button at the top left of the screen.\n\n**Something went wrong with the app. What should I do?**\n\nIf the app is stuck, try closing it on your {{device}} and reopening it.\n\nOn an iPhone or iPad with a circle button at the bottom, double click the button, swipe to find the flu@home app, then while touching the app image, swipe it up and off the screen. This will close the open app. After this you can re-open the app. It should return to the original step you were on. If that doesn't work, email us at [flu-support@auderenow.org](mailto:flu-support@auderenow.org).\n\nOn an iPhone with no circle button, swipe up from the bottom to get to the list of active apps, then while touching the app image, swipe it up and off the screen to close the app. Then re-open it to continue."
-  },
-  "TestQuestions": {
-    "title": "Test Questions",
-    "description": "**Why do I need to perform two tests?**\n\nHaving access to more than one nasal swab allows our researchers to compare your samples and double-check test results. Your first test swab is examined using one kind of machine in the lab, while the second is tested on a different, ultra-sensitive machine. Together, both samples help us verify the accuracy of our at-home testing kit.\n\n**Do I follow the same instructions for both tests?**\n\nNo, they’re a little different so please follow the instructions in the app closely. The first test is more involved—but don’t worry, the app screens will walk you through each step for both tests.\n\n**How long will the two tests take me?**\n\nIt should take around 20 minutes from start to finish.\n\n**My completed test swab accidentally dropped or came into contact with something else. Should I still submit it?**\n\nYes. Even if you dropped the swab or it touched another surface, please do your best to continue with the test steps.\n\n**Is it ok if I left the nasal swab in the tube longer than the designated time?**\n\nYes. If you left the swab in for a little longer than the timer, please just continue to follow the rest of the steps. \n\n**Is it ok if I left the test strip in the tube longer than the designated time?**\n\nYes. If you left the test strip in for a little longer than the timer, please just continue to follow the rest of the steps.\n\n**Why do I need to answer so many personal questions?**\n\nUnderstanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information.\n\n**Will you share my personal information with anyone else?**\n\nNo, we will not share your personal information with any third party or for purposes other than this study.\n\n**Will my personal information be kept confidential?**\n\nYou will not be identified personally in any report or publication about this study. We will assign a study code to you and all your identifiable information such as your name and address. These will be kept in a separate, secure database where the researchers do not have access as they look at the other study data.\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Institutional Review Board (IRB), who approved this study, and other accrediting agencies may inspect and copy your records--which may have your name on them. They would only do this to ensure you were treated fairly and safely during the study.\n\n**Do the pink or blue lines on the test strip mean I’m more likely to have the flu?**\n\nThe blue and pink lines help us understand how the test is performing. You should not consider them conclusive of whether or not you have the flu.\n\n**After I ship my kit back is there anything else I need to do?**\n\nYou will receive an email about a week after you ship your kit back, which has a few questions to let us know how you're feeling. It is important for us to receive this final information to complete your participation in the study.\n\n**Will I need to pay to return the test kit?**\n\nNo, we have included a prepaid United States Postal Service (USPS) return label in the test kit.\n\n**What is the UN3373 sticker for?**\n\nUN3373 is the US government’s shipping code for biological samples. Since you will be mailing a nose swab sample, it must be shipped according to applicable government, International Air Transport Association (IATA), and International Civil Aviation Organization (ICAO) regulations."
-  },
-  "GiftcardQuestions": {
-    "title": "Gift Card Questions",
-    "description": "**When will I receive my gift card?**\n\nWhen you ordered your kit we also collected your email address. The gift card will be emailed to that email address within four weeks of us receiving your completed test kit.\n\n**I prefer not to share my email address. Can you send my gift card to my home address instead?**\n\nUnfortunately, we can only email gift cards at this time. Rest assured we will not share your email address with anyone else if you choose to provide it. Thank you for your understanding.\n\n**I provided my email address, but I still haven’t received my gift card. What should I do?**\n\nWe’re sorry you haven’t received your gift card yet. If it has already been four weeks since you returned your test kit to us, please email us at [fluhelp@uw.edu](mailto:fluhelp@uw.edu) and we will make sure you get your gift card."
+    "title": "App Version",
+    "description": "Copyright © 2019 Audere.\nAll rights reserved."
   },
   "ContactSupport": {
     "title": "Contact Support",
-    "description": "**I have questions about the test kit contents.**\n\nFor questions about the test kit, email **[fluhelp@uw.edu](mailto:fluhelp@uw.edu)** or call (509) 593-3964.\n\n**I have questions about the study in general.**\n\nFor general study questions, email **[fluhelp@uw.edu](mailto:fluhelp@uw.edu)** or call (509) 593-3964.\n\n**I have a support issue regarding the application.**\n\nFor support with issues with this application, please contact **[flu-support@auderenow.org](mailto:flu-support@auderenow.org)**."
+    "testStudy": "Test & study support",
+    "testStudyDesc": "Use this link for problems with test procedure, kit contents, or questions about the study.",
+    "emailTestSupport": "EMAIL TEST SUPPORT",
+    "appSupport": "flu@home app support",
+    "appSupportDesc": "Use this link for technical problems with the flu@home app.",
+    "emailAppSupport": "EMAIL APP SUPPORT"
   },
-  "PreConsent": {
-    "title": "Consent to join the study",
-    "desc": "Based on your symptoms, you qualify to participate in the research study. On the next screen you will see a consent document explaining how we will keep your data safe throughout the study. In short, the document says:",
-    "bullets": "Your record will be kept confidential.\nYou will not be personally identified in any report or publication about this study.\nYour data will be assigned a number the researchers will see. They will not see your personal information such as your name, address or email.\nTaking part in this study is voluntary. You can stop at any time.\nYour test samples may be used for other research. However, no personal data will be linked to those test samples.",
-    "extraText": "If you have questions about this study, please contact [fluhelp@uw.edu](mailto:fluhelp@uw.edu) or call **(509) 593-3964**.",
-    "disclaimer": "Please scroll to the bottom of the next page and click \"I consent\" to participate in the study."
+  "ParticipantInformation": {
+    "title": "Participant Information Sheet",
+    "desc": "**PROJECT TITLE**: Surveillance of influenza using a self-test for influenza\n\n**HUMAN RESEARCH ETHICS COMMITTEE APPROVAL NUMBER:** H-2019-116\n\n**PRINCIPAL INVESTIGATOR:**\nProfessor Nigel Stocks\n\n**STUDENT RESEARCHER:**\nMonique Chilver\n\n**STUDENT'S DEGREE:**\nPhD Candidate\n\nDear Participant,\n\nYou are invited to participate in the research project described below.\n\n**What is the project about?**\nThe goal of this study is to determine if people in the community are interested, and are able to test themselves for influenza ('the flu') at home. This study will also compare the results from people's self-testing with tests carried out by GPs and practice nurses to understand the effectiveness of this new approach of self-testing for flu.\n",
+    "desc2": "**Who is undertaking the project?**\nThis project is being conducted by Professor Nigel Stocks, Monique Chilver (University of Adelaide), and colleagues, Professors Matthew Thompson, Barry Lutz, and Monica Zigman Suchsland from the University of Washington (USA). This research will form the basis for a PhD at the University of Adelaide under the supervision of Professor Nigel Stocks.\n\nThis project has received funding from Audere, a non-profit application development organization that runs the flu@home app. The Commonwealth's Department of Health, Vaccine Preventable Disease Surveillance Section, funds the Australian Sentinel Practices Research Network (ASPREN) of GPs to undertake work related to monitoring levels of influenza type illness.\n\n**Why am I being invited to participate?**\nYou are being invited to take part in this study as your GP or practice nurse has identified that you have the symptoms that are common in flu-like illnesses and you have already consented to be part of the Australian Practices Research Network (ASPREN) testing program that is run at this general practice.\n\nIn order to take part in this study, you will also need to have a smartphone that can be used to download a mobile phone application (or 'app').\n\n**What am I being invited to do?**\nYou are being invited to take a swab from inside your own nose, do a test on this swab using a simple kit provided, and read the results of this test.\n\nIf you agreed to participate, you were handed a self-test kit by your GP or practice nurse and asked to download the flu@home app to your smartphone. This app will include a consent form for you to complete and provide instructions for completing the self-swab and test. You will be asked to complete the self-swab at a convenient time, preferably within 1-2 days following the in-clinic consultation.\n\nThe flu@home app will also administer a questionnaire to collect information about your age and sex, whether you have had a vaccination in previous years, your current health conditions, and some brief information about respiratory symptoms. All data collected are to be non-identifiable, using only a study code assigned to your data.\n\n**Will I receive the results of my flu test in the app?**\nThe app will communicate your flu test results. However, this app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice. The interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom.\n\n**How much time will my involvement in the project take?**\nIt is expected that self-testing, completing the questionnaire, and reading results should take about 20 minutes.\n\n**Are there any risks associated with participating in this project?**\nSome people may feel uncomfortable taking a swab test from their nose. Rarely this might cause a small nosebleed. Since the results of the self-test kit are experimental, this may make people anxious. If you are worried about flu or your health you should seek advice and care from your GP.\n",
+    "desc3": "**What are the potential benefits of the research project?**\nYou may gain a small benefit from participating in the study by receiving instant results from the self-test kit and self-management advice related to the result. You may contribute to the development of a new way to test for flu in the future.\n\n**Can I withdraw from the project?**\nParticipation in this project is completely voluntary. If you agree to participate by agreeing to the consent form on the next screen, anonymous data will be collected based on your interactions with the app. It will not be possible to withdraw your data once collected. Non-participation will not affect your ongoing treatment at any general practice.\n\n**What will happen to my information?**\nYour data will be kept confidential. You will not be identified in any report or publication about the study. All participants will be provided with their personal results of their self-swab test as part of the self-test conducted at home.\n\nData from the self-swab test, questionnaire, and IP address for the device using the app will be stored on Amazon Web Services, only accessible by Audere. App analytics and caching is provided by Google's Cloud Platform (Firebase). The Amazon and Google cloud services may store data outside of Australia, such as in the United States. During data analysis these data will be transferred to the University of Washington and to the University of Adelaide. Audere will receive results of the flu test and questionnaire answers collected in the clinic via the ASPREN study. These data will only be accessible to authorized parties (e.g. the project researchers) with the University of Washington (in the United States) and the University of Adelaide for a minimum of seven years.\n\nThe overall results of this study may be presented and published in academic journals, presented at conferences, and published in a thesis paper. You will not be identified in any publications.\n\nOn the consent form, you will be given the option to agree to your information being used for future related research conducted by the University of Adelaide and/or the University of Washington.\n\nYour information will only be used as described in this participant information sheet and it will only be disclosed according to the consent provided, except as required by law.\n\n**Whom do I contact if I have questions about the project?**\nIf you have any questions or would like additional information, please contact:\n\n**Monique Chilver**\n**Phone**: [+61 8 8313 3463](PHONE)\n**Email:** [monique.chilver@adelaide.edu.au](mailto:monique.chilver@adelaide.edu.au)\n\nAlternatively, you may contact the other members of the research team:\n\n**Professor Nigel Stocks**\n**Email:** [nigel.stocks@adelaide.edu.au](mailto:nigel.stocks@adelaide.edu.au)\n\n**Dr. Matthew Thompson**\n**Email:** [mjt@uw.edu](mailto:mjt@uw.edu)\n\n**Associate Professor Barry Lutz**\n**Email:** [blutz@uw.edu](mailto:blutz@uw.edu)\n\n**Ms. Monica Zigman Suchsland**\n**Email:** [mzigman@uw.edu](mailto:mzigman@uw.edu)\n\n**What if I have a complaint or any concerns?**\nThe study has been approved by the Human Research Ethics Committee at the University of Adelaide (approval number H-2019-116). This research project will be conducted according to the NHMRC National Statement on Ethical Conduct in Human Research 2007 (Updated 2018). If you have questions or problems associated with the practical aspects of your participation in the project, or wish to raise a concern or complaint about the project, then you should consult the Principal Investigator. If you wish to speak with an independent person regarding concerns or a complaint, the University's policy on research involving human participants, or your rights as a participant, please contact the Human Research Ethics Committee's Secretariat on:\n\n**Phone:** [+61 8 8313 6028](PHONE)\n\n**Email:** [hrec@adelaide.edu.au](mailto:hrec@adelaide.edu.au)\n\n**Post:** Level 4, Rundle Mall Plaza, 50 Rundle Mall, ADELAIDE SA 5000\n\nAny complaint or concern will be treated in confidence and fully investigated. You will be informed of the outcome.\n\nYours sincerely,\nProfessor Nigel Stocks, Dr. Matthew Thompson, Associate Professor Barry Lutz, Ms. Monica Zigman Suchsland and Ms. Monique Chilver"
   },
-  "consentScreen": {
-    "required": " (required)",
-    "name": "Please enter your full name",
-    "todaysDate": "Today's date",
-    "consent": "Consent form",
-    "description": "Please read and accept the consent form by scrolling to the bottom and clicking \"I consent\"",
+  "addressInput": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "zipcode": "Zipcode"
+  },
+  "Consent": {
+    "title": "Consent form",
     "accept": "I consent",
-    "noThanks": "No thanks",
-    "consentFormHeader1": "University of Washington\nInformed Consent Document\nCONFIDENTIAL\n",
-    "consentFormHeader2": "**INFORMED CONSENT DOCUMENT**\n**AGREEMENT TO BE IN A RESEARCH STUDY**\n",
-    "consentFormText": "Sponsor / Study Title: “A community wide study to evaluate the accuracy of self-testing for influenza.”\n\nPrincipal Investigator: Matthew Thompson, M.D., Ph.D. (Study Doctor), University of Washington Medical Center\n \nTelephone: (509) 593-3964\n\nAdditional Contact(s): Monica Zigman-Suchsland MPH (Study Staff)\n\nAddress: Department of Family Medicine, Box 354696, University of Washington, Seattle, WA 98195-4696\n\n**Researchers’ statement**\nWe are asking you to be in a research study. The purpose of this form is to give you the information you will need to help you decide whether to be in the study or not. Please read the form carefully. You may ask questions about the purpose of the research, what we will ask you to do, the possible risks and benefits, your rights as a volunteer, and anything else about the research or this form that is not clear. When we have answered all your questions, you can decide if you want to be in the study or not. If you decide to take part in this research study, you will be asked to agree to this form. You will be given an opportunity to receive a copy of the form via email. You should keep your copy for your records. It has information, including important names and telephone numbers, which you may wish to refer in the future.\n\n**PURPOSE OF THE STUDY**\nThis goal of this study is to determine if people in the community can test themselves for influenza (the ‘flu’). This will involve you taking a swab from inside your own nose, doing a test on this swab, and reading the results of this test. \n\n**STUDY PROCEDURES**\nTo take part in this study, you need to have symptoms that are common in a flu like illness. \n\nWe will ask you to download an app onto your own smartphone/device, and complete a short questionnaire about yourself and your illness. Your answers to these questions will help us know if you have a flu-like illness. Your answers will also allow us to ship a testing kit to your home. \n\nWhen you get the testing kit (within 1-2 days), you will follow instructions and take two swabs from inside your nose. The nasal swab is collected by gently putting a swab (like a Q-tip) about ½ inch inside your nose and gently turning it around. One of these you will use to run a simple test (that looks a bit like a pregnancy test) yourself, following instructions. You will be reading the results of the test, however, these results are experimental only and should not determine whether you should visit your doctor for treatment. You are to continue to use your best judgment for treatment based on your symptoms.\n\nThe other swab you will return to us in the mail. We will follow up with you after 1 week by the app, text, email or phone to ask you about your illness. Once that questionnaire is completed, a gift card will be sent to you either via email or mail.\n\nOnce your swab is returned, the genetic material from the virus will be tested to determine the strain of the virus. \n\nWhile participating in this research study, you must be willing and able to follow the study directions and procedures. You must also tell the study staff about any side effects or problems. You should ask any questions as you think of them, and tell the study doctor or his designee if you change your mind about staying in the study.\n\n**RISKS, STRESS, OR DISCOMFORT**\nThe research team will make every effort to maintain strict confidentiality of the data. Some people may feel uncomfortable taking a swab test from their nose. Rarely this might cause a small nosebleed. We cannot tell you if you have flu or not with the test, and this may make you feel anxious. If you are worried about flu or your health you should seek care from a primary care clinician. \n\n**BENEFITS OF THE STUDY**\nYou will not have any direct benefit from participating in this study. However, you will be contributing to the development of a new way to test for flu in the future.\n\n**CONFIDENTIALITY OF RESEARCH INFORMATION**\nYour record will be kept confidential. You will not be identified in any report or publication about this study. \n\nThe researchers will keep the study data confidential. We will obtain your name and address from the App, and use this to mail you the test kit. We will also use the app/text/email/phone to send you the survey at 1 week follow up. \n\nWe will assign a study code to you. Your identifiable information such as your name and address will be kept in a secure database where the researchers do not have access. When we publish or present the results of this study, we will not use any information that will identify you.\n \nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, your responses in the interview may be examined.\n \nThe Institutional Review Board (IRB) and accrediting agencies may inspect and copy your records, which may have your name on them. Therefore, total confidentiality cannot be guaranteed. If the study results are presented at meetings or printed in publications, your name will not be used.\n \n**SOURCE OF FUNDING**\nThis study is funded by the Brotman Baty Institute at the University of Washington.\n\n**OTHER INFORMATION**\nTaking part in this study is voluntary. You can stop at any time. You may refuse to participate and you are free to leave the study at any time, without any effect on your relationship or employment with your clinic or the research team.\nIf you have questions about the study, or if you have been harmed by participating in this study, please contact Matthew Thompson at fluhelp@uw.edu. If you have questions about your rights as a research subject, you can call the Human Subjects Division at (206) 543-0098. You can keep a copy of this information form for your records.\n \nPlease reference the following number when contacting the Study Subject Adviser: Study 00006388\n\n**SPECIMEN BANKING**\nStoring samples so researchers can use it in the future is called “banking.” Researchers also bank information/samples so they can share it with other researchers. Your sample would be stored after the completion of the study and may be used for future research. Your sample will only be labeled with a study code and will not be labeled with your name or other identifying information. We would not be able to give you the results from research that is done using your sample. \n\nYou will not be able to remove your sample from banking.\n\n**Storage and Use of Specimens for Research:**\nThis research will not be done to help you and you will not be compensated for allowing additional research use of your samples. The use of leftover samples for research may lead to the development of commercial products. You will not be paid if this happens. If we want to use your samples for other research or share it with other scientists for research, an ethics review committee (IRB) would review the request. The IRB would decide if we need to ask for your consent to do the research.\n \nBy signing this consent form you are giving your permission for these researchers to use your samples for future use.\n\n**PAYMENT FOR BEING IN THE STUDY**\nYou will receive payment of {{amount}} in the form of a gift card per completion to compensate for time and expenses related to participating in the research study. You will receive payment within two weeks of your last study visit. \n \n**AGREEMENT TO BE IN THE STUDY**\nThis consent form contains important information to help you decide if you want to be in the study. If you have any questions that are not answered in this consent form, ask one of the study staff.\n\n**CLOSING STATEMENT**\nYou have read the information which has been stated above and have received satisfactory answer to all of the questions which you have asked and you willingly agree to this consent form. You will be offered a copy of the informed consent form, if requested. You hereby consent to be a participant in this study.\n \n**RESEARCH-RELATED INJURY**\nIf you think you have been harmed from being in this research, contact Dr Matthew Thompson at fluhelp@uw.edu or 509-593-3964.\n\n**Subject’s statement**\nThis study has been explained to me. I volunteer to take part in this research. I have had a chance to ask questions. If I have questions later about the research, or if I have been harmed by participating in this study, I can contact one of the researchers listed on the first page of this consent form. If I have questions about my rights as a research subject, I can call the Human Subjects Division at (206) 543-0098 or call collect at (206) 221-5940. I will have the opportunity to receive a copy of this consent form.",
-    "privacyNotice": "We will not share your personal information with any third party or for purposes other than this study."
+    "noThanks": "No, Thanks",
+    "consentFormHeader1": "Please read and accept the consent form by scrolling to the bottom and tapping \"I Consent.\"\n\n* = Required question",
+    "consentFormText": "1. I have read the previous Participant Information Sheet and agree to take part in the following research project:\n\n**Title:** Surveillance of influenza using a self-test for influenza\n\n**Ethics Approval Number:** H-2019-116\n\n2. I have had the project, so far as it affects me, and the potential risks and burdens fully explained to my satisfaction. I have had the opportunity to ask any questions I may have about the project and my participation. My consent is given freely.\n\n3. I have been given the opportunity to discuss my potential participation in this study with a member of my family or a friend.\n\n4. Although I understand the purpose of the research project is to improve the quality of health/medical care, it has also been explained that my involvement may not be of any benefit to me.\n\n5. I understand that I will be reading the results of a flu test in the app, and that these results are experimental and should not determine whether I should visit my GP for additional treatment. I will use my best judgment for treatment based on my symptoms.\n\n6. I agree to participate in the activities as outlined in the Participant Information Sheet. I understand that the project will collect information from me as described in the Participant Information Sheet.\n\n7. I have been informed that the information gained in the project may be published in a book/journal article/thesis/news article/conference presentations/website/report etc.\n\n8. I have been informed that in the published materials I will not be identified and my personal results will not be divulged.",
+    "consentFormText2": "10. I understand my information will only be disclosed according to the consent provided, except where disclosure is required by law.\n\n11. I am aware that I may obtain a copy of this Consent Form, and the attached Participant Information Sheet from [www.fluathome.org.au](http://fluathome.org.au)."
+  },
+  "ConsentDeclined": {
+    "title": "Thank you for your interest",
+    "desc": "We're sorry, but to participate in the study we need your consent. If you wish to change your mind, tap the \"Back to Consent\" button below.",
+    "backToConsent": "Back to Consent"
   },
   "surveyTitle": {
-    "address": "Your address:",
-    "whereKit": "Where did you get your kit?",
-    "ageTitle": "How old are you?",
-    "consentEmail": "Email me a copy of this consent form",
-    "symptomTitle": "Describe your symptoms",
-    "consent": "Consent",
+    "age": "How old are you?",
+    "researchBySameResearchers": "9. I agree to my information being used for future research undertaken by these same researchers:",
     "whatSymptoms": "Which of the following were present during your illness?",
     "symptomsStart": "How long ago did symptoms start?",
     "symptomsLast48": "Were these symptoms present in the last 48 hours?",
     "symptomsSeverity": "How severe were your symptoms?",
-    "inContact": "In the past week, have you been in contact with a person who seemed to have a cold?",
     "coughSneeze": "Were they coughing or sneezing?",
     "youngChildren": "In the past week, have you been in contact with any children under five years old for over an hour?",
     "householdChildren": "Are there any children under 18 years old in your household?",
@@ -179,473 +174,402 @@
     "peopleInHousehold": "How many people live in your household (including you)?",
     "bedrooms": "How many bedrooms are in your home?",
     "medicalCondition": "Have you ever been told by a doctor that you have one of the following medical conditions?",
-    "fluShot": "Did you get a flu shot in the last year?",
-    "fluShotDate": "What was the date of your flu shot?",
     "smokeTobacco": "Do you smoke tobacco?",
     "householdTobacco": "Does anyone in your household smoke tobacco?",
     "interfering": "Is your illness preventing you from going to work or school, going to social events, or exercising/working out?",
-    "antibiotics": "Are you currently taking antibiotics (e.g. Amoxil, penicillin, Z-pack, Bactrim, Augmentin) or antivirals (e.g. Tamiflu, Xofluza, Relenza) for this illness?",
+    "antibiotics": "Are you currently taking antibiotics (e.g. Amoxil, penicillin, azithromycin, co-trimoxazole (Bactrim), co-amoxiclav (Augmentin)) or antivirals (e.g. Tamiflu, Xofluza, Relenza) prescribed by a doctor (GP or hospital) for this illness?",
     "assignedSex": "What is the sex on your medical records?",
     "race": "How would you describe your race?",
-    "hispanic": "Are you Hispanic or Latino?",
-    "healthInsurance": "What kind of medical insurance do you have?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
-    "redLine": "Is there a red line on your test strip?",
-    "firstTestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
-    "secondTestFeedback": "How do you feel you performed the second test?",
-    "optInForMessages": "Opt-in for messages"
+    "pinkLine": "Which image below most closely matches your test strip?",
+    "numLinesSeen": "How many lines (darker horizontal bars) do you see on your test strip?",
+    "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
+    "fluShot": "Did you receive an influenza vaccination this year (2019)?",
+    "previousSeason": "Did you receive an influenza vaccination last year (2018)?",
+    "healthcareWorker": "Are you a healthcare (or aged care) worker (i.e. do you directly work with patients/aged care residents in your job)?",
+    "inContact": "In the past week, have you been in contact with a person who seemed to have a cold or flu?",
+    "fluShotDate": "What was the approximate date of your influenza vaccination?"
   },
   "surveyDescription": {
-    "addressDesc": "Please provide your home address and email. We will send the gift card to your email.",
-    "mailingAddressDesc": "Please provide your shipping address and email. We will send the flu test kit to your address and the gift card to your email.",
     "selectAll": "Select all that apply",
     "selectMostApplicable": "Select the most applicable option",
     "symptomsStart": "Select the time frame that best applies",
     "feelingFeverish": "Fever",
     "chillsOrSweats": "Chills or sweats",
     "cough": "Cough",
-    "fatigue": "Feeling tired or more tired than usual",
+    "fatigue": "Feeling more tired than usual",
     "muscleOrBodyAches": "Muscle or body aches",
     "soreThroat": "Sore throat",
     "headache": "Headache",
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
+    "vomiting": "Vomiting",
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
-    "medicalConditions": "Have you ever been told by a doctor that you have one of the following medical conditions?",
-    "blueLine": "The line may be faint, but as long as you see it you can answer Yes to the question.",
-    "selectOne": "Select one of the following",
-    "optInForMessages": "We will have information to share regarding the outcome of this study and we will be expanding the study next flu season. Please select the items below we can contact you about, or if you're not interested, just click Continue."
-  },
-  "symptomsScreen": {
-    "symptoms": "Symptoms"
+    "seeExample": "Tap the \"?\" below to see examples"
   },
   "Welcome": {
     "title": "Welcome",
-    "desc": "We know you aren't feeling well right now. Thank you for participating even when you're ill. As a thank you, you’ll receive a $25 gift card within four weeks of us receiving your completed test kit in the mail. Let’s get started."
+    "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick. With your help, we want to understand if people (like you) can test themselves at home for the flu."
   },
-  "whyScreen": {
-    "title": "Why this study?",
-    "desc": "The goal of this program is to understand if people who are sick should test themselves at home for the flu using a new test. Although you won't learn whether or not you have the flu as part of this study, you'll play an important role in helping find ways to manage it in the future. "
+  "WhatsRequired": {
+    "title": "What's required?",
+    "desc": "In order to proceed, we'll need your consent to participate in a medical study. In addition, the app will need to access your device's camera to scan your test strip."
   },
-  "What": {
-    "title": "Getting started",
-    "desc": "To participate, we will ask you for the following:\n\n**Your current symptoms** – a quick survey.\n\n**Your home address** – to ship the test kit to you.\n\n**Your email address** – so we may send you your gift card and a follow-up survey.\n\nFinally, you will be asked to provide your consent to participate in a medical study."
+  "HowTestWorks": {
+    "title": "How The Test Works",
+    "desc": "Accuracy is important"
   },
-  "OutOfKits": {
-    "title": "We're sorry, we are no longer accepting new orders",
-    "desc": "Due to high demand, we have stopped taking new orders for the time being. We appreciate your interest and hope you feel better soon!",
-    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
+  "ReadyToBegin": {
+    "title": "Ready to begin?",
+    "desc": "Please get comfortable and find a location away from pets and children. You'll want a location with a flat surface and good lighting to do your test. The entire process should take about 20 minutes."
   },
-  "ageScreen": {
-    "welcome": "Welcome",
-    "numYears": "Number of years",
-    "numMonths": "Number of months"
-  },
-  "addressScreen": {
-    "email": "Your email address:",
-    "title": "Email and Address",
-    "addressExceptions": "Test kits will only be shipped to addresses in the mainland United States. Hawaii and Alaska are not included.",
-    "noInternetTitle": "Connection error",
-    "noInternetSubtitle": "Please check your internet connection and try again",
-    "validationError": "* Please provide all required fields"
-  },
-  "addressConfirmScreen": {
-    "title": "Verify your address",
-    "description": "The USPS suggests the following changes to your address. Please select the correct address from the choices below:",
-    "suggestedAddress": "Suggested address:",
-    "originalAddress": "Original address",
-    "reEnterAddress": "Re-end address"
-  },
-  "addressNotFoundModal": {
-    "dismissText": "Not Correct",
-    "submitText": "Correct",
-    "addressNotFound": "Address not found",
-    "addressConfirm": "Please confirm the address below is correct",
-    "entered": "You entered: "
-  },
-  "radioButtonGroup": {
-    "suggestedAddress": "Suggested address:",
-    "originalAddress": "Original address:"
-  },
-  "AgeIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but this study is aimed at adults 18 years and older. "
-  },
-  "Ineligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but you are not currently eligible for this study."
-  },
-  "AddressIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but we could not verify your address."
-  },
-  "POBoxIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but due to the time sensitivity of the test we do not ship to P.O. boxes. If you have a physical address we can mail the kit to, you can use the 'back' button above to re-enter a new address."
-  },
-  "SymptomsIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "At this time your symptoms do not meet the criteria to continue. If your symptoms change, you can open this app again on a different day.",
-    "disclaimer": "This is not medical advice. We suggest you consult your doctor for your illness as you normally would."
-  },
-  "StateIneligible": {
-    "title": "Thanks for your interest",
-    "desc": "We're sorry, but we don't currently ship to Alaska or Hawaii. "
-  },
-  "consentIneligibleScreen": {
-    "ineligible": "Thanks for your interest",
-    "description": "We're sorry, but you need to agree to the consent form in order for you to participate in the study. If you change your mind, click the \"Back to consent\" button below.",
-    "back": "Back to consent"
-  },
-  "KitOrdered": {
-    "title": "Your kit was ordered.",
-    "desc": "The flu test package should arrive at your home within the next 1-2 days.\n\n**When your kit arrives:**",
-    "bullets": "**Open the flu@home app on your device.** The app will guide you through the entire test.\n**Keep the kit contents in their original packaging.** The app will guide you through everything.\n**Save the box the kit came in.** You will need it to scan its barcode for verification and to return the kit to us (via pre-paid postage).",
-    "disclaimer": "The kit is for your use only. Please do not give, share, or use the kit with anyone else after you receive it."
-  },
-  "ThankYouScreening": {
-    "title": "Thanks for participating!",
-    "desc": "We hope you’re able to get some rest and feel better soon.\n\n**While you wait for your kit:** ",
-    "bullets": "**[Search Maps for urgent care clinics nearby.](FIND_MED_HELP)** If you need to see a doctor, you can use Maps to find one.\n**[Learn more about this study.](http://fluathome.org/)** Read about the study, its funding, and research partners.\n**Have a question?** You can leave a question for the study coordinator at (509) 593-3964 or by email at **[fluhelp@uw.edu](EMAIL_SUPPORT)**."
-  },
-  "Confirmation": {
-    "title": "Thank you! Your flu test kit has been ordered.",
-    "desc": "You are now enrolled in the study. The flu test package should arrive at your home within the next 1-2 days. When you receive the kit, open the flu@home app on your device and it will tell you what to do.\n\nIf you have questions regarding the study itself, contact the study coordinator at:(509)593-3964.\n\nWant to learn more?"
-  },
-  "PushNotifications": {
-    "title": "May we send you push notifications?",
-    "desc": "We'll only notify you of content interesting and relevant to you, such as: shipping status of your kit, gift card details at the end of the study, and flu information."
-  },
-  "extraInfoScreen": {
-    "extraInfo": "Interested in sharing this or learning more?",
-    "close": "Close flu@home"
-  },
-  "welcomeBackScreen": {
-    "welcomeBack": "How the test works",
-    "description": "Sorry, we know you’re feeling bad and appreciate your participation. Today you’ll be completing two tests which involve taking nose swabs. The whole process should take about 20 minutes total.\n\n**Please note the following:**",
-    "bullets": "**Save the box the kit came in.** The app will ask you to scan the blue barcode on the box and you'll return your samples to us in the same box.\n**Shipping is pre-paid.** A return label is included in your kit, as well as tape to seal up the box.\n**Return the kit and we’ll send you a gift card.** Your gift card will be emailed within four weeks of us receiving your kit with samples in the mail."
-  },
-  "WhatsNext": {
-    "title": "Preparing for the test",
-    "desc": "Take a minute to get comfortable before you start the test process. Ideally, you’ll stay with your test kit for the duration of the test.\n\n**Before you begin:**",
-    "bullets": "**Find a location away from pets and children.** Your test kit includes items that could be broken, damaged, or contaminated.\n**Choose a flat surface with good lighting.** The app will take a photo of your test strip."
-  },
-  "Before": {
-    "title": "Before you begin",
-    "desc": "Find a flat surface where you can place the kit. Be sure it is away from pets and children."
-  },
-  "scanInstructionsScreen": {
-    "scanQrCode": "Scan the barcode",
-    "description": "First, we'd like you to scan the barcode found on the inside cover of your box. To do that, we'll need to access your device's camera. **If you deny access, you'll have to enter your barcode using your keypad.**"
+  "ScanInstructions": {
+    "title": "Scan the barcode",
+    "desc": "Locate the barcode on the kit in the bottom right corner and tap \"Continue.\"\n\nThe app will indicate where to place the barcode and will scan it automatically when it's positioned correctly.\n\n**Please note: If you deny camera access you won't be able to continue using the app.**"
   },
   "barcode": {
-    "yourCode": "**Your code**: KIT {{barcode}}",
+    "yourCode": "**Your code**: {{barcode}}",
     "sorry": "Sorry",
     "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
     "notVerified": "Your barcode was not verified",
     "pleaseRetry": "Please re-{{action}} your kit bar code (the blue on on the inner lid of the box), being careful not to insert spaces or extra characters",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "barcodeRequired": "Please enter your kit's barcode to continue.",
+    "dontMatch": "Those barcodes don't match. Please try again.",
+    "placeholder": "Enter barcode",
+    "secondPlaceholder": "Confirm barcode"
   },
-  "scanScreen": {
-    "scan": "scan",
-    "cameraAccess": "Camera access needed to scan barcodes.",
-    "enterManually": "Enter barcode manually",
-    "cameraWarning": "\"flu@home\" would like to access your camera"
+  "BarcodeScanner": {
+    "instructions": "Position the barcode in the middle of the outline above.\nTry adjusting your distance or angle if the scan is taking a while.",
+    "enterManually": "Enter barcode manually"
   },
   "ScanConfirmation": {
     "title": "Your code was scanned!",
-    "desc": "Thank you. Your barcode was successfully scanned. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
+    "desc": "Thank you. Your barcode was successfully scanned. Next up, you'll perform the test and answer some questions about your symptoms."
   },
-  "manualEntryScreen": {
-    "enter": "enter",
-    "enterKit": "Enter barcode manually",
-    "placeholder": "Enter barcode",
-    "barcodeRequired": "Please enter your kit's barcode to continue.",
-    "dontMatch": "Those barcodes don't match. Please try again.",
-    "secondPlaceholder": "Confirm barcode",
-    "desc": "Enter the code found below the barcode symbol on the inside cover of your flu kit box.",
-    "tipHeader": "Tips:",
-    "tips": "Find the blue barcode on the inside cover of your box.\n\nThe code is directly below the barcode."
+  "ManualEntry": {
+    "title": "Enter your barcode",
+    "desc": "Enter the code found on the corner of your flu kit.",
+    "tips": "**Tip:** Find the white barcode on the box. The code is directly below the barcode."
   },
   "ManualConfirmation": {
     "title": "Your code was accepted",
-    "desc": "Thank you. Your barcode was successfully entered. This will help us know the kit came from you when you return it to us.\n\nNext up, you'll be performing two tests with your kit and answering some questions about your symptoms."
+    "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
   },
-  "barcodeContactSupportScreen": {
-    "title": "Please Contact Support",
-    "description": "We're sorry but the kit barcode you entered did not match our records.\n\nPlease take a picture of your blue kit barcode and email the picture to **[flu-support@auderenow.org](mailto:flu-support@auderenow.org?subject=Invalid barcode)** for help.",
-    "supportVerification": "flu@home Support Verification",
-    "enterCode": "Please enter the code you receieved from the flu@home support team",
-    "invalidCode": "Sorry, that code is not valid."
+  "SeattleFluMap": {
+    "title": "Seattle Flu Map",
+    "desc": "Is the flu near you?"
   },
-  "TestInstructions": {
-    "title": "How the test works",
-    "desc": "We'll walk you through all the necessary steps in the following screens--from doing the tests using the items in the kit to shipping it all back and getting your gift card."
+  "VideoPlayer": {
+    "offline": "Video is not available while device is offline."
   },
   "Unpacking": {
-    "title": "How the test works",
-    "desc": "We'll walk you through all the necessary steps in the following screens. First let's check to make sure your kit is complete.\n\nYou should have an introduction card, a box with a number ①, a bag with a number ②, a bag with a number ③, and some bubble wrap."
+    "title": "Set up your kit box",
+    "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
+  },
+  "BarcodeContactSupport": {
+    "title": "Please contact your clinic",
+    "desc": "We're sorry, but the barcode you entered did not match our records. Please contact the clinic where you received your kit for a replacement.\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
   },
   "Swab": {
-    "title": "Begin the first test",
-    "desc": "Open box ① and remove all the items.\n\nTake out the small tube with the grey top, remove the stopper, and stand up the tube in the hole marked \"Small tube\" on the box. **Keep** the stopper for later."
-  },
-  "SwabPrep": {
-    "title": "Prepare tube",
-    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube. Do so slowly and carefully so all the liquid gets into the tube."
+    "title": "Prepare the tube",
+    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube.\nDo so slowly and carefully so all the liquid gets into the tube."
   },
   "OpenSwab": {
     "title": "Open nasal swab",
-    "desc": "Remove the nasal swab from the wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\n\nBe careful not to drop it, and only touch the handle, not the tip."
+    "desc": "Remove the nasal swab from its paper wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\nBe careful to only touch the handle, not the tip."
   },
   "Mucus": {
     "title": "Collect sample from nose",
-    "desc": "Gently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
+    "desc": "Gently insert the **entire** soft tip of the swab into one nostril.\nRub it around the inside wall of the nostril four times.\nNext, gently insert the same swab into the other nostril and rub it around the same way."
+  },
+  "MucusUTM": {
+    "title": "Collect sample from nose",
+    "desc": "Gently insert the **entire** soft tip of the swab into one nostril.\nRub it around the inside wall of the nostril four times.\nNext, gently insert the same swab into the other nostril and rub it around the same way."
   },
   "SwabInTube": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube sitting in box ①. Make sure the swab tip is touching the bottom of the tube and stir it around 4 times.\n\nClick \"Start Timer\" below. The swab needs to stay in the tube for one minute.",
-    "buttonLabel": "Start Timer"
+    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around 4 times in the tube. The swab needs to stay in the tube for one minute.\nTap the button below to start the one-minute timer.",
+    "startTimer": "Start Timer"
   },
-  "firstTimerScreen": {
+  "SwabInTubeUTM": {
+    "title": "Put swab in tube",
+    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around 4 times in the tube. The swab needs to stay in the tube for one minute.\nTap the button below to start the one-minute timer.",
+    "startTimer": "Start Timer"
+  },
+  "PackUpUTM": {
+    "title": "Pack Up",
+    "desc": "Now lets pack up our UTM test"
+  },
+  "TimerDoneUTM": {
+    "title": "",
+    "titleTimerUp": "Timer finished",
+    "desc": "",
+    "descThanksForAnswering": "Thank you"
+  },
+  "FirstTimer": {
     "title": "Did you know?",
-    "note": "Keep swab in the tube for one minute",
-    "tip": "If you are sick with flu symptoms, the CDC recommends that you stay home for at least 24 hours after your fever is gone, except to get medical care or for other necessities.",
-    "tip2": "To avoid the flu, wash your hands using soap and water, especially after touching commonly shared items. Hand washing is one of the most basic and proven methods for preventing the spread of disease."
+    "desc": "If you are sick with flu symptoms, CDC recommends that you stay home for at least 24 hours after your fever is gone except to get medical care or for other necessities."
   },
   "RemoveSwabFromTube": {
     "title": "Remove swab from tube",
-    "desc": "Carefully rub the tip of the swab against the wall of the tube as you pull it out. You want to squeeze as much liquid out of the swab as possible.\n\nThrow the swab in the trash. You won't need it again."
+    "desc": "Carefully rub the tip of the swab against the wall of the tube as you pull it out.\nSqueeze as much liquid out of the swab as possible.\nThrow the swab in the bin. You won't need it again."
   },
   "OpenTestStrip": {
     "title": "Open test strip",
-    "desc": "Inside the same box ① you'll find a test strip in a white pouch with purple printing. Open this package by tearing from the top where there is already a small cut."
+    "desc": "In the white pouch with purple printing there is a test strip.\nOpen this package by tearing from the top where there is already a small cut."
   },
   "StripInTube": {
     "title": "Put test strip in tube",
-    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\n\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out. In the meantime, please answer some questions so we can better understand how this illness has affected you."
-  },
-  "surveyCoverScreen": {
-    "title": "Questions for you",
-    "description": "The strip needs to stay in the tube for at least 10 minutes. While we're waiting, please answer some questions for us. We'll tell you when to take the strip out of the tube."
+    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\nIn the meantime, please answer some questions so we can better understand how this illness has affected you.",
+    "startTimer": "Start Timer"
   },
   "WhatSymptoms": {
     "title": "Symptom Survey",
-    "desc": "Questions marked with an * are required."
+    "desc": "* = Required question"
   },
   "GeneralHealth": {
     "title": "General Health",
-    "desc": "Questions marked with an * are required.",
-    "extraText": "Next, we'd like to ask you some questions about your overall health."
+    "desc": "* = Required question",
+    "next": "Next, we'd like to ask you some questions about your overall health."
   },
-  "surveyScreen": {
-    "title": "Symptom Survey",
-    "description": "Questions marked with an * are required.",
-    "generalExposure": "General Exposure",
-    "expoDesc": "In the next section, the questions are going to be about being in contact with people who seem to have a cold. In contact means being within six feet of them for at least two minutes or physical contact for any amount of time.",
+  "InfluenzaVaccination": {
+    "title": "Influenza Vaccination",
+    "desc": "We would like to ask you some questions about your influenza vaccination history. This information will be used to determine how effective the vaccine is."
+  },
+  "GeneralExposure": {
+    "title": "General Exposure",
+    "desc": "* = Required question",
+    "expoDesc": "In the next section, the questions are going to be about being **in contact** with people who seemed to have a cold or the flu. **In contact** means being within six feet of them for at least two minutes or physical contact for any amount of time.",
     "expoRef": "For reference, six feet is about the distance between you and someone sitting two rows ahead of you on the bus."
   },
-  "thankYouSurveyScreen": {
+  "WhenSymptoms": {
+    "title": "Symptom Survey",
+    "desc": "* = Required question"
+  },
+  "ThankYouSurvey": {
     "title": "Thank you!",
-    "desc": "Your answers, along with the tests, help us to understand many factors related to your illness.",
-    "waiting": "Now, just wait for the time to end and the app will direct you to the next steps."
+    "desc": "Your answers, along with the test, help us to understand many factors related to your illness.",
+    "waiting": "Now, just wait for the timer to end and the app will direct you to the next steps.",
+    "titleTimerUp": "Timer finished",
+    "descTimerUp": "Thanks for hanging in there. Tap 'Continue' and we'll move on to reading your test strip.",
+    "descThanksForAnswering": "Thanks for handing in there. Tap 'Continue' and we'll move on to the next test."
+  },
+  "PrepareUTM": {
+    "title": "Prepare for UTM Test",
+    "desc": "Open the swab"
   },
   "TestStripReady": {
     "title": "Remove test strip",
-    "desc": "Please remove the test strip from the tube and place it flat on the middle of box ①."
+    "desc": "Remove the test strip from the tube and put the stopper back on the tube.\nPlace the test strip on the kit box where it says \"Place test strip here.\""
   },
-  "testStripTimerScreen": {
-    "title": "Time Remaining: **{{time}}**",
-    "doneTitle": "Time Complete",
-    "desc": "**Please wait for the timer to end.**"
+  "TestStripReadyUTM": {
+    "title": "Remove test strip",
+    "desc": "Remove the test strip from the tube and put the stopper back on the tube.\nPlace the test strip on the kit box where it says \"Place test strip here.\""
   },
-  "FinishTube": {
-    "title": "Finish with the tube",
-    "desc": "Put the stopper back on the sample tube you just took the test strip out of. You'll be sending this back to us. We'll walk you through packaging steps shortly."
-  },
-  "LookAtStrip": {
-    "title": "Look at the test strip",
-    "desc": "We are going to ask you a few questions about what you see on the test strip. Please try to look at it in good lighting. Answer YES if you see any of the lines mentioned, even if they are very faint. There is no right or wrong answer here, we're just interested in knowing what you see."
-  },
-  "testStripSurveyScreen": {
+  "TestStripSurvey": {
     "title": "What do you see?",
-    "desc": "Hold the test strip with the arrows pointing down when answering the following questions."
+    "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
+  },
+  "TestStripSurvey2": {
+    "title": "What do you see?",
+    "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
   },
   "RDTInstructions": {
-    "title": "Take a picture of the strip",
-    "desc": "We know that was a lot of steps and appreciate you hanging in there with us. Next, we'd like you to take a picture of the test strip. **The app will access your phone's camera and will automatically take the picture for you.**"
+    "title": "Scan the test strip",
+    "desc": "Next, the app will use your device's camera to scan your test strip.",
+    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip to scan.\nThe app will guide you to make adjustments to the position, distance, and rotation, as necessary.\nIf your device has a flash, you can turn it off/on as needed.\nIf the test strip doesn't scan, after {{rdtTimeoutSeconds}} seconds you will be asked to take a photo using the app."
+  },
+  "NonRDTInstructions": {
+    "title": "Take a photo of test strip",
+    "desc": "Next, we'd like you to take a photo of your test strip using your device camera. The app will access your device camera for you.",
+    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip.\nCenter the test strip within the viewfinder, then tap the round button to take a photo."
   },
   "RDTReader": {
     "title": "RDT READER",
-    "stripHere": "Your strip here",
-    "description": "Tap the round button to take a photo",
-    "loading": "Loading..."
+    "position": "POSITION",
+    "distance": "DISTANCE",
+    "rotation": "ROTATION",
+    "flash": "FLASH: ",
+    "on": "ON",
+    "off": "OFF",
+    "centerStrip": "Position device so your test strip aligns with sample image",
+    "holdSteady": "Hold steady",
+    "sizeResultLarge": "Move farther away",
+    "sizeResultSmall": "Move closer",
+    "badOrientationPos": "Turn device to the right (clockwise)",
+    "badOrientationNeg": "Turn device to the left (anti-clockwise)",
+    "underExposed": "Turn on the flash or move to better lighting",
+    "overExposed": "Ensure test strip is on kit box or turn off the flash"
   },
   "CameraSettings": {
-    "title": "Update your settings",
-    "desc": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Privacy > Camera > flu@home. Flip the switch to 'Yes'.**\n\nPlease note: When you return, the camera will be active.",
-    "descAndroid": "To grant access for flu@home to take a picutre of your test strip, you will need to update your device's settings for this app.\n\n**How to Update:**\n\n**Go to Settings > Apps > flu@home > Permissions. Toggle the camera switch to on.**\n\nPlease note: When you return, the camera will be active."
+    "title": "Camera access required",
+    "desc": "We're sorry, but using your device's camera is required to continue with the test. If you'd like to continue, please update your device settings.\n\nOtherwise, we thank you for your participation, and hope you feel better.\n\n**How to Update:**",
+    "howToIOS": "**Go to Settings / Privacy / Camera / flu@home.**\n**Flip the switch to \"Yes\".**\n**Please note: When you return, the camera will be active.**",
+    "howToAndroid": "**Go to Settings / Apps / flu@home / Permissions.**\n**Toggle the camera switch to on.**\n**Please note: When you return, the camera will be active.**",
+    "goToSettings": "Go to Settings"
   },
-  "pictureInstructionsScreen": {
-    "title": "Take a photo of the strip",
-    "desc": "We know that was a lot of steps and appreciate you hanging in there with us. Next, take a photo of the test strip.\n\nFirst, lay the test strip on the box with the arrows pointing down towards you:",
-    "tip2": "The app will show you a sample test strip image to use as a guide. Position your test strip inside the dotted lines as shown, holding your camera directly over the test strip. Make sure to focus the image before taking the photo, and try to use good lighting.",
-    "tip3": "Tap **Continue** when you're ready, and we'll take the photo on the next screen.",
-    "skip": "Unable to take a picture? Skip this step"
-  },
-  "testStripCameraScreen": {
+  "TestStripCamera": {
     "title": "Tap the screen to focus the image.",
-    "stripHere": "Your strip here",
     "description": "Tap the round button to take a photo",
-    "loading": "Loading..."
+    "alertTitle": "We are unable to scan the test strip",
+    "alertDesc": "The app is having trouble scanning your test strip. Please take a photo of the strip.",
+    "cameraErrorTitle": "Something's gone wrong.",
+    "cameraErrorDesc": "We are unable to load the camera and will proceed without taking a photo.",
+    "error": "There was a processing error, please try again",
+    "flash": "FLASH: ",
+    "on": "ON",
+    "off": "OFF"
   },
-  "testStripConfirmationScreen": {
-    "title": "Photo captured!",
-    "desc": "Thank you for continuing with the test. Next, we'll get our first test items put away."
+  "TestStripConfirmation": {
+    "title": "Picture captured!",
+    "desc": "Thank you! Your test strip photo was captured successfully."
   },
-  "CleanFirstTest": {
-    "title": "Seal up the test strip",
-    "desc": "Find the medium-sized bag with a green barcode on it.\n\nPut the test strip inside that bag, remove the white strip on the bag and seal it."
+  "PostRDTTestStripSurvey": {
+    "title": "How many lines?",
+    "desc": "We enhanced and magnified your test strip photo, so it may now be easier to see a faint line. Let us know how many lines (darker horizontal bars) you see in the photo above. Tap the \"?\" below to see examples. If the photo above does not look like any of the examples, select \"None of the above.\""
   },
-  "CleanFirstTest2": {
-    "title": "Put test strip in bag #2",
-    "desc": "Open bag ② and take out the tube with the red top and the swab package. Leave the soft material in the bag.\n\nPlace the bag with the green barcode and the tube with the grey top into bag ②. Please ensure the grey stopper is tight on the tube.\n\nKeep the box in front of you. You'll need it for the next test."
+  "TestResult": {
+    "title": "Your test result",
+    "why": "You indicated you saw the following on your test strip:",
+    "onePinkAndBlue": "A pink line above or below the blue line",
+    "noPink": "No pink line"
   },
-  "FirstTestFeedback": {
-    "title": "Nice job with the first test! One more to go.",
-    "desc": ""
+  "TestResultRDT": {
+    "title": "Your test result",
+    "onePinkAndBlue": "Another line above or below the blue line",
+    "noPink": "No other lines above or below the blue line",
+    "why": "The app has interpreted your test strip and found the following:"
   },
-  "BeginSecondTest": {
-    "title": "Begin the second test",
-    "desc": "This test has fewer steps than the first one and some steps are different, so please read carefully.\n\nFind the tube with the red top. Holding it straight so the liquid inside doesn't spill, open the top. Place the tube in the box hole marked \"Large tube\" so it's standing up. Keep the top for later."
+  "OptInNotifications": {
+    "title": "Notifications",
+    "desc": "Would you like to be notified of your results?"
   },
-  "PrepSecondTest": {
-    "title": "Prepare for the test",
-    "desc": "Open the swab package. Be careful to not drop it, and try to only touch the handle--not the tip of the swab."
+  "SelfCare": {
+    "title": "Self Care Tips",
+    "desc": "Also refer a friend"
   },
-  "MucusSecond": {
-    "title": "Collect sample from nose",
-    "desc": "Now you'll swab your nose the same way you did during the first test:\n\nGently insert the **entire** soft tip of the swab into one nostril. Rub it around the inside wall of the nostril four times. Next, gently insert the same swab into the other nostril and rub it around the same way."
+  "Advice": {
+    "title": "What do I do now?",
+    "desc": "We're sorry you're not feeling well and we'd like to help. Here are a few resources from leading health organizations with tips and information on how to get well."
   },
-  "SwabInTubeSecond": {
-    "title": "Put swab in tube",
-    "desc": "Place the swab directly into the tube and put the red top back on the tube tightly. (No need to add saline as you did with test 1)."
+  "InvalidResult": {
+    "title": "Your test strip is defective",
+    "desc": "We're sorry, but something went wrong. If there is no visible blue line on the test strip then the test strip is likely defective.",
+    "whatToDo": "**What should I do if my test strip is defective?**\n\nIf your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon."
   },
-  "CleanSecondTest": {
-    "title": "Clean up the second test",
-    "desc": "Put the tube with the red top into the same bag ② as the other items to be returned."
-  },
-  "SecondTestFeedback": {
-    "title": "Nice job with the second (and final) test!",
-    "desc": ""
+  "CleanTest": {
+    "title": "Clean up the test",
+    "desc": "Now that you've completed the test, you can discard the kit components. Make sure to wash your hands after disposing of your flu test kit."
   },
   "Packing": {
-    "title": "Packing things up",
-    "desc": "You will be using the same box that was shipped to you to send everything back. Open bag ③, and inside, you'll find everything you need to pack up your box."
+    "title": "Pack Up Your Kit",
+    "desc": "Put the swab and strip in the box"
   },
-  "Stickers": {
-    "title": "Put stickers on the box",
-    "desc": "Apply the return mailing label to the outside of the box, **over** the label with your address on it.\n\nAdd the UN3373 sticker to the side of the box. This sticker just means there are samples inside."
+  "Shipping": {
+    "title": "Schedule Pick-up"
   },
-  "SecondBag": {
-    "title": "Put bag ② in the box",
-    "desc": "Bag ② should have the small tube, the large tube, a bag with the test strip, and some absorbent material (just in case anything spills in transit).\n\nClose bag ② by removing the white strip on the top of the bag and sealing the bag.\n\nEnsure the bubble wrap is still in the box.\n\nYou can throw out the rest of the items you used, or put them in the return box if it's easier."
+  "PickUpAddress": {
+    "title": "Pick Up Address",
+    "desc": "Would you like to use the same address we shipped to for pick up?"
   },
-  "TapeBox": {
-    "title": "Tape up the box",
-    "desc": "Find the tape strip. There are multiple pieces of tape provided on the strip, stacked one on top of each other.\n\n**Pull** a single tape strip off by holding the white edge. Adhere the provided tape lengthwise to the long seam of the box over the word \"Open.\" Remove the white backing from the tape edge to seal the tape strip completely. You may have tape left over."
+  "SelectPickUpWindow": {
+    "title": "Select Pick-Up Window",
+    "desc": "Please choose the times you would be available for package pick up"
   },
-  "ShipBox": {
-    "title": "Shipping your box",
-    "desc": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don’t have an outgoing mail service to leave the package with, locate a nearby USPS location, blue mailbox, or schedule a pick-up from your location.",
-    "buttonLabel": "Schedule a pickup",
-    "iWillDropOff": "I have a drop-off location"
+  "PickUpWindowConfirm": {
+    "title": "Confirm Pick Up Window",
+    "desc": "Are these the times you will be available for package pick up?"
   },
-  "schedulePickupScreen": {
-    "title": "Schedule a pickup",
-    "description": "You will be directed to the USPS site where you can enter the pickup address.\n\nThe mailperson can pick up the package directly from your doorstep while on their typical route. Indicate the following items on the form:",
-    "rule1": "One **Priority Mail** package for pick-up.",
-    "rule2": "Pick-up during your **regular mail delivery** so there is no additional charge.  The weight of the package is **1 lb**."
+  "TestFeedback": {
+    "title": "How did you do?",
+    "desc": ""
   },
-  "emailOptInScreen": {
-    "title": "Opt-in for messages",
-    "description": "We will have information to share regarding the outcome of this study and will be expanding the study next flu season. Please select the items below we can email you about, or if you're not interested, just click Continue."
+  "FollowUpSurvey": {
+    "title": "Follow-up Survey",
+    "desc": "We'd like you to complete a follow-up survey that we will send you in the next couple days. Here's what to expect:",
+    "iosInstructions": "We'll ask for permission to enable notifications on your device (after you tap 'Continue' below).\nIt's important that you don't delete this app until you've received the notification.\nThe notification will link to a web survey.",
+    "androidInstructions": "We'll send a notification to your device in 2 days with a link to the web survey.\nIt's important that you don't delete this app until you've received the notification."
   },
   "Thanks": {
-    "title": "Thank you!",
-    "desc": "Your participation could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.\n\nIn about one week you will receive an email with a quick follow-up survey to check in and see how you're feeling. Please reply as soon as you can to that message.\n\nYour gift card will be sent to **{{email}}** within four weeks of us receiving your completed test kit in the mail.",
-    "disclaimer": "Please remember, the results of these tests are experimental and are not to be used as medical care. Consult your doctor as you normally would for your sickness."
+    "title": "All done!",
+    "desc": "Thank you. Your participation in this research study could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.",
+    "treatmentTitle": "Influenza Treatment",
+    "treatmentLinkLabel": "healthdirect: How to treat cold and flu symptoms",
+    "preventingTitle": "Preventing Influenza",
+    "preventingLinkLabel": "healthdirect: 10 tips to fight the flu",
+    "symptomsTitle": "Cold or Flu Symptoms",
+    "symptomsLinkLabel": "healthdirect: Understand the symptoms of cold and flu"
+  },
+  "PendingData": {
+    "title": "Connect to upload data",
+    "desc": "We could not connect to upload your data. Once you are connected please come back to the app and tap \"Try Again.\"\n\nIt may take a minute to sync your data."
   },
   "links": {
-    "haveKitAlready": "I already have my kit",
-    "learnMore": "Learn more about this flu study",
-    "findMedHelp": "Search Maps for urgent care clinics nearby",
-    "inputManually": "Enter barcode manually",
-    "supportCode": "I have a support code",
-    "kitMissingItems": "Is your kit missing items? Email us.",
+    "ausGov": "Australian Government Department of Health: All about influenza",
+    "CDC": "Centers for Disease Control and Prevention: Antiviral drugs may be an option",
+    "changeResultAnswer": "**Change your answers >**",
+    "inputManually": "Enter barcode",
+    "myDr": "myDr.com.au: Flu treatment",
     "skipTestStripPhoto": "Unable to take a picture? Skip this step",
-    "showNearbyUsps": "Show nearby USPS facilities"
+    "supportBody": "\n\n\n\n[Please describe your issue above this line and include the Installation ID below for a quicker response.] Installation ID: "
   },
   "surveyOption": {
-    "doNotEmailMe": "Please do not email me",
-    "sendCopyOfMyConsent": "Send me a copy of my consent",
-    "askAboutMyIllness": "To ask me questions about my illness/cold",
-    "learnAboutStudy": "To learn more about this study and related topics",
-    "allOfTheAbove": "All of the above",
     "feelingFeverish": "Fever",
     "chillsOrSweats": "Chills or sweats",
     "cough": "Cough",
-    "fatigue": "Feeling tired or more tired than usual",
+    "fatigue": "Feeling more tired than usual",
     "muscleOrBodyAches": "Muscle or body aches",
     "soreThroat": "Sore throat",
     "headache": "Headache",
     "runningNose": "Runny or stuffy nose",
     "shortnessOfBreath": "Shortness of breath",
-    "noInsurance": "I do not have medical insurance",
-    "privateInsuranceEmployer": "Insurance from my employer",
-    "privateInsuranceSelf": "Insurance I purchased myself",
-    "governmentInsurance": "Medicaid or Medicare",
     "noneOfTheAbove": "None of the above",
     "asthma": "Asthma",
     "copd": "COPD/emphysema",
     "diabetes": "Diabetes",
+    "heartDisease": "Heart disease",
     "noneOfThese": "None of these",
-    "doNotKnow": "Do not know",
-    "americanIndianOrAlaskaNative": "American Indian or Alaska Native",
+    "dontKnow": "Don't know",
+    "preferNotToSay": "Prefer not to say",
+    "vomiting": "Vomiting",
+    "americanIndianOrAlaskanNative": "American Indian or Alaska Native",
     "asian": "Asian",
     "nativeHawaiian": "Native Hawaiian or Other Pacific Islander",
     "blackOrAfricanAmerican": "Black or African American",
     "white": "White",
-    "other": "Other",
-    "preferNotToSay": "Prefer not to say",
-    "contactMeNextSeason": "Contact me next flu season",
-    "sendMeStudy": "Send me the study outcome report",
-    "contactMeForFollowUpStudy": "Contact me in a couple months to participate in a follow-up study (Note: You will be compensated for your time)"
+    "other": "Other"
   },
   "surveyButton": {
     "done": "Done",
     "next": "Next",
     "preferNotToSay": "Prefer not to say",
-    "na": "Not Applicable",
     "yes": "Yes",
     "no": "No",
     "male": "Male",
     "female": "Female",
     "other": "Other",
-    "doNotKnow": "Do Not Know",
-    "dontKnow": "Don't Know",
-    "doNotKnowUndecided": "Do Not Know / Undecided",
+    "dontKnow": "Don't know",
     "noneOfTheAbove": "None of the above",
-    "65andOlder": "65 and older",
-    "45to64": "45 to 64",
-    "35to44": "35 to 44",
-    "25to34": "25 to 34",
-    "18to24": "18 to 24",
-    "under18": "17 and under",
+    "selectAge": "Select age",
+    "18to19": "18 to 19",
+    "20to24": "20 to 24",
+    "25to29": "25 to 29",
+    "30to34": "30 to 34",
+    "35to39": "35 to 39",
+    "40to44": "40 to 44",
+    "45to49": "45 to 49",
+    "50to54": "50 to 54",
+    "55to59": "55 to 59",
+    "60to64": "60 to 64",
+    "65to69": "65 to 69",
+    "70to74": "70 to 74",
+    "75to79": "75 to 79",
+    "80to84": "80 to 84",
+    "85to89": "85 to 89",
+    "90+": "90 and older",
     "submit": "Submit",
     "none": "None",
-    "orderedApp": "Ordered through the app",
-    "fromClinic": "Received from a clinic",
     "1day": "1 day",
     "2days": "2 days",
     "3days": "3 days",
@@ -666,15 +590,39 @@
     "3": "3",
     "4": "4",
     "5+": "5+",
-    "noRed": "No, there are no red lines",
-    "yesAboveBlue": "Yes, above the blue line",
-    "yesBelowBlue": "Yes, below the blue line",
-    "yesAboveBelowBlue": "Yes, above and below the blue line",
-    "yesOneRed": "Yes, there is one red line",
-    "yesTwoRed": "Yes, there are two red lines",
+    "noPink": "Blue line only",
+    "yesAboveBlue": "Pink line above the blue line",
+    "yesBelowBlue": "Pink line below the blue line",
+    "yesAboveBelowBlue": "Pink line above and below the blue line",
+    "yesOnePink": "Yes, there is one pink line",
+    "yesTwoPink": "Yes, there are two pink lines",
+    "oneLine": "One line only",
+    "twoLines": "Two lines",
+    "threeLines": "Three lines",
     "easyCorrect": "It was easy to follow and I think I completed the test correctly",
     "confusingCorrect": "It was a little confusing but I think I did the test correctly",
     "confusingNotCorrect": "It was very confusing and I'm not sure I completed the test correctly",
-    "incorrect": "During the test, I realized I did something incorrectly"
+    "incorrect": "During the test, I realized I did something incorrectly",
+    "neverFlu": "I've never received an influenza vaccination",
+    "indeterminate": "Indeterminate/Other",
+    "unknown": "Unknown"
+  },
+  "didYouKnow": {
+    "++tip0": "While you can catch the flu at any time, it's more likely to happen in the colder months of the year. The flu season typically peaks in August, but laboratory-confirmed cases of influenza have been higher than usual so far this year (2019).\n",
+    "++tip1": "Since both colds and flu are viral infections, antibiotics won't help. Antibiotics only work against bacterial, not viral infections.\n",
+    "++tip2": "The flu and colds are caused by viruses and not by cold climates or being exposed to cold air.\n",
+    "++tip3": "The viruses that cause a cold affect the lining of the nose and throat causing symptoms such as sore throat, runny nose and sneezing, symptoms which are less common with the flu.\n",
+    "++tip4": "Some symptoms are more common with the flu than a cold, such as a fever, headache, body aches, extreme exhaustion, and chest discomfort.\n",
+    "++tip5": "Colds are caused by about 200 different viruses, most commonly rhinoviruses and coronaviruses. It is possible to have several colds, one after the other, because a different virus causes each one.\n",
+    "++tip6": "People with chronic conditions such as asthma, chronic lung disease, heart disease, blood disorders, liver and kidney disorders, endocrine disorders and obesity are more likely to develop complications from the flu.\n",
+    "++tip7": "While humidity is not the only factor in flu outbreaks, dry air promotes the spread of the flu. Yale University researchers suggest increasing the water vapour in the air at home, school or work with a humidifier.\n",
+    "++source0": "Source: https://www.healthdirect.gov.au/flu-trends-in-australia",
+    "++source1": "Source: https://www.healthdirect.gov.au/colds-and-flu",
+    "++source2": "Source: https://www.healthdirect.gov.au/cold-or-flu-infographic",
+    "++source3": "Source: https://www.healthdirect.gov.au/colds-and-flu-types",
+    "++source4": "Source: https://www.healthdirect.gov.au/cold-or-flu-infographic",
+    "++source5": "Source: https://www.healthdirect.gov.au/colds-and-flu-types",
+    "++source6": "Source: https://www.healthdirect.gov.au/colds-and-flu-statistics",
+    "++source7": "Source: https://www.healthdirect.gov.au/blog/help-stop-the-spread-of-flu-as-the-death-toll-rises"
   }
 }

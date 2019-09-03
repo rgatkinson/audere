@@ -10,7 +10,7 @@ import { AddressDetails } from "../models/encounterDetails";
 import { Op } from "sequelize";
 import {
   SmartyStreetsResponseModel,
-  SmartyStreetsResponseAttributes
+  SmartyStreetsResponseAttributes,
 } from "../models/db/smartyStreetsResponses";
 import logger from "../util/logger";
 import moment from "moment";
@@ -56,7 +56,7 @@ export class GeocodingService {
   ): Promise<GeocodingResponse[]> {
     const {
       cachedResults,
-      uncachedAddressesMap
+      uncachedAddressesMap,
     } = await this.getCachedAddresses(addresses);
 
     const uncachedAddressesCount = Array.from(
@@ -87,14 +87,14 @@ export class GeocodingService {
     const cachedResponses = await this.smartyStreetResponses.findAll({
       where: {
         inputAddress: {
-          [Op.in]: allAddressInfos
+          [Op.in]: allAddressInfos,
         },
         createdAt: {
           [Op.gt]: moment()
             .subtract(2, "weeks")
-            .toDate()
-        }
-      }
+            .toDate(),
+        },
+      },
     });
 
     const uncachedAddressesMap: Map<string, AddressInfo[]> = new Map();
@@ -113,7 +113,7 @@ export class GeocodingService {
             cachedResults.push({
               id: k,
               use: addressInfo.use,
-              addresses: c.responseAddresses
+              addresses: c.responseAddresses,
             });
           } else {
             emptyCachedResponseCount++;
@@ -133,7 +133,7 @@ export class GeocodingService {
 
     return {
       cachedResults,
-      uncachedAddressesMap
+      uncachedAddressesMap,
     };
   }
 
@@ -149,13 +149,13 @@ export class GeocodingService {
 
         newResponses.push({
           inputAddress: canonicalizeAddressInfo(address),
-          responseAddresses: result == null ? [] : result.addresses
+          responseAddresses: result == null ? [] : result.addresses,
         });
       });
     }
 
     await this.smartyStreetResponses.bulkCreate(newResponses, {
-      ignoreDuplicates: true
+      ignoreDuplicates: true,
     });
   }
 
@@ -173,7 +173,7 @@ export class GeocodingService {
       .forEach(r => {
         const coordinates = r.addresses.map(a => ({
           latitude: a.latitude,
-          longitude: a.longitude
+          longitude: a.longitude,
         }));
         latlng.push(...coordinates);
       });
@@ -207,7 +207,7 @@ const ADDRESS_EQUALITY_KEYS = [
   "city",
   "state",
   "postalCode",
-  "country"
+  "country",
 ];
 
 export function addressInfosEqual(

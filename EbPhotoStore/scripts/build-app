@@ -1,0 +1,93 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+# Sets Rash-specific env variables then calls root build-app
+
+set -euo pipefail
+
+if [[ "${CIRCLE_TOKEN:-}" == "" ]]; then
+  echo 1>&2 "Error: CIRCLE_TOKEN env variable is not set. Set this before running this script."
+  echo 1>&2 "       If you have no API token, get one here: https://circleci.com/account/api"
+  exit 1
+fi
+
+function usage_and_exit() {
+  echo 1>&2 "Usage: build-app <type> \"description of build\" [--no-increment]"
+  echo 1>&2 ""
+  echo 1>&2 "<type> = \"staging\"|\"prod\""
+  echo 1>&2 "description of build = Brief description of what's new, used in Slack and git tag message"
+  echo 1>&2 "--no-increment = Skip incrementing build number"
+  echo 1>&2 ""
+  echo 1>&2 "Example:"
+  echo 1>&2 "    build-app prod \"Latest strings from copywriter\""
+  echo 1>&2 ""
+  exit 1
+}
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+PRODUCT=rash
+APP_ROOT_DIR="$REPO_ROOT_DIR/EbPhotoStore"
+INCREMENT=true
+BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+REVISION=""
+
+if [[ "$#" -lt 2 ]]; then
+  usage_and_exit
+fi
+
+POSITIONAL=()
+while [[ "$#" -gt 0 ]]; do
+  key="$1"
+  case "$key" in
+    --no-increment)
+      INCREMENT=false
+      shift
+      ;;
+    *)
+      POSITIONAL+=("$1") # save in array for later
+      shift
+      ;;
+  esac
+done
+set -- "${POSITIONAL[@]}" # restore positional params
+
+if [[ "$#" -ne 2 || ! "$1" =~ ^(staging|prod)$ ]]; then
+  echo "Error: First argument must be \"staging\" or \"prod\""
+  echo "       Second argument must be description of build"
+  usage_and_exit
+fi
+CHANNEL="$1"
+DESCRIPTION="$2"
+
+if [[ "$INCREMENT" = true ]]; then
+  if [ -n "$(git status --porcelain)" ]; then
+    echo "Error: Cannot increment build number. You have uncommitted changes; please commit first."
+    git status
+    exit 1
+  fi
+
+  VERSION_FILE="$APP_ROOT_DIR/android/app/version.properties"
+  BUILD_NUM=`cat "$VERSION_FILE" | grep "VERSION_CODE" | cut -d'=' -f2`
+  ((BUILD_NUM++))
+
+  read -p "Will increment build number to $BUILD_NUM and commit \
+to $BRANCH. Press Enter to continue or Ctrl-C to abort."
+
+  rm "$VERSION_FILE"
+  echo "VERSION_CODE=$BUILD_NUM" > "$VERSION_FILE"
+
+  git add "$VERSION_FILE"
+  git commit -m "Build script incrementing Rash build number to $BUILD_NUM"
+  git push origin "$BRANCH"
+fi
+
+echo "Asking CircleCI to build $PRODUCT"
+curl --user "${CIRCLE_TOKEN}":\
+     -X POST\
+     --header "Content-Type: application/json"\
+     -d '{'$REVISION' "build_parameters": {"CIRCLE_JOB": "build_deploy_'$PRODUCT'", "PRODUCT": "'$PRODUCT'", "EXPO_RELEASE_CHANNEL": "'$CHANNEL'", "BUILD_DESCRIPTION": "'"$DESCRIPTION"'"}}' \
+https://circleci.com/api/v1.1/project/github/AudereNow/audere/tree/"$BRANCH"
+

@@ -218,13 +218,6 @@ export const generateScreen = (config: ScreenConfig) => {
       );
     };
 
-    shouldComponentUpdate(nextProps: any) {
-      if (nextProps.hasBeenOpened != this.props.hasBeenOpened) {
-        return false;
-      }
-      return true;
-    }
-
     render() {
       const ChromeType =
         !!config &&

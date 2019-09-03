@@ -25,7 +25,7 @@ import { partPath, getPart, setPart } from "./util/pathEdit";
 import {
   createSplitSql,
   nonPiiDatabaseUrl,
-  piiDatabaseUrl
+  piiDatabaseUrl,
 } from "../src/util/sql";
 import { generateRandomKey, sha256 } from "../src/util/crypto";
 import { Locations as snifflesLocations } from "audere-lib/locations";
@@ -33,7 +33,7 @@ import {
   defineSnifflesModels,
   VisitAttributes,
   VisitInstance,
-  VisitModel
+  VisitModel,
 } from "../src/models/db/sniffles";
 import {
   ClientVersionInfo as SnifflesClientVersionInfo,
@@ -41,23 +41,23 @@ import {
   LogRecordInfo,
   VisitNonPIIDbInfo,
   VisitNonPIIInfo,
-  VisitPIIInfo
+  VisitPIIInfo,
 } from "audere-lib/snifflesProtocol";
 import {
   defineFeverModels,
   SurveyAttributes,
   SurveyInstance,
-  SurveyModel
+  SurveyModel,
 } from "../src/models/db/fever";
 import {
   DeviceInfo as FeverDevice,
   EventInfo,
   SurveyNonPIIDbInfo,
-  PIIInfo
+  PIIInfo,
 } from "audere-lib/feverProtocol";
 import {
   SurveyNonPIIUpdater,
-  SurveyPIIUpdater
+  SurveyPIIUpdater,
 } from "./util/feverSurveyUpdater";
 import { Updater } from "./util/updater";
 import { AuthManager } from "../src/endpoints/webPortal/auth";
@@ -127,24 +127,25 @@ type FeverUpdater = PerReleaseUpdater<FeverNonPiiUpdater, FeverPiiUpdater>;
 
 const sniffles: SnifflesUpdater = {
   nonPii: new VisitNonPIIUpdater(sql, log),
-  pii: new VisitPIIUpdater(sql, log)
+  pii: new VisitPIIUpdater(sql, log),
 };
 
 const fever: FeverUpdater = {
   nonPii: new SurveyNonPIIUpdater(sql.nonPii, log),
-  pii: new SurveyPIIUpdater(sql.pii, log)
+  pii: new SurveyPIIUpdater(sql.pii, log),
 };
 
 enum Release {
   Sniffles = "sniffles",
-  Fever = "fever"
+  Fever = "fever",
+  Cough = "cough",
 }
 
 yargs.strict(true);
 yargs.option("verbose", {
   alias: "v",
   boolean: true,
-  global: true
+  global: true,
 });
 yargs.command({
   command: "by-created <release> <start> <end>",
@@ -153,27 +154,27 @@ yargs.command({
       .string("release")
       .string("start")
       .string("end"),
-  handler: command(cmdByCreated)
+  handler: command(cmdByCreated),
 });
 yargs.command({
   command: "by-consent-date <release> <date>",
   builder: yargs => yargs.string("release").string("date"),
-  handler: command(cmdByConsentDate)
+  handler: command(cmdByConsentDate),
 });
 yargs.command({
   command: "by-email <release> <email>",
   builder: yargs => yargs.string("email"),
-  handler: command(cmdByEmail)
+  handler: command(cmdByEmail),
 });
 yargs.command({
   command: "by-name <release> <first> <last>",
   builder: yargs => yargs.string("first").string("last"),
-  handler: command(cmdByName)
+  handler: command(cmdByName),
 });
 yargs.command({
   command: "by-samples <release> <types>",
   builder: yargs => yargs.string("release").string("types"),
-  handler: command(cmdBySamples)
+  handler: command(cmdBySamples),
 });
 yargs.command({
   command: "show-path <release> <kind> <path> <rows>",
@@ -183,17 +184,17 @@ yargs.command({
       .string("kind")
       .string("path")
       .string("rows"),
-  handler: command(cmdShowPath)
+  handler: command(cmdShowPath),
 });
 yargs.command({
   command: "photo <csruid>",
   builder: yargs => yargs.string("csruid"),
-  handler: command(cmdPhoto)
+  handler: command(cmdPhoto),
 });
 yargs.command({
   command: "photo-of <release> <row>",
   builder: yargs => yargs.string("release").string("row"),
-  handler: command(cmdPhotoOf)
+  handler: command(cmdPhotoOf),
 });
 yargs.command({
   command: "sample-of <release> <type> <row>",
@@ -202,12 +203,12 @@ yargs.command({
       .string("release")
       .string("type")
       .string("row"),
-  handler: command(cmdSampleOf)
+  handler: command(cmdSampleOf),
 });
 yargs.command({
   command: "demo <release> <row> [value]",
   builder: yargs => yargs.string("row").boolean("value"),
-  handler: command(cmdDemo)
+  handler: command(cmdDemo),
 });
 yargs.command({
   command: "demo1 <release> <kind> <row> [value]",
@@ -217,17 +218,17 @@ yargs.command({
       .string("kind")
       .string("row")
       .option("value", { boolean: true }),
-  handler: command(cmdDemo1)
+  handler: command(cmdDemo1),
 });
 yargs.command({
   command: "set-administrator <value> <row>",
   builder: yargs => yargs.string("value").string("row"),
-  handler: command(cmdSetSnifflesAdministrator)
+  handler: command(cmdSetSnifflesAdministrator),
 });
 yargs.command({
   command: "set-location <value> <row>",
   builder: yargs => yargs.string("value").string("row"),
-  handler: command(cmdSetSnifflesLocation)
+  handler: command(cmdSetSnifflesLocation),
 });
 yargs.command({
   command: "upload <release> <row>",
@@ -235,30 +236,35 @@ yargs.command({
     "Removes marker that a row is already uploaded to Hutch, " +
     "hopefully to trigger another upload next time around.",
   builder: yargs => yargs.string("release").string("row"),
-  handler: command(cmdUpload)
+  handler: command(cmdUpload),
 });
 yargs.command({
   command: "generate-random-key [size]",
   builder: yargs =>
     yargs.option("size", {
-      number: true
+      number: true,
     }),
-  handler: command(cmdGenerateRandomKey)
+  handler: command(cmdGenerateRandomKey),
 });
 yargs.command({
   command: "add-access-key <release> <key>",
   builder: yargs => yargs.string("release"),
-  handler: command(cmdAddAccessKey)
+  handler: command(cmdAddAccessKey),
 });
 yargs.command({
   command: "create-access-key <release>",
   builder: yargs => yargs.string("release"),
-  handler: command(cmdCreateAccessKey)
+  handler: command(cmdCreateAccessKey),
+});
+yargs.command({
+  command: "show-access-key <release> <part>",
+  builder: yargs => yargs.string("release").string("part"),
+  handler: command(cmdShowAccessKey),
 });
 yargs.command({
   command: "show <release> <kind> <row>",
   builder: yargs => yargs.string("kind").string("row"),
-  handler: command(cmdShow)
+  handler: command(cmdShow),
 });
 yargs.command({
   command: "edit <release> <kind> <path> <row>",
@@ -268,13 +274,13 @@ yargs.command({
       .string("kind")
       .string("path")
       .string("row"),
-  handler: command(cmdEdit)
+  handler: command(cmdEdit),
 });
 yargs.command({
   // Fever-only
   command: "docev <csruid>",
   builder: yargs => yargs.string("crsuid"),
-  handler: command(cmdDocumentEvents)
+  handler: command(cmdDocumentEvents),
 });
 yargs.command({
   command: "log <release> [since] [until] [device] [text]",
@@ -283,31 +289,31 @@ yargs.command({
       .string("release")
       .positional("since", {
         describe: "earliest timestamp to search",
-        default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        default: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
       })
       .positional("until", {
         describe: "latest timestamp to search",
-        default: new Date(Date.now())
+        default: new Date(Date.now()),
       })
       .positional("device", {
         describe: "regular expression to search in device name or id",
-        default: ".?"
+        default: ".?",
       })
       .positional("text", {
         describe: "regular expression to search in log lines",
-        default: ".?"
+        default: ".?",
       }),
-  handler: command(cmdLog)
+  handler: command(cmdLog),
 });
 yargs.command({
   command: "adduser <userid> <password>",
   builder: yargs => yargs.string("userid").string("password"),
-  handler: command(cmdAdd)
+  handler: command(cmdAdd),
 });
 yargs.command({
   command: "passwd <userid> <password>",
   builder: yargs => yargs.string("userid").string("password"),
-  handler: command(cmdPasswd)
+  handler: command(cmdPasswd),
 });
 yargs.command({
   command: "set-device-setting <installationId> <key> <value>",
@@ -316,27 +322,27 @@ yargs.command({
       .string("installationId")
       .string("key")
       .string("value"),
-  handler: command(cmdSetDeviceSetting)
+  handler: command(cmdSetDeviceSetting),
 });
 yargs.command({
   command: "clear-device-setting <installationId> <key>",
   builder: yargs => yargs.string("installationId").string("key"),
-  handler: command(cmdClearDeviceSetting)
+  handler: command(cmdClearDeviceSetting),
 });
 yargs.command({
   command: "grant-permission <userid> <permission>",
   builder: yargs => yargs.string("userid").string("permission"),
-  handler: command(cmdGrantPermission)
+  handler: command(cmdGrantPermission),
 });
 yargs.command({
   command: "revoke-permission <userid> <permission>",
   builder: yargs => yargs.string("userid").string("permission"),
-  handler: command(cmdRevokePermission)
+  handler: command(cmdRevokePermission),
 });
 yargs.command({
   command: "recover-visit <barcode>",
   builder: yargs => yargs.string("barcode"),
-  handler: command(cmdRecoverVisit)
+  handler: command(cmdRecoverVisit),
 });
 yargs.demandCommand().argv;
 
@@ -368,7 +374,7 @@ async function cmdSetDeviceSetting(argv: DeviceSettingArgs) {
   await deviceSetting.upsert({
     device: argv.installationId,
     key: argv.key,
-    setting: argv.value
+    setting: argv.value,
   });
 }
 
@@ -376,8 +382,8 @@ async function cmdClearDeviceSetting(argv: DeviceSettingArgs) {
   await deviceSetting.destroy({
     where: {
       device: argv.installationId,
-      key: argv.key
-    }
+      key: argv.key,
+    },
   });
 }
 
@@ -400,7 +406,7 @@ interface PhotosArgs {
 async function cmdPhoto(argv: PhotosArgs): Promise<void> {
   const csruid = argv.csruid;
   const rows = await feverModels.photo.findAll({
-    where: { csruid: { [Op.like]: `${csruid}%` } }
+    where: { csruid: { [Op.like]: `${csruid}%` } },
   });
   switch (rows.length) {
     case 0:
@@ -427,7 +433,7 @@ async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
     case Release.Fever: {
       const surveyRow = expectOne(
         await feverModels.surveyNonPii.findAll({
-          where: { csruid: { [Op.like]: `${argv.row}%` } }
+          where: { csruid: { [Op.like]: `${argv.row}%` } },
         })
       );
       const sample = expectOne(
@@ -437,7 +443,7 @@ async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
       );
       const photoRow = expectOne(
         await feverModels.photo.findAll({
-          where: { csruid: { [Op.eq]: sample.code } }
+          where: { csruid: { [Op.eq]: sample.code } },
         })
       );
       console.log(photoRow.photo.jpegBase64);
@@ -461,7 +467,7 @@ async function cmdSampleOf(argv: SampleOfArgs): Promise<void> {
     case Release.Fever: {
       const surveyRow = expectOne(
         await feverModels.surveyNonPii.findAll({
-          where: { csruid: { [Op.like]: `${argv.row}%` } }
+          where: { csruid: { [Op.like]: `${argv.row}%` } },
         })
       );
       const sample = expectOne(
@@ -491,9 +497,9 @@ async function cmdByConsentDate(argv: ByDateArgs): Promise<void> {
             { visit: { isDemo: false } },
             Sequelize.literal(
               `lower(visit->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`
-            )
-          ]
-        }
+            ),
+          ],
+        },
       });
       consoleLogRows(rows);
       break;
@@ -505,9 +511,9 @@ async function cmdByConsentDate(argv: ByDateArgs): Promise<void> {
             { survey: { isDemo: false } },
             Sequelize.literal(
               `lower(survey->>'consents')::jsonb @> '[{"date":"${argv.date}"}]'`
-            )
-          ]
-        }
+            ),
+          ],
+        },
       });
       consoleLogRows(rows);
       break;
@@ -532,9 +538,9 @@ async function cmdByEmail(argv: ByEmailArgs): Promise<void> {
             Sequelize.literal(`
               lower(visit->'patient'->>'telecom')::jsonb @>
               lower('[{"value":"${argv.email}"}]')
-            `)
-          ]
-        }
+            `),
+          ],
+        },
       });
       consoleLogRows(rows);
       break;
@@ -547,9 +553,9 @@ async function cmdByEmail(argv: ByEmailArgs): Promise<void> {
             Sequelize.literal(`
               lower(survey->'patient'->>'telecom')::jsonb @>
               lower('[{"value":"${argv.email}"}]')
-            `)
-          ]
-        }
+            `),
+          ],
+        },
       });
       consoleLogRows(rows);
       break;
@@ -575,11 +581,11 @@ async function cmdByName(argv: ByNameArgs): Promise<void> {
             isDemo: false,
             patient: {
               name: {
-                [Op.iLike]: `%${argv.first}%${argv.last}%`
-              }
-            }
-          }
-        }
+                [Op.iLike]: `%${argv.first}%${argv.last}%`,
+              },
+            },
+          },
+        },
       });
       consoleLogRows(rows);
       break;
@@ -591,14 +597,14 @@ async function cmdByName(argv: ByNameArgs): Promise<void> {
             isDemo: false,
             patient: {
               firstName: {
-                [Op.iLike]: `%argv.first%`
+                [Op.iLike]: `%argv.first%`,
               },
               lastName: {
-                [Op.iLike]: `%argv.last%`
-              }
-            }
-          }
-        }
+                [Op.iLike]: `%argv.last%`,
+              },
+            },
+          },
+        },
       });
       consoleLogRows(rows);
       break;
@@ -622,9 +628,9 @@ async function cmdByCreated(argv: ByCreatedArgs): Promise<void> {
           [Op.and]: [
             { visit: { isDemo: false } },
             { createdAt: { [Op.gte]: argv.start } },
-            { createdAt: { [Op.lte]: argv.end } }
-          ]
-        }
+            { createdAt: { [Op.lte]: argv.end } },
+          ],
+        },
       });
       consoleLogRows(rows);
       break;
@@ -635,9 +641,9 @@ async function cmdByCreated(argv: ByCreatedArgs): Promise<void> {
           [Op.and]: [
             { survey: { isDemo: false } },
             { createdAt: { [Op.gte]: argv.start } },
-            { createdAt: { [Op.lte]: argv.end } }
-          ]
-        }
+            { createdAt: { [Op.lte]: argv.end } },
+          ],
+        },
       });
       consoleLogRows(rows);
       break;
@@ -663,11 +669,11 @@ async function cmdBySamples(argv: BySamplesArgs): Promise<void> {
             { survey: { isDemo: false } },
             ...sample_types.map(sample_type => ({
               "survey.samples::jsonb": {
-                [Op.contains]: cast(JSON.stringify([{ sample_type }]), "JSONB")
-              }
-            }))
-          ]
-        }
+                [Op.contains]: cast(JSON.stringify([{ sample_type }]), "JSONB"),
+              },
+            })),
+          ],
+        },
       });
       rows.forEach(row => console.log(pubId(row.csruid)));
       break;
@@ -696,9 +702,9 @@ async function feverSurveys(
       ...q,
       survey: {
         isDemo: false,
-        ...q.survey
-      }
-    }
+        ...q.survey,
+      },
+    },
   });
 }
 
@@ -711,9 +717,9 @@ async function snifflesVisits(
       ...q,
       visit: {
         isDemo: false,
-        ...q.visit
-      }
-    }
+        ...q.visit,
+      },
+    },
   });
 }
 
@@ -731,14 +737,14 @@ async function cmdShowPath(argv: ShowPathArgs): Promise<void> {
   switch (argv.release) {
     case Release.Sniffles: {
       const rows = await snifflesVisits(argv.kind, {
-        csruid: { [Op.like]: { [Op.any]: rowLikes } }
+        csruid: { [Op.like]: { [Op.any]: rowLikes } },
       });
       console.log(JSON.stringify(rows.map(row => getPart(row, pathNodes))));
       break;
     }
     case Release.Fever: {
       const rows = await feverSurveys(argv.kind, {
-        csruid: { [Op.like]: { [Op.any]: rowLikes } }
+        csruid: { [Op.like]: { [Op.any]: rowLikes } },
       });
       console.log(JSON.stringify(rows.map(row => getPart(row, pathNodes))));
       break;
@@ -805,10 +811,10 @@ async function snifflesLog(argv: LogArgs): Promise<void> {
     where: {
       [Op.and]: [
         { batch: { timestamp: { [Op.gt]: argv.since } } },
-        { batch: { timestamp: { [Op.lt]: argv.until } } }
-      ]
+        { batch: { timestamp: { [Op.lt]: argv.until } } },
+      ],
     },
-    order: [literal("batch->>'timestamp' ASC")]
+    order: [literal("batch->>'timestamp' ASC")],
   });
 
   const emitter = new LogEmitter();
@@ -835,11 +841,11 @@ async function feverLog(argv: LogArgs): Promise<void> {
       analytics: {
         [Op.and]: [
           { timestamp: { [Op.gt]: argv.since } },
-          { timestamp: { [Op.lt]: argv.until } }
-        ]
-      }
+          { timestamp: { [Op.lt]: argv.until } },
+        ],
+      },
     },
-    order: [literal("analytics->>'timestamp' ASC")]
+    order: [literal("analytics->>'timestamp' ASC")],
   });
 
   const emitter = new LogEmitter();
@@ -918,7 +924,7 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
       const dataP = await sniffles.pii.load(csruid);
       await Promise.all([
         sniffles.nonPii.setDemo(dataNP, isDemo),
-        sniffles.pii.setDemo(dataP, isDemo)
+        sniffles.pii.setDemo(dataP, isDemo),
       ]);
       break;
     }
@@ -929,7 +935,7 @@ async function cmdDemo(argv: DemoArgs): Promise<void> {
       const dataP = await fever.pii.load(csruid);
       await Promise.all([
         fever.nonPii.setDemo(dataNP, isDemo),
-        fever.pii.setDemo(dataP, isDemo)
+        fever.pii.setDemo(dataP, isDemo),
       ]);
       break;
     }
@@ -1013,9 +1019,9 @@ async function cmdSetSnifflesAdministrator(argv: AdministratorArgs) {
   const updates = await Promise.all([
     sniffles.nonPii.updateItem(nonPii, {
       ...nonPii.visit,
-      administrator: argv.value
+      administrator: argv.value,
     }),
-    sniffles.pii.updateItem(pii, { ...pii.visit, administrator: argv.value })
+    sniffles.pii.updateItem(pii, { ...pii.visit, administrator: argv.value }),
   ]);
   if (updates.some(x => x)) {
     console.log(`Updated administrator to '${argv.value}'`);
@@ -1056,9 +1062,9 @@ async function cmdSetSnifflesLocation(argv: LocationArgs) {
   const updates = await Promise.all([
     sniffles.nonPii.updateItem(nonPii, {
       ...nonPii.visit,
-      location: argv.value
+      location: argv.value,
     }),
-    sniffles.pii.updateItem(pii, { ...pii.visit, location: argv.value })
+    sniffles.pii.updateItem(pii, { ...pii.visit, location: argv.value }),
   ]);
   if (updates.some(x => x)) {
     console.log(`Updated location to '${argv.value}'`);
@@ -1101,7 +1107,7 @@ interface AddAccessKeyArgs {
 async function cmdAddAccessKey(argv: AddAccessKeyArgs): Promise<void> {
   await accessKey(argv.release).create({
     key: argv.key,
-    valid: true
+    valid: true,
   });
   console.log(`Added access key '${argv.key}' and marked valid.`);
 }
@@ -1113,7 +1119,7 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   const components = [
     "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
     await generateRandomKey(),
-    await generateRandomKey()
+    await generateRandomKey(),
   ];
   const buffers = components.map(base64url.toBuffer);
   const buffer = buffers.reduce(bufferXor, Buffer.alloc(0));
@@ -1127,6 +1133,37 @@ async function cmdCreateAccessKey(argv: CreateAccessKeyArgs): Promise<void> {
   console.log(`ACCESS_KEY_A='${components[1]}'`);
   console.log(`ACCESS_KEY_B='${components[2]}'`);
   console.log();
+}
+
+interface ShowAccessKeyArgs {
+  release: Release;
+  part: string;
+}
+
+async function cmdShowAccessKey(argv: ShowAccessKeyArgs): Promise<void> {
+  const components = [
+    "X12ct9Go-AqgxyjnuCT4uOHFFokVfnB03BXo3vxw_TEQVBAaK53Kkk74mEwU5Nuw",
+    getKeyA(argv.release),
+    argv.part,
+  ];
+  const buffers = components.map(base64url.toBuffer);
+  const buffer = buffers.reduce(bufferXor, Buffer.alloc(0));
+  const key = base64url(buffer);
+
+  console.log(key);
+}
+
+function getKeyA(release: Release): string {
+  switch (release) {
+    case Release.Sniffles:
+      return "TQpJzepFiEQoVTXAxFbORoMy3i23Xeeq_OYTM9esKzEFkpso0ZlQd5Hd_OWa9plB";
+    case Release.Fever:
+      return "7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F";
+    case Release.Cough:
+      return "7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F";
+    default:
+      throw failRelease(release);
+  }
 }
 
 interface RecoverVisitArgs {
@@ -1176,7 +1213,7 @@ async function saveRecoveredVisit(
 
   await Promise.all([
     snifflesModels.visitNonPii.create({ csruid, device, visit: visitNonPII }),
-    snifflesModels.visitPii.create({ csruid, device, visit: visitPII })
+    snifflesModels.visitPii.create({ csruid, device, visit: visitPII }),
   ]);
 
   console.log(`Saved recovered record ${id}`);
@@ -1213,8 +1250,8 @@ async function dbcliSnifflesDevice(
     yearClass: new Date().getFullYear().toString(),
     idiomText: `dbcli-recover-visit-${id}`,
     platform: JSON.stringify({
-      nodejs: os.platform()
-    })
+      nodejs: os.platform(),
+    }),
   };
 }
 
@@ -1371,7 +1408,7 @@ async function expectYes(query: string): Promise<void> {
 async function question(query: string): Promise<string> {
   const rl = createReadline({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   });
   return new Promise<string>(resolve => {
     rl.question(query, answer => {
@@ -1424,7 +1461,7 @@ function runCode(program: string, ...args: string[]): Promise<number> {
   return new Promise<number>((resolve, reject) => {
     const proc = spawn(program, args, {
       stdio: "inherit",
-      shell: true
+      shell: true,
     });
     proc.on("close", code => {
       resolve(code);
@@ -1434,8 +1471,11 @@ function runCode(program: string, ...args: string[]): Promise<number> {
 
 function accessKey(release: Release) {
   return forApp(release, {
-    sniffles: snifflesModels.accessKey,
-    fever: feverModels.accessKey
+    sniffles: () => snifflesModels.accessKey,
+    fever: () => feverModels.accessKey,
+    cough: () => {
+      throw failRelease(release);
+    },
   });
 }
 
@@ -1474,46 +1514,38 @@ function updater(release: Release, kind: string): SomeUpdater {
 
 function piiUpdater(release: Release) {
   return forApp<SnifflesPiiUpdater | FeverPiiUpdater>(release, {
-    sniffles: sniffles.pii,
-    fever: fever.pii
+    sniffles: () => sniffles.pii,
+    fever: () => fever.pii,
+    cough: () => {
+      throw failRelease(release);
+    },
   });
 }
 
 function nonPiiUpdater(release: Release) {
   return forApp<SnifflesNonPiiUpdater | FeverNonPiiUpdater>(release, {
-    sniffles: sniffles.nonPii,
-    fever: fever.nonPii
+    sniffles: () => sniffles.nonPii,
+    fever: () => fever.nonPii,
+    cough: () => {
+      throw failRelease(release);
+    },
   });
 }
 
-function forApp<T>(release: Release, choices: { [key in Release]: T }) {
-  {
-    const required = Object.keys(Release)
-      .map(x => Release[x])
-      .sort();
-    const provided = Object.keys(choices).sort();
-    if (!_.isEqual(required, provided)) {
-      throw new Error(
-        `Internal error: forApp called with choices that don't match releases: ` +
-          `required=[${required.join(",")}] ` +
-          `provided=[${provided.join(",")}]`
-      );
-    }
-  }
-
+function forApp<T>(release: Release, choices: { [key in Release]: () => T }) {
   const choice = choices[release];
   if (choice == null) {
     throw failRelease(release);
   }
 
-  return choice;
+  return choice();
 }
 
 async function makeRecoveryFirebase(): Promise<App> {
   const credentialFile = getenv("FIREBASE_RECOVERY_CREDENTIALS");
   const credentials = await readFile(credentialFile, { encoding: "utf8" });
   return firebase.initializeApp({
-    credential: firebase.credential.cert(JSON.parse(credentials))
+    credential: firebase.credential.cert(JSON.parse(credentials)),
   });
 }
 
@@ -1561,6 +1593,9 @@ function failKind(kind: string): never {
 }
 
 function failRelease(release: string | Release): never {
+  if (release === "cough") {
+    throw fail("This command is not yet implemented for cough");
+  }
   throw fail(
     `Unrecognized release: '${release}', ` +
       `expected one of '${Object.keys(Release).join("', '")}'`

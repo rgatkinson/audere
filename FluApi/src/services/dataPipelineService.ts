@@ -3,14 +3,14 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Sequelize } from "sequelize";
+import { Sequelize, Transaction } from "sequelize";
 import { SplitSql } from "../util/sql";
 import { Hash } from "../util/crypto";
 import {
   OptionQuestion,
   SurveyQuestion,
   SurveyQuestionType,
-  SURVEY_QUESTIONS
+  SURVEY_QUESTIONS,
 } from "audere-lib/coughQuestionConfig";
 import { defineDataNode } from "../models/db/dataPipeline";
 import { tuple2 } from "../util/tuple";
@@ -20,9 +20,11 @@ const DEBUG_DATA_PIPELINE_SERVICE = false;
 
 export class DataPipelineService {
   private readonly sql: SplitSql;
+  private readonly progress: () => void;
 
-  constructor(sql: SplitSql) {
+  constructor(sql: SplitSql, progress?: () => void) {
     this.sql = sql;
+    this.progress = progress || (() => {});
   }
 
   async refresh(): Promise<void> {
@@ -44,12 +46,15 @@ export class DataPipelineService {
     const statesByName = new Map(states.map(x => tuple2(x.name, x)));
     const nodesByName = new Map(nodes.map(x => tuple2(x.meta.name, x)));
     const hashes = buildHashes(nodesByName);
+    this.progress();
 
     for (let state of states) {
       const name = state.name;
       if (!nodesByName.has(name)) {
         await runQuery(sql, state.cleanup);
+        this.progress();
         await nodeState.destroy({ where: { name } });
+        this.progress();
       }
     }
 
@@ -60,13 +65,26 @@ export class DataPipelineService {
       if (state != null && state.hash === hash) {
         const refresh = node.getRefresh();
         if (refresh != null) {
-          await runQuery(sql, refresh);
+          await sql.transaction(async t => {
+            for (let i = 0; i < refresh.length; i++) {
+              await runQuery(sql, refresh[i], t);
+            }
+          });
+          this.progress();
         }
       } else {
         const drop = node.getDelete();
         await runQuery(sql, drop);
-        await runQuery(sql, node.getCreate());
+        this.progress();
+        const create = node.getCreate();
+        await sql.transaction(async t => {
+          for (let i = 0; i < create.length; i++) {
+            await runQuery(sql, create[i], t);
+            this.progress();
+          }
+        });
         await nodeState.upsert({ name, hash, cleanup: drop });
+        this.progress();
       }
     }
   }
@@ -79,11 +97,17 @@ interface SqlNodeMetadata {
   spec: string; // Specification for how to create.
 }
 
+interface SequelizeTableReference {
+  tableName: string;
+  id: string;
+  timestamp: string;
+}
+
 interface ManagedSqlNode {
   readonly meta: SqlNodeMetadata;
 
-  getCreate(): string;
-  getRefresh(): string | null;
+  getCreate(): string[];
+  getRefresh(): string[] | null;
   getDelete(): string;
 }
 
@@ -93,7 +117,7 @@ class ManagedSqlType implements ManagedSqlNode {
     this.meta = meta;
   }
 
-  getCreate = () => `create type ${this.meta.name} as ${this.meta.spec};`;
+  getCreate = () => [`create type ${this.meta.name} as ${this.meta.spec};`];
   getRefresh = () => null;
   getDelete = () => `drop type if exists ${this.meta.name} cascade;`;
 }
@@ -104,7 +128,7 @@ class ManagedView implements ManagedSqlNode {
     this.meta = meta;
   }
 
-  getCreate = () => `create view ${this.meta.name} as ${this.meta.spec};`;
+  getCreate = () => [`create view ${this.meta.name} as ${this.meta.spec};`];
   getRefresh = () => null;
   getDelete = () => dropTableLike(this.meta.name);
 }
@@ -115,15 +139,78 @@ class ManagedMaterializedView implements ManagedSqlNode {
     this.meta = meta;
   }
 
-  getCreate = () =>
-    `create materialized view ${this.meta.name} as ${this.meta.spec};`;
-  getRefresh = () => `refresh materialized view ${this.meta.name};`;
+  getCreate = () => [
+    `create materialized view ${this.meta.name} as ${this.meta.spec};`,
+  ];
+  getRefresh = () => [`refresh materialized view ${this.meta.name};`];
   getDelete = () => dropTableLike(this.meta.name);
 }
 
-async function runQuery(sql: Sequelize, query: string): Promise<void> {
+class ManagedTable implements ManagedSqlNode {
+  readonly meta: SqlNodeMetadata;
+  readonly deleteStaleRows: string;
+  readonly insertNewRows: string;
+
+  constructor(
+    meta: SqlNodeMetadata,
+    deleteStaleRows: string,
+    insertNewRows: string
+  ) {
+    this.meta = meta;
+    this.deleteStaleRows = deleteStaleRows;
+    this.insertNewRows = insertNewRows;
+  }
+
+  getCreate = () => [
+    `create table ${this.meta.name} as ${this.meta.spec};`,
+    `alter table ${this.meta.name} add column id serial primary key;`,
+    `alter table ${this.meta.name} add column "createdAt" timestamp default now();`,
+  ];
+  getRefresh = () => [this.deleteStaleRows, this.insertNewRows];
+  getDelete = () => dropTableLike(this.meta.name);
+}
+
+class SequelizeSourceTable extends ManagedTable {
+  constructor(meta: SqlNodeMetadata, ref: SequelizeTableReference) {
+    super(
+      meta,
+      `
+      delete from ${meta.name}
+      where id in (
+        select
+          tbl.id
+        from
+          ${meta.name} as tbl
+          join ${ref.tableName} as source on source.id = tbl."${ref.id}"
+        where
+          tbl."${ref.timestamp}" < source."updatedAt"
+      )
+      `,
+      `
+      insert into ${meta.name}
+      select
+        spec.*
+      from
+        (${meta.spec}) as spec
+        left join ${meta.name} as tbl on tbl."${ref.id}" = spec."${ref.id}"
+      where
+        tbl.id is null
+      `
+    );
+  }
+}
+
+async function runQuery(
+  sql: Sequelize,
+  query: string,
+  transaction?: Transaction
+): Promise<void> {
   debug(`=== Running SQL ===\n${query}`);
-  await sql.query(query);
+  if (transaction != null) {
+    await sql.query(query, { transaction: transaction });
+  } else {
+    await sql.query(query);
+  }
 }
 
 function getPiiDataNodes(): ManagedSqlNode[] {
@@ -131,6 +218,25 @@ function getPiiDataNodes(): ManagedSqlNode[] {
 }
 
 function getNonPiiDataNodes(): ManagedSqlNode[] {
+  const testResultNav = "survey->'events' @> '[{\"refId\":\"TestResult\"}]'";
+
+  const backfillResultsExplanation = caseIf(
+    testResultNav,
+    answerValue(SURVEY_QUESTIONS.find(s => s.id === "PinkWhenBlue")),
+    "null"
+  );
+
+  const backfillResultsShown = caseIf(
+    testResultNav,
+    matchesIfNotNull(
+      backfillResultsExplanation,
+      "No, there are no pink lines",
+      "negative",
+      "positive"
+    ),
+    "null"
+  );
+
   return [
     new ManagedSqlType({
       name: "cough_derived.survey_response",
@@ -140,16 +246,18 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
         text text,
         answer jsonb,
         "answerOptions" jsonb
-      )`
+      )`,
     }),
 
     new ManagedMaterializedView({
       name: "cough_derived.non_demo_surveys",
       deps: [],
       spec: `
-        select * from cough.current_surveys
+        select cough.current_surveys.*, cough.expert_read.interpretation as expert_interpretation from
+          cough.current_surveys
+          left join cough.expert_read on cough.current_surveys.id = cough.expert_read."surveyId"
         where survey->>'isDemo' = 'false'
-      `
+      `,
     }),
 
     new ManagedMaterializedView({
@@ -164,16 +272,17 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           device,
           survey,
           ${namedResponseColumns(SURVEY_QUESTIONS).join(",\n  ")},
-          ${namedSampleColumns().join(",\n  ")}
+          ${namedSampleColumns().join(",\n  ")},
+          expert_interpretation
         from cough_derived.non_demo_surveys
-      `
+      `,
     }),
 
     new ManagedMaterializedView({
       name: "cough_derived.surveys",
       deps: [
         "cough_derived.survey_response",
-        "cough_derived.survey_named_array_items"
+        "cough_derived.survey_named_array_items",
       ],
       spec: `
         select
@@ -195,6 +304,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           device->'clientVersion'->>'name' as clientversion_name,
           device->'clientVersion'->>'version' as clientversion_version,
           device->'clientVersion'->>'buildDate' as clientversion_builddate,
+          device->'clientVersion'->>'rdtVersionAndroid' as clientversion_rdt_android,
+          device->'clientVersion'->>'rdtVersionIos' as clientversion_rdt_ios,
 
           survey,
           survey->'marketingProperties' as marketingproperties,
@@ -214,8 +325,10 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo' as rdtinfo,
           survey->'rdtInfo'->>'captureTime' as rdtinfo_lastcapturetime,
           survey->'rdtInfo'->>'rdtTotalTime' as rdtinfo_totalcapturetime,
-          survey->'rdtInfo'->>'resultShown' as rdtinfo_resultshown,
-          survey->'rdtInfo'->>'resultShownExplanation' as rdtinfo_resultshownexplanation,
+          survey->'rdtInfo'->>'flashEnabled' as rdtinfo_flashenabled,
+          survey->'rdtInfo'->>'flashDisabledAutomatically' as rdtinfo_flashdisabledautomatically,
+          coalesce(survey->'rdtInfo'->>'resultShown', (${backfillResultsShown})) as rdtinfo_resultshown,
+          coalesce(survey->'rdtInfo'->>'resultShownExplanation', ${backfillResultsExplanation}) as rdtinfo_resultshownexplanation,
           survey->'rdtInfo'->'rdtReaderResult'->>'testStripFound' as rdtreaderresult_teststripfound,
           survey->'rdtInfo'->'rdtReaderResult'->>'skippedDueToMemWarning' as rdtreaderresult_skippedduetomemwarning,
           survey->'rdtInfo'->'rdtReaderResult'->>'isCentered' as rdtreaderresult_iscentered,
@@ -226,9 +339,11 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo'->'rdtReaderResult'->>'exposureResult' as rdtreaderresult_exposureresult,
           survey->'rdtInfo'->'rdtReaderResult'->>'controlLineFound' as rdtreaderresult_controllinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testALineFound' as rdtreaderresult_testalinefound,
-          survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound
+          survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound,
+          survey->'rdtInfo'->'rdtReaderResult'->>'testStripBoundary' as rdtreaderresult_teststripboundary,
+          expert_interpretation
         from cough_derived.survey_named_array_items
-      `
+      `,
     }),
 
     new ManagedView({
@@ -269,71 +384,78 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           overseas_illness,
           overseas_location
         from cough.aspren_data
-      `
-    })
+      `,
+    }),
   ];
 }
 
 function getFirebaseDataNodes(): ManagedSqlNode[] {
   return [
-    new ManagedMaterializedView({
-      name: "cough_derived.analytics",
-      deps: [],
-      spec: `
-        select
-          id,
-          "createdAt",
-          "updatedAt",
+    new SequelizeSourceTable(
+      {
+        name: "cough_derived.analytics",
+        deps: [],
+        spec: `
+          select
+            id as source_id,
+            "createdAt" as source_created,
+            "updatedAt" as source_updated,
 
-          event->>'event_date' as event_date,
-          event->>'event_timestamp' as event_timestamp,
-          event->>'event_name' as event_name,
-          event->>'event_previous_timestamp' as event_previous_timestamp,
-          event->>'event_value_in_usd' as event_value_usd,
-          event->>'event_bundle_sequence_id' as event_bundle_sequence_id,
-          event->>'event_server_timestamp_offset' as event_server_timestamp_offset,
-          event->>'user_id' as user_id,
-          event->>'user_pseudo_id' as user_pseudo_id,
-          event->>'user_first_touch_timestamp' as user_first_touch_timestamp,
-          event->'user_ltv'->>'revenue' as ltv_revenue,
-          event->'user_ltv'->>'currency' as ltv_currency,
-          event->'device'->>'category' as device_category,
-          event->'device'->>'mobile_brand_name' as mobile_brand_name,
-          event->'device'->>'mobile_model_name' as mobile_model_name,
-          event->'device'->>'mobile_marketing_name' as mobile_marketing_name,
-          event->'device'->>'mobile_os_hardware_model' as mobile_os_hardware_model,
-          event->'device'->>'operating_system' as device_operating_system,
-          event->'device'->>'operating_system_version' as device_operating_system_version,
-          event->'device'->>'vendor_id' as device_vendor_id,
-          event->'device'->>'advertising_id' as device_advertising_id,
-          event->'device'->>'language' as device_language,
-          event->'device'->>'is_limited_ad_tracking' as is_limited_ad_tracking,
-          event->'device'->>'time_zone_offset_seconds' as device_time_zone_offset_seconds,
-          event->'device'->>'browser' as device_browser,
-          event->'device'->>'browser_version' as device_browser_version,
-          event->'device'->'web_info'->>'browser' as web_info_browser,
-          event->'device'->'web_info'->>'browser_version' as web_info_browser_version,
-          event->'device'->'web_info'->>'hostname' as web_info_hostname,
-          event->'geo'->>'continent' as continent,
-          event->'geo'->>'country' as country,
-          event->'geo'->>'region' as region,
-          event->'geo'->>'city' as city,
-          event->'geo'->>'sub_continent' as sub_continent,
-          event->'geo'->>'metro' as metro,
-          event->'app_info'->>'id' as app_info_id,
-          event->'app_info'->>'version' as app_info_version,
-          event->'app_info'->>'install_store' as install_store,
-          event->'app_info'->>'firebase_app_id' as firebase_app_id,
-          event->'app_info'->>'install_source' as install_source,
-          event->'traffic_source'->>'name' as traffic_source_name,
-          event->'traffic_source'->>'medium' as traffic_source_medium,
-          event->'traffic_source'->>'source' as traffic_source,
-          event->>'stream_id' as stream_id,
-          event->>'platform' as platform,
-          event->'event_dimensions'->>'hostname' as hostname
-        from cough.firebase_analytics
-      `
-    }),
+            event->>'event_date' as event_date,
+            event->>'event_timestamp' as event_timestamp,
+            event->>'event_name' as event_name,
+            event->>'event_previous_timestamp' as event_previous_timestamp,
+            event->>'event_value_in_usd' as event_value_usd,
+            event->>'event_bundle_sequence_id' as event_bundle_sequence_id,
+            event->>'event_server_timestamp_offset' as event_server_timestamp_offset,
+            event->>'user_id' as user_id,
+            event->>'user_pseudo_id' as user_pseudo_id,
+            event->>'user_first_touch_timestamp' as user_first_touch_timestamp,
+            event->'user_ltv'->>'revenue' as ltv_revenue,
+            event->'user_ltv'->>'currency' as ltv_currency,
+            event->'device'->>'category' as device_category,
+            event->'device'->>'mobile_brand_name' as mobile_brand_name,
+            event->'device'->>'mobile_model_name' as mobile_model_name,
+            event->'device'->>'mobile_marketing_name' as mobile_marketing_name,
+            event->'device'->>'mobile_os_hardware_model' as mobile_os_hardware_model,
+            event->'device'->>'operating_system' as device_operating_system,
+            event->'device'->>'operating_system_version' as device_operating_system_version,
+            event->'device'->>'vendor_id' as device_vendor_id,
+            event->'device'->>'advertising_id' as device_advertising_id,
+            event->'device'->>'language' as device_language,
+            event->'device'->>'is_limited_ad_tracking' as is_limited_ad_tracking,
+            event->'device'->>'time_zone_offset_seconds' as device_time_zone_offset_seconds,
+            event->'device'->>'browser' as device_browser,
+            event->'device'->>'browser_version' as device_browser_version,
+            event->'device'->'web_info'->>'browser' as web_info_browser,
+            event->'device'->'web_info'->>'browser_version' as web_info_browser_version,
+            event->'device'->'web_info'->>'hostname' as web_info_hostname,
+            event->'geo'->>'continent' as continent,
+            event->'geo'->>'country' as country,
+            event->'geo'->>'region' as region,
+            event->'geo'->>'city' as city,
+            event->'geo'->>'sub_continent' as sub_continent,
+            event->'geo'->>'metro' as metro,
+            event->'app_info'->>'id' as app_info_id,
+            event->'app_info'->>'version' as app_info_version,
+            event->'app_info'->>'install_store' as install_store,
+            event->'app_info'->>'firebase_app_id' as firebase_app_id,
+            event->'app_info'->>'install_source' as install_source,
+            event->'traffic_source'->>'name' as traffic_source_name,
+            event->'traffic_source'->>'medium' as traffic_source_medium,
+            event->'traffic_source'->>'source' as traffic_source,
+            event->>'stream_id' as stream_id,
+            event->>'platform' as platform,
+            event->'event_dimensions'->>'hostname' as hostname
+          from cough.firebase_analytics
+        `,
+      },
+      {
+        tableName: "cough.firebase_analytics",
+        id: "source_id",
+        timestamp: "source_updated",
+      }
+    ),
 
     new ManagedMaterializedView({
       name: "cough_derived.analytics_event_params",
@@ -349,7 +471,7 @@ function getFirebaseDataNodes(): ManagedSqlNode[] {
         from
           cough.firebase_analytics a,
           jsonb_array_elements(a.event->'event_params') e
-      `
+      `,
     }),
 
     new ManagedMaterializedView({
@@ -367,8 +489,8 @@ function getFirebaseDataNodes(): ManagedSqlNode[] {
         from
           cough.firebase_analytics a,
           jsonb_array_elements(a.event->'user_properties') u
-      `
-    })
+      `,
+    }),
   ];
 }
 
@@ -388,7 +510,7 @@ function namedResponseColumns(questions: SurveyQuestion[]): string[] {
             )}
           )::text
         ) as response_${question.id.toLowerCase()}
-      `
+      `,
     ];
   }
 }
@@ -454,7 +576,7 @@ function namedSampleColumns(): string[] {
           "RDTReaderHCPhotoGUID"
         )})::text
       )->>'code' as samples_rdtreaderhcphotoguid
-    `
+    `,
   ];
 }
 
@@ -466,7 +588,7 @@ function sampleColumns(): string[] {
     "samples_rdtreaderphotoguid",
     "samples_rdtreaderhcphotoguid",
     `coalesce(samples_code128, samples_1, samples_manualentry) as samples_barcode`,
-    `coalesce(samples_rdtreaderphotoguid, samples_photoguid) as samples_photo`
+    `coalesce(samples_rdtreaderphotoguid, samples_photoguid) as samples_photo`,
   ];
 }
 
@@ -486,14 +608,14 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
         return [
           `
           response_${qid}->'answer'->0->>'valueDateTime' as ${qid}
-        `
+        `,
         ];
 
       case SurveyQuestionType.TextInput:
         return [
           `
           response_${qid}->'answer'->0->>'valueString' as ${qid}
-        `
+        `,
         ];
 
       case SurveyQuestionType.ButtonGrid:
@@ -508,7 +630,7 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
               response_${qid}->'answerOptions',
               response_${qid}->'answer'->0->>'valueIndex'
             )->>'id' as ${qid}
-          `
+          `,
         ];
 
       case SurveyQuestionType.OptionQuestion: {
@@ -540,6 +662,94 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
       default:
         throw new Error(`Unexpected SurveyQuestionType: ${question.type}`);
     }
+  }
+}
+
+function matchesIfNotNull(
+  expression: string,
+  valueToMatch: string,
+  matchValue: string,
+  noMatchValue: string
+): string {
+  return `
+    case
+      when ${expression} = null then null
+      when ${expression} = '${valueToMatch}' then '${matchValue}'
+      else '${noMatchValue}'
+    end
+  `;
+}
+
+function caseIf(
+  ifExpression: string,
+  thenExpression: string,
+  elseExpression: string
+): string {
+  return `
+    case
+      when ${ifExpression} then ${thenExpression}
+      else ${elseExpression}
+    end
+  `;
+}
+
+function answerValue(question: SurveyQuestion): string {
+  const qid = question.id.toLowerCase();
+
+  function getSingleAnswerOption(): string {
+    // `.answer` is `[{"valueIndex": N}]`, where N is an index into `.answerOptions`.
+    // `.answerOptions` is `[{"id":"","text":""},...]
+    // So we want to return the text of the selected answer index
+    return `
+      jsonb_extract_path(
+        response_${qid}->'answerOptions',
+        response_${qid}->'answer'->0->>'valueIndex'
+      )->>'text'
+    `;
+  }
+
+  function getAnswerOptionsList(): string {
+    // `.answer` is `{"valueIndex": N0, "valueIndex": N1}`, where N0,N1 are indexes
+    // into `.answerOptions`.
+    // `.answerOptions` is `[{"id":"","text":""},...]
+    // We want to return the text answer from each selected option in a list
+    return `
+      (select
+        array_to_string(array_agg(jsonb_extract_path(
+          response_${qid}->'answerOptions',
+          a->>'valueIndex'
+        )->>'text'), ',')
+      from
+        jsonb_array_elements(response_${qid}->'answer') a)
+    `;
+  }
+
+  switch (question.type) {
+    // Text is just a label, and results in no data in db.
+    case SurveyQuestionType.Text:
+      return `null`;
+
+    // `.answer` is a string with the data we want
+    case SurveyQuestionType.DatePicker:
+      return `response_${qid}->'answer'->0->'valueDateTime'`;
+
+    case SurveyQuestionType.TextInput:
+      return `response_${qid}->'answer'->0->'valueString'`;
+
+    case SurveyQuestionType.ButtonGrid:
+      return getSingleAnswerOption();
+
+    case SurveyQuestionType.Dropdown:
+      return getSingleAnswerOption();
+
+    case SurveyQuestionType.RadioGrid:
+      return getSingleAnswerOption();
+
+    case SurveyQuestionType.OptionQuestion:
+      return getAnswerOptionsList();
+
+    default:
+      throw new Error(`Unexpected SurveyQuestionType: ${question.type}`);
   }
 }
 
@@ -594,8 +804,12 @@ function buildHashes(nodesByName: Map<string, ManagedSqlNode>) {
   const hashes = new Map();
   for (let node of nodesByName.values()) {
     const hash = new Hash();
-    hash.update(node.getCreate());
-    hash.update(node.getRefresh());
+    const create = node.getCreate();
+    create.forEach(s => hash.update(s));
+    const refresh = node.getRefresh();
+    if (Array.isArray(refresh)) {
+      refresh.forEach(s => hash.update(s));
+    }
     hash.update(node.getDelete());
     node.meta.deps.forEach(name => hash.update(hashes.get(name)));
     hashes.set(node.meta.name, hash.toString());

@@ -7,7 +7,7 @@ import { SplitSql } from "../util/sql";
 import { Model } from "../util/sql";
 import {
   DeviceSettingAttributes,
-  defineDeviceSetting
+  defineDeviceSetting,
 } from "../models/db/devices";
 import logger from "../util/logger";
 
@@ -23,8 +23,8 @@ export class DeviceSettingsEndpoint {
     const rows = await this.deviceFlag.findAll({
       where: {
         device,
-        key
-      }
+        key,
+      },
     });
 
     console.log(`getSetting(${device}, ${key})`);

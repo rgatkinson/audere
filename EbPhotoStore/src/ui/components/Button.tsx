@@ -11,17 +11,21 @@ import {
   Text,
   TextStyle,
   TouchableOpacity,
-  ViewStyle
+  ViewStyle,
 } from "react-native";
 import {
-  BORDER_RADIUS,
+  BUTTON_BORDER_RADIUS,
   BORDER_WIDTH,
   BUTTON_WIDTH,
-  FONT_SEMI_BOLD,
+  BUTTON_WIDTH_SM,
+  EXTRA_SMALL_TEXT,
+  FONT_ROBO_BOLD,
   GUTTER,
+  HIGHLIGHT_COLOR,
   INPUT_HEIGHT,
+  INPUT_HEIGHT_SM,
   INPUT_TEXT,
-  PRIMARY_COLOR
+  REGULAR_TEXT,
 } from "../styles";
 
 interface Props {
@@ -29,6 +33,7 @@ interface Props {
   fontSize?: number;
   primary: boolean;
   label: string;
+  small?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onPress?(event: GestureResponderEvent): void;
@@ -42,24 +47,35 @@ export default class Button extends React.Component<Props> {
   };
 
   render() {
-    const { enabled, fontSize, label, primary, style, textStyle } = this.props;
+    const {
+      enabled,
+      fontSize,
+      label,
+      primary,
+      small,
+      style,
+      textStyle,
+    } = this.props;
     return (
       <TouchableOpacity
         disabled={!enabled}
         style={[
           styles.button,
+          !!small && styles.buttonSm,
           { opacity: enabled ? 0.95 : 0.5 },
           primary && styles.primaryButton,
-          style && style
+          style && style,
         ]}
         onPress={this.handlePress}
       >
         <Text
           style={[
             styles.text,
+            !small && styles.textMed,
+            !!small && styles.textSm,
             primary ? styles.primaryButtonText : styles.secondaryButtonText,
-            !!fontSize && { fontSize: fontSize },
-            textStyle && textStyle
+            !!fontSize && { fontSize },
+            textStyle && textStyle,
           ]}
           accessibilityLabel={label.toUpperCase()}
         >
@@ -73,30 +89,46 @@ export default class Button extends React.Component<Props> {
 const styles = StyleSheet.create({
   button: {
     alignItems: "center",
-    borderColor: PRIMARY_COLOR,
-    borderRadius: BORDER_RADIUS,
-    borderWidth: BORDER_WIDTH,
+    borderColor: HIGHLIGHT_COLOR,
     flexDirection: "row",
-    height: INPUT_HEIGHT,
     justifyContent: "center",
+    borderRadius: BUTTON_BORDER_RADIUS,
+    borderWidth: BORDER_WIDTH,
+    height: INPUT_HEIGHT,
     marginBottom: GUTTER * 2,
-    width: BUTTON_WIDTH
+    width: BUTTON_WIDTH,
+  },
+  buttonSm: {
+    borderRadius: BUTTON_BORDER_RADIUS,
+    height: INPUT_HEIGHT_SM,
+    marginBottom: GUTTER,
+    width: BUTTON_WIDTH_SM,
   },
   check: {
-    paddingRight: GUTTER / 2
+    paddingRight: GUTTER / 2,
   },
   text: {
-    fontFamily: FONT_SEMI_BOLD,
+    color: "#fff",
+    fontFamily: FONT_ROBO_BOLD,
+    fontSize: REGULAR_TEXT,
+    fontWeight: "bold",
+    lineHeight: INPUT_HEIGHT,
+    textAlign: "center",
+    textAlignVertical: "center",
+  },
+  textMed: {
     fontSize: INPUT_TEXT,
-    textAlign: "center"
+  },
+  textSm: {
+    fontSize: EXTRA_SMALL_TEXT,
   },
   primaryButton: {
-    backgroundColor: PRIMARY_COLOR
+    backgroundColor: HIGHLIGHT_COLOR,
   },
   primaryButtonText: {
-    color: "white"
+    color: "white",
   },
   secondaryButtonText: {
-    color: PRIMARY_COLOR
-  }
+    color: HIGHLIGHT_COLOR,
+  },
 });

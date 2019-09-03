@@ -16,7 +16,7 @@ import {
   ReceivedKitAttributes,
   defineReceivedKits,
   ReceivedKitsFileAttributes,
-  defineReceivedKitsFiles
+  defineReceivedKitsFiles,
 } from "../../src/models/db/fever";
 import { createSplitSql, Inst, Model, SplitSql } from "../../src/util/sql";
 import { SurveyNonPIIInfo } from "audere-lib/feverProtocol";
@@ -24,11 +24,11 @@ import { surveyNonPIIInDb } from "../endpoints/feverSampleData";
 import {
   IncentiveRecipientsDataAccess,
   INCENTIVE_BATCH_NAMESPACE,
-  INCENTIVE_ITEMS_NAMESPACE
+  INCENTIVE_ITEMS_NAMESPACE,
 } from "../../src/services/fever/incentiveRecipientsData";
 import {
   defineGaplessSeq,
-  GaplessSeqAttributes
+  GaplessSeqAttributes,
 } from "../../src/models/db/gaplessSeq";
 
 describe("survey batch data access", () => {
@@ -63,11 +63,11 @@ describe("survey batch data access", () => {
     );
 
     batchSeq = await seq.find({
-      where: { name: INCENTIVE_BATCH_NAMESPACE }
+      where: { name: INCENTIVE_BATCH_NAMESPACE },
     });
 
     itemSeq = await seq.find({
-      where: { name: INCENTIVE_ITEMS_NAMESPACE }
+      where: { name: INCENTIVE_ITEMS_NAMESPACE },
     });
 
     done();
@@ -89,12 +89,12 @@ describe("survey batch data access", () => {
     await Promise.all([
       nonPii.destroy({ where: {} }).then(() => {}),
       batchSeq.update({ index: 0 }).then(() => {}),
-      itemSeq.update({ index: 0 }).then(() => {})
+      itemSeq.update({ index: 0 }).then(() => {}),
     ]);
 
     await Promise.all([
       incentiveBatch.destroy({ where: {} }).then(() => {}),
-      receivedKitFiles.destroy({ where: {} }).then(() => {})
+      receivedKitFiles.destroy({ where: {} }).then(() => {}),
     ]);
   }
 
@@ -108,7 +108,7 @@ describe("survey batch data access", () => {
       _.cloneDeep(surveyNonPIIInDb("0")),
       _.cloneDeep(surveyNonPIIInDb("1")),
       _.cloneDeep(surveyNonPIIInDb("2")),
-      _.cloneDeep(surveyNonPIIInDb("3"))
+      _.cloneDeep(surveyNonPIIInDb("3")),
     ];
     const now = new Date().toISOString();
     if (surveyComplete) {
@@ -123,14 +123,14 @@ describe("survey batch data access", () => {
 
     await incentiveBatch.create({
       id: 1,
-      uploaded: batchUploaded
+      uploaded: batchUploaded,
     });
 
     const batchKeys = Array.from(s.keys()).slice(0, 2);
     const batchItems = batchKeys.map(i => ({
       id: i,
       batchId: 1,
-      surveyId: +s[i].id
+      surveyId: +s[i].id,
     }));
     await incentiveItems.bulkCreate(batchItems);
 
@@ -147,7 +147,7 @@ describe("survey batch data access", () => {
           boxBarcode: x.csruid.repeat(8),
           dateReceived: "1985-06-12",
           linked: true,
-          recordId: +x.id
+          recordId: +x.id,
         };
       });
       await receivedKits.bulkCreate(received);
@@ -165,7 +165,7 @@ describe("survey batch data access", () => {
       [0, 1].forEach(key =>
         expect(out.items).toContainEqual(
           expect.objectContaining({
-            workflowId: key
+            workflowId: key,
           })
         )
       );
@@ -190,7 +190,7 @@ describe("survey batch data access", () => {
       [2, 3].forEach(key =>
         expect(out).toContainEqual(
           expect.objectContaining({
-            csruid: key.toString()
+            csruid: key.toString(),
           })
         )
       );
@@ -205,7 +205,7 @@ describe("survey batch data access", () => {
       [2, 3].forEach(key =>
         expect(out).toContainEqual(
           expect.objectContaining({
-            csruid: key.toString()
+            csruid: key.toString(),
           })
         )
       );
@@ -234,7 +234,7 @@ describe("survey batch data access", () => {
       expect(out).toHaveLength(1);
       expect(out).toContainEqual(
         expect.objectContaining({
-          csruid: "2"
+          csruid: "2",
         })
       );
     });
@@ -250,12 +250,12 @@ describe("survey batch data access", () => {
       expect(out).toHaveLength(2);
       expect(out).toContainEqual(
         expect.objectContaining({
-          boxBarcode: "00000000"
+          boxBarcode: "00000000",
         })
       );
       expect(out).toContainEqual(
         expect.objectContaining({
-          boxBarcode: "11111111"
+          boxBarcode: "11111111",
         })
       );
     });
@@ -276,12 +276,12 @@ describe("survey batch data access", () => {
       expect(batch.items).toHaveLength(2);
       expect(batch.items).toContainEqual(
         expect.objectContaining({
-          workflowId: 46
+          workflowId: 46,
         })
       );
       expect(batch.items).toContainEqual(
         expect.objectContaining({
-          workflowId: 47
+          workflowId: 47,
         })
       );
     });
@@ -294,7 +294,7 @@ describe("survey batch data access", () => {
       await dao.commitUploadedBatch(1, []);
 
       const batch = await incentiveBatch.find({
-        where: { id: 1 }
+        where: { id: 1 },
       });
 
       expect(batch).not.toBeNull();
@@ -312,21 +312,21 @@ describe("survey batch data access", () => {
       await dao.commitUploadedBatch(batch.id, itemIds);
 
       const db = await incentiveBatch.find({
-        where: { id: batch.id }
+        where: { id: batch.id },
       });
 
       expect(db).not.toBeNull();
       expect(db.uploaded).toBe(true);
 
       const discarded = await incentiveDiscard.findAll({
-        where: { batchId: batch.id }
+        where: { batchId: batch.id },
       });
 
       expect(discarded).toHaveLength(2);
       itemIds.forEach(id => {
         expect(discarded).toContainEqual(
           expect.objectContaining({
-            workflowId: id
+            workflowId: id,
           })
         );
       });

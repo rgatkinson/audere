@@ -1,0 +1,61 @@
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.PatientListBody {
+  padding: 0px 40px 40px 40px;
+}
+
+.PatientListTitle h2 {
+  font-weight: 100;
+  font-size: 30pt;
+  padding: 0px 0px 0px 0px;
+  font-family: "Roboto", sans-serif;
+  color: #989898;
+}
+
+.PatientListLegend {
+  font-family: "Roboto", sans-serif;
+  color: #4d4d4d;
+  font-size: 14pt;
+}
+
+.PatientTableTitle {
+  padding: 40px 0px 20px 0px;
+  font-family: "Roboto", sans-serif;
+  color: #4d4d4d;
+  font-size: 20pt;
+}
+
+.PatientTableTitle .viewButton {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.PatientTableTitle img {
+  margin-right: 6px;
+}
+
+.ListViewIcon {
+  vertical-align: middle;
+  padding-left: 10px;
+}
+
+.MapViewIcon {
+  vertical-align: middle;
+  padding-left: 10px;
+}
+
+.ListViewText {
+  font-family: "Roboto", sans-serif;
+  color: #4d4d4d;
+  font-size: 12pt;
+}
+
+.MapViewText {
+  font-family: "Roboto", sans-serif;
+  color: #0088ff;
+  font-size: 12pt;
+}

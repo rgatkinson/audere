@@ -15,4 +15,4 @@ Tests can be run via Jest by `yarn test`
 
 Lambda functions are uploaded as a zip archive.  To generate the zip archive we blow away the local node modules & retrieve only production dependencies to minimize the archive's size.  You can generate the archive by running `yarn package`.
 
-Lambda function deployment is done via Terraform, see the [flu-lambda](https://github.com/AudereNow/learn/tree/master/terraform/modules/flu-lambda) module and the [staging](https://github.com/AudereNow/learn/tree/master/terraform/flu/lambda-staging) and [production](https://github.com/AudereNow/learn/tree/master/terraform/flu/lambda-production) configurations.
+Lambda function deployment is done via Terraform, see the [flu-lambda](https://github.com/AudereNow/audere/tree/master/terraform/modules/flu-lambda) module and the [staging](https://github.com/AudereNow/audere/tree/master/terraform/flu/lambda-staging) and [production](https://github.com/AudereNow/audere/tree/master/terraform/flu/lambda-production) configurations.

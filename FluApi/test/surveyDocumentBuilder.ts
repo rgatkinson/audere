@@ -6,7 +6,7 @@
 import {
   SampleInfo,
   SurveyDocument,
-  TelecomInfoSystem
+  TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
 import { surveyPost } from "./endpoints/feverSampleData";
 import _ from "lodash";
@@ -26,15 +26,15 @@ export class SurveyDocumentBuilder {
           {
             id: "CakeVeracity",
             text: "Is the cake a lie?",
-            answer: [{ valueString: "true" }]
+            answer: [{ valueString: "true" }],
           },
           {
             id: "BirthDate",
             text: "What is your birth date?",
-            answer: [{ valueString: "1900-01-01" }]
-          }
-        ]
-      }
+            answer: [{ valueString: "1900-01-01" }],
+          },
+        ],
+      },
     ];
   }
 
@@ -47,8 +47,8 @@ export class SurveyDocumentBuilder {
     this.surveyDocument.survey.patient.telecom = [
       {
         system: TelecomInfoSystem.Email,
-        value: email
-      }
+        value: email,
+      },
     ];
     return this;
   }

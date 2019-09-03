@@ -11,13 +11,13 @@ import { FeverModels } from "../models/db/fever";
 import {
   SnifflesModels,
   VisitNonPIIInstance,
-  VisitPIIInstance
+  VisitPIIInstance,
 } from "../models/db/sniffles";
 import { filterResponsePII } from "./sniffles/piiFilter";
 import { EventInfoKind as FeverEvents } from "audere-lib/feverProtocol";
 import {
   ResponseInfo,
-  EventInfoKind as SnifflesEvents
+  EventInfoKind as SnifflesEvents,
 } from "audere-lib/snifflesProtocol";
 import { TelecomInfoSystem } from "audere-lib/common";
 import moment from "moment";
@@ -25,7 +25,7 @@ import { FollowUpSurveyData } from "../external/redCapClient";
 
 export enum Release {
   Fever = "fever",
-  Sniffles = "sniffles"
+  Sniffles = "sniffles",
 }
 
 export interface KeyedEncounter<T> {
@@ -63,7 +63,7 @@ export class EncounterDetailsService {
 
     const [sniffles, fever] = [
       await this.retrievePendingVisits(),
-      await this.retrievePendingSurveys()
+      await this.retrievePendingSurveys(),
     ];
 
     fever.forEach((v, k) => {
@@ -85,28 +85,28 @@ export class EncounterDetailsService {
         [Op.and]: [
           {
             survey: {
-              isDemo: false
-            }
+              isDemo: false,
+            },
           },
           Sequelize.literal("json_array_length(survey->'samples') > 0"),
           {
-            "$hutch_upload.id$": null
-          }
-        ]
+            "$hutch_upload.id$": null,
+          },
+        ],
       },
       include: [
         {
           model: this.hutchUploadModel,
-          required: false
-        }
+          required: false,
+        },
       ],
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
     });
 
     const piiSurveys = await this.feverModels.surveyPii.findAll({
       where: {
-        csruid: nonPiiSurveys.map(survey => survey.csruid)
-      }
+        csruid: nonPiiSurveys.map(survey => survey.csruid),
+      },
     });
 
     const emails: string[] = [].concat.apply(
@@ -120,8 +120,8 @@ export class EncounterDetailsService {
 
     const followUpSurveys = await this.feverModels.followUpSurveys.findAll({
       where: {
-        email: emails
-      }
+        email: emails,
+      },
     });
 
     const zipped: Map<number, PIIEncounterDetails> = new Map();
@@ -168,7 +168,7 @@ export class EncounterDetailsService {
           responses: nonPii.survey.responses,
           addresses: pii.survey.patient.address.map(a => ({
             use: a.use,
-            value: a
+            value: a,
           })),
           samples: nonPii.survey.samples,
           events: appNav,
@@ -176,7 +176,7 @@ export class EncounterDetailsService {
           gender: pii.survey.patient.gender,
           firstName: pii.survey.patient.firstName,
           lastName: pii.survey.patient.lastName,
-          followUpResponses: followUpSurvey
+          followUpResponses: followUpSurvey,
         });
       } else {
         logger.error(
@@ -206,51 +206,51 @@ export class EncounterDetailsService {
         [Op.and]: [
           {
             visit: {
-              isDemo: false
-            }
+              isDemo: false,
+            },
           },
           // Either completed or over two days old
           {
             [Op.or]: [
               {
                 visit: {
-                  complete: "true"
-                }
+                  complete: "true",
+                },
               },
               {
                 updatedAt: {
-                  [Op.lt]: staleDate
-                }
-              }
-            ]
+                  [Op.lt]: staleDate,
+                },
+              },
+            ],
           },
           {
             [Op.or]: [
               Sequelize.literal(
                 "(visit->'events')::jsonb @> '[{\"refId\":\"CompletedQuestionnaire\"}]'"
               ),
-              Sequelize.literal("json_array_length(visit->'samples') > 0")
-            ]
+              Sequelize.literal("json_array_length(visit->'samples') > 0"),
+            ],
           },
           {
-            "$hutch_upload.id$": null
-          }
-        ]
+            "$hutch_upload.id$": null,
+          },
+        ],
       },
       include: [
         {
           model: this.hutchUploadModel,
-          required: false
-        }
+          required: false,
+        },
       ],
-      order: [["id", "ASC"]]
+      order: [["id", "ASC"]],
     });
 
     // Query the second database for the PII data associated to the visit.
     const piiVisits = await this.snifflesModels.visitPii.findAll({
       where: {
-        csruid: nonPiiVisits.map(visit => visit.csruid)
-      }
+        csruid: nonPiiVisits.map(visit => visit.csruid),
+      },
     });
 
     const zipped: Map<number, PIIEncounterDetails> = new Map();
@@ -287,13 +287,13 @@ export class EncounterDetailsService {
           responses: nonPiiResponses(nonPii, pii),
           addresses: pii.visit.patient.address.map(a => ({
             use: a.use,
-            value: a
+            value: a,
           })),
           samples: nonPii.visit.samples,
           events: [],
           birthDate: pii.visit.patient.birthDate,
           gender: pii.visit.patient.gender,
-          fullName: pii.visit.patient.name
+          fullName: pii.visit.patient.name,
         });
       } else {
         logger.error(
@@ -343,15 +343,13 @@ function nonPiiResponses(
         ...nonPii.visit.responses,
         item: [
           ...nonPii.visit.responses[0].item,
-          ...pii.visit.responses[0].item
-        ]
-      }
+          ...pii.visit.responses[0].item,
+        ],
+      },
     ].map(filterResponsePII(false));
   } else {
     logger.warn(
-      `Unexpected responses format on ${
-        nonPii.csruid
-      }, returning existing nonPii`
+      `Unexpected responses format on ${nonPii.csruid}, returning existing nonPii`
     );
     return nonPii.visit.responses;
   }

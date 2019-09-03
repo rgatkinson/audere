@@ -141,6 +141,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
     const state = getState();
     switch (action.type) {
       case "SET_RDT_INTERPRETATION_SHOWN": // FEV-695
+      case "SET_RESULT_SHOWN": // FEV-929
       case "APPEND_EVENT":
         /*
          * Testing only writing to pouch when the user navigates between screens

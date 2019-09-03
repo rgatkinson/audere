@@ -40,6 +40,11 @@ export type SurveyAction =
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_RDT_PHOTOHC"; rdtPhotoHCUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
+  | {
+      type: "SET_RDT_CAPTURE_INFO";
+      flashEnabled: boolean;
+      flashDisabledAutomatically: boolean;
+    }
   | { type: "SET_RDT_INTERPRETATION_SHOWN"; interpreter: string }
   | {
       type: "SET_RESULT_SHOWN";
@@ -243,6 +248,16 @@ export default function reducer(state = initialState, action: SurveyAction) {
         timestamp: new Date().getTime(),
       };
 
+    case "SET_RDT_CAPTURE_INFO":
+      return {
+        ...state,
+        rdtInfo: {
+          ...state.rdtInfo,
+          flashEnabled: action.flashEnabled,
+          flashDisabledAutomatically: action.flashDisabledAutomatically,
+        },
+      };
+
     case "SET_RDT_INTERPRETATION_SHOWN":
       return {
         ...state,
@@ -426,6 +441,17 @@ export function setRDTReaderResult(
   return {
     type: "SET_RDT_READER_RESULT",
     rdtReaderResult,
+  };
+}
+
+export function setRDTCaptureInfo(
+  flashEnabled: boolean,
+  flashDisabledAutomatically: boolean
+): SurveyAction {
+  return {
+    type: "SET_RDT_CAPTURE_INFO",
+    flashEnabled,
+    flashDisabledAutomatically,
   };
 }
 

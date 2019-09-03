@@ -5,7 +5,6 @@
 
 import { BigQueryTableImporter } from "../../external/bigQuery";
 import { CoughModels } from "../../models/db/cough";
-import { DataPipelineService } from "../dataPipelineService";
 import { SplitSql } from "../../util/sql";
 import moment = require("moment");
 import logger from "../../util/logger";
@@ -17,18 +16,15 @@ export class FirebaseImport {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
   private readonly bigQuery: BigQueryTableImporter;
-  private readonly pipeline: DataPipelineService;
 
   constructor(
     sql: SplitSql,
     models: CoughModels,
-    bigQuery: BigQueryTableImporter,
-    pipeline: DataPipelineService
+    bigQuery: BigQueryTableImporter
   ) {
     this.sql = sql;
     this.models = models;
     this.bigQuery = bigQuery;
-    this.pipeline = pipeline;
   }
 
   /**
@@ -67,8 +63,8 @@ export class FirebaseImport {
 
     const existingVersions = await this.models.firebaseAnalyticsTable.findAll({
       where: {
-        name: Array.from(candidateVersions.keys())
-      }
+        name: Array.from(candidateVersions.keys()),
+      },
     });
 
     const toUpdate: Map<string, number> = new Map();
@@ -107,8 +103,8 @@ export class FirebaseImport {
         logger.info(`Destroying existing rows with event date ${eventDate}`);
         await this.models.firebaseAnalytics.destroy({
           where: {
-            event_date: eventDate
-          }
+            event_date: eventDate,
+          },
         });
 
         let token: string;
@@ -123,12 +119,12 @@ export class FirebaseImport {
           token = analytics.token;
           const rows = analytics.results.map(r => ({
             event_date: eventDate,
-            event: r
+            event: r,
           }));
 
           logger.info(`Creating ${rows.length} analytic events`);
           await this.models.firebaseAnalytics.bulkCreate(rows, {
-            transaction: t
+            transaction: t,
           });
         } while (token != null);
 
@@ -137,18 +133,13 @@ export class FirebaseImport {
         await this.models.firebaseAnalyticsTable.upsert(
           {
             name: name,
-            modified: lastModified
+            modified: lastModified,
           },
           {
-            transaction: t
+            transaction: t,
           }
         );
       });
     }
-
-    // Update derived views
-    logger.info("Refreshing derived views");
-    await this.pipeline.refresh();
-    logger.info("Refresh complete");
   }
 }

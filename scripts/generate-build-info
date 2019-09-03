@@ -38,3 +38,6 @@ cat >"$TARGET_DIR/$FILENAME" <<EOT
   "hash": "$GITHASH"
 }
 EOT
+
+cd $PRODUCT_DIR
+$REPO_ROOT_DIR/scripts/extend-build-info

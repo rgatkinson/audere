@@ -25,7 +25,7 @@ if (!(device in device_list)) {
 const PLATFORM = "iOS";
 const config = {
   platformName: "iOS",
-  platformVersion: "12.2",
+  platformVersion: "12.4",
   deviceName: device,
   app: path.join(
     os.homedir(),
@@ -35,5 +35,6 @@ const config = {
 
 const SCREEN_X = device_list[device].X;
 const SCREEN_Y = device_list[device].Y;
+const SIMULATOR = true;
 
-module.exports = { PLATFORM, config, SCREEN_X, SCREEN_Y };
+module.exports = { PLATFORM, config, SCREEN_X, SCREEN_Y, SIMULATOR };

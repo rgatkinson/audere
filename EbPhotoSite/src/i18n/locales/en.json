@@ -1,0 +1,87 @@
+{
+  "common": {
+    "ok": "Ok",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "POSITIVE": "POSITIVE",
+    "NEGATIVE": "NEGATIVE",
+    "button": {
+      "yes": "Yes",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "YES": "YES",
+      "NO": "NO",
+      "SAVE": "SAVE"
+    }
+  },
+  "buildInfo": {
+    "name": "Name: ",
+    "version": "Version: ",
+    "buildDate": "Build date: ",
+    "hash": "Hash: "
+  },
+  "chat": {
+    "messageFrom": "Message from {{name}}",
+    "userTag": "{{date}} by {{user}}",
+    "workerChat": "Chat with community health worker:",
+    "toClinicPlaceholder": "Enter a note to send to the clinic CHW"
+  },
+  "loggedInAs": {
+    "welcome": "Welcome, ",
+    "logout": "Logout"
+  },
+  "patientBlock": {
+    "listView": "List view",
+    "mapView": "Map view"
+  },
+  "patientListPage": {
+    "listTitle": "Patient Lists",
+    "listLegend": "Click on a row to see details for a specific patient and to contact the CHW who tested the patient"
+  },
+  "patientDetailAssumeRouter": {
+    "updatedDiagnosis": "Updated Ebola diagnosis",
+    "resultAvailable": "A patient's test result interpretation is available"
+  },
+  "patientInfoPane": {
+    "likelyPositive": "*Likely POSITIVE for Ebola",
+    "likelyNegative": "*Likely NEGATIVE for Ebola",
+    "reviewedBy": "Reviewed by: ",
+    "date": "Date: ",
+    "toPatientList": "← Back to Patient List",
+    "patientInfo": "Patient Information",
+    "phoneNumber": "Phone",
+    "contact": "Contact Details",
+    "CHWNotes": "CHW Notes"
+  },
+  "testDetailPane": {
+    "notTested": "Not Tested",
+    "patientTest": "Patient Test Detail",
+    "testedOn": "Tested on",
+    "testedBy": "Tested by",
+    "contact": "Contact info",
+    "aboutCHW": "About this CHW"
+  },
+  "triagePane": {
+    "EbolaPositivity": "Does the below image indicate Ebola positivity?"
+  },
+  "photoPane": {
+    "takenOn": "Taken on:",
+    "testLocation": "Test Location",
+    "showPrevious": "Show previous ",
+    "photo": "photo",
+    "photo_plural": "photos"
+  },
+  "patientTable": {
+    "EbolaTestResult": "Ebola Test Result",
+    "EbolaResultNotes": "Ebola Result Notes",
+    "dateTested": "Date Tested",
+    "notTested": "Not Tested",
+    "patientName": "Patient Name",
+    "CHWName": "CHW Name",
+    "CHWPhone": "CHW Phone #"
+  },
+  "simpleMap": {
+    "cannotLoadMap": "Cannot load map. Google Cloud API key is not configured.",
+    "details": "Details"
+  }
+}

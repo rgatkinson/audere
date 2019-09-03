@@ -8,7 +8,6 @@ import strings from "../../../src/i18n/locales/en.json";
 export const inputs = {
   [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.yes,
   [strings.barcode.placeholder]: "00400400",
-  [strings.barcode.secondPlaceholder]: "00400400",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.chillsOrSweats,
     strings.surveyOption.shortnessOfBreath,
@@ -47,6 +46,7 @@ export const inputs = {
     strings.surveyOption.middleEastNorthAfrican,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
-  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBelowBlue + " ?",
+  [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBelowBlue,
+  [strings.surveyTitle.numLinesSeen]: strings.surveyButton.noneOfTheAbove,
   [strings.surveyTitle.TestFeedback]: strings.surveyButton.incorrect,
 };

@@ -101,13 +101,13 @@ export enum EventType {
   BarcodeScanned = "BarcodeScanned",
   ConsentSigned = "ConsentSigned",
   StartedQuestionnaire = "StartedQuestionnaire",
-  SymptomsScreened = "SymptomsScreened"
+  SymptomsScreened = "SymptomsScreened",
 }
 
 export enum LocationUse {
   Home = "Home",
   Work = "Work",
-  Temp = "Temp"
+  Temp = "Temp",
 }
 
 export interface Site {
@@ -143,7 +143,7 @@ export enum SampleType {
   ClinicSwab = "ClinicSwab",
   Blood = "Blood",
   Serum = "Serum",
-  PBMC = "PBMC"
+  PBMC = "PBMC",
 }
 
 // The value of a barcode/QR-code from a sample collection container.

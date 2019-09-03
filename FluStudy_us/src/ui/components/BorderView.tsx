@@ -5,20 +5,14 @@
 
 import React from "react";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
-import {
-  BORDER_RADIUS,
-  BORDER_WIDTH,
-  GUTTER,
-  SECONDARY_COLOR,
-  THIN_BORDER_WIDTH,
-} from "../styles";
+import { GUTTER, SECONDARY_COLOR, THIN_BORDER_WIDTH } from "../styles";
 
 interface Props {
   children?: any;
   style?: StyleProp<ViewStyle>;
 }
 
-export default class BorderView extends React.Component<Props> {
+export default class BorderView extends React.PureComponent<Props> {
   render() {
     return (
       <View style={[styles.container, this.props.style]}>

@@ -9,13 +9,13 @@ import {
   defineFeverModels,
   SurveyAttributes,
   ConsentEmailAttributes,
-  querySurveyJoinConsentEmail
+  querySurveyJoinConsentEmail,
 } from "../models/db/fever";
 import { SplitSql, Inst } from "../util/sql";
 import {
   PIIInfo,
   SurveyNonPIIInfo,
-  TelecomInfoSystem
+  TelecomInfoSystem,
 } from "audere-lib/feverProtocol";
 import { Emailer } from "../util/email";
 import logger from "../util/logger";
@@ -47,8 +47,8 @@ export class FeverConsentEmailerEndpoint {
       dbg(`loading non-pii for ${piis.length} surveys`);
       const nonPiis = await this.models.surveyNonPii.findAll({
         where: {
-          csruid: piis.map(x => x.csruid)
-        }
+          csruid: piis.map(x => x.csruid),
+        },
       });
       const nonPiisByCSRUID = new Map(
         nonPiis.map(x => [x.csruid, x] as [string, SurveyNonPii])
@@ -89,7 +89,7 @@ export class FeverConsentEmailerEndpoint {
       }
       const update = {
         survey_id,
-        completed: new Date().toISOString()
+        completed: new Date().toISOString(),
       };
       await this.models.consentEmail.upsert(update);
       return update;
@@ -109,16 +109,16 @@ export async function newSurveys(models: FeverModels) {
         isDemo: false,
         consents: { [Op.ne]: "[]" },
         patient: {
-          telecom: { [Op.ne]: "[]" }
+          telecom: { [Op.ne]: "[]" },
         },
         workflow: {
-          screeningCompletedAt: { [Op.ne]: null }
-        }
+          screeningCompletedAt: { [Op.ne]: null },
+        },
       },
-      "$fever_consent_emails.id$": null
+      "$fever_consent_emails.id$": null,
     },
     limit: 1,
-    order: [["id", "ASC"]]
+    order: [["id", "ASC"]],
   });
 }
 
@@ -138,7 +138,7 @@ ${consentTerms}`;
     to: [participantEmail],
     from: "flu-support@auderenow.org",
     subject: "flu@home Research Study Consent Form",
-    text
+    text,
   });
 }
 

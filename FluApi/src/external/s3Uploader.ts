@@ -26,7 +26,7 @@ export class S3Uploader {
     const params = {
       Bucket: bucket,
       Key: key,
-      Body: contents
+      Body: contents,
     };
 
     await this.s3.putObject(params).promise();

@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "FluAtHome",
+    "version": "0.2.0",
+    "description": "App for Seattle Flu Study project",
+    "icon": "./assets/images/app-icon.png",
+    "slug": "FluAtHome",
+    "sdkVersion": "32.0.0",
+    "ios": {
+      "bundleIdentifier": "org.auderenow.fluathome",
+      "buildNumber": "1",
+      "supportsTablet": false,
+      "isTabletOnly": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "publishBundlePath": "ios/fluathome/Supporting/shell-app.bundle",
+      "publishManifestPath": "ios/fluathome/Supporting/shell-app-manifest.json"
+    },
+    "android": {
+      "package": "org.auderenow.fluathome",
+      "publishBundlePath": "android/app/src/main/assets/shell-app.bundle",
+      "publishManifestPath": "android/app/src/main/assets/shell-app-manifest.json"
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["assets/images/*"],
+    "orientation": "portrait",
+    "isDetached": true,
+    "detach": {
+      "iosExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/ios-v2.9.0-sdk31.0.0-250a3991-b623-4f9c-b07f-0b9ed7e8c4c9.tar.gz",
+      "androidExpoViewUrl": "https://s3.amazonaws.com/exp-exponent-view-code/android-v2.9.2-sdk31.0.0-d1776f37-d524-4fee-872d-6807b0fd83ff.tar.gz"
+    },
+    "scheme": "expdcd6f73fcd53486284683e2a09a2d545"
+  }
+}

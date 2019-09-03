@@ -9,21 +9,21 @@ import {
   SurveyAttributes,
   SurveyInstance,
   SurveyModel,
-  EditableTableType
+  EditableTableType,
 } from "../../src/models/db/fever";
 import _ from "lodash";
 
 import {
   DeviceInfo,
   SurveyNonPIIDbInfo,
-  PIIInfo
+  PIIInfo,
 } from "audere-lib/feverProtocol";
 
 import { idtxt, ScriptLogger } from "./script_logger";
 import { Updater } from "./updater";
 import {
   defineHutchUploadSequelize,
-  HutchUploadModel
+  HutchUploadModel,
 } from "../../src/models/db/hutchUpload";
 
 const Op = Sequelize.Op;
@@ -66,7 +66,7 @@ export abstract class SurveyUpdater<T extends object & { isDemo?: boolean }>
     const rows = looksLikeRowId(key)
       ? await this.data.findAll({ where: { id: key } })
       : await this.data.findAll({
-          where: { csruid: { [Op.like]: `${key}%` } }
+          where: { csruid: { [Op.like]: `${key}%` } },
         });
     return expectOneMatch(key, rows, this.label);
   }
@@ -86,7 +86,7 @@ export abstract class SurveyUpdater<T extends object & { isDemo?: boolean }>
     );
     expectCSRUID(csruid);
     return await this.backup.findAll({
-      where: { csruid: { [Op.like]: `${csruid}%` } }
+      where: { csruid: { [Op.like]: `${csruid}%` } },
     });
   }
 
@@ -124,7 +124,7 @@ export abstract class SurveyUpdater<T extends object & { isDemo?: boolean }>
     await this.backup.create({
       csruid: current.csruid,
       device: current.device,
-      survey: current.survey
+      survey: current.survey,
     });
 
     this.log.info(
@@ -159,13 +159,13 @@ export class SurveyNonPIIUpdater extends SurveyUpdater<SurveyNonPIIDbInfo> {
     const nonPii = expectOneMatch(
       "csruid",
       await this.data.findAll({
-        where: { csruid: { [Op.like]: `${csruid}%` } }
+        where: { csruid: { [Op.like]: `${csruid}%` } },
       }),
       this.label
     );
 
     const uploads = await this.upload.destroy({
-      where: { survey_id: nonPii.id }
+      where: { survey_id: nonPii.id },
     });
     switch (uploads) {
       case 0:
@@ -213,9 +213,7 @@ function looksLikeRowId(key: string): boolean {
 function expectOneMatch<T>(key: string, items: T[], label: string): T {
   if (items.length != 1) {
     throw new Error(
-      `Expected exactly 1 ${label} row to match key '${key}', but got ${
-        items.length
-      }`
+      `Expected exactly 1 ${label} row to match key '${key}', but got ${items.length}`
     );
   }
   return items[0];

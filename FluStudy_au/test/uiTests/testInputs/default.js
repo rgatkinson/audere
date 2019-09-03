@@ -8,7 +8,6 @@ import strings from "../../../src/i18n/locales/en.json";
 export const inputs = {
   [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.no,
   [strings.barcode.placeholder]: "00000000",
-  [strings.barcode.secondPlaceholder]: "00000000",
   [strings.surveyTitle.whatSymptoms]: [strings.surveyOption.cough],
   [strings.surveyTitle.symptomsStart]: strings.surveyButton["1day"],
   [strings.surveyTitle.symptomsLast48]: strings.surveyButton.no,
@@ -16,4 +15,5 @@ export const inputs = {
   [strings.surveyTitle.antibiotics]: strings.surveyButton.yes,
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
+  [strings.surveyTitle.numLinesSeen]: strings.surveyButton.oneLine,
 };

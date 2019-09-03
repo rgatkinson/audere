@@ -13,15 +13,16 @@ import {
   booleanColumn,
   integerColumn,
   jsonColumn,
+  dateColumn,
   nullable,
   unique,
   jsonbColumn,
-  bigIntColumn
+  bigIntColumn,
 } from "../../util/sql";
 import {
   DeviceInfo,
   PhotoDbInfo,
-  SurveyNonPIIInfo
+  SurveyNonPIIInfo,
 } from "audere-lib/dist/coughProtocol";
 
 const schema = "cough";
@@ -31,17 +32,18 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     accessKey: defineAccessKey(sql),
     asprenData: defineAsprenData(sql),
     asprenFile: defineAsprenFile(sql),
+    expertRead: defineExpertRead(sql),
     firebaseAnalytics: defineFirebaseAnalytics(sql),
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     photoUploadLog: definePhotoUploadLog(sql),
-    survey: defineSurvey(sql.nonPii)
+    survey: defineSurvey(sql.nonPii),
   };
 
   models.survey.hasOne(models.photoUploadLog, {
     foreignKey: "cough_survey_id",
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   });
 
   return models;
@@ -51,6 +53,7 @@ export interface CoughModels {
   accessKey: Model<AccessKeyAttributes>;
   asprenData: Model<AsprenDataAttributes>;
   asprenFile: Model<AsprenFileAttributes>;
+  expertRead: Model<ExpertReadAttributes>;
   firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   importProblem: Model<ImportProblemAttributes>;
@@ -66,7 +69,7 @@ export interface CoughModels {
 // if a fixup has been applied.
 export enum EditableTableType {
   CURRENT = "current",
-  BACKUP = "backup"
+  BACKUP = "backup",
 }
 
 // ---------------------------------------------------------------
@@ -82,7 +85,7 @@ export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
     "access_keys",
     {
       key: stringColumn(),
-      valid: booleanColumn()
+      valid: booleanColumn(),
     },
     { schema }
   );
@@ -107,7 +110,7 @@ export function defineImportProblem(
       firebaseId: stringColumn("firebase_id"),
       firebaseCollection: stringColumn("firebase_collection"),
       attempts: integerColumn(),
-      lastError: stringColumn("last_error")
+      lastError: stringColumn("last_error"),
     },
     { schema }
   );
@@ -128,7 +131,7 @@ export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
     {
       docId: unique(stringColumn("docid")),
       device: jsonColumn(),
-      photo: jsonColumn()
+      photo: jsonColumn(),
     },
     { schema }
   );
@@ -147,7 +150,7 @@ export function definePhotoUploadLog(
     sql.nonPii,
     "photo_upload_log",
     {
-      coughSurveyId: unique(stringColumn("cough_survey_id"))
+      coughSurveyId: unique(stringColumn("cough_survey_id")),
     },
     { schema }
   );
@@ -160,6 +163,8 @@ export interface SurveyAttributes<Info> {
   docId: string;
   device: DeviceInfo;
   survey: Info;
+  updatedAt?: Date;
+  createdAt?: Date;
 }
 export function defineSurvey<Info>(
   sql: Sequelize,
@@ -171,7 +176,9 @@ export function defineSurvey<Info>(
     {
       docId: unique(stringColumn("docid")),
       device: jsonColumn(),
-      survey: jsonColumn()
+      survey: jsonColumn(),
+      updatedAt: dateColumn(),
+      createdAt: dateColumn(),
     },
     { schema }
   );
@@ -191,7 +198,7 @@ export function defineAsprenFile(sql: SplitSql): Model<AsprenFileAttributes> {
     "aspren_files",
     {
       key: unique(stringColumn()),
-      hash: stringColumn()
+      hash: stringColumn(),
     },
     { schema }
   );
@@ -205,20 +212,20 @@ export enum IndigenousStatus {
   Both = "BT",
   Unknown = "UNKNOWN",
   Yes = "Y",
-  No = "N"
+  No = "N",
 }
 
 export enum CurrentSeasonVaccinationStatus {
   Received = "Y",
   NotReceived = "N",
-  Unknown = "UNKNOWN"
+  Unknown = "UNKNOWN",
 }
 
 export enum PreviousSeasonVaccinationStatus {
   Received = "Y",
   NotReceived = "N",
   Unknown = "UNKNOWN",
-  Never = "NEVER"
+  Never = "NEVER",
 }
 
 export interface AsprenDataAttributes {
@@ -277,25 +284,25 @@ export function defineAsprenData(sql: SplitSql): Model<AsprenDataAttributes> {
       aboriginalOrIslander: {
         type: Sequelize.STRING,
         field: "atsi",
-        allowNull: true
+        allowNull: true,
       },
       dateOnset: stringColumn("date_onset"),
       currentVaccination: {
         type: Sequelize.STRING,
         field: "current_vaccination",
-        allowNull: true
+        allowNull: true,
       },
       vaccinationDate: nullable(stringColumn("vaccination_date")),
       previousVaccination: {
         type: Sequelize.STRING,
         field: "previous_vaccination",
-        allowNull: true
+        allowNull: true,
       },
       comorbities: nullable(booleanColumn()),
       comorbitiesDescription: nullable(stringColumn("comorbities_description")),
       healthcareWorkerStatus: nullable(booleanColumn("hcw_status")),
       overseasIllness: nullable(booleanColumn("overseas_illness")),
-      overseasLocation: nullable(stringColumn("overseas_location"))
+      overseasLocation: nullable(stringColumn("overseas_location")),
     },
     { schema }
   );
@@ -315,7 +322,7 @@ export function defineFirebaseAnalytics(
     "firebase_analytics",
     {
       event_date: stringColumn(),
-      event: jsonbColumn()
+      event: jsonbColumn(),
     },
     { schema }
   );
@@ -333,7 +340,28 @@ export function defineFirebaseAnalayticsTable(
     "firebase_analytics_table",
     {
       name: unique(stringColumn()),
-      modified: bigIntColumn()
+      modified: bigIntColumn(),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface ExpertReadAttributes {
+  surveyId: number;
+  interpretation: string;
+  interpreterId: number;
+}
+
+export function defineExpertRead(sql: SplitSql): Model<ExpertReadAttributes> {
+  return defineModel<ExpertReadAttributes>(
+    sql.nonPii,
+    "expert_read",
+    {
+      surveyId: unique(integerColumn("surveyId")),
+      interpretation: stringColumn("interpretation"),
+      interpreterId: integerColumn("interpreterId"),
     },
     { schema }
   );

@@ -20,7 +20,7 @@ const address: AddressInfo = {
   city: "Seattle",
   state: "WA",
   postalCode: "98109",
-  country: "US"
+  country: "US",
 };
 const geocodedAddress = {
   canonicalAddress: "Home",
@@ -29,7 +29,7 @@ const geocodedAddress = {
   state: "WA",
   postalCode: "98109",
   latitude: 0,
-  longitude: 0
+  longitude: 0,
 };
 
 describe("feverValidateAddress", () => {
@@ -51,8 +51,8 @@ describe("feverValidateAddress", () => {
       {
         id: "1_home",
         use: AddressInfoUse.Home,
-        addresses: [geocodedAddress]
-      }
+        addresses: [geocodedAddress],
+      },
     ];
     when(mockGeocoder.geocodeAddresses(anything())).thenReturn(
       geocoderResponse
@@ -65,14 +65,14 @@ describe("feverValidateAddress", () => {
     const pii = surveyPIIInDb(csruid);
     pii.survey.patient.address = [address];
     await fever.surveyPii.destroy({
-      where: { csruid }
+      where: { csruid },
     });
     const survey = await fever.surveyPii.create(pii);
 
     const result = await endpoint.validateAndCheckDuplicates(
       {
         ...address,
-        address: address.line[0]
+        address: address.line[0],
       },
       ""
     );

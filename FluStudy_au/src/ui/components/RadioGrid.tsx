@@ -29,6 +29,7 @@ import {
   FEATHER_SIZE,
 } from "../styles";
 import Text from "./Text";
+import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 interface Props {
   highlighted?: boolean;
@@ -39,35 +40,40 @@ interface Props {
 }
 
 interface State {
-  helpSelected: string | null;
+  expandedHelpImage: string | null;
 }
 
 class RadioGrid extends React.PureComponent<Props, State> {
-  state = {
-    helpSelected: null,
+  state: State = {
+    expandedHelpImage: null,
   };
 
   _onPress = (key: string) => {
-    this.setState({ helpSelected: null });
+    this.setState({ expandedHelpImage: null });
     this.props.dispatch(
       updateAnswer({ selectedButtonKey: key }, this.props.question)
     );
   };
 
   _toggleHelp = (key: string) => {
-    const isSelected = key === this.state.helpSelected ? null : key;
-    this.setState({ helpSelected: isSelected });
+    const isSelected = key === this.state.expandedHelpImage ? null : key;
+    this.setState({ expandedHelpImage: isSelected });
+    logFirebaseEvent(AppEvents.HELP_TOGGLED, {
+      selected: !!isSelected,
+      key,
+      question: this.props.question.id,
+    });
   };
 
   render() {
     const { highlighted, selected, question } = this.props;
-    const { helpSelected } = this.state;
+    const { expandedHelpImage } = this.state;
     return (
       <View style={styles.container}>
         {question.buttons.map((buttonConfig, i) => (
           <RadioGridItem
             config={buttonConfig}
-            helpSelected={helpSelected === buttonConfig.key}
+            expandHelpImage={expandedHelpImage === buttonConfig.key}
             highlighted={!!highlighted}
             key={buttonConfig.key}
             last={question.buttons.length - 1 === i}
@@ -86,7 +92,7 @@ export default connect((state: StoreState, props: Props) => ({
 
 interface ItemProps {
   config: ButtonConfig;
-  helpSelected: boolean;
+  expandHelpImage: boolean;
   highlighted: boolean;
   last: boolean;
   selected: boolean;
@@ -94,11 +100,11 @@ interface ItemProps {
   toggleHelp: (key: string) => void;
 }
 
-class Item extends React.Component<ItemProps & WithNamespaces, State> {
+class Item extends React.Component<ItemProps & WithNamespaces> {
   shouldComponentUpdate(props: ItemProps & WithNamespaces) {
     return (
       props.selected != this.props.selected ||
-      props.helpSelected != this.props.helpSelected ||
+      props.expandHelpImage != this.props.expandHelpImage ||
       props.highlighted != this.props.highlighted
     );
   }
@@ -112,13 +118,20 @@ class Item extends React.Component<ItemProps & WithNamespaces, State> {
   };
 
   render() {
-    const { config, helpSelected, highlighted, last, selected, t } = this.props;
-    const { key, helpImageUri } = config;
+    const {
+      config,
+      expandHelpImage,
+      highlighted,
+      last,
+      selected,
+      t,
+    } = this.props;
+    const { key, expandableHelpImage, helpImageUri } = config;
     return (
       <Fragment>
         <TouchableOpacity
           onPress={this._onPress}
-          style={last ? styles.radioRowButtonLast : styles.radioRowButton}
+          style={[styles.radioRowButton, last && styles.radioRowButtonLast]}
         >
           <View style={styles.radioRow}>
             <View
@@ -134,7 +147,7 @@ class Item extends React.Component<ItemProps & WithNamespaces, State> {
               style={[styles.radioText, selected && styles.selectedRadioColor]}
               content={t(`surveyButton:${key}`)}
             />
-            {!!helpImageUri && (
+            {!!expandableHelpImage && !!helpImageUri && (
               <TouchableOpacity
                 key={`${key}-touchable`}
                 onPress={this._toggleHelp}
@@ -146,21 +159,20 @@ class Item extends React.Component<ItemProps & WithNamespaces, State> {
               </TouchableOpacity>
             )}
           </View>
+          {!!helpImageUri && (expandHelpImage || !expandableHelpImage) && (
+            <TouchableOpacity
+              style={styles.imageContainer}
+              onPress={expandableHelpImage ? this._toggleHelp : this._onPress}
+            >
+              <Image
+                key={`${key}-image`}
+                resizeMode={"contain"}
+                style={styles.helpImage}
+                source={{ uri: helpImageUri }}
+              />
+            </TouchableOpacity>
+          )}
         </TouchableOpacity>
-        {helpSelected && !!helpImageUri && (
-          <TouchableOpacity
-            style={{ height: 200 }}
-            key={`${key}-image-button`}
-            onPress={this._toggleHelp}
-          >
-            <Image
-              key={`${key}-image`}
-              resizeMode={"contain"}
-              style={styles.helpImage}
-              source={{ uri: helpImageUri }}
-            />
-          </TouchableOpacity>
-        )}
       </Fragment>
     );
   }
@@ -173,26 +185,28 @@ const styles = StyleSheet.create({
     marginBottom: GUTTER,
   },
   helpIcon: {
+    alignItems: "center",
     backgroundColor: SECONDARY_COLOR,
     borderColor: SECONDARY_COLOR,
     borderWidth: 1,
     borderRadius: 20,
     height: RADIO_BUTTON_HEIGHT / 2,
-    width: RADIO_BUTTON_HEIGHT / 2,
-    alignItems: "center",
     justifyContent: "center",
+    width: RADIO_BUTTON_HEIGHT / 2,
   },
   helpIconButton: {
     alignItems: "center",
-    height: RADIO_BUTTON_HEIGHT,
     justifyContent: "center",
-    width: RADIO_BUTTON_HEIGHT,
+    paddingVertical: GUTTER / 4,
   },
   helpImage: {
     flex: 1,
     height: undefined,
     marginVertical: GUTTER / 2,
     width: undefined,
+  },
+  imageContainer: {
+    height: 200,
   },
   radioButton: {
     alignItems: "center",
@@ -213,6 +227,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 1,
     flexDirection: "row",
+    paddingVertical: GUTTER / 2,
   },
   radioRowButton: {
     borderColor: BORDER_COLOR,
@@ -220,10 +235,7 @@ const styles = StyleSheet.create({
     minHeight: RADIO_BUTTON_HEIGHT,
   },
   radioRowButtonLast: {
-    borderColor: BORDER_COLOR,
-    borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    minHeight: RADIO_BUTTON_HEIGHT,
   },
   radioText: {
     flex: 3,

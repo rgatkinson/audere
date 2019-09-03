@@ -1,0 +1,39 @@
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: "Roboto", sans-serif;
+  font-size: 12pt;
+  line-height: 14pt;
+}
+
+div.WhoAmI {
+  padding-top: 17px;
+  margin-right: 40px;
+  text-align: left;
+  visibility: inherit;
+  vertical-align: middle;
+}
+
+.Logout {
+  color: #0088ff;
+  cursor: pointer;
+  font-weight: bold;
+  padding-top: 5px;
+}
+
+.ProfileImage {
+  padding-right: 10px;
+  padding-top: 22px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.UserWelcome {
+  color: #4d4d4d;
+}
+
+.UserName {
+  font-weight: bold;
+  color: #4d4d4d;
+}

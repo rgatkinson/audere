@@ -10,7 +10,7 @@ import {
   EventInfo,
   PatientInfoGender,
   ResponseInfo,
-  SampleInfo
+  SampleInfo,
 } from "audere-lib/common";
 import { FollowUpSurveyData } from "../external/redCapClient";
 

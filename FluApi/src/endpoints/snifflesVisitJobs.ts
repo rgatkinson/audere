@@ -6,7 +6,7 @@ import {
   SnifflesModels,
   VisitJobResult,
   VisitPIIInstance,
-  VisitNonPIIInstance
+  VisitNonPIIInstance,
 } from "../models/db/sniffles";
 import logger from "../util/logger";
 
@@ -42,10 +42,10 @@ export class SnifflesVisitJobs {
             where: {
               visit: {
                 complete: {
-                  [Op.eq]: "true"
-                }
+                  [Op.eq]: "true",
+                },
               },
-              "$sniffles_visit_job_records.id$": null
+              "$sniffles_visit_job_records.id$": null,
             },
             include: [
               {
@@ -55,30 +55,28 @@ export class SnifflesVisitJobs {
                 // `duplicating` is not included in the IncludeOptions type definition,
                 // hence the cast below, but it's needed to make the limit option work.
                 // See: https://github.com/sequelize/sequelize/issues/4446
-                duplicating: false
-              } as IncludeOptions
+                duplicating: false,
+              } as IncludeOptions,
             ],
             limit: maxVisits === -1 ? undefined : maxVisits,
-            order: [["id", "ASC"]]
+            order: [["id", "ASC"]],
           });
           const visitPiis = await this.snifflesModels.visitPii.findAll({
             where: {
-              csruid: visitNonPiis.map(visitNonPii => visitNonPii.csruid)
-            }
+              csruid: visitNonPiis.map(visitNonPii => visitNonPii.csruid),
+            },
           });
           const combinedVisits = visitNonPiis
             .map(visitNonPii => ({
               nonPii: visitNonPii,
               pii: visitPiis.find(
                 visitPii => visitPii.csruid === visitNonPii.csruid
-              )
+              ),
             }))
             .filter(combinedVisit => {
               if (!combinedVisit.pii) {
                 console.error(
-                  `Not running ${jobName} on visit ${
-                    combinedVisit.nonPii.id
-                  } because pii is mising`
+                  `Not running ${jobName} on visit ${combinedVisit.nonPii.id} because pii is mising`
                 );
                 return false;
               }
@@ -90,12 +88,12 @@ export class SnifflesVisitJobs {
             .map(([visitId, jobResult]) => ({
               visitId,
               jobName,
-              result: jobResult.result
+              result: jobResult.result,
             }));
           await this.snifflesModels.visitJobRecord.bulkCreate(jobRecords);
           summary[jobName] = {
             visitsProcessed: combinedVisits.length,
-            visitsSucceeded: jobRecords.length
+            visitsSucceeded: jobRecords.length,
           };
         } catch (e) {
           summary[job.getName()] = { error: true };

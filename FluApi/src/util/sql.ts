@@ -14,7 +14,7 @@ import Sequelize, {
   INTEGER as SQL_INTEGER,
   JSON as SQL_JSON,
   JSONB as SQL_JSONB,
-  STRING as SQL_STRING
+  STRING as SQL_STRING,
 } from "sequelize";
 import "../util/config";
 import logger from "./logger";
@@ -50,11 +50,11 @@ export function createSplitSql(): SplitSql {
 
   const pii = new Sequelize(piiUrl, {
     logging: process.env.LOG_SQL && sequelizeLogger,
-    operatorsAliases: false
+    operatorsAliases: false,
   });
   const nonPii = new Sequelize(nonPiiUrl, {
     logging: process.env.LOG_SQL && sequelizeLogger,
-    operatorsAliases: false
+    operatorsAliases: false,
   });
   return {
     pii,
@@ -63,7 +63,7 @@ export function createSplitSql(): SplitSql {
     nonPiiUrl,
     close: async () => {
       Promise.all([pii.close(), nonPii.close()]);
-    }
+    },
   };
 }
 
@@ -84,7 +84,7 @@ export function defineModel<Attr>(
   // The sequelize type definition makes define return SqlModel<any,any>, so cast to recover type info.
   return sql.define<Inst<Attr>, Attr>(name, attr, {
     ...options,
-    freezeTableName: true
+    freezeTableName: true,
   });
 }
 
@@ -94,7 +94,7 @@ export function primaryKey(column) {
 export function unique(column, compositeKeyName?: string) {
   return {
     ...column,
-    unique: compositeKeyName === undefined ? true : compositeKeyName
+    unique: compositeKeyName === undefined ? true : compositeKeyName,
   };
 }
 export function nullable(column) {
@@ -129,7 +129,7 @@ export function foreignIdKey(column, model) {
     ...column,
     unique: true,
     references: { model, key: "id" },
-    onDelete: "CASCADE"
+    onDelete: "CASCADE",
   };
 }
 export function column(type, field?: string) {

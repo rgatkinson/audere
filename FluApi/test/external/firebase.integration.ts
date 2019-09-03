@@ -8,7 +8,7 @@ import _ from "lodash";
 import firebase from "firebase-admin";
 import {
   connectorFromSqlSecrets,
-  FirebaseReceiver
+  FirebaseReceiver,
 } from "../../src/external/firebase";
 import { createSplitSql, SplitSql } from "../../src/util/sql";
 
@@ -18,13 +18,13 @@ type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 const DOC_ID0 = "DocumentId0";
 const DOC0 = {
   docid: DOC_ID0,
-  key: "value0"
+  key: "value0",
 };
 
 const DOC_ID1 = "DocumentId1";
 const DOC1 = {
   docid: DOC_ID1,
-  key: "value1"
+  key: "value1",
 };
 
 describe("FirebaseReceiver", async () => {
@@ -100,7 +100,7 @@ describe("FirebaseReceiver", async () => {
     const name = collectionName(scenario);
     const collection = firestore.collection(name);
     const receiver = new FirebaseReceiver(async () => app, {
-      collection: name
+      collection: name,
     });
 
     await clear(collection);
@@ -141,7 +141,7 @@ function hash(...args: (string | Buffer)[]): string {
 function wireDoc(content: object): object {
   return {
     _transport: clientTransportFrame(hash(JSON.stringify(content))),
-    ...content
+    ...content,
   };
 }
 
@@ -150,7 +150,7 @@ function clientTransportFrame(hash: string) {
     sentAt: new Date().toISOString(),
     contentHash: hash,
     lastWriter: "sender",
-    protocolVersion: 1
+    protocolVersion: 1,
   };
 }
 

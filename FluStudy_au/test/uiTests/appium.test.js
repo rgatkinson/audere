@@ -22,9 +22,10 @@ const deviceInfo = require(process.env.TEST_UI_CONFIG);
 const PLATFORM = deviceInfo.PLATFORM;
 const screen_x = deviceInfo.SCREEN_X;
 const screen_y = deviceInfo.SCREEN_Y;
+const isSimulator = deviceInfo.SIMULATOR;
 const fs = require("fs");
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 6000000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000000;
 const PORT = 4723;
 const driver = wd.promiseChainRemote("localhost", PORT);
 
@@ -75,12 +76,16 @@ async function runThroughApp(models, isDemo) {
     true
   );
   await driver.setImplicitWaitTimeout(10000);
+  await driver.sleep(1000); // let welcome animation finish
   const installationId = await app_setup_for_automation(driver, isDemo);
 
   let files_to_write = {};
   let screen_num = 1;
+  let screens_visited = ["Version"];
 
-  for (const screen_info of content) {
+  // for (const screen_info of content) {
+  screen_info = content.find(screen => screen.key === "Welcome");
+  while (screen_info) {
     if (!isDemo) {
       await driver.sleep(1000); //let screen finish loading
       let screenshot = await driver.takeScreenshot();
@@ -88,46 +93,78 @@ async function runThroughApp(models, isDemo) {
       screen_num++;
     }
     if (screen_info.type == "basic") {
-      await basic_screen(driver, screen_info);
+      next_screen = await basic_screen(driver, screen_info, screens_visited);
     } else if (screen_info.type == "input") {
-      await input_screen(driver, screen_info);
+      //skip question about number of lines if RDT capture was not successful
+      if (
+        screen_info.title != strings.PostRDTTestStripSurvey.title ||
+        !screens_visited.includes("TestStripCamera")
+      ) {
+        next_screen = await input_screen(driver, screen_info, screens_visited);
+      } else {
+        next_screen = screen_info.button.onClick;
+      }
     } else if (screen_info.type == "timer") {
-      await timer_screen(driver, screen_info, isDemo);
+      next_screen = await timer_screen(
+        driver,
+        screen_info,
+        screens_visited,
+        isDemo
+      );
+    } else if (screen_info.type == "barcode") {
+      next_screen = await barcode_screen(driver, screen_info, screens_visited);
+    } else if (screen_info.type == "consent") {
+      next_screen = await consent_screen(driver, screen_info, screens_visited);
+    } else if (screen_info.type == "blue_line_question") {
+      next_screen = await blue_line_question_screen(
+        driver,
+        screen_info,
+        screens_visited
+      );
     } else if (screen_info.type == "rdt") {
-      await rdt_screen(driver, screen_info);
+      next_screen = await rdt_screen(driver, screen_info, screens_visited);
     }
+    screen_info = next_screen
+      ? content.find(screen => screen.key === next_screen)
+      : null;
   }
   if (!isDemo) {
     printScreenshots(files_to_write);
   }
-  await verify_db_contents(driver, models, installationId);
+  await verify_db_contents(driver, models, installationId, screens_visited);
 }
 
 //check for screen title and click button for next page
-async function basic_screen(driver, screen_info) {
+async function basic_screen(driver, screen_info, screens_visited) {
   expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
     true
   );
+  screens_visited.push(screen_info.key);
+
   if ("button" in screen_info) {
-    await scroll_to_element(driver, screen_info.button);
-    await driver.elementByAccessibilityId(screen_info.button).click();
-  }
-  if (
-    "iosPopupOnContinue" in screen_info &&
-    PLATFORM == "iOS" &&
-    (await driver.hasElementByAccessibilityId(screen_info.iosPopupOnContinue))
-  ) {
-    await driver
-      .elementByAccessibilityId(screen_info.iosPopupOnContinue)
-      .click();
+    await scroll_to_element(driver, screen_info.button.name);
+    await driver.elementByAccessibilityId(screen_info.button.name).click();
+
+    if (
+      "iosPopupOnContinue" in screen_info &&
+      PLATFORM == "iOS" &&
+      (await driver.hasElementByAccessibilityId(screen_info.iosPopupOnContinue))
+    ) {
+      await driver
+        .elementByAccessibilityId(screen_info.iosPopupOnContinue)
+        .click();
+    }
+    return screen_info.button.onClick;
   }
 }
 
 //Check for title, enter default choices for questions, click button for next screen
-async function input_screen(driver, screen_info) {
+async function input_screen(driver, screen_info, screens_visited) {
   expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
     true
   );
+  screens_visited.push(screen_info.key);
+
   for (let i = 0; i < screen_info.input.length; i++) {
     const question = screen_info.input[i];
     if (question.name in inputs) {
@@ -137,9 +174,23 @@ async function input_screen(driver, screen_info) {
       }
 
       if (question.type == "text") {
-        await driver
-          .elementByAccessibilityId(question.name)
-          .type(inputs[question.name]);
+        if (question.placeholder) {
+          await driver
+            .elementByAccessibilityId(question.placeholder)
+            .type(inputs[question.placeholder]);
+        } else {
+          if (PLATFORM == "iOS") {
+            await driver
+              .elementByClassName("XCUIElementTypeTextField")
+              .type(inputs[question.name]);
+          } else {
+            await driver.elementByClassName("android.widget.EditText").click();
+            await driver
+              .elementByClassName("android.widget.EditText")
+              .type(inputs[question.name]);
+          }
+          await driver.hideDeviceKeyboard();
+        }
       } else if (question.type == "checkbox" && question.name in inputs) {
         for (const item of question.options) {
           if (inputs[question.name].includes(item)) {
@@ -152,23 +203,16 @@ async function input_screen(driver, screen_info) {
           driver,
           question.name
         );
-        let buttons;
-        if (PLATFORM == "iOS") {
-          buttons = await driver.elementsByAccessibilityId(
-            inputs[question.name]
-          );
-        } else {
-          //remove trailing ' ?' for items that have ? help option as part of ios accessibilitiy id
-          buttons = await driver.elementsByAccessibilityId(
-            inputs[question.name].replace(/ \?$/, "")
-          );
-        }
+        let buttons = await driver.elementsByAccessibilityId(
+          inputs[question.name]
+        );
 
         for (const button of buttons) {
           let buttonLocation = await button.getLocation();
           if (buttonLocation.y > questionLocation.y) {
-            if (buttonLocation.y > screen_y) {
+            while (buttonLocation.y > screen_y) {
               half_scroll(driver);
+              buttonLocation = await button.getLocation();
             }
             await button.click();
             break;
@@ -192,17 +236,12 @@ async function input_screen(driver, screen_info) {
     }
   }
 
-  if (await driver.isKeyboardShown()) {
-    if (PLATFORM == "iOS") {
-      await driver.elementByAccessibilityId(strings.common.button.done).click();
-    } else {
-      await driver.hideDeviceKeyboard();
-    }
-  }
-  await scroll_to_element(driver, screen_info.button);
-  await driver.elementByAccessibilityId(screen_info.button).click();
+  await scroll_to_element(driver, screen_info.button.name);
+  await driver.elementByAccessibilityId(screen_info.button.name).click();
+  return screen_info.button.onClick;
 }
 
+//Pick answer for button choice question (android)
 async function android_buttonGrid(driver, question, nextQuestion, screen_info) {
   let questionLocation = await get_element_location(driver, question.name);
   let totalButtons = Array.isArray(inputs[question.name])
@@ -213,7 +252,7 @@ async function android_buttonGrid(driver, question, nextQuestion, screen_info) {
   let somethingLeftToClick = true;
   let nextQuestionLocation = await get_element_location(
     driver,
-    nextQuestion ? nextQuestion.name : screen_info.button
+    nextQuestion ? nextQuestion.name : screen_info.button.name
   );
   if (!nextQuestionLocation) {
     nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
@@ -246,7 +285,7 @@ async function android_buttonGrid(driver, question, nextQuestion, screen_info) {
       await half_scroll(driver);
       nextQuestionLocation = await get_element_location(
         driver,
-        nextQuestion ? nextQuestion.name : screen_info.button
+        nextQuestion ? nextQuestion.name : screen_info.button.name
       );
       if (!nextQuestionLocation) {
         nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
@@ -265,6 +304,7 @@ async function android_buttonGrid(driver, question, nextQuestion, screen_info) {
   }
 }
 
+//Pick answer for button choice question (ios)
 async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
   let questionLocation = await get_element_location(driver, question.name);
   let totalButtons = Array.isArray(inputs[question.name])
@@ -274,7 +314,7 @@ async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
   let lastClickedY = questionLocation.y;
   let nextQuestionLocation = await get_element_location(
     driver,
-    nextQuestion ? nextQuestion.name : screen_info.button
+    nextQuestion ? nextQuestion.name : screen_info.button.name
   );
   if (!nextQuestionLocation) {
     nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
@@ -294,7 +334,7 @@ async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
         buttonLocation = await button.getLocation();
         nextQuestionLocation = await get_element_location(
           driver,
-          nextQuestion ? nextQuestion.name : screen_info.button
+          nextQuestion ? nextQuestion.name : screen_info.button.name
         );
         if (!nextQuestionLocation) {
           nextQuestionLocation = { x: screen_x, y: screen_y + 1 };
@@ -315,8 +355,9 @@ async function ios_buttonGrid(driver, question, nextQuestion, screen_info) {
   }
 }
 
+//Pick answer for select menu question (android)
 async function android_select(driver, question) {
-  await driver.elementByClassName("android.widget.TextView").click();
+  await driver.elementByClassName("android.widget.Spinner").click();
   let foundChoice = false;
   while (!foundChoice) {
     let dropdown_items = await driver.elementsByClassName(
@@ -334,13 +375,13 @@ async function android_select(driver, question) {
       //scroll up to see more choices
       let scroll = new wd.TouchAction(driver)
         .press({
-          x: Math.trunc(screen_x * 0.5),
-          y: Math.trunc(screen_y * 0.3),
+          x: Math.trunc(screen_x * 0.25),
+          y: Math.trunc(screen_y * 0.5),
         })
         .wait(2000)
         .moveTo({
-          x: Math.trunc(screen_x * 0.5),
-          y: Math.trunc(screen_y * 0.7),
+          x: Math.trunc(screen_x * 0.25),
+          y: Math.trunc(screen_y * 0.9),
         })
         .release();
       await scroll.perform();
@@ -348,6 +389,7 @@ async function android_select(driver, question) {
   }
 }
 
+//Pick answer for select menu question (ios)
 async function ios_select(driver, question) {
   await driver.elementByAccessibilityId(question.link).click();
   const pickerWheel = await driver.elementByClassName(
@@ -365,8 +407,119 @@ async function ios_select(driver, question) {
   await driver.setImplicitWaitTimeout(10000);
 }
 
-//Answer camera permissions and click button to take a picture
-async function rdt_screen(driver, screen_info) {
+//Barcode screen logic: allows for invalid barcodes if desired
+async function barcode_screen(driver, screen_info, screens_visited) {
+  expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
+    true
+  );
+  screens_visited.push(screen_info.key);
+
+  let barcode_to_try = true;
+  let num_bad_barcodes = 0;
+
+  while (barcode_to_try) {
+    let code;
+    if (
+      !screens_visited.includes("BarcodeContactSupport") &&
+      "InvalidBarcodes" in inputs &&
+      inputs["InvalidBarcodes"].length > num_bad_barcodes
+    ) {
+      code = inputs["InvalidBarcodes"][num_bad_barcodes];
+      num_bad_barcodes++;
+    } else {
+      code = inputs[screen_info.input[0].placeholder];
+      barcode_to_try = false;
+    }
+    await driver
+      .elementByAccessibilityId(screen_info.input[0].placeholder)
+      .type(code);
+    await driver
+      .elementByAccessibilityId(screen_info.input[1].placeholder)
+      .type(code);
+
+    if (await driver.isKeyboardShown()) {
+      if (PLATFORM == "iOS") {
+        await driver
+          .elementByAccessibilityId(strings.common.button.done)
+          .click();
+      } else {
+        await driver.hideDeviceKeyboard();
+      }
+    }
+    await driver.elementByAccessibilityId(screen_info.button.name).click();
+    if (num_bad_barcodes == 4) {
+      return "BarcodeContactSupport";
+    } else if (barcode_to_try && PLATFORM == "iOS") {
+      await driver.elementByAccessibilityId(strings.common.button.ok).click();
+    } else if (barcode_to_try && PLATFORM == "Android") {
+      await driver.element("id", "android:id/button1").click();
+    }
+  }
+
+  return screen_info.button.onClick;
+}
+
+//Consent screen logic: allows automation to consent or deny consent
+async function consent_screen(driver, screen_info, screens_visited) {
+  //skip looking for title if coming back from ConsentDeclined
+  if (!screens_visited.includes("ConsentDeclined")) {
+    expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
+      true
+    );
+  }
+  screens_visited.push(screen_info.key);
+
+  let next_screen_key;
+  if (
+    "ConsentDeclined" in inputs &&
+    !screens_visited.includes("ConsentDeclined")
+  ) {
+    await scroll_to_element(driver, screen_info.denyButton.name);
+    await driver.elementByAccessibilityId(screen_info.denyButton.name).click();
+    next_screen_key = screen_info.denyButton.onClick;
+  } else {
+    let questionY = await scroll_to_element(driver, screen_info.input[0].name);
+    if (questionY > screen_y * 0.6) {
+      await half_scroll(driver);
+    }
+    PLATFORM == "iOS"
+      ? await ios_buttonGrid(driver, screen_info.input[0], null, screen_info)
+      : await android_buttonGrid(
+          driver,
+          screen_info.input[0],
+          null,
+          screen_info
+        );
+    await scroll_to_element(driver, screen_info.button.name);
+    await driver.elementByAccessibilityId(screen_info.button.name).click();
+    next_screen_key = screen_info.button.onClick;
+  }
+  return next_screen_key;
+}
+
+//Test strip survey screen logic: allows automation to not see blue line
+async function blue_line_question_screen(driver, screen_info, screens_visited) {
+  expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
+    true
+  );
+  screens_visited.push(screen_info.key);
+
+  if (PLATFORM == "iOS") {
+    await ios_buttonGrid(driver, screen_info.input[0], null, screen_info);
+  } else {
+    await android_buttonGrid(driver, screen_info.input[0], null, screen_info);
+  }
+
+  await driver.elementByAccessibilityId(screen_info.button.name).click();
+  if (inputs[strings.surveyTitle.blueLine] == strings.surveyButton.yes) {
+    return screen_info.button.onClick;
+  } else {
+    return "InvalidResult";
+  }
+}
+
+//RDT screen logic: Answer camera permissions and click button to take a picture
+async function rdt_screen(driver, screen_info, screens_visited) {
   if (
     PLATFORM == "Android" &&
     (await driver.hasElement(
@@ -374,15 +527,9 @@ async function rdt_screen(driver, screen_info) {
       "com.android.packageinstaller:id/permission_allow_button"
     ))
   ) {
-    allowButton = await driver.element(
-      "id",
-      "com.android.packageinstaller:id/permission_allow_button"
-    );
-    await allowButton.click();
-    //wait to make sure button can load
-    await driver.sleep(3000);
-    okButton = await driver.element("id", "android:id/button1");
-    await okButton.click();
+    await driver
+      .element("id", "com.android.packageinstaller:id/permission_allow_button")
+      .click();
   } else {
     if (
       await driver.hasElementByAccessibilityId(
@@ -393,37 +540,79 @@ async function rdt_screen(driver, screen_info) {
         .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
         .click();
     }
-    await driver.elementByAccessibilityId(strings.common.button.ok).click();
   }
 
-  //prevents the tap from happening before the button appears
-  await driver.sleep(500);
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
-    .perform();
+  let manual_capture_required = true;
+  if (!isSimulator) {
+    screens_visited.push(screen_info.key);
+    startTime = new Date();
+    secondsElapsed = 0;
+    while (manual_capture_required && secondsElapsed <= 35) {
+      if (
+        await driver.hasElementByAccessibilityId(
+          strings.TestStripConfirmation.title
+        )
+      ) {
+        manual_capture_required = false;
+      }
+      currentTime = new Date();
+      secondsElapsed = (currentTime - startTime) / 1000;
+    }
+  }
+
+  if (manual_capture_required) {
+    if (PLATFORM == "Android") {
+      await driver.sleep(3000); //wait to make sure button can load
+      await driver.element("id", "android:id/button1").click();
+    } else {
+      await driver.elementByAccessibilityId(strings.common.button.ok).click();
+    }
+
+    //prevents the tap from happening before the button appears
+    await driver.sleep(2000);
+    screens_visited.push("TestStripCamera");
+    await new wd.TouchAction(driver)
+      .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
+      .perform();
+    await driver.sleep(5000);
+  }
+  return "TestStripConfirmation";
 }
 
-//Answer push notifications question if necessary and bypass timer
-async function timer_screen(driver, screen_info, isDemo) {
+//Timer screen logic: Answer push notifications question if necessary and bypass timer
+async function timer_screen(driver, screen_info, screens_visited, isDemo) {
   expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
     true
   );
+  screens_visited.push(screen_info.key);
+
   if (isDemo) {
     //tap until timer is bypassed
     await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
-    while (!(await driver.hasElementByAccessibilityId(screen_info.button))) {
+    while (
+      !(await driver.hasElementByAccessibilityId(screen_info.button.name))
+    ) {
       await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
     }
   } else {
-    while (!(await driver.hasElementByAccessibilityId(screen_info.button))) {
+    while (
+      !(await driver.hasElementByAccessibilityId(screen_info.button.name))
+    ) {
       driver.sleep(1000);
     }
   }
-  await driver.elementByAccessibilityId(screen_info.button).click();
+  await driver.elementByAccessibilityId(screen_info.button.name).click();
+  return screen_info.button.onClick;
 }
 
-async function verify_db_contents(driver, models, installationId) {
-  await driver.sleep(3000); // Let firestore sync
+//Check that navigation events and question answers are correctly stored in the databse
+async function verify_db_contents(
+  driver,
+  models,
+  installationId,
+  screens_visited
+) {
+  await driver.sleep(5000); // Let firestore sync
   const response = await axios.get(
     "http://localhost:3200/api/import/coughDocuments"
   );
@@ -446,10 +635,8 @@ async function verify_db_contents(driver, models, installationId) {
   const dbRow = dbRowsAndNum["rows"][dbRowsAndNum["count"] - 1];
 
   //verify navigation events
-  const expected = content.map(item => item.dbScreenName);
-  const actual = dbRow.survey.events
-    .slice(1) // db has version screen before app starts
-    .map(item => item.refId);
+  const expected = screens_visited;
+  const actual = dbRow.survey.events.map(item => item.refId);
   expect(actual).toEqual(expected);
 
   //verify user responses
@@ -481,7 +668,9 @@ async function verify_db_contents(driver, models, installationId) {
         }
       } else if (
         question.dbLocation === "responses" &&
-        inputs[question.name] != strings.surveyButton.preferNotToSay
+        inputs[question.name] != strings.surveyButton.preferNotToSay &&
+        (question.name != strings.surveyTitle.numLinesSeen ||
+          !screens_visited.includes("TestStripCamera"))
       ) {
         const questionDb = dbRow.survey.responses[0].item.find(item =>
           item.text.startsWith(question.name)
@@ -492,12 +681,15 @@ async function verify_db_contents(driver, models, installationId) {
             const answerDb = questionDb.answerOptions[answer.valueIndex].text;
             expect(inputs[question.name]).toContain(answerDb);
           }
+        } else if (question.type === "text") {
+          expect(inputs[question.name]).toEqual(
+            questionDb.answer[0].valueString
+          );
         } else {
           const answerDb =
             questionDb.answerOptions[questionDb.answer[0].valueIndex].text;
           expect(questionDb.answer).toHaveLength(1);
-          //remove trailing ' ?' for items that have ? help option as part of ios accessibilitiy id
-          expect(inputs[question.name].replace(/ \?$/, "")).toEqual(answerDb);
+          expect(inputs[question.name]).toEqual(answerDb);
         }
       } else if (question.dbLocation === "samples") {
         expect(dbRow.survey.samples[0].code).toEqual(inputs[question.name]);
@@ -668,6 +860,7 @@ async function half_scroll(driver) {
   }
 }
 
+//If automatoin took screeshots, add them to appScreenshots folder
 async function printScreenshots(files_to_write) {
   const build = fs
     .readFileSync("./android/app/version.properties", "utf8")

@@ -23,67 +23,57 @@ const IOS_MODAL_ANIMATION = {
 };
 
 interface Props {
-  height: number;
-  width: number;
+  body?: string;
   dismissText?: string;
+  height: number;
   submitText?: string;
   title?: string;
-  body?: string;
   visible: boolean;
+  width: number;
   onDismiss(): void;
   onSubmit(): void;
 }
 
 class Modal extends React.Component<Props & WithNamespaces> {
   render() {
-    const { t } = this.props;
+    const {
+      body,
+      children,
+      dismissText,
+      height,
+      submitText,
+      t,
+      title,
+      visible,
+      width,
+      onDismiss,
+      onSubmit,
+    } = this.props;
     return (
       <AnimatedModal
         backdropOpacity={0.3}
         style={styles.modal}
-        isVisible={this.props.visible}
+        isVisible={visible}
         animationIn={IOS_MODAL_ANIMATION}
         animationOut={"fadeOut"}
       >
-        <View
-          style={[
-            styles.modalContainer,
-            {
-              height: this.props.height,
-              width: this.props.width,
-            },
-          ]}
-        >
+        <View style={[styles.modalContainer, { height, width }]}>
           <View style={styles.blur}>
-            {this.props.title ? (
-              <Text style={styles.title}>{this.props.title}</Text>
-            ) : null}
-            {this.props.body ? (
-              <Text style={styles.body}>{this.props.body}</Text>
-            ) : null}
-            {this.props.children}
+            {title && <Text style={styles.title}>{title}</Text>}
+            {body && <Text style={styles.body}>{body}</Text>}
+            {children}
             <View style={styles.footer}>
-              <TouchableOpacity
-                onPress={this.props.onDismiss}
-                style={styles.actionButton}
-              >
+              <TouchableOpacity onPress={onDismiss} style={styles.actionButton}>
                 <Text style={styles.actionText}>
-                  {this.props.dismissText
-                    ? this.props.dismissText
-                    : t("common:button:cancel")}
+                  {dismissText ? dismissText : t("common:button:cancel")}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={this.props.onSubmit}
-                style={styles.actionButton}
-              >
+              <TouchableOpacity onPress={onSubmit} style={styles.actionButton}>
                 <Text
                   style={[styles.actionText, { textAlign: "right" }]}
-                  accessibilityLabel={this.props.submitText}
+                  accessibilityLabel={submitText}
                 >
-                  {this.props.submitText
-                    ? this.props.submitText
-                    : t("common:button:submit")}
+                  {submitText ? submitText : t("common:button:submit")}
                 </Text>
               </TouchableOpacity>
             </View>

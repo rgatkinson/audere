@@ -4,18 +4,28 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { ReturnKeyTypeOptions, StyleProp, TextStyle } from "react-native";
+import {
+  KeyboardType,
+  ReturnKeyTypeOptions,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 import TextInput from "./TextInput";
 
 interface Props {
   autoFocus?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
+  keyboardType?: KeyboardType;
   maxDigits?: number;
   placeholder: string;
   placeholderTextColor?: string;
   returnKeyType: ReturnKeyTypeOptions;
-  style?: StyleProp<TextStyle>;
+  textStyle?: StyleProp<TextStyle>;
   value?: string | null;
+  onBlur?: () => void;
   onChangeText(text: string): void;
+  onFocus?: () => void;
   onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
 }
@@ -30,7 +40,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      text: props.value
+      text: props.value,
     };
   }
 
@@ -45,16 +55,22 @@ export default class NumberInput extends React.PureComponent<Props, State> {
   };
 
   render() {
+    const { autoFocus, onBlur, onFocus } = this.props;
     return (
       <TextInput
         autoCorrect={false}
-        autoFocus={this.props.autoFocus}
-        keyboardType={"number-pad"}
+        autoFocus={autoFocus}
+        containerStyle={this.props.containerStyle}
+        keyboardType={
+          this.props.keyboardType ? this.props.keyboardType : "number-pad"
+        }
+        onBlur={onBlur}
+        onFocus={onFocus}
         placeholder={this.props.placeholder}
         placeholderTextColor={this.props.placeholderTextColor}
         ref={this.textInput}
         returnKeyType={this.props.returnKeyType}
-        style={this.props.style}
+        textStyle={this.props.textStyle}
         value={this.state.text}
         onChangeText={this.onChangeText}
         onKeyPress={this.props.onKeyPress}

@@ -21,6 +21,7 @@ import {
   Action,
   setTestStripImg,
   setRDTStartTime,
+  setRDTCaptureInfo,
   setRDTCaptureTime,
   setRDTReaderResult,
   setRDTPhoto,
@@ -38,12 +39,17 @@ import {
   RDTInterpretingArgs,
 } from "../../../native/rdtReader";
 import {
+  RDTReaderResult,
   RDTReaderSizeResult,
   RDTReaderExposureResult,
 } from "audere-lib/coughProtocol";
 import { GUTTER, SCREEN_MARGIN, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
-import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
+import {
+  logFirebaseEvent,
+  AppEvents,
+  AppHealthEvents,
+} from "../../../util/tracker";
 import { getRemoteConfig } from "../../../util/remoteConfig";
 
 interface Props {
@@ -80,7 +86,7 @@ interface FeedbackInstructionRequest {
 }
 
 const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
-const ALLOW_ICON_FEEDBACK = false; // Experimental for now; we'll revisit whether we should add icons back in
+const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
 const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
@@ -102,11 +108,13 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     sizeResult: RDTReaderSizeResult.INVALID,
     exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
     flashEnabled: true,
+    flashDisabledAutomatically: false,
     fps: 0,
     instructionMsg: "centerStrip",
     instructionIsOK: false,
     appState: "",
     supportsTorchMode: false,
+    frameImageScale: 1,
   };
 
   _didFocus: any;
@@ -116,13 +124,19 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _fpsCounterInterval?: NodeJS.Timeout | null | undefined;
   _instructionTimer: NodeJS.Timeout | null | undefined;
   _instructionLastUpdate: number = 0;
+  _lastRDTReaderResult?: RDTReaderResult;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
       predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
       duration: 5000,
-      action: () => this.setState({ flashEnabled: false }),
+      action: () =>
+        this.setState({
+          flashEnabled: false,
+          flashDisabledAutomatically: true,
+        }),
       cooldown: Infinity,
     },
     notCentered: {
@@ -321,7 +335,18 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         });
         dispatch(setRDTPhoto(""));
         dispatch(setRDTPhotoHC(""));
-        dispatch(setRDTReaderResult({ testStripFound: false }));
+        dispatch(
+          setRDTReaderResult(
+            this._lastRDTReaderResult || { testStripFound: false }
+          )
+        );
+        dispatch(
+          setRDTCaptureInfo(
+            this.state.supportsTorchMode && this.state.flashEnabled,
+            this.state.supportsTorchMode &&
+              this.state.flashDisabledAutomatically
+          )
+        );
       }
     }, secsTimeout * 1000);
   }
@@ -335,7 +360,11 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _handleAppStateChange = async (nextAppState: string) => {
     this.setState({ appState: nextAppState });
-    if (nextAppState === "active" && this.state.flashEnabled) {
+    if (
+      nextAppState === "active" &&
+      this.state.supportsTorchMode &&
+      this.state.flashEnabled
+    ) {
       // Toggle flash state since the hardware state doesn't seem to get preserved
       // on iOS if the app is backgrounded and then foregrounded.
       this.setState({ flashEnabled: false });
@@ -344,6 +373,16 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _handleMemoryWarning = () => {
+    logFirebaseEvent(AppHealthEvents.LOW_MEMORY_WARNING);
+    if (this.state.frameImageScale === 1) {
+      this.setState({ frameImageScale: 0.5 });
+      logFirebaseEvent(AppHealthEvents.REDUCED_FRAME_SCALE);
+      return;
+    }
+    if (!getRemoteConfig("advanceRDTCaptureOnMemoryWarning")) {
+      return;
+    }
+
     const { dispatch, fallback, isFocused, navigation } = this.props;
     if (isFocused) {
       // Make sure timer cleanup happens since since this event can fire
@@ -506,6 +545,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     }
 
     if (!args.testStripFound || !args.fiducialFound) {
+      if (args.testStripDetected) {
+        this._lastRDTReaderResult = rdtCapturedArgsToResult(args);
+      }
       return;
     }
 
@@ -532,19 +574,12 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       dispatch(
         setRDTPhotoHC(`data:image/png;base64,${args.resultWindowImgBase64}`)
       );
+      dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
-        setRDTReaderResult({
-          testStripFound: args.testStripFound,
-          isCentered: args.isCentered,
-          sizeResult: args.sizeResult,
-          isFocused: args.isFocused,
-          angle: args.angle,
-          isRightOrientation: args.isRightOrientation,
-          exposureResult: args.exposureResult,
-          controlLineFound: args.controlLineFound,
-          testALineFound: args.testALineFound,
-          testBLineFound: args.testBLineFound,
-        })
+        setRDTCaptureInfo(
+          this.state.supportsTorchMode && this.state.flashEnabled,
+          this.state.supportsTorchMode && this.state.flashDisabledAutomatically
+        )
       );
       navigation.push(next);
     } catch (e) {
@@ -699,6 +734,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           enabled={isFocused}
           showDefaultViewfinder={false}
           flashEnabled={this.state.flashEnabled}
+          frameImageScale={this.state.frameImageScale}
           appState={this.state.appState}
         />
         <View style={styles.overlayContainer}>
@@ -862,6 +898,22 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 export default connect((state: StoreState) => ({
   isDemo: state.meta.isDemo,
 }))(withNavigationFocus(withNamespaces("RDTReader")(RDTReader)));
+
+function rdtCapturedArgsToResult(args: RDTCapturedArgs): RDTReaderResult {
+  return {
+    testStripFound: args.testStripFound,
+    testStripBoundary: args.testStripBoundary,
+    isCentered: args.isCentered,
+    sizeResult: args.sizeResult,
+    isFocused: args.isFocused,
+    angle: args.angle,
+    isRightOrientation: args.isRightOrientation,
+    exposureResult: args.exposureResult,
+    controlLineFound: args.controlLineFound,
+    testALineFound: args.testALineFound,
+    testBLineFound: args.testBLineFound,
+  };
+}
 
 const styles = StyleSheet.create({
   camera: {
