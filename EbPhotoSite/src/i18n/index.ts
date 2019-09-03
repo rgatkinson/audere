@@ -5,6 +5,7 @@
 
 import i18n from "i18next";
 import enStrings from "./locales/en.json";
+import frStrings from "./locales/fr.json";
 
 const languageDetector = {
   type: "languageDetector",
@@ -17,6 +18,7 @@ i18n.use(languageDetector).init({
   fallbackLng: "en",
   resources: {
     en: enStrings,
+    fr: frStrings,
   },
   ns: ["common"],
   defaultNS: "common",

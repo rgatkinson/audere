@@ -1,0 +1,96 @@
+{
+  "common": {
+    "ok": "D'accord",
+    "cancel": "Annuler",
+    "loading": "Chargement...",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "POSITIVE": "POSITIF",
+    "NEGATIVE": "NÉGATIF",
+    "button": {
+      "yes": "Oui",
+      "submit": "Soumettre",
+      "cancel": "Annuler",
+      "YES": "OUI",
+      "NO": "NON",
+      "SAVE": "ENREGISTRER"
+    }
+  },
+  "buildInfo": {
+    "name": "Nom: ",
+    "version": "Version: ",
+    "buildDate": "Date de construction: ",
+    "hash": "Hacher: "
+  },
+  "chat": {
+    "messageFrom": "Message de {{name}}",
+    "userTag": "{{date}} par {{user}}",
+    "workerChat": "Discuter avec un agent de santé communautaire:",
+    "toClinicPlaceholder": "Entrez une note à envoyer à la clinique ASC"
+  },
+  "loggedInAs": {
+    "welcome": "Bienvenue,",
+    "logout": "Connectez - Out"
+  },
+  "patientBlock": {
+    "listView": "Vue liste",
+    "mapView": "Vue de la carte"
+  },
+  "patientListPage": {
+    "untriaged": "Patients Non Triés ({{num}})",
+    "triaged": "Patients Triés ({{num}})",
+    "listTitle": "Listes de patients",
+    "listLegend": "Cliquez sur une ligne pour voir les détails d'un patient spécifique et pour contacter l'ASC qui a testé le patient"
+  },
+  "patientDetailAssumeRouter": {
+    "updatedDiagnosis": "Diagnostic Ebola mis à jour",
+    "resultAvailable": "L'interprétation du résultat du test du patient est disponible"
+  },
+  "patientInfoPane": {
+    "likelyPositive": "* Probablement positif pour Ebola",
+    "likelyNegative": "* Probablement négatif pour Ebola",
+    "reviewedBy": "Revu par: ",
+    "date": "Date: ",
+    "toPatientList": "← Retour à la liste des patients",
+    "patientInfo": "Information du patient",
+    "phoneNumber": "Téléphone",
+    "contact": "Détails du contact",
+    "CHWNotes": "Notes ASC"
+  },
+  "testDetailPane": {
+    "notTested": "Pas testé",
+    "patientTest": "Détail du test du patient",
+    "testedOn": "Date testée",
+    "testedBy": "Testé par",
+    "contact": "Informations de contact",
+    "aboutCHW": "À propos de cet ASC"
+  },
+  "triagePane": {
+    "ebolaPositivity": "L'image ci-dessous indique-t-elle une positivité pour Ebola?",
+    "addNotes": "Ajoutez des notes de triage supplémentaires ici"
+  },
+  "photoPane": {
+    "takenOn": "Date:",
+    "testLocation": "Lieu de test",
+    "showPrevious": "Afficher le précédent ",
+    "photo": "photo",
+    "photo_plural": "photos"
+  },
+  "patientTable": {
+    "EbolaTestResult": "Résultat du test Ebola",
+    "EbolaResultNotes": "Notes sur les résultats d'Ebola",
+    "dateTested": "Date testée",
+    "notTested": "Pas testé",
+    "patientName": "Nom du patient",
+    "CHWName": "Nom de l'ASC",
+    "CHWPhone": "Numéro de téléphone ASC",
+    "noRows": "Aucune rangée trouvée",
+    "page": "Page",
+    "outOf": "de",
+    "rows": "rangées"
+  },
+  "simpleMap": {
+    "cannotLoadMap": "Impossible de charger la carte. La clé de l'API Google Cloud n'est pas configurée.",
+    "details": "Détails"
+  }
+}
