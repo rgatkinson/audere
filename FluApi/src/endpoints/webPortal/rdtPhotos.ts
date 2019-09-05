@@ -158,6 +158,18 @@ export class RDTPhotos {
       return;
     }
 
+    const canInterpret = await this.authManager.authorize(
+      req.user.userid,
+      Permissions.COUGH_INTERPRETATION_WRITE
+    );
+    const piiReview = await this.models.piiReview.findOne({
+      where: { surveyId: id },
+    });
+    if (!canInterpret && (!piiReview || piiReview.containsPii)) {
+      res.sendStatus(401);
+      return;
+    }
+
     const photos = await Promise.all(
       survey.survey.samples
         .filter(sample =>
@@ -185,10 +197,6 @@ export class RDTPhotos {
         })
     );
 
-    const canInterpret = await this.authManager.authorize(
-      req.user.userid,
-      Permissions.COUGH_INTERPRETATION_WRITE
-    );
     const expertRead = await this.models.expertRead.findOne({
       where: { surveyId: id },
     });
@@ -209,9 +217,6 @@ export class RDTPhotos {
       req.user.userid,
       Permissions.COUGH_RDT_PHOTOS_WRITE
     );
-    const piiReview = await this.models.piiReview.findOne({
-      where: { surveyId: id },
-    });
     const previousReviewer =
       piiReview &&
       (await this.siteUserModels.user.findById(piiReview.reviewerId)).userid;
