@@ -169,7 +169,7 @@ export class RDTPhotos {
       interpretation => ({
         value: interpretation,
         label: INTERPRETATIONS[interpretation],
-        checked: oldInterpretation === interpretation ? "checked" : "",
+        checked: checked(oldInterpretation === interpretation),
       })
     );
 
@@ -177,6 +177,21 @@ export class RDTPhotos {
       req.user.userid,
       Permissions.COUGH_RDT_PHOTOS_WRITE
     );
+    const piiReview = await this.models.piiReview.findOne({
+      where: { surveyId: id },
+    });
+    const piiOptions = [
+      {
+        value: "false",
+        label: "No PII",
+        checked: checked(piiReview && !piiReview.containsPii),
+      },
+      {
+        value: "true",
+        label: "Contains PII",
+        checked: checked(piiReview && piiReview.containsPii),
+      },
+    ];
 
     res.render("rdtPhotos.html", {
       photos,
@@ -186,6 +201,7 @@ export class RDTPhotos {
       canReplace,
       canInterpret,
       interpretations,
+      piiOptions,
     });
   };
 
@@ -222,4 +238,8 @@ export class RDTPhotos {
     });
     res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
+}
+
+function checked(c: boolean) {
+  return c ? "checked" : "";
 }

@@ -49,6 +49,14 @@ can be found in the LICENSE file distributed with this file.
         <form action="./setExpertRead" method="post">
           <input type="hidden" name="_csrf" value="{{csrf}}"/>
           <input type="hidden" name="surveyId" value="{{surveyId}}"/>
+          <h4>Does this photo contain PII?</h4>
+          {{#each piiOptions}}
+            <div>
+              <input type="radio" id="{{value}}" name="piiReview" value="{{value}}" {{checked}} />
+              <label for="{{value}}">{{label}}</label>
+            </div>
+          {{/each}}
+          <h4>What result does this test strip indicated?</h4>
           {{#each interpretations}}
             <div>
               <input type="radio" id="{{value}}" name="interpretation" value="{{value}}" {{checked}} />
