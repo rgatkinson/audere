@@ -206,13 +206,22 @@ export class RDTPhotos {
   };
 
   public setExpertRead = async (req, res) => {
-    const { surveyId, interpretation } = req.body;
+    const { surveyId, interpretation, piiReview } = req.body;
     const interpreterId = req.user.id;
-    await this.models.expertRead.upsert({
-      surveyId,
-      interpretation,
-      interpreterId,
-    });
+    if (interpretation !== undefined) {
+      await this.models.expertRead.upsert({
+        surveyId,
+        interpretation,
+        interpreterId,
+      });
+    }
+    if (piiReview !== undefined) {
+      await this.models.piiReview.upsert({
+        surveyId,
+        containsPii: piiReview,
+        reviewerId: interpreterId,
+      });
+    }
     res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
 
