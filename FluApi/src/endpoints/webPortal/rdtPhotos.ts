@@ -261,13 +261,14 @@ export class RDTPhotos {
       }
     }
     if (piiReview !== undefined) {
+      const containsPii = JSON.parse(piiReview);
       const oldReview = await this.models.piiReview.findOne({
         where: { surveyId },
       });
-      if (!oldReview || oldReview.containsPii !== piiReview) {
+      if (!oldReview || oldReview.containsPii !== containsPii) {
         await this.models.piiReview.upsert({
           surveyId,
-          containsPii: piiReview,
+          containsPii,
           reviewerId: interpreterId,
         });
       }
