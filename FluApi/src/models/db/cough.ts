@@ -39,6 +39,7 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
     photoUploadLog: definePhotoUploadLog(sql),
+    piiReview: definePiiReviews(sql),
     survey: defineSurvey(sql.nonPii),
   };
 
@@ -61,6 +62,7 @@ export interface CoughModels {
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
+  piiReview: Model<PiiReviewAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
 }
 
@@ -389,6 +391,27 @@ export function definePhotoReplacementLog(
       oldPhotoHash: stringColumn("oldPhotoHash"),
       newPhotoHash: stringColumn("newPhotoHash"),
       replacerId: unique(integerColumn("replacerId")),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface PiiReviewAttributes {
+  surveyId: number;
+  containsPii: boolean;
+  reviewerId: number;
+}
+
+export function definePiiReviews(sql: SplitSql): Model<PiiReviewAttributes> {
+  return defineModel<PiiReviewAttributes>(
+    sql.nonPii,
+    "pii_reviews",
+    {
+      surveyId: unique(integerColumn("surveyId")),
+      containsPii: stringColumn("containsPii"),
+      reviewerId: booleanColumn("reviewerId"),
     },
     { schema }
   );
