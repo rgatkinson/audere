@@ -35,6 +35,11 @@ td {
         <td><a href="{{dateSortLink}}">Date</a></td>
         <td>Time</td>
         <td><a href="{{barcodeSortLink}}">Barcode</a></td>
+        <td>Photo Type</td>
+        <td>Result</td>
+        {{#if shouldShowPII}}
+          <td>Contains PII?</td>
+        {{/if}}
       </thead>
       <tbody>
       {{#each barcodes}}
@@ -42,6 +47,11 @@ td {
           <td>{{date}}</td>
           <td>{{time}}</td>
           <td><a href="{{url}}">{{barcode}}</a></td>
+          <td>{{photo_type}}</td>
+          <td>{{expert_read}}</td>
+          {{#if ../shouldShowPII}}
+            <td>{{pii}}</td>
+          {{/if}}
         </tr>
       {{/each}}
       </tbody>

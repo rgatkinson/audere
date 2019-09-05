@@ -59,6 +59,15 @@ export class RDTPhotos {
       ? req.query.orderBy
       : "date_asc";
     const order = ORDER_OPTIONS[orderBy];
+    const shouldShowPII = await this.authManager.authorize(
+      req.user.userid,
+      Permissions.COUGH_INTERPRETATION_WRITE
+    );
+    const piiRestriction = shouldShowPII
+      ? {}
+      : {
+          "$pii_review.containsPii$": false,
+        };
     const surveys = await this.models.survey.findAll({
       where: [
         {
@@ -72,8 +81,10 @@ export class RDTPhotos {
               },
             },
           },
+          ...piiRestriction,
         },
       ],
+      include: [this.models.expertRead, this.models.piiReview],
       order,
       limit: PAGE_SIZE + 1,
       offset: page * PAGE_SIZE,
@@ -86,6 +97,19 @@ export class RDTPhotos {
       date: survey.createdAt.toLocaleDateString(),
       time: survey.createdAt.toLocaleTimeString(),
       url: `coughPhoto?id=${survey.id}`,
+      pii: survey.pii_review
+        ? survey.pii_review.containsPii
+          ? "PII"
+          : "No PII"
+        : "Not Reviewed",
+      expert_read: survey.expert_read
+        ? INTERPRETATIONS[survey.expert_read.interpretation]
+        : "Not interpreted",
+      photo_type: survey.survey.samples.find(
+        sample => sample.sample_type === "RDTReaderPhotoGUID"
+      )
+        ? "Automatic Capture"
+        : "Manual Photo",
     }));
 
     const dateSortLink =
@@ -115,6 +139,7 @@ export class RDTPhotos {
       prevPageLink,
       dateSortLink,
       barcodeSortLink,
+      shouldShowPII,
     });
   };
 

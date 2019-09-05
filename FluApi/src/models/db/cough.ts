@@ -47,6 +47,14 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     foreignKey: "cough_survey_id",
     onDelete: "CASCADE",
   });
+  models.survey.hasOne(models.expertRead, {
+    foreignKey: "surveyId",
+    onDelete: "CASCADE",
+  });
+  models.survey.hasOne(models.piiReview, {
+    foreignKey: "surveyId",
+    onDelete: "CASCADE",
+  });
 
   return models;
 }
@@ -167,6 +175,8 @@ export interface SurveyAttributes<Info> {
   docId: string;
   device: DeviceInfo;
   survey: Info;
+  pii_review?: PiiReviewAttributes;
+  expert_read?: ExpertReadAttributes;
   updatedAt?: Date;
   createdAt?: Date;
 }
