@@ -9,6 +9,7 @@ import querystring from "querystring";
 import { sha256 } from "../../util/crypto";
 import { SplitSql } from "../../util/sql";
 import { CoughModels, defineCoughModels } from "../../models/db/cough";
+import { SiteUserModels, defineSiteUserModels } from "./models";
 import { AuthManager, Permissions } from "./auth";
 
 const LABELS = {
@@ -42,11 +43,13 @@ export class RDTPhotos {
     authManager: AuthManager
   ) {
     this.models = defineCoughModels(sql);
+    this.siteUserModels = defineSiteUserModels(sql);
     this.getStatic = getStatic;
     this.authManager = authManager;
   }
 
   private models: CoughModels;
+  private siteUserModels: SiteUserModels;
   private getStatic: () => string;
   private authManager: AuthManager;
 
@@ -189,6 +192,10 @@ export class RDTPhotos {
     const expertRead = await this.models.expertRead.findOne({
       where: { surveyId: id },
     });
+    const previousInterpreter =
+      expertRead &&
+      (await this.siteUserModels.user.findById(expertRead.interpreterId))
+        .userid;
     const oldInterpretation = expertRead && expertRead.interpretation;
     const interpretations = Object.keys(INTERPRETATIONS).map(
       interpretation => ({
@@ -205,6 +212,9 @@ export class RDTPhotos {
     const piiReview = await this.models.piiReview.findOne({
       where: { surveyId: id },
     });
+    const previousReviewer =
+      piiReview &&
+      (await this.siteUserModels.user.findById(piiReview.reviewerId)).userid;
     const piiOptions = [
       {
         value: "false",
@@ -226,7 +236,9 @@ export class RDTPhotos {
       canReplace,
       canInterpret,
       interpretations,
+      previousInterpreter,
       piiOptions,
+      previousReviewer,
     });
   };
 
@@ -234,18 +246,31 @@ export class RDTPhotos {
     const { surveyId, interpretation, piiReview } = req.body;
     const interpreterId = req.user.id;
     if (interpretation !== undefined) {
-      await this.models.expertRead.upsert({
-        surveyId,
-        interpretation,
-        interpreterId,
+      const oldInterpretation = await this.models.expertRead.findOne({
+        where: { surveyId },
       });
+      if (
+        !oldInterpretation ||
+        oldInterpretation.interpretation !== interpretation
+      ) {
+        await this.models.expertRead.upsert({
+          surveyId,
+          interpretation,
+          interpreterId,
+        });
+      }
     }
     if (piiReview !== undefined) {
-      await this.models.piiReview.upsert({
-        surveyId,
-        containsPii: piiReview,
-        reviewerId: interpreterId,
+      const oldReview = await this.models.piiReview.findOne({
+        where: { surveyId },
       });
+      if (!oldReview || oldReview.containsPii !== piiReview) {
+        await this.models.piiReview.upsert({
+          surveyId,
+          containsPii: piiReview,
+          reviewerId: interpreterId,
+        });
+      }
     }
     res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };

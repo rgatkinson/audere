@@ -56,6 +56,9 @@ can be found in the LICENSE file distributed with this file.
               <label for="{{value}}">{{label}}</label>
             </div>
           {{/each}}
+          {{#if previousReviewer}}
+            <em>Reviewed by {{previousReviewer}}</em>
+          {{/if}}
           <h4>What result does this test strip indicated?</h4>
           {{#each interpretations}}
             <div>
@@ -63,6 +66,9 @@ can be found in the LICENSE file distributed with this file.
               <label for="{{value}}">{{label}}</label>
             </div>
           {{/each}}
+          {{#if previousInterpreter}}
+            <em>Interpreted by {{previousInterpreter}}</em>
+          {{/if}}
           <div>
             <input type="submit" value="Save"/>
           </div>
