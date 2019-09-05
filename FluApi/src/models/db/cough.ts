@@ -37,6 +37,7 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
+    photoReplacementLog: definePhotoReplacementLog(sql),
     photoUploadLog: definePhotoUploadLog(sql),
     survey: defineSurvey(sql.nonPii),
   };
@@ -58,6 +59,7 @@ export interface CoughModels {
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
+  photoReplacementLog: Model<PhotoReplacementLogAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
 }
@@ -362,6 +364,31 @@ export function defineExpertRead(sql: SplitSql): Model<ExpertReadAttributes> {
       surveyId: unique(integerColumn("surveyId")),
       interpretation: stringColumn("interpretation"),
       interpreterId: integerColumn("interpreterId"),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface PhotoReplacementLogAttributes {
+  photoId: number;
+  oldPhotoHash: string;
+  newPhotoHash: string;
+  replacerId: number;
+}
+
+export function definePhotoReplacementLog(
+  sql: SplitSql
+): Model<PhotoReplacementLogAttributes> {
+  return defineModel<PhotoReplacementLogAttributes>(
+    sql.nonPii,
+    "photo_replacement_log",
+    {
+      photoId: unique(integerColumn("photoId")),
+      oldPhotoHash: stringColumn("oldPhotoHash"),
+      newPhotoHash: stringColumn("newPhotoHash"),
+      replacerId: unique(integerColumn("replacerId")),
     },
     { schema }
   );

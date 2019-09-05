@@ -16,13 +16,34 @@ can be found in the LICENSE file distributed with this file.
         max-width: 80vw;
         max-height: 80vh;
       }
+      .photoSection {
+        margin: 10px;
+      }
+      .replaceSection {
+        background-color: #f8f8f8;
+        padding: 10px;
+        margin: 10px 0px;
+      }
     </style>
   </head>
   <body>
     <h1>flu@home Australia Photos</h1>
       {{#each photos}}
         <h3>{{label}}</h3>
-        <img src={{src}}>
+        <div class="photoSection">
+          {{#if ../canReplace}}
+          <div class="replaceSection">
+            <div>Replace Photo:</div>
+            <form action="./replacePhoto?_csrf={{../csrf}}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="photoId" value="{{id}}"/>
+                <input type="hidden" name="surveyId" value="{{../surveyId}}"/>
+                <div><input type="file" name="photoReplacement" accept="image/png, image/jpeg"/></div>
+                <div><input type="submit" value="upload"/></div>
+              </form>
+            </div>
+          {{/if}}
+          <img src={{src}}>
+        </div>
       {{/each}}
       {{#if canInterpret}}
         <form action="./setExpertRead" method="post">

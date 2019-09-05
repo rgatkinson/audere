@@ -7,6 +7,7 @@ import { join as pjoin, resolve } from "path";
 import passport from "passport";
 import express, { Express } from "express";
 import session from "express-session";
+import formidable from "express-formidable";
 import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
@@ -195,6 +196,12 @@ function addHandlers(
       Permissions.COUGH_INTERPRETATION_WRITE
     ),
     wrap(rdtPhotosServer.setExpertRead)
+  );
+  app.post(
+    "/replacePhoto",
+    authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_WRITE),
+    formidable(),
+    wrap(rdtPhotosServer.replacePhoto)
   );
 
   const manageAccount = new ManageAccount(config.sql, getStatic);

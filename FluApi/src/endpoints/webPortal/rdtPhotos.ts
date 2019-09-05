@@ -3,8 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { promises as fs } from "fs";
 import { Op, cast, json, where, col, fn } from "sequelize";
 import querystring from "querystring";
+import { sha256 } from "../../util/crypto";
 import { SplitSql } from "../../util/sql";
 import { CoughModels, defineCoughModels } from "../../models/db/cough";
 import { AuthManager, Permissions } from "./auth";
@@ -148,6 +150,7 @@ export class RDTPhotos {
             };
           }
           return {
+            id: photoRecord.id,
             label: LABELS[sample.sample_type],
             src: "data:;image/png;base64," + photoRecord.photo.jpegBase64,
           };
@@ -169,11 +172,18 @@ export class RDTPhotos {
         checked: oldInterpretation === interpretation ? "checked" : "",
       })
     );
+
+    const canReplace = await this.authManager.authorize(
+      req.user.userid,
+      Permissions.COUGH_RDT_PHOTOS_WRITE
+    );
+
     res.render("rdtPhotos.html", {
       photos,
       static: this.getStatic(),
       surveyId: id,
       csrf: req.csrfToken(),
+      canReplace,
       canInterpret,
       interpretations,
     });
@@ -186,6 +196,29 @@ export class RDTPhotos {
       surveyId,
       interpretation,
       interpreterId,
+    });
+    res.redirect(303, `./coughPhoto?id=${surveyId}`);
+  };
+
+  public replacePhoto = async (req, res) => {
+    const { photoId, surveyId } = req.fields;
+    const { photoReplacement } = req.files;
+    const newPhoto = (await fs.readFile(photoReplacement.path)).toString(
+      "base64"
+    );
+    const newPhotoHash = sha256(newPhoto);
+    const photoRecord = await this.models.photo.findById(photoId);
+    const oldPhotoHash = sha256(photoRecord.photo.jpegBase64);
+    photoRecord.photo.jpegBase64 = newPhoto;
+    await this.models.photo.update(
+      { photo: photoRecord.photo },
+      { where: { id: photoId } }
+    );
+    await this.models.photoReplacementLog.create({
+      photoId,
+      oldPhotoHash,
+      newPhotoHash,
+      replacerId: req.user.id,
     });
     res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
