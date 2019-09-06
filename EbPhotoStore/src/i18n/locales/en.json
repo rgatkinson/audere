@@ -12,7 +12,8 @@
   },
   "titleBar": {
     "title": "EVD Track",
-    "search": "Search by Name, Status, or ID"
+    "search": "Search by Name, Status, or ID",
+    "cancel": "Cancel"
   },
   "appMenu": {
     "logout": "Log Out",

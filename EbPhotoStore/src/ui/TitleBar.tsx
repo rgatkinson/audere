@@ -280,10 +280,7 @@ class TitleBar extends React.Component<Props & WithNamespaces, State> {
                         <TextInput
                           autoCapitalize="words"
                           ref={this._searchInput}
-                          style={{
-                            fontSize: 18,
-                            paddingVertical: GUTTER / 4,
-                          }}
+                          style={styles.searchField}
                           onFocus={this._expandSearch}
                           onChangeText={this._onSearchTextChanged}
                           onBlur={this._collapseSearch}
@@ -294,9 +291,10 @@ class TitleBar extends React.Component<Props & WithNamespaces, State> {
                       <TouchableOpacity onPress={this._onSearchCancel}>
                         <Text
                           bold={true}
-                          content=" CANCEL"
+                          content={t("cancel").toUpperCase()}
                           numberOfLines={1}
                           ellipsizeMode="clip"
+                          style={styles.searchCancel}
                         />
                       </TouchableOpacity>
                     </Animated.View>
@@ -381,6 +379,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginBottom: GUTTER / 4,
   },
+  actionIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: GUTTER / 2,
+  },
   searchContainer: {
     position: "absolute",
     backgroundColor: TITLEBAR_COLOR,
@@ -398,9 +401,11 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     alignItems: "center",
   },
-  actionIcon: {
-    width: 20,
-    height: 20,
+  searchField: {
+    fontSize: 18,
+    paddingVertical: GUTTER / 4,
+  },
+  searchCancel: {
     marginLeft: GUTTER / 2,
   },
 });
