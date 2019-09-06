@@ -720,6 +720,7 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
+    automationNext: "CleanTest",
     footer: [
       {
         tag: ContinueButton,
@@ -742,7 +743,7 @@ export const Screens: ScreenConfig[] = [
         validate: true,
       },
     ],
-    automationNext: "TestResult",
+    automationNext: "TestStripSurvey2",
     footer: [
       {
         tag: ContinueButton,
@@ -764,7 +765,7 @@ export const Screens: ScreenConfig[] = [
         validate: true,
       },
     ],
-    automationNext: "TestResult",
+    automationNext: "RDTInstructions",
     footer: [
       {
         tag: ContinueButton,
