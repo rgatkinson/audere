@@ -39,11 +39,20 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
     photoUploadLog: definePhotoUploadLog(sql),
+    piiReview: definePiiReviews(sql),
     survey: defineSurvey(sql.nonPii),
   };
 
   models.survey.hasOne(models.photoUploadLog, {
     foreignKey: "cough_survey_id",
+    onDelete: "CASCADE",
+  });
+  models.survey.hasOne(models.expertRead, {
+    foreignKey: "surveyId",
+    onDelete: "CASCADE",
+  });
+  models.survey.hasOne(models.piiReview, {
+    foreignKey: "surveyId",
     onDelete: "CASCADE",
   });
 
@@ -61,6 +70,7 @@ export interface CoughModels {
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
+  piiReview: Model<PiiReviewAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
 }
 
@@ -165,6 +175,8 @@ export interface SurveyAttributes<Info> {
   docId: string;
   device: DeviceInfo;
   survey: Info;
+  pii_review?: PiiReviewAttributes;
+  expert_read?: ExpertReadAttributes;
   updatedAt?: Date;
   createdAt?: Date;
 }
@@ -389,6 +401,27 @@ export function definePhotoReplacementLog(
       oldPhotoHash: stringColumn("oldPhotoHash"),
       newPhotoHash: stringColumn("newPhotoHash"),
       replacerId: unique(integerColumn("replacerId")),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface PiiReviewAttributes {
+  surveyId: number;
+  containsPii: boolean;
+  reviewerId: number;
+}
+
+export function definePiiReviews(sql: SplitSql): Model<PiiReviewAttributes> {
+  return defineModel<PiiReviewAttributes>(
+    sql.nonPii,
+    "pii_reviews",
+    {
+      surveyId: unique(integerColumn("surveyId")),
+      containsPii: stringColumn("containsPii"),
+      reviewerId: booleanColumn("reviewerId"),
     },
     { schema }
   );

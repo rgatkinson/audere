@@ -49,12 +49,26 @@ can be found in the LICENSE file distributed with this file.
         <form action="./setExpertRead" method="post">
           <input type="hidden" name="_csrf" value="{{csrf}}"/>
           <input type="hidden" name="surveyId" value="{{surveyId}}"/>
+          <h4>Does this photo contain PII?</h4>
+          {{#each piiOptions}}
+            <div>
+              <input type="radio" id="{{value}}" name="piiReview" value="{{value}}" {{checked}} />
+              <label for="{{value}}">{{label}}</label>
+            </div>
+          {{/each}}
+          {{#if previousReviewer}}
+            <em>Reviewed by {{previousReviewer}}</em>
+          {{/if}}
+          <h4>What result does this test strip indicated?</h4>
           {{#each interpretations}}
             <div>
               <input type="radio" id="{{value}}" name="interpretation" value="{{value}}" {{checked}} />
               <label for="{{value}}">{{label}}</label>
             </div>
           {{/each}}
+          {{#if previousInterpreter}}
+            <em>Interpreted by {{previousInterpreter}}</em>
+          {{/if}}
           <div>
             <input type="submit" value="Save"/>
           </div>

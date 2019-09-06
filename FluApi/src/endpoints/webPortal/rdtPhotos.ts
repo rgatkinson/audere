@@ -9,6 +9,7 @@ import querystring from "querystring";
 import { sha256 } from "../../util/crypto";
 import { SplitSql } from "../../util/sql";
 import { CoughModels, defineCoughModels } from "../../models/db/cough";
+import { SiteUserModels, defineSiteUserModels } from "./models";
 import { AuthManager, Permissions } from "./auth";
 
 const LABELS = {
@@ -42,11 +43,13 @@ export class RDTPhotos {
     authManager: AuthManager
   ) {
     this.models = defineCoughModels(sql);
+    this.siteUserModels = defineSiteUserModels(sql);
     this.getStatic = getStatic;
     this.authManager = authManager;
   }
 
   private models: CoughModels;
+  private siteUserModels: SiteUserModels;
   private getStatic: () => string;
   private authManager: AuthManager;
 
@@ -59,6 +62,15 @@ export class RDTPhotos {
       ? req.query.orderBy
       : "date_asc";
     const order = ORDER_OPTIONS[orderBy];
+    const shouldShowPII = await this.authManager.authorize(
+      req.user.userid,
+      Permissions.COUGH_INTERPRETATION_WRITE
+    );
+    const piiRestriction = shouldShowPII
+      ? {}
+      : {
+          "$pii_review.containsPii$": false,
+        };
     const surveys = await this.models.survey.findAll({
       where: [
         {
@@ -72,8 +84,10 @@ export class RDTPhotos {
               },
             },
           },
+          ...piiRestriction,
         },
       ],
+      include: [this.models.expertRead, this.models.piiReview],
       order,
       limit: PAGE_SIZE + 1,
       offset: page * PAGE_SIZE,
@@ -86,6 +100,19 @@ export class RDTPhotos {
       date: survey.createdAt.toLocaleDateString(),
       time: survey.createdAt.toLocaleTimeString(),
       url: `coughPhoto?id=${survey.id}`,
+      pii: survey.pii_review
+        ? survey.pii_review.containsPii
+          ? "PII"
+          : "No PII"
+        : "Not Reviewed",
+      expert_read: survey.expert_read
+        ? INTERPRETATIONS[survey.expert_read.interpretation]
+        : "Not interpreted",
+      photo_type: survey.survey.samples.find(
+        sample => sample.sample_type === "RDTReaderPhotoGUID"
+      )
+        ? "Automatic Capture"
+        : "Manual Photo",
     }));
 
     const dateSortLink =
@@ -115,6 +142,7 @@ export class RDTPhotos {
       prevPageLink,
       dateSortLink,
       barcodeSortLink,
+      shouldShowPII,
     });
   };
 
@@ -127,6 +155,18 @@ export class RDTPhotos {
     const survey = await this.models.survey.findOne({ where: { id } });
     if (!survey) {
       res.status(404).send("Survey not found");
+      return;
+    }
+
+    const canInterpret = await this.authManager.authorize(
+      req.user.userid,
+      Permissions.COUGH_INTERPRETATION_WRITE
+    );
+    const piiReview = await this.models.piiReview.findOne({
+      where: { surveyId: id },
+    });
+    if (!canInterpret && (!piiReview || piiReview.containsPii)) {
+      res.sendStatus(401);
       return;
     }
 
@@ -157,19 +197,19 @@ export class RDTPhotos {
         })
     );
 
-    const canInterpret = await this.authManager.authorize(
-      req.user.userid,
-      Permissions.COUGH_INTERPRETATION_WRITE
-    );
     const expertRead = await this.models.expertRead.findOne({
       where: { surveyId: id },
     });
+    const previousInterpreter =
+      expertRead &&
+      (await this.siteUserModels.user.findById(expertRead.interpreterId))
+        .userid;
     const oldInterpretation = expertRead && expertRead.interpretation;
     const interpretations = Object.keys(INTERPRETATIONS).map(
       interpretation => ({
         value: interpretation,
         label: INTERPRETATIONS[interpretation],
-        checked: oldInterpretation === interpretation ? "checked" : "",
+        checked: checked(oldInterpretation === interpretation),
       })
     );
 
@@ -177,6 +217,21 @@ export class RDTPhotos {
       req.user.userid,
       Permissions.COUGH_RDT_PHOTOS_WRITE
     );
+    const previousReviewer =
+      piiReview &&
+      (await this.siteUserModels.user.findById(piiReview.reviewerId)).userid;
+    const piiOptions = [
+      {
+        value: "false",
+        label: "No PII",
+        checked: checked(piiReview && !piiReview.containsPii),
+      },
+      {
+        value: "true",
+        label: "Contains PII",
+        checked: checked(piiReview && piiReview.containsPii),
+      },
+    ];
 
     res.render("rdtPhotos.html", {
       photos,
@@ -186,17 +241,43 @@ export class RDTPhotos {
       canReplace,
       canInterpret,
       interpretations,
+      previousInterpreter,
+      piiOptions,
+      previousReviewer,
     });
   };
 
   public setExpertRead = async (req, res) => {
-    const { surveyId, interpretation } = req.body;
+    const { surveyId, interpretation, piiReview } = req.body;
     const interpreterId = req.user.id;
-    await this.models.expertRead.upsert({
-      surveyId,
-      interpretation,
-      interpreterId,
-    });
+    if (interpretation !== undefined) {
+      const oldInterpretation = await this.models.expertRead.findOne({
+        where: { surveyId },
+      });
+      if (
+        !oldInterpretation ||
+        oldInterpretation.interpretation !== interpretation
+      ) {
+        await this.models.expertRead.upsert({
+          surveyId,
+          interpretation,
+          interpreterId,
+        });
+      }
+    }
+    if (piiReview !== undefined) {
+      const containsPii = JSON.parse(piiReview);
+      const oldReview = await this.models.piiReview.findOne({
+        where: { surveyId },
+      });
+      if (!oldReview || oldReview.containsPii !== containsPii) {
+        await this.models.piiReview.upsert({
+          surveyId,
+          containsPii,
+          reviewerId: interpreterId,
+        });
+      }
+    }
     res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
 
@@ -222,4 +303,8 @@ export class RDTPhotos {
     });
     res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
+}
+
+function checked(c: boolean) {
+  return c ? "checked" : "";
 }
