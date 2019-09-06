@@ -124,6 +124,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _instructionTimer: NodeJS.Timeout | null | undefined;
   _instructionLastUpdate: number = 0;
   _lastRDTReaderResult?: RDTReaderResult;
+  _interpreting: boolean = false;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
@@ -307,6 +308,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         1000
       );
     }
+    this._interpreting = false;
   };
 
   _handleWillBlur = () => {
@@ -323,7 +325,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     this._clearTimer();
     this._timer = global.setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
-      if (isFocused) {
+      if (!this._interpreting && isFocused) {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
@@ -532,6 +534,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _onRDTInterpreting = (args: RDTInterpretingArgs) => {
     this.setState({ spinner: true });
+    this._interpreting = true;
   };
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
