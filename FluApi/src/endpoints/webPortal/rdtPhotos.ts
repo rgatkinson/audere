@@ -220,6 +220,7 @@ export class RDTPhotos {
     const previousReviewer =
       piiReview &&
       (await this.siteUserModels.user.findById(piiReview.reviewerId)).userid;
+    const piiNotes = piiReview && piiReview.notes;
     const piiOptions = [
       {
         value: "false",
@@ -243,12 +244,13 @@ export class RDTPhotos {
       interpretations,
       previousInterpreter,
       piiOptions,
+      piiNotes,
       previousReviewer,
     });
   };
 
   public setExpertRead = async (req, res) => {
-    const { surveyId, interpretation, piiReview } = req.body;
+    const { surveyId, interpretation, piiReview, piiNotes } = req.body;
     const interpreterId = req.user.id;
     if (interpretation !== undefined) {
       const oldInterpretation = await this.models.expertRead.findOne({
@@ -267,14 +269,20 @@ export class RDTPhotos {
     }
     if (piiReview !== undefined) {
       const containsPii = JSON.parse(piiReview);
+      const notes = piiNotes || null;
       const oldReview = await this.models.piiReview.findOne({
         where: { surveyId },
       });
-      if (!oldReview || oldReview.containsPii !== containsPii) {
+      if (
+        !oldReview ||
+        oldReview.containsPii !== containsPii ||
+        oldReview.notes !== notes
+      ) {
         await this.models.piiReview.upsert({
           surveyId,
           containsPii,
           reviewerId: interpreterId,
+          notes,
         });
       }
     }

@@ -412,6 +412,7 @@ export interface PiiReviewAttributes {
   surveyId: number;
   containsPii: boolean;
   reviewerId: number;
+  notes: string;
 }
 
 export function definePiiReviews(sql: SplitSql): Model<PiiReviewAttributes> {
@@ -422,6 +423,10 @@ export function definePiiReviews(sql: SplitSql): Model<PiiReviewAttributes> {
       surveyId: unique(integerColumn("surveyId")),
       containsPii: stringColumn("containsPii"),
       reviewerId: booleanColumn("reviewerId"),
+      notes: {
+        ...stringColumn("notes"),
+        allowNull: true,
+      },
     },
     { schema }
   );

@@ -56,6 +56,8 @@ can be found in the LICENSE file distributed with this file.
               <label for="{{value}}">{{label}}</label>
             </div>
           {{/each}}
+          <div><label for="piiNotes">Notes:</label></div>
+          <div><textarea  id="piiNotes" name="piiNotes">{{piiNotes}}</textarea></div>
           {{#if previousReviewer}}
             <em>Reviewed by {{previousReviewer}}</em>
           {{/if}}
