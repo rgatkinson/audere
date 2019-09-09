@@ -47,7 +47,7 @@ describe("Happy Path", () => {
 
   beforeEach(async () => {
     await driver.init(deviceInfo.config);
-    await driver.setImplicitWaitTimeout(60000);
+    await driver.setImplicitWaitTimeout(600000);
   });
 
   afterEach(async () => {
@@ -122,7 +122,13 @@ async function runThroughApp(models, isDemo) {
         screens_visited
       );
     } else if (screen_info.type == "rdt") {
-      next_screen = await rdt_screen(driver, screen_info, screens_visited);
+      next_screen = await rdt_screen(
+        driver,
+        screen_info,
+        models,
+        installationId,
+        screens_visited
+      );
     }
     screen_info = next_screen
       ? content.find(screen => screen.key === next_screen)
@@ -519,7 +525,13 @@ async function blue_line_question_screen(driver, screen_info, screens_visited) {
 }
 
 //RDT screen logic: Answer camera permissions and click button to take a picture
-async function rdt_screen(driver, screen_info, screens_visited) {
+async function rdt_screen(
+  driver,
+  screen_info,
+  models,
+  installationId,
+  screens_visited
+) {
   if (
     PLATFORM == "Android" &&
     (await driver.hasElement(
@@ -547,6 +559,7 @@ async function rdt_screen(driver, screen_info, screens_visited) {
     screens_visited.push(screen_info.key);
     startTime = new Date();
     secondsElapsed = 0;
+    console.log("RDT Capture attempted");
     while (manual_capture_required && secondsElapsed <= 35) {
       if (
         await driver.hasElementByAccessibilityId(
@@ -561,6 +574,7 @@ async function rdt_screen(driver, screen_info, screens_visited) {
   }
 
   if (manual_capture_required) {
+    console.log("RDT Capture FAILED");
     if (PLATFORM == "Android") {
       await driver.sleep(3000); //wait to make sure button can load
       await driver.element("id", "android:id/button1").click();
@@ -575,6 +589,9 @@ async function rdt_screen(driver, screen_info, screens_visited) {
       .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
       .perform();
     await driver.sleep(5000);
+  } else {
+    console.log("RDT Capture Succeeded!");
+    display_rdt_stats(driver, models, installationId);
   }
   return "TestStripConfirmation";
 }
@@ -593,6 +610,7 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
       !(await driver.hasElementByAccessibilityId(screen_info.button.name))
     ) {
       await triple_tap(driver, screen_x * 0.5, screen_y * 0.95);
+      driver.sleep(1000);
     }
   } else {
     while (
@@ -696,6 +714,32 @@ async function verify_db_contents(
       }
     });
   });
+}
+
+//Display stats from previous RDT capture
+async function display_rdt_stats(driver, models, installationId) {
+  await driver.sleep(5000); // Let firestore sync
+  const response = await axios.get(
+    "http://localhost:3200/api/import/coughDocuments"
+  );
+  if (response.status !== 200) {
+    throw new Error(`Expected 200, got ${response.status}`);
+  }
+
+  const dbRowsAndNum = await models.survey.findAndCountAll({
+    where: {
+      device: {
+        installation: {
+          [Op.eq]: installationId,
+        },
+      },
+    },
+    order: [["id", "ASC"]],
+  });
+
+  //gets most recent row with same installationId
+  const dbRow = dbRowsAndNum["rows"][dbRowsAndNum["count"] - 1];
+  console.log(dbRow.survey.rdtInfo);
 }
 
 //Go to version menu, change to demo mode, return installation id
