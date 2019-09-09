@@ -42,7 +42,7 @@ interface Props {
 
 class Timer extends React.Component<Props & WithNamespaces> {
   state = {
-    remainingLabel: this._getRemainingLabel(),
+    remainingLabel: "",
   };
 
   _timer: NodeJS.Timeout | undefined;
@@ -52,7 +52,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
 
   shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
     return (
-      state != this.state ||
+      state.remainingLabel !== this.state.remainingLabel ||
       props.isDemo != this.props.isDemo ||
       props.startTimeMs != this.props.startTimeMs ||
       props.totalTimeMs != this.props.totalTimeMs
@@ -103,12 +103,12 @@ class Timer extends React.Component<Props & WithNamespaces> {
   _getRemainingMs(): number | null {
     const { totalTimeMs } = this.props;
     const deltaMillis = this._startTimeMs + totalTimeMs - new Date().getTime();
-    return deltaMillis > SECOND_MS ? deltaMillis : null;
+    return deltaMillis >= SECOND_MS ? deltaMillis : null;
   }
 
   _getRemainingLabel(): string {
     const remainingMs = this._getRemainingMs();
-    if (remainingMs == null) {
+    if (!remainingMs) {
       return "00:00";
     }
 
@@ -133,8 +133,9 @@ class Timer extends React.Component<Props & WithNamespaces> {
 
   _onTimer = () => {
     if (this.props.navigation.isFocused()) {
+      const isDone = !this._getRemainingMs();
       this.setState({ remainingLabel: this._getRemainingLabel() });
-      if (!this._getRemainingMs()) {
+      if (isDone) {
         this._timerDone();
       }
     }
@@ -148,7 +149,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { isDemo, next } = this.props;
-    return this._getRemainingMs() === null ? (
+    return !this._getRemainingMs() ? (
       <ContinueButton next={next} />
     ) : (
       <MultiTapContainer
@@ -169,7 +170,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
         >
           <Text
             bold={true}
-            content={this._getRemainingLabel()}
+            content={this.state.remainingLabel}
             style={{ color: SECONDARY_COLOR }}
           />
         </BorderView>
