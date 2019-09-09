@@ -10,6 +10,7 @@ import Sequelize, {
   BIGINT as SQL_BIGINT,
   BOOLEAN as SQL_BOOLEAN,
   DATE as SQL_DATE,
+  DECIMAL as SQL_DECIMAL,
   FLOAT as SQL_FLOAT,
   INTEGER as SQL_INTEGER,
   JSON as SQL_JSON,
@@ -123,6 +124,9 @@ export function dateColumn(field?: string) {
 }
 export function floatColumn(field?: string) {
   return column(SQL_FLOAT, field);
+}
+export function decimalColumn(field: string, precision: number, scale: number) {
+  return column(SQL_DECIMAL(precision, scale), field);
 }
 export function foreignIdKey(column, model) {
   return {

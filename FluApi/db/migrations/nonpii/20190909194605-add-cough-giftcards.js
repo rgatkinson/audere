@@ -5,7 +5,7 @@
 
 'use strict';
 
-const { baseColumns, column, foreignIdKey } = require("../../util");
+const { baseColumns, column, foreignIdKey, nullableColumn, unique } = require("../../util");
 const schema = "cough";
 
 module.exports = {
@@ -22,10 +22,9 @@ module.exports = {
         theme: column(Sequelize.STRING),
         order_number: column(Sequelize.STRING),
         url: column(Sequelize.STRING),
-        installation_id: {
-          ...column(Sequelize.STRING),
-          allowNull: true,
-        },
+        is_demo: column(Sequelize.BOOLEAN),
+        installation_id: unique(nullableColumn(Sequelize.STRING)),
+        barcode: unique(nullableColumn(Sequelize.STRING)),
       },
       { schema }
     );
