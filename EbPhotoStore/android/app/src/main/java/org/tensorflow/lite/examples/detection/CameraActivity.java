@@ -37,7 +37,6 @@ import android.os.Trace;
 import androidx.annotation.NonNull;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Size;
 import android.view.Surface;
@@ -50,9 +49,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.nio.ByteBuffer;
+import java.util.List;
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 import org.auderenow.ebphotostore.R;
+import org.tensorflow.lite.examples.detection.tflite.ImageClassifier;
+
 public abstract class CameraActivity extends AppCompatActivity
     implements OnImageAvailableListener,
         Camera.PreviewCallback,
@@ -79,12 +81,14 @@ public abstract class CameraActivity extends AppCompatActivity
   private LinearLayout bottomSheetLayout;
   private LinearLayout gestureLayout;
   private BottomSheetBehavior sheetBehavior;
-
-  protected TextView frameValueTextView, cropValueTextView, inferenceTimeTextView;
+  protected TextView recognitionTextView,
+          recognition1TextView,
+          recognition2TextView,
+          recognitionValueTextView,
+          recognition1ValueTextView,
+          recognition2ValueTextView;
+  protected TextView inferenceTimeTextView, classifierInferenceTimeTextView;
   protected ImageView bottomSheetArrowImageView;
-  private ImageView plusImageView, minusImageView;
-  private SwitchCompat apiSwitchCompat;
-  private TextView threadsTextView;
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -103,10 +107,6 @@ public abstract class CameraActivity extends AppCompatActivity
       requestPermission();
     }
 
-    threadsTextView = findViewById(R.id.threads);
-    plusImageView = findViewById(R.id.plus);
-    minusImageView = findViewById(R.id.minus);
-    apiSwitchCompat = findViewById(R.id.api_info_switch);
     bottomSheetLayout = findViewById(R.id.bottom_sheet_layout);
     gestureLayout = findViewById(R.id.gesture_layout);
     sheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
@@ -158,15 +158,11 @@ public abstract class CameraActivity extends AppCompatActivity
           @Override
           public void onSlide(@NonNull View bottomSheet, float slideOffset) {}
         });
+    recognitionTextView = findViewById(R.id.detected_item);
+    recognitionValueTextView = findViewById(R.id.detected_item_value);
+    classifierInferenceTimeTextView = findViewById(R.id.classifierInference_info);
 
-    frameValueTextView = findViewById(R.id.frame_info);
-    cropValueTextView = findViewById(R.id.crop_info);
     inferenceTimeTextView = findViewById(R.id.inference_info);
-
-    apiSwitchCompat.setOnCheckedChangeListener(this);
-
-    plusImageView.setOnClickListener(this);
-    minusImageView.setOnClickListener(this);
   }
 
   protected int[] getRgbBytes() {
@@ -490,42 +486,52 @@ public abstract class CameraActivity extends AppCompatActivity
 
   @Override
   public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-    setUseNNAPI(isChecked);
-    if (isChecked) apiSwitchCompat.setText("NNAPI");
-    else apiSwitchCompat.setText("TFLITE");
   }
 
   @Override
   public void onClick(View v) {
-    if (v.getId() == R.id.plus) {
-      String threads = threadsTextView.getText().toString().trim();
-      int numThreads = Integer.parseInt(threads);
-      if (numThreads >= 9) return;
-      numThreads++;
-      threadsTextView.setText(String.valueOf(numThreads));
-      setNumThreads(numThreads);
-    } else if (v.getId() == R.id.minus) {
-      String threads = threadsTextView.getText().toString().trim();
-      int numThreads = Integer.parseInt(threads);
-      if (numThreads == 1) {
-        return;
-      }
-      numThreads--;
-      threadsTextView.setText(String.valueOf(numThreads));
-      setNumThreads(numThreads);
-    }
-  }
-
-  protected void showFrameInfo(String frameInfo) {
-    frameValueTextView.setText(frameInfo);
-  }
-
-  protected void showCropInfo(String cropInfo) {
-    cropValueTextView.setText(cropInfo);
   }
 
   protected void showInference(String inferenceTime) {
     inferenceTimeTextView.setText(inferenceTime);
+  }
+
+  protected void showClassifierInference(String inferenceTime) {
+    classifierInferenceTimeTextView.setText(inferenceTime);
+  }
+
+  protected void showResultsInBottomSheet(List<ImageClassifier.Recognition> results) {
+    if (results != null) {
+      ImageClassifier.Recognition recognition = results.get(0);
+      if (recognition != null) {
+        if (recognition.getTitle() != null) recognitionTextView.setText(recognition.getTitle());
+        if (recognition.getConfidence() != null)
+          recognitionValueTextView.setText(
+                  String.format("%.2f", (100 * recognition.getConfidence())) + "%");
+      }
+
+      if (results.size() > 1) {
+        ImageClassifier.Recognition recognition1 = results.get(1);
+        if (recognition1 != null) {
+          if (recognition1.getTitle() != null)
+            recognition1TextView.setText(recognition1.getTitle());
+          if (recognition1.getConfidence() != null)
+            recognition1ValueTextView.setText(
+                    String.format("%.2f", (100 * recognition1.getConfidence())) + "%");
+        }
+      }
+
+      if (results.size() > 2) {
+        ImageClassifier.Recognition recognition2 = results.get(2);
+        if (recognition2 != null) {
+          if (recognition2.getTitle() != null)
+            recognition2TextView.setText(recognition2.getTitle());
+          if (recognition2.getConfidence() != null)
+            recognition2ValueTextView.setText(
+                    String.format("%.2f", (100 * recognition2.getConfidence())) + "%");
+        }
+      }
+    }
   }
 
   protected abstract void processImage();

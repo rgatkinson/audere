@@ -15,7 +15,7 @@ limitations under the License.
 
 package org.tensorflow.lite.examples.detection.tracking;
 
-import android.content.Context;
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -32,6 +32,7 @@ import android.util.TypedValue;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+
 import org.tensorflow.lite.examples.detection.env.BorderedText;
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
@@ -70,7 +71,9 @@ public class MultiBoxTracker {
   private int frameHeight;
   private int sensorOrientation;
 
-  public MultiBoxTracker(final Context context) {
+  private Activity activity;
+
+  public MultiBoxTracker(final Activity activity) {
     for (final int color : COLORS) {
       availableColors.add(color);
     }
@@ -84,8 +87,9 @@ public class MultiBoxTracker {
 
     textSizePx =
         TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, context.getResources().getDisplayMetrics());
+            TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, activity.getResources().getDisplayMetrics());
     borderedText = new BorderedText(textSizePx);
+    this.activity = activity;
   }
 
   public synchronized void setFrameConfiguration(
@@ -95,28 +99,10 @@ public class MultiBoxTracker {
     this.sensorOrientation = sensorOrientation;
   }
 
-  public synchronized void drawDebug(final Canvas canvas) {
-    final Paint textPaint = new Paint();
-    textPaint.setColor(Color.WHITE);
-    textPaint.setTextSize(60.0f);
-
-    final Paint boxPaint = new Paint();
-    boxPaint.setColor(Color.RED);
-    boxPaint.setAlpha(200);
-    boxPaint.setStyle(Style.STROKE);
-
-    for (final Pair<Float, RectF> detection : screenRects) {
-      final RectF rect = detection.second;
-      canvas.drawRect(rect, boxPaint);
-      canvas.drawText("" + detection.first, rect.left, rect.top, textPaint);
-      borderedText.drawText(canvas, rect.centerX(), rect.centerY(), "" + detection.first);
-    }
-  }
-
-  public synchronized void trackResults(final Bitmap sourceBitmap, final List<Recognition> results, final long timestamp) {
+  public synchronized Bitmap trackResults(final Bitmap sourceBitmap, final List<Recognition> results, final long timestamp) {
     // logger.i("Processing %d results from %d", results.size(), timestamp);
     processResults(results);
-    this.rdtTrack(sourceBitmap, results);
+    return this.rdtTrack(sourceBitmap, results);
   }
 
   private Matrix getFrameToCanvasMatrix() {
@@ -137,24 +123,24 @@ public class MultiBoxTracker {
             (int) (multiplier * (rotated ? frameWidth : frameHeight)),
             sensorOrientation,
             false);
-    // for (final TrackedRecognition recognition : trackedObjects) {
-    //   final RectF trackedPos = new RectF(recognition.location);
+     for (final TrackedRecognition recognition : trackedObjects) {
+       final RectF trackedPos = new RectF(recognition.location);
 
-    //   getFrameToCanvasMatrix().mapRect(trackedPos);
-    //   boxPaint.setColor(recognition.color);
+       getFrameToCanvasMatrix().mapRect(trackedPos);
+       boxPaint.setColor(recognition.color);
 
-    //   float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 8.0f;
-    //   canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
+       float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 8.0f;
+       canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
 
-    //   final String labelString =
-    //       !TextUtils.isEmpty(recognition.title)
-    //           ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
-    //           : String.format("%.2f", (100 * recognition.detectionConfidence));
-    //   //            borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
-    //   // labelString);
-    //   borderedText.drawText(
-    //       canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
-    // }
+       final String labelString =
+           !TextUtils.isEmpty(recognition.title)
+               ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
+               : String.format("%.2f", (100 * recognition.detectionConfidence));
+       //            borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
+       // labelString);
+       borderedText.drawText(
+           canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
+     }
 
     this.rdtDraw(canvas);
   }
@@ -226,7 +212,7 @@ public class MultiBoxTracker {
   Bitmap rdtBitmap = null;
   float[] rdtOutline = null;
 
-  private void rdtTrack(final Bitmap sourceBitmap, final List<Recognition> results) {
+  private Bitmap rdtTrack(final Bitmap sourceBitmap, final List<Recognition> results) {
     final Recognition[] findings = this.rdtLocations(results);
 
     int index0 = findings.length + 1;
@@ -241,7 +227,7 @@ public class MultiBoxTracker {
       this.rdtMatrix = null;
       this.rdtBitmap = null;
       this.rdtOutline = null;
-      return;
+      return null;
     }
 
     PointF location0 = this.center(findings[index0].getLocation());
@@ -295,20 +281,31 @@ public class MultiBoxTracker {
     this.debugLogOutline("transformed outline", outline);
     this.rdtOutline = outline;
 
+    // This is horrible but let's just try for now
+    int CANVAS_WIDTH = 1080;
+    int CANVAS_HEIGHT = 2028;
+    int x1 = (int) (1.0 * outline[0] / CANVAS_WIDTH * sourceBitmap.getWidth());
+    int y1 = (int) (1.0 * outline[1] / CANVAS_HEIGHT * sourceBitmap.getHeight());
+    int scaledHeight = (int) (1.0 * (outline[7] - outline[5]) / CANVAS_HEIGHT * sourceBitmap.getHeight());
+    int scaledWidth = (int) (1.0 * (outline[2] - outline[0]) / CANVAS_WIDTH * sourceBitmap.getWidth());
+
     try {
-      this.rdtBitmap = Bitmap.createBitmap(
-        sourceBitmap,
-        RDT_INSET_MARGIN,
-        RDT_INSET_MARGIN,
-        rdtWidth,
-        rdtHeight,
-        this.rdtMatrix,
-        true
+      Bitmap croppedBitmap = Bitmap.createBitmap(
+              sourceBitmap,
+              x1,
+              y1,
+              scaledWidth,
+              scaledHeight,
+              this.rdtMatrix,
+              true
       );
+      this.rdtBitmap = Bitmap.createScaledBitmap(croppedBitmap, 100, 870, false);
+      return Bitmap.createScaledBitmap(croppedBitmap, 224, 224, false);
     } catch (Exception e) {
       // Extraction isn't great at handling clipping
       logger.e("DETECTOR caught " + e.toString());
     }
+    return null;
   }
 
   private void rdtDraw(final Canvas canvas) {
@@ -316,9 +313,9 @@ public class MultiBoxTracker {
       float[] outline = this.rdtOutline;
       this.debugLogOutline("rdtDraw outline", outline);
       final Paint paint = new Paint();
-      paint.setColor(Color.BLUE);
+      paint.setColor(Color.MAGENTA);
       paint.setStyle(Style.STROKE);
-      paint.setStrokeWidth(2.0f);
+      paint.setStrokeWidth(10.0f);
       canvas.drawLines(this.rdtOutline, paint);
     }
 

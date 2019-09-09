@@ -31,6 +31,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
+import android.widget.ImageView;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -43,6 +44,7 @@ import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.tflite.Classifier;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
+import org.tensorflow.lite.examples.detection.tflite.ImageClassifier;
 import org.auderenow.ebphotostore.R;
 /**
  * An activity that uses a TensorFlowMultiBoxDetector and ObjectTracker to detect and then track
@@ -69,9 +71,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private Classifier detector;
 
   private long lastProcessingTimeMs;
+  private long classifierLastProcessingTimeMs;
   private Bitmap rgbFrameBitmap = null;
   private Bitmap croppedBitmap = null;
   private Bitmap cropCopyBitmap = null;
+
+  private Bitmap rdtBitmap = null;
 
   private boolean computingDetection = false;
 
@@ -83,6 +88,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private MultiBoxTracker tracker;
 
   private BorderedText borderedText;
+  private ImageClassifier imageClassifier;
+  private List<ImageClassifier.Recognition> classifierResults;
 
   @Override
   public void onPreviewSizeChosen(final Size size, final int rotation) {
@@ -97,6 +104,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     int cropSize = TF_OD_API_INPUT_SIZE;
 
     try {
+      imageClassifier = new ImageClassifier(this, 1);
+    } catch (IOException e) {
+      LOGGER.e("Failed to create Tensorflow Lite Image Classifier.");
+    }
+
+    try {
       detector =
           TFLiteObjectDetectionAPIModel.create(
               getAssets(),
@@ -104,7 +117,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
               TF_OD_API_LABELS_FILE,
               TF_OD_API_INPUT_SIZE,
               TF_OD_API_IS_QUANTIZED);
-      cropSize = TF_OD_API_INPUT_SIZE;
     } catch (final IOException e) {
       e.printStackTrace();
       LOGGER.e(e, "Exception initializing classifier!");
@@ -127,7 +139,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     frameToCropTransform =
         ImageUtils.getTransformationMatrix(
-            previewWidth, previewHeight,
+            previewWidth, previewHeight, // TODO CHANGE TO DETECTION OUTPUT HEIGHT/WIDTH
             cropSize, cropSize,
             sensorOrientation, MAINTAIN_ASPECT);
 
@@ -140,9 +152,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           @Override
           public void drawCallback(final Canvas canvas) {
             tracker.draw(canvas);
-            if (isDebug()) {
-              tracker.drawDebug(canvas);
-            }
           }
         });
 
@@ -215,8 +224,13 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 mappedRecognitions.add(result);
               }
             }
-
-            tracker.trackResults(sourceBitmap, mappedRecognitions, currTimestamp);
+            rdtBitmap = tracker.trackResults(sourceBitmap, mappedRecognitions, currTimestamp);
+            if (rdtBitmap != null) {
+              final long classifierStartTime = SystemClock.uptimeMillis();
+              classifierResults = imageClassifier.recognizeImage(rdtBitmap);
+              classifierLastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
+              LOGGER.i("Classifier detection: %s", classifierResults);
+            }
             trackingOverlay.postInvalidate();
 
             computingDetection = false;
@@ -225,8 +239,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 new Runnable() {
                   @Override
                   public void run() {
-                    showFrameInfo(previewWidth + "x" + previewHeight);
-                    showCropInfo(cropCopyBitmap.getWidth() + "x" + cropCopyBitmap.getHeight());
+                    if (rdtBitmap != null) {
+                      showResultsInBottomSheet(classifierResults);
+                      showClassifierInference(classifierLastProcessingTimeMs + "ms");
+                    }
                     showInference(lastProcessingTimeMs + "ms");
                   }
                 });
