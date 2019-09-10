@@ -374,6 +374,8 @@ export class CoughEndpoint {
       throw new Error("Invalid secret");
     }
 
+    await this.validateInstallationId(installationId);
+
     const existingCards = await this.models.giftcard.findAll({
       where: {
         [Op.or]: [{ installationId }, { barcode }],
@@ -417,6 +419,17 @@ export class CoughEndpoint {
         },
       };
     })();
+  }
+
+  private async validateInstallationId(installationId: string) {
+    const firebase = await connectorFromSqlSecrets(this.sql)();
+    const surveys = firebase.firestore().collection("surveys");
+    const matchingSurveys = await surveys
+      .where("device.installation", "==", installationId)
+      .get();
+    if (matchingSurveys.empty) {
+      throw new Error("Invalid installationId");
+    }
   }
 }
 
