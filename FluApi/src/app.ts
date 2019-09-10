@@ -155,6 +155,14 @@ export async function createPublicApp(config: AppConfig) {
       res.sendStatus(code >= 100 && code <= 599 ? code : 404);
     })
   );
+
+  const coughApi = new CoughEndpoint(sql);
+  publicApp.get(
+    "/api/cough/giftcard",
+    stats("coughGiftcard"),
+    wrap(coughApi.getGiftcard)
+  );
+
   return useOuch(publicApp);
 }
 
