@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "description": "App for flu@home project",
     "icon": "./assets/images/app-icon.png",
-    "slug": "FluAtHome",
+    "slug": "FluAtHomeUS",
     "sdkVersion": "33.0.0",
     "updates": {
       "enabled": false

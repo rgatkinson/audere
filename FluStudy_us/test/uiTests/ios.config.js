@@ -29,7 +29,7 @@ const config = {
   deviceName: device,
   app: path.join(
     os.homedir(),
-    "Library/Developer/Xcode/DerivedData/fluathome_au/Build/Products/Debug-iphonesimulator/fluathome.app"
+    "Library/Developer/Xcode/DerivedData/fluathome_us/Build/Products/Debug-iphonesimulator/fluathome.app"
   ),
 };
 

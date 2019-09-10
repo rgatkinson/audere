@@ -12,7 +12,7 @@ import host.exp.exponent.Constants;
 public class AppConstants {
 
   public static final String VERSION_NAME = "2.9.2";
-  public static String INITIAL_URL = "exp://exp.host/@audere/FluAtHome";
+  public static String INITIAL_URL = "exp://exp.host/@audere/FluAtHomeUS";
   public static final boolean IS_DETACHED = true;
   public static final String SHELL_APP_SCHEME = "expdcd6f73fcd53486284683e2a09a2d545";
   public static final String RELEASE_CHANNEL = "default";
@@ -29,10 +29,11 @@ public class AppConstants {
         
         
         
+        
         // ADD EMBEDDED RESPONSES HERE
         // START EMBEDDED RESPONSES
-        embeddedResponses.add(new Constants.EmbeddedResponse("https://exp.host/@audere/FluAtHome", "assets://shell-app-manifest.json", "application/json"));
-        embeddedResponses.add(new Constants.EmbeddedResponse("https://d1wp6m56sqw74a.cloudfront.net/%40audere%2FFluAtHome%2F0.3.0%2F3d2736f22d04260cfded31c8dc9ee245-32.0.0-android.js", "assets://shell-app.bundle", "application/javascript"));
+        embeddedResponses.add(new Constants.EmbeddedResponse("https://exp.host/@audere/FluAtHomeUS", "assets://shell-app-manifest.json", "application/json"));
+        embeddedResponses.add(new Constants.EmbeddedResponse("https://d1wp6m56sqw74a.cloudfront.net/%40audere%2FFluAtHomeUS%2F1.0.0%2Fe47749ebc58e248f58f679a840f1096f-33.0.0-android.js", "assets://shell-app.bundle", "application/javascript"));
         // END EMBEDDED RESPONSES
     EMBEDDED_RESPONSES = embeddedResponses;
   }

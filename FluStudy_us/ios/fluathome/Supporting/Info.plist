@@ -42,12 +42,12 @@
 			<string>dynamicLinkInbound</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>org.auderenow.fluathome.dynlink</string>
+				<string>org.auderenow.fluathome-us.dynlink</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>5</string>
+	<string>7</string>
 	<key>FacebookAppID</key>
 	<string>270588223842056</string>
 	<key>FacebookDisplayName</key>
