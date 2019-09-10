@@ -144,3 +144,19 @@ export declare enum RDTReaderSizeResult {
     SMALL = 2,
     INVALID = 3
 }
+export interface GiftcardRequest {
+    installationId: string;
+    barcode: string;
+    denomination: number;
+    isDemo: boolean;
+    secret: string;
+}
+export interface GiftcardResponse {
+    giftcard?: Giftcard;
+}
+export interface Giftcard {
+    url: string;
+    denomination: number;
+    isDemo: boolean;
+    isNew: boolean;
+}
