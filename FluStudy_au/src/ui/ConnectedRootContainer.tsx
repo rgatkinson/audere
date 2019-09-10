@@ -87,9 +87,14 @@ interface Props {
 }
 
 const persistenceKey = "NavigationStateAus";
-const persistNavigationState = async (navState: NavigationState) => {
+const persistNavigationState = async (navState: any) => {
   try {
-    await AsyncStorage.setItem(persistenceKey, JSON.stringify(navState));
+    // Scrub out drawer-specific navState IDs that are not unique across relaunch
+    const { openId, closeId, toggleId, ...scrubbedNavState } = navState;
+    await AsyncStorage.setItem(
+      persistenceKey,
+      JSON.stringify(scrubbedNavState)
+    );
   } catch (err) {
     // handle the error according to your needs
   }
