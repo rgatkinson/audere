@@ -16,9 +16,8 @@ import { defineDataNode } from "../models/db/dataPipeline";
 import { tuple2 } from "../util/tuple";
 import logger from "../util/logger";
 
-const DEBUG_DATA_PIPELINE_SERVICE = false;
-
 export class DataPipelineService {
+  private readonly MILLION = BigInt("1000000");
   private readonly sql: SplitSql;
   private readonly progress: () => void;
 
@@ -59,6 +58,7 @@ export class DataPipelineService {
     }
 
     for (let node of nodes) {
+      const start = process.hrtime.bigint();
       const name = node.meta.name;
       const state = statesByName.get(name);
       const hash = hashes.get(name);
@@ -70,6 +70,10 @@ export class DataPipelineService {
               await runQuery(sql, refresh[i], t);
             }
           });
+          const end = process.hrtime.bigint();
+          logger.info(
+            `Refreshed ${name} in ${(end - start) / this.MILLION} ms`
+          );
           this.progress();
         }
       } else {
@@ -84,6 +88,8 @@ export class DataPipelineService {
           }
         });
         await nodeState.upsert({ name, hash, cleanup: drop });
+        const end = process.hrtime.bigint();
+        logger.info(`Recreated ${name} in ${(end - start) / this.MILLION} ms`);
         this.progress();
       }
     }
@@ -205,7 +211,7 @@ async function runQuery(
   query: string,
   transaction?: Transaction
 ): Promise<void> {
-  debug(`=== Running SQL ===\n${query}`);
+  logger.debug(`Running SQL: ${query}`);
   if (transaction != null) {
     await sql.query(query, { transaction: transaction });
   } else {
@@ -607,7 +613,7 @@ function answerColumns(questions: SurveyQuestion[]): string[] {
   return flatMap(columns, questions);
 
   function columns(question: SurveyQuestion): string[] {
-    debug(`=== Generating Columns for ===\n${JSON.stringify(question)}`);
+    logger.debug(`Generating Columns for: ${JSON.stringify(question)}`);
     const qid = question.id.toLowerCase();
     switch (question.type) {
       // Text is just a label, and results in no data in db.
@@ -830,10 +836,4 @@ function buildHashes(nodesByName: Map<string, ManagedSqlNode>) {
 
 function flatMap<I, O>(f: (input: I) => O[], inputs: I[]): O[] {
   return inputs.reduce((acc, x) => [...acc, ...f(x)], []);
-}
-
-function debug(s: string) {
-  if (DEBUG_DATA_PIPELINE_SERVICE) {
-    console.log(`DataPipelineService: ${s}`);
-  }
 }
