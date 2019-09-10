@@ -253,9 +253,10 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
       name: "cough_derived.non_demo_surveys",
       deps: [],
       spec: `
-        select cough.current_surveys.*, cough.expert_read.interpretation as expert_interpretation from
+        select cough.current_surveys.*, cough.expert_read.interpretation as expert_interpretation, cough.pii_reviews."containsPii" as contains_pii, cough.pii_reviews.notes as pii_notes from
           cough.current_surveys
           left join cough.expert_read on cough.current_surveys.id = cough.expert_read."surveyId"
+          left join cough.pii_reviews on cough.current_surveys.id = cough.pii_reviews."surveyId"
         where survey->>'isDemo' = 'false'
       `,
     }),
@@ -273,7 +274,9 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey,
           ${namedResponseColumns(SURVEY_QUESTIONS).join(",\n  ")},
           ${namedSampleColumns().join(",\n  ")},
-          expert_interpretation
+          expert_interpretation,
+          contains_pii,
+          pii_notes
         from cough_derived.non_demo_surveys
       `,
     }),
@@ -341,7 +344,9 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           survey->'rdtInfo'->'rdtReaderResult'->>'testALineFound' as rdtreaderresult_testalinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound,
           survey->'rdtInfo'->'rdtReaderResult'->>'testStripBoundary' as rdtreaderresult_teststripboundary,
-          expert_interpretation
+          expert_interpretation,
+          contains_pii,
+          pii_notes
         from cough_derived.survey_named_array_items
       `,
     }),
