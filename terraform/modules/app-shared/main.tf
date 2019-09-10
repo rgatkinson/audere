@@ -74,10 +74,10 @@ module "cough_sftp" {
 module "cough_qualtrics_sftp" {
   source = "../sftp-user"
 
-  client_role = "cough-qualtrics"
+  client_role = "qualtrics"
   environment = "${var.environment}"
   sftp_host = "${module.sftp.sftp_host}"
-  transfer_server_id = "${module.sftp.transfer_server_id.}"
+  transfer_server_id = "${module.sftp.transfer_server_id}"
   user_public_key = "${file("${path.module}/../../../local/sftp-keys/cough.qualtrics.${var.environment}.pub")}"
 }
 
