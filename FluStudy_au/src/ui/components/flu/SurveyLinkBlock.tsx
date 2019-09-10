@@ -17,6 +17,7 @@ import { StoreState } from "../../../store";
 import { followUpSurveyUrl } from "../../../resources/LinkConfig";
 import ScreenText from "../ScreenText";
 import { getRemoteConfig } from "../../../util/remoteConfig";
+import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
 
 const MILLIS_IN_TWO_DAYS = 1000 * 60 * 60 * 24 * 2;
 
@@ -36,6 +37,7 @@ class SurveyLinkBlock extends React.PureComponent<Props, State> {
   }
 
   _onPress = () => {
+    logFirebaseEvent(AppEvents.LINK_PRESSED, { link: followUpSurveyUrl });
     Linking.openURL(`${followUpSurveyUrl}?r=${this.props.barcode}`);
   };
 
