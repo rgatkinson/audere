@@ -187,3 +187,67 @@ resource "aws_s3_bucket_notification" "cough_aspren_reports_notification" {
     events = ["s3:ObjectCreated:*"]
   }
 }
+
+resource "aws_lambda_function" "cough_follow_ups_import" {
+  function_name = "${local.base_name}-cough-follow-ups-import"
+  filename = "${local.handler_archive_path}"
+  handler = "handler.cronGet"
+  runtime = "nodejs8.10"
+  source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
+  role = "${aws_iam_role.flu_lambda.arn}"
+  timeout = 300
+
+  environment {
+    variables = {
+      TARGET_URL = "http://${var.fluapi_fqdn}:444/api/import/coughFollowUps"
+      TIMEOUT = 300000
+    }
+  }
+
+  vpc_config {
+    subnet_ids = ["${var.lambda_subnet_id}"]
+    security_group_ids = ["${var.internal_elb_access_sg}"]
+  }
+}
+
+resource "aws_lambda_permission" "cough_follow_ups_import_s3_invocation" {
+  action = "lambda:InvokeFunction"
+  function_name = "${aws_lambda_function.cough_follow_ups_import.arn}"
+  principal = "s3.amazonaws.com"
+  source_arn = "${var.cough_follow_ups_bucket_arn}"
+}
+
+resource "aws_cloudwatch_metric_alarm" "cough_follow_ups_execution_errors" {
+  alarm_name = "${local.base_name}-cough-follow-ups-import-execution-errors"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = "1"
+  metric_name = "Errors"
+  namespace = "AWS/Lambda"
+  period = "60"
+  statistic = "Maximum"
+  threshold = "1"
+  treat_missing_data = "ignore"
+  alarm_description = "This monitors ${local.base_name}-cough-follow-ups-import execution failures"
+
+  alarm_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  ok_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  dimensions {
+    FunctionName = "${aws_lambda_function.cough_follow_ups_import.function_name}"
+    Resource = "${aws_lambda_function.cough_follow_ups_import.function_name}"
+  }
+}
+
+resource "aws_s3_bucket_notification" "cough_follow_ups_reports_notification" {
+  bucket = "${var.cough_follow_ups_bucket_id}"
+
+  lambda_function {
+    lambda_function_arn = "${aws_lambda_function.cough_follow_ups_import.arn}"
+    events = ["s3:ObjectCreated:*"]
+  }
+}

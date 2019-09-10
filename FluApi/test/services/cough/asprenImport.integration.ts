@@ -39,7 +39,7 @@ describe("import ASPREN reports", () => {
 
     const getRequest = mock(AWS.Request);
     const wb = XLSX.utils.book_new();
-    const csv = parse(asprenReports.default);
+    const csv = parse(get);
     const ws = XLSX.utils.aoa_to_sheet(csv);
     XLSX.utils.book_append_sheet(wb, ws, "Data");
     const outputBuffer = XLSX.write(wb, { type: "buffer" });
@@ -75,6 +75,7 @@ describe("import ASPREN reports", () => {
     const s3Config = {
       fluReportsBucket: "string",
       asprenReportsBucket: "string",
+      coughFollowUpBucket: "string",
       fileshareBucket: "string",
     };
     const list = [
@@ -107,6 +108,7 @@ describe("import ASPREN reports", () => {
     const s3Config = {
       fluReportsBucket: "string",
       asprenReportsBucket: "string",
+      coughFollowUpBucket: "string",
       fileshareBucket: "string",
     };
     const list = [
@@ -136,6 +138,7 @@ describe("import ASPREN reports", () => {
     const s3Config = {
       fluReportsBucket: "string",
       asprenReportsBucket: "string",
+      coughFollowUpBucket: "string",
       fileshareBucket: "string",
     };
     const list = [

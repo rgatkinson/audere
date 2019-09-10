@@ -386,6 +386,12 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
         from cough.aspren_data
       `,
     }),
+
+    new ManagedMaterializedView({
+      name: "cough_derived.follow_up_surveys",
+      deps: [],
+      spec: "select * from cough.follow_up_surveys",
+    }),
   ];
 }
 

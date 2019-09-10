@@ -72,21 +72,19 @@ export class RDTPhotos {
           "$pii_review.containsPii$": false,
         };
     const surveys = await this.models.survey.findAll({
-      where: [
-        {
-          survey: {
-            isDemo: false,
-            samples: {
-              [Op.like]: "%manualEntry%",
-              [Op.or]: {
-                [Op.like]: "%RDTReaderPhotoGUID%",
-                [Op.like]: "%PhotoGUID%",
-              },
+      where: {
+        survey: {
+          isDemo: false,
+          samples: {
+            [Op.like]: "%manualEntry%",
+            [Op.or]: {
+              [Op.like]: "%RDTReaderPhotoGUID%",
+              [Op.like]: "%PhotoGUID%",
             },
           },
           ...piiRestriction,
         },
-      ],
+      },
       include: [this.models.expertRead, this.models.piiReview],
       order,
       limit: PAGE_SIZE + 1,

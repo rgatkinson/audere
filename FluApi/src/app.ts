@@ -29,6 +29,7 @@ import { SqlLock } from "./util/sqlLock";
 import { CoughAsprenEndpoint } from "./endpoints/coughAsprenApi";
 import { ServerHealth } from "./endpoints/healthCheck";
 import { CoughFirebaseEndpoint } from "./endpoints/coughFirebaseApi";
+import { CoughFollowUpEndpoint } from "./endpoints/coughFollowUpApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -308,6 +309,19 @@ export function createInternalApp(config: AppConfig) {
       sqlLock.runIfFree(
         "/api/import/coughAnalytics",
         coughFirebase.importAnalytics,
+        jsonNoOp
+      )
+    )
+  );
+
+  const coughFollowUp = new CoughFollowUpEndpoint(sql);
+  internalApp.get(
+    "/api/import/coughFollowUps",
+    stats("coughFollowUps"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/coughFollowUps",
+        coughFollowUp.importFollowUps,
         jsonNoOp
       )
     )

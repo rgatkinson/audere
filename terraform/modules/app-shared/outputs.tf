@@ -23,6 +23,14 @@ output "cough_aspren_bucket_id" {
   value = "${module.cough_sftp.sftp_bucket_id}"
 }
 
+output "cough_follow_ups_bucket_arn" {
+  value = "${module.cough_qualtrics_sftp.sftp_bucket_arn}"
+}
+
+output "cough_follow_ups_bucket_id" {
+  value = "${module.cough_qualtrics_sftp.sftp_bucket_id}"
+}
+
 output "ecs_cluster_id" {
   value = "${module.ecs_cluster.id}"
 }

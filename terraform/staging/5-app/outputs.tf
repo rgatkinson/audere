@@ -11,6 +11,14 @@ output "cough_aspren_bucket_id" {
   value = "${module.shared.cough_aspren_bucket_id}"
 }
 
+output "cough_follow_ups_bucket_arn" {
+  value = "${module.shared.cough_follow_ups_bucket_arn}"
+}
+
+output "cough_follow_ups_bucket_id" {
+  value = "${module.shared.cough_follow_ups_bucket_id}"
+}
+
 output "fluapi_fqdn" {
   value = "${module.flu_api.fluapi_route53_fqdn}"
 }

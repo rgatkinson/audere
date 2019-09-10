@@ -71,6 +71,16 @@ module "cough_sftp" {
   user_public_key = "${file("${path.module}/../../../local/sftp-keys/cough.${var.environment}.pub")}"
 }
 
+module "cough_qualtrics_sftp" {
+  source = "../sftp-user"
+
+  client_role = "cough-qualtrics"
+  environment = "${var.environment}"
+  sftp_host = "${module.sftp.sftp_host}"
+  transfer_server_id = "${module.sftp.transfer_server_id.}"
+  user_public_key = "${file("${path.module}/../../../local/sftp-keys/cough.qualtrics.${var.environment}.pub")}"
+}
+
 locals {
   base_name = "flu-${var.environment}-api"
 }

@@ -13,6 +13,16 @@ variable "cough_aspren_bucket_id" {
   type = "string"
 }
 
+variable "cough_follow_ups_bucket_arn" {
+  description = "ARN of bucket where follow up surveys are stored"
+  type = "string"
+}
+
+variable "cough_follow_ups_bucket_id" {
+  description = "Name of bucket where follow up surveys are stored"
+  type = "string"
+}
+
 variable "environment" {
   description = "One of 'staging' or 'prod'"
   type = "string"

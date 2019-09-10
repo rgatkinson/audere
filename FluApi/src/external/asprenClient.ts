@@ -109,6 +109,12 @@ export class AsprenClient {
     }
   }
 
+  private containsValue(value: string, obj: any): boolean {
+    const keys = Object.keys(obj);
+    const match = keys.find(k => obj[k] === value);
+    return match != null;
+  }
+
   // Case-insensitive search for matching object key
   private searchKey(key: string, obj: any): string | null {
     const keys = Object.keys(obj);
@@ -259,7 +265,7 @@ export class AsprenClient {
   }
 
   private validateAtsi(input: string): void {
-    if (input !== "B" && !Object.values(IndigenousStatus).includes(input)) {
+    if (input !== "B" && !this.containsValue(input, IndigenousStatus)) {
       throw Error(`Invalid ATSI value, ${input}.`);
     }
   }
@@ -267,7 +273,7 @@ export class AsprenClient {
   private validateCurrentVacc(input: string): void {
     if (
       input !== "B" &&
-      !Object.values(CurrentSeasonVaccinationStatus).includes(input)
+      !this.containsValue(input, CurrentSeasonVaccinationStatus)
     ) {
       throw Error(`Invalid current vaccination status, ${input}.`);
     }
@@ -276,7 +282,7 @@ export class AsprenClient {
   private validatePreviousVacc(input: string): void {
     if (
       input !== "B" &&
-      !Object.values(PreviousSeasonVaccinationStatus).includes(input)
+      !this.containsValue(input, PreviousSeasonVaccinationStatus)
     ) {
       throw Error(`Invalid previous vaccination status, ${input}.`);
     }

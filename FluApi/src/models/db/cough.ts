@@ -35,6 +35,8 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     expertRead: defineExpertRead(sql),
     firebaseAnalytics: defineFirebaseAnalytics(sql),
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
+    followUpSurveyFile: defineFollowUpSurveyFile(sql),
+    followUpSurvey: defineFollowUpSurvey(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
@@ -66,6 +68,8 @@ export interface CoughModels {
   expertRead: Model<ExpertReadAttributes>;
   firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
+  followUpSurveyFile: Model<FollowUpSurveyFileAttributes>;
+  followUpSurvey: Model<FollowUpSurveyAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
@@ -427,6 +431,136 @@ export function definePiiReviews(sql: SplitSql): Model<PiiReviewAttributes> {
         ...stringColumn("notes"),
         allowNull: true,
       },
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface FollowUpSurveyFileAttributes {
+  key: string;
+  hash: string;
+}
+export function defineFollowUpSurveyFile(
+  sql: SplitSql
+): Model<AsprenFileAttributes> {
+  return defineModel<AsprenFileAttributes>(
+    sql.nonPii,
+    "follow_up_survey_files",
+    {
+      key: unique(stringColumn()),
+      hash: stringColumn(),
+    },
+    { schema }
+  );
+}
+
+export interface FollowUpSurveyAttributes {
+  startDate: string;
+  endDate: string;
+  status: string;
+  progress: string;
+  duration: string;
+  finished: string;
+  recordedDate: string;
+  responseId: string;
+  externalDataReference: string;
+  distributionChannel: string;
+  userLanguage: string;
+  QID12: string;
+  QID15: string;
+  QID9: string;
+  QID17: string;
+  QID6: string;
+  QID59: string;
+  QID16: string;
+  QID8: string;
+  QID14: string;
+  QID23: string;
+  QID22: string;
+  QID20: string;
+  QID21: string;
+  QID24: string;
+  QID33_1: string;
+  QID33_2: string;
+  QID33_3: string;
+  QID33_7: string;
+  QID42: string;
+  QID34: string;
+  QID43: string;
+  QID58: string;
+  QID31: string;
+  QID46: string;
+  QID30: string;
+  QID41: string;
+  QID44: string;
+  QID47_1_1: string;
+  QID47_1_2: string;
+  QID47_1_3: string;
+  QID47_1_4: string;
+  QID35: string;
+  QID61: string;
+  QID45: string;
+  QID28: string;
+  QID62: string;
+  QID63: string;
+}
+export function defineFollowUpSurvey(
+  sql: SplitSql
+): Model<FollowUpSurveyAttributes> {
+  return defineModel<FollowUpSurveyAttributes>(
+    sql.nonPii,
+    "follow_up_surveys",
+    {
+      startDate: stringColumn(),
+      endDate: stringColumn(),
+      status: stringColumn(),
+      progress: stringColumn(),
+      duration: stringColumn(),
+      finished: stringColumn(),
+      recordedDate: stringColumn(),
+      responseId: unique(stringColumn()),
+      externalDataReference: stringColumn(),
+      distributionChannel: stringColumn(),
+      userLanguage: stringColumn(),
+      QID12: stringColumn(),
+      QID15: stringColumn(),
+      QID9: stringColumn(),
+      QID17: stringColumn(),
+      QID6: stringColumn(),
+      QID59: stringColumn(),
+      QID16: stringColumn(),
+      QID8: stringColumn(),
+      QID14: stringColumn(),
+      QID23: stringColumn(),
+      QID22: stringColumn(),
+      QID20: stringColumn(),
+      QID21: stringColumn(),
+      QID24: stringColumn(),
+      QID33_1: stringColumn(),
+      QID33_2: stringColumn(),
+      QID33_3: stringColumn(),
+      QID33_7: stringColumn(),
+      QID42: stringColumn(),
+      QID34: stringColumn(),
+      QID43: stringColumn(),
+      QID58: stringColumn(),
+      QID31: stringColumn(),
+      QID46: stringColumn(),
+      QID30: stringColumn(),
+      QID41: stringColumn(),
+      QID44: stringColumn(),
+      QID47_1_1: stringColumn(),
+      QID47_1_2: stringColumn(),
+      QID47_1_3: stringColumn(),
+      QID47_1_4: stringColumn(),
+      QID35: stringColumn(),
+      QID61: stringColumn(),
+      QID45: stringColumn(),
+      QID28: stringColumn(),
+      QID62: stringColumn(),
+      QID63: stringColumn(),
     },
     { schema }
   );

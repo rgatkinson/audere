@@ -13,6 +13,7 @@ describe("S3 uploader", () => {
   const s3Config: S3Config = {
     fluReportsBucket: "test_bucket",
     asprenReportsBucket: "not_test_bucket",
+    coughFollowUpBucket: "bucket_in_space",
     fileshareBucket: "fileshare_bucket",
   };
 
