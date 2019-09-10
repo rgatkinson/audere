@@ -75,6 +75,7 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
     resources = [
       "${aws_s3_bucket.flu_api_reports_bucket.arn}/*",
       "${var.cough_aspren_bucket}/*",
+      "${var.cough_qualtrics_bucket}/*",
       "${var.audere_share_bucket}/*"
     ]
   }
@@ -87,6 +88,7 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
     resources = [
       "${aws_s3_bucket.flu_api_reports_bucket.arn}",
       "${var.cough_aspren_bucket}",
+      "${var.cough_qualtrics_bucket}",
       "${var.audere_share_bucket}"
     ]
   }

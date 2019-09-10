@@ -33,6 +33,10 @@ variable "cough_aspren_bucket" {
   description = "ARN for S3 bucket containing ASPREN reports"
 }
 
+variable "cough_qualtrics_bucket" {
+  description = "ARN for S3 bucket containing Qualtrics surveys"
+}
+
 variable "audere_share_bucket" {
   description = "ARN for public S3 bucket"
 }
