@@ -246,10 +246,17 @@ export interface GiftcardRequest {
 
 export interface GiftcardResponse {
   giftcard?: Giftcard;
+  failureReason?: GiftcardFailureReason;
 }
-export interface Giftcard {
+interface Giftcard {
   url: string;
   denomination: number;
   isDemo: boolean;
   isNew: boolean;
+}
+export enum GiftcardFailureReason {
+  CARDS_EXHAUSTED,
+  INVALID_INSTALLATION_ID,
+  INVALID_BARCODE,
+  API_ERROR,
 }
