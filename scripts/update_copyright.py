@@ -3,6 +3,7 @@ import argparse
 import sys
 import re
 import datetime
+import subprocess
 from glob import glob
 
 
@@ -11,16 +12,26 @@ header_text = [" Copyright (c) " + str(now.year) + " by Audere", "",
 " Use of this source code is governed by an MIT-style license that", 
 " can be found in the LICENSE file distributed with this file."]
 
-parser = argparse.ArgumentParser()
-parser.add_argument("inputfilespec", nargs='+')
-parser.add_argument("-r", nargs=1, help="Enables it to search through directories recursivly, give path to starting directory")
+# File extensions that we care about
+source_file_extensions = (".ts", ".tsx", ".js", ".jsx", ".sh", ".py", ".html", ".css")
+
+parser = argparse.ArgumentParser(description="Run this script from the working dir you want to recursively search.")
+parser.add_argument("--verbose", action="store_true", help="Report how each file was processed.")
 args = parser.parse_args()
-recursive = args.r
-wildcard_pattern = args.inputfilespec
-search_length = 5
+
+statusEdited = 1
+statusSkipped = 2
+statusNoNeedToEdit = 3
+def reportStatus(path, status): 
+    if status == statusEdited: 
+        print("*** Edited " + path)
+    elif args.verbose: 
+        if status == statusSkipped:
+            print("Skipped " + path)
+        elif status == statusNoNeedToEdit: 
+            print("OK " + path)
 
 def editFile(path):
-    
     f = open(path, "r")
     try:
         text = f.readlines()
@@ -29,7 +40,9 @@ def editFile(path):
         return
     f.close()
     if(len(text) == 0):
+        reportStatus(path, statusNoNeedToEdit)
         return
+    search_length = 5
     header_found = False
     for i in range(search_length if len(text)>=search_length else len(text)):
         old_str = re.search(r"\W*Copyright\s+\(c\)\s+(?P<year1>\d{4})(?P<year2>\s*[-,]\s*\d{4})? by Audere",
@@ -38,6 +51,7 @@ def editFile(path):
             continue
         
         if str(now.year) in old_str.string:
+            reportStatus(path, statusNoNeedToEdit)
             return
             
         years = list(old_str.groups())
@@ -51,11 +65,12 @@ def editFile(path):
             text.insert(1, createHeader(path))
         else:
             text.insert(0, createHeader(path))
-
-    f = open(path, "w")
-    f.writelines(text)
-    print("Edited " + path)
-    f.close()
+        f = open(path, "w")
+        f.writelines(text)
+        f.close()
+        reportStatus(path, statusEdited)
+    else: 
+        reportStatus(path, statusNoNeedToEdit)
 
 def createHeader(file):
     header = ""
@@ -77,14 +92,11 @@ def createHeader(file):
         header += comment_type + "\n"
     return header
 
-def processDirectory(path):
-    for pattern in wildcard_pattern:
-        for filename in glob(os.path.join(path, pattern)):
-            if not os.path.isdir(filename):
-                editFile(filename)
-
-if recursive is not None:
-    for (subdir, dirs, files) in os.walk(recursive[0]):
-        processDirectory(subdir)
-else:
-    processDirectory(".")
+list_of_git_files = subprocess.check_output("git ls-files", shell=True).splitlines()
+for filename in list_of_git_files:
+    path = "./" + filename.decode()
+    if path.endswith(source_file_extensions):
+        editFile(path)
+    else: 
+        reportStatus(path, statusSkipped)
+        
