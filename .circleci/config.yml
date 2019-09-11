@@ -43,12 +43,9 @@ setenv: &setenv
           export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
           export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
           ;;
-        "fever")
+        "fever"|"cough"|"chills")
           export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
           export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
-          ;;
-        "cough")
-          export GIFTCARD_KEY="$COUGH_GIFTCARD_KEY_PROD"
           ;;
         *) echo 1>&2 "Unrecognized product '$PRODUCT'"; false;;
       esac
@@ -56,11 +53,6 @@ setenv: &setenv
       export REACT_NATIVE_API_SERVER="$STAGING_SERVER" 
       export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
       export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_STAGING"
-      case "$PRODUCT" in
-        "cough")
-          export GIFTCARD_KEY="$COUGH_GIFTCARD_KEY_STAGING"
-          ;;
-      esac
     fi
     echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
     echo "ACCESS_KEY_A=$ACCESS_KEY_A" >> .env
