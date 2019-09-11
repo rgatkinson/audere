@@ -13,6 +13,21 @@ export async function getGiftcard(
   denomination: number,
   isDemo: boolean
 ): Promise<GiftcardResponse> {
+  if (process.env.DEBUG_GIFTCARD) {
+    return {
+      giftcard: {
+        url: "https://www.auderenow.org/",
+        denomination,
+        isDemo,
+        isNew: true,
+      },
+    };
+  }
+  if (process.env.DEBUG_GIFTCARD_ERROR) {
+    return {
+      failureReason: parseInt(process.env.DEBUG_GIFTCARD_ERROR),
+    };
+  }
   if (!process.env.GIFTCARD_KEY) {
     throw new Error("GIFTCARD_KEY not configured");
   }
