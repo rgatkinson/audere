@@ -232,3 +232,31 @@ export enum RDTReaderSizeResult {
   SMALL,
   INVALID,
 }
+
+// ================================================================================
+// Giftcard API
+
+export interface GiftcardRequest {
+  installationId: string;
+  barcode: string;
+  denomination: number;
+  isDemo: boolean;
+  secret: string;
+}
+
+export interface GiftcardResponse {
+  giftcard?: Giftcard;
+  failureReason?: GiftcardFailureReason;
+}
+interface Giftcard {
+  url: string;
+  denomination: number;
+  isDemo: boolean;
+  isNew: boolean;
+}
+export enum GiftcardFailureReason {
+  CARDS_EXHAUSTED,
+  INVALID_INSTALLATION_ID,
+  INVALID_BARCODE,
+  API_ERROR,
+}
