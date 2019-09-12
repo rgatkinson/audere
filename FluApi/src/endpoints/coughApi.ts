@@ -22,16 +22,12 @@ import {
   SurveyDocument,
   SurveyNonPIIInfo,
   PhotoDocument,
-  GiftcardRequest,
-  GiftcardResponse,
-  GiftcardFailureReason,
 } from "audere-lib/dist/coughProtocol";
 import { DataPipelineService } from "../services/dataPipelineService";
 import { SecretConfig } from "../util/secretsConfig";
 import { getS3Config } from "../util/s3Config";
 import { S3Uploader } from "../external/s3Uploader";
 import { LazyAsync } from "../util/lazyAsync";
-import { SqlLock } from "../util/sqlLock";
 
 type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
 
@@ -43,8 +39,6 @@ const MAX_IMPORT_ATTEMPTS = 24;
 
 const DEFAULT_SURVEY_COLLECTION = "surveys";
 const DEFAULT_PHOTO_COLLECTION = "photos";
-
-const DEMO_GIFTCARD_URL = "https://www.example.com/giftcard";
 
 function getSurveyCollection() {
   return process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
@@ -58,7 +52,6 @@ export class CoughEndpoint {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
   private readonly secrets: SecretConfig;
-  private readonly sqlLock: SqlLock;
   private s3Uploader: LazyAsync<S3Uploader>;
 
   constructor(sql: SplitSql) {
@@ -71,7 +64,6 @@ export class CoughEndpoint {
       const s3 = new AWS.S3({ region: "us-west-2" });
       return new S3Uploader(s3, s3Config);
     });
-    this.sqlLock = new SqlLock(sql.nonPii);
   }
 
   public importCoughDocuments = async (req, res, next) => {
@@ -350,110 +342,6 @@ export class CoughEndpoint {
       logger.error(`${reqId} CoughEndpoint update views error: ${err.message}`);
     }
     logger.info(`${reqId}: leave updateDerivedTables`);
-  }
-
-  public getGiftcard = async (req, res) => {
-    const giftcardRequest: GiftcardRequest = JSON.parse(
-      req.query.giftcardRequest
-    );
-    if (
-      giftcardRequest.denomination === undefined ||
-      giftcardRequest.installationId === undefined ||
-      giftcardRequest.barcode === undefined ||
-      giftcardRequest.isDemo === undefined ||
-      giftcardRequest.secret === undefined
-    ) {
-      throw new Error("Invalid giftcard request");
-    }
-    res.json(await this.getCard(giftcardRequest));
-  };
-
-  private async getCard(request: GiftcardRequest): Promise<GiftcardResponse> {
-    const { installationId, barcode, denomination, isDemo, secret } = request;
-    const giftcardSecret = await this.secrets.getOrCreate(
-      "COUGH_GIFTCARD_SECRET"
-    );
-    if (secret !== giftcardSecret) {
-      throw new Error("Invalid secret");
-    }
-
-    await this.validateInstallationId(installationId);
-
-    if (isDemo) {
-      return {
-        giftcard: {
-          url: DEMO_GIFTCARD_URL,
-          denomination,
-          isDemo,
-          isNew: true,
-        },
-      };
-    }
-
-    await this.validateBarcode(barcode);
-
-    const existingCards = await this.models.giftcard.findAll({
-      where: {
-        [Op.or]: [{ installationId }, { barcode }],
-      },
-    });
-    if (existingCards.length > 0) {
-      const card = existingCards[0];
-      return {
-        giftcard: {
-          url: card.url,
-          denomination: card.denomination,
-          isDemo: false,
-          isNew: false,
-        },
-      };
-    }
-
-    return await this.sqlLock.runWhenFree(
-      "coughGiftcard",
-      async (): Promise<GiftcardResponse> => {
-        const newGiftcard = await this.models.giftcard.findOne({
-          where: {
-            denomination: {
-              [Op.gte]: denomination,
-            },
-            installationId: null,
-          },
-          order: [["denomination", "ASC"]],
-        });
-        if (!newGiftcard) {
-          return {
-            failureReason: GiftcardFailureReason.CARDS_EXHAUSTED,
-          };
-        }
-        newGiftcard.installationId = installationId;
-        newGiftcard.barcode = barcode;
-        await newGiftcard.save();
-        return {
-          giftcard: {
-            url: newGiftcard.url,
-            denomination: newGiftcard.denomination,
-            isDemo: false,
-            isNew: true,
-          },
-        };
-      }
-    )();
-  }
-
-  private async validateInstallationId(installationId: string) {
-    const firebase = await connectorFromSqlSecrets(this.sql)();
-    const surveys = firebase.firestore().collection("surveys");
-    const matchingSurveys = await surveys
-      .where("device.installation", "==", installationId)
-      .get();
-    if (matchingSurveys.empty) {
-      throw new Error("Invalid installationId");
-    }
-  }
-
-  private async validateBarcode(barcode: string) {
-    //TODO(ram): validate barcode against list of valid barcodes
   }
 }
 

@@ -79,3 +79,13 @@ export function requestId(req: express.Request): string {
   }
   return casted.uuid;
 }
+
+export function jsonApi<Req, Res>(
+  fn: (req: Req) => Promise<Res>,
+  paramName: string
+): (req, res) => void {
+  return async (req, res) => {
+    const response = await fn(JSON.parse(req.query[paramName]));
+    res.json(response);
+  };
+}
