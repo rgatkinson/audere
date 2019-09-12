@@ -24,6 +24,7 @@ import {
   PhotoDocument,
   GiftcardRequest,
   GiftcardResponse,
+  GiftcardFailureReason,
 } from "audere-lib/dist/coughProtocol";
 import { DataPipelineService } from "../services/dataPipelineService";
 import { SecretConfig } from "../util/secretsConfig";
@@ -375,6 +376,7 @@ export class CoughEndpoint {
     }
 
     await this.validateInstallationId(installationId);
+    await this.validateBarcode(barcode);
 
     const existingCards = await this.models.giftcard.findAll({
       where: {
@@ -393,32 +395,37 @@ export class CoughEndpoint {
       };
     }
 
-    return await this.sqlLock.runWhenFree("coughGiftcard", async () => {
-      const newGiftcard = await this.models.giftcard.findOne({
-        where: {
-          denomination: {
-            [Op.gte]: denomination,
+    return await this.sqlLock.runWhenFree(
+      "coughGiftcard",
+      async (): Promise<GiftcardResponse> => {
+        const newGiftcard = await this.models.giftcard.findOne({
+          where: {
+            denomination: {
+              [Op.gte]: denomination,
+            },
+            isDemo,
+            installationId: null,
           },
-          isDemo,
-          installationId: null,
-        },
-        order: [["denomination", "ASC"]],
-      });
-      if (!newGiftcard) {
-        return {};
+          order: [["denomination", "ASC"]],
+        });
+        if (!newGiftcard) {
+          return {
+            failureReason: GiftcardFailureReason.CARDS_EXHAUSTED,
+          };
+        }
+        newGiftcard.installationId = installationId;
+        newGiftcard.barcode = barcode;
+        await newGiftcard.save();
+        return {
+          giftcard: {
+            url: newGiftcard.url,
+            denomination: newGiftcard.denomination,
+            isDemo,
+            isNew: true,
+          },
+        };
       }
-      newGiftcard.installationId = installationId;
-      newGiftcard.barcode = barcode;
-      await newGiftcard.save();
-      return {
-        giftcard: {
-          url: newGiftcard.url,
-          denomination: newGiftcard.denomination,
-          isDemo,
-          isNew: true,
-        },
-      };
-    })();
+    )();
   }
 
   private async validateInstallationId(installationId: string) {
@@ -430,6 +437,10 @@ export class CoughEndpoint {
     if (matchingSurveys.empty) {
       throw new Error("Invalid installationId");
     }
+  }
+
+  private async validateBarcode(barcode: string) {
+    //TODO(ram): validate barcode against list of valid barcodes
   }
 }
 
