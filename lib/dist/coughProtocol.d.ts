@@ -156,6 +156,10 @@ export declare type GiftcardResponse = {
 } | {
     failureReason: GiftcardFailureReason;
 };
+export interface GiftcardAvailabilityResponse {
+    giftcardAvailable: boolean;
+    failureReason?: GiftcardFailureReason;
+}
 interface Giftcard {
     url: string;
     denomination: number;

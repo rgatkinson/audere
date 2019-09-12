@@ -14,7 +14,7 @@ import {
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
-import { SampleInfo } from "audere-lib/feverProtocol";
+import { SampleInfo } from "audere-lib/chillsProtocol";
 import {
   appendInvalidBarcode,
   setKitBarcode,

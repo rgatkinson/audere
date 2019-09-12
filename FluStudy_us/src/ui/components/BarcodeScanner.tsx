@@ -15,7 +15,7 @@ import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Camera } from "expo-camera";
-import { SampleInfo } from "audere-lib/feverProtocol";
+import { SampleInfo } from "audere-lib/chillsProtocol";
 import {
   Action,
   StoreState,

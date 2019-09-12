@@ -9,7 +9,7 @@ import { NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
 import i18n from "i18next";
 import { wrapScrollView } from "react-native-scroll-into-view";
-import { WorkflowInfo } from "audere-lib/feverProtocol";
+import { WorkflowInfo } from "audere-lib/chillsProtocol";
 import { Action, StoreState, setWorkflow } from "../../store";
 import { logFirebaseEvent } from "../../util/tracker";
 import Chrome from "./Chrome";
