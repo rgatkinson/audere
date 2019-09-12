@@ -103,9 +103,14 @@ async function runThroughApp(models, isDemo) {
   screen_info = content.find(screen => screen.key === "Welcome");
   while (screen_info) {
     if (!isDemo) {
-      await driver.sleep(1000); //let screen finish loading
+      await driver.sleep(1200); //let screen finish loading
       let screenshot = await driver.takeScreenshot();
-      files_to_write[`${screen_num}_${screen_info.title}`] = screenshot;
+      let filename =
+        (screen_num < 10 ? "0" : "") +
+        screen_num +
+        "_" +
+        screen_info.title.replace(/['!\?\.]/g, "").replace(/ /g, "_");
+      files_to_write[filename] = screenshot;
       screen_num++;
     }
     if (screen_info.type == "basic") {
@@ -636,29 +641,17 @@ async function app_setup_for_automation(driver, isDemo) {
   return installation[1];
 }
 
-//If automatoin took screeshots, add them to appScreenshots folder
+//If automation took screeshots, add them to appScreenshots folder
 async function printScreenshots(files_to_write) {
   const build = fs
     .readFileSync("./android/app/version.properties", "utf8")
-    .split("=")[1];
-  if (!fs.existsSync("./appScreenshots")) {
-    fs.mkdirSync("./appScreenshots");
-  }
-  if (!fs.existsSync(`./appScreenshots/Build${build}`)) {
-    fs.mkdirSync(`./appScreenshots/Build${build}`);
-  }
-  if (
-    !fs.existsSync(
-      `./appScreenshots/Build${build}/${deviceInfo.config.deviceName}`
-    )
-  ) {
-    fs.mkdirSync(
-      `./appScreenshots/Build${build}/${deviceInfo.config.deviceName}`
-    );
-  }
+    .split("=")[1]
+    .trim();
+  const targetDir = `./appScreenshots/Build${build}/${deviceInfo.config.deviceName}`;
+  fs.mkdirSync(targetDir, { recursive: true });
   for (const f in files_to_write) {
     fs.writeFile(
-      `./appScreenshots/Build${build}/${deviceInfo.config.deviceName}/${f}.png`,
+      `${targetDir}/${f}.png`,
       files_to_write[f],
       { encoding: "base64" },
       function(err) {
