@@ -24,7 +24,8 @@
     "device": {
       "handset": "phone",
       "tablet": "iPad",
-      "unknown": "device"
+      "unknown": "device",
+      "iosHint": " >"
     },
     "testResult": {
       "desc": "Your test strip indicates you may be:",
@@ -519,7 +520,7 @@
     "other": "Other",
     "dontKnow": "Don't know",
     "noneOfTheAbove": "None of the above",
-    "selectAge": "Select age",
+    "selectAge": "Select age range",
     "18to19": "18 to 19",
     "20to24": "20 to 24",
     "25to29": "25 to 29",

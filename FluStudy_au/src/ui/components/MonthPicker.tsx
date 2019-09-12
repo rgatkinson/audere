@@ -16,7 +16,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { getAnswer } from "../../util/survey";
 import { Action, updateAnswer, StoreState } from "../../store";
-import { MonthQuestion, SurveyQuestion } from "audere-lib/coughQuestionConfig";
+import { MonthQuestion } from "audere-lib/coughQuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
 import {
@@ -227,10 +227,11 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
           >
             <Text
               content={
-                !!date
+                (!!date
                   ? t(months[date.getMonth()]) + " " + date.getFullYear()
-                  : t("selectDate")
+                  : t("selectDate")) + t("common:device:iosHint")
               }
+              bold={true}
               style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
             />
           </TouchableOpacity>

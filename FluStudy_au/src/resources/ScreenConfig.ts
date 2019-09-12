@@ -83,7 +83,6 @@ import {
   TestFeedbackConfig,
   BlueLineConfig,
   PinkWhenBlueConfig,
-  PinkLineConfig,
   NumLinesSeenConfig,
 } from "audere-lib/coughQuestionConfig";
 import { ScreenConfig } from "../ui/components/Screen";
@@ -120,7 +119,7 @@ import { followUpSurvey } from "../util/notifications";
 import ConsentText from "../ui/components/ConsentText";
 import BackButton from "../ui/components/BackButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
-import { SMALL_TEXT } from "../ui/styles";
+import { GUTTER, SMALL_TEXT } from "../ui/styles";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import { openSettingsApp } from "../util/openSettingsApp";
 import {
@@ -637,15 +636,20 @@ export const Screens: ScreenConfig[] = [
             HouseholdTobaccoConfig,
             InterferingConfig,
             AntibioticsConfig,
-            AgeConfig,
             AssignedSexConfig,
             RaceConfig,
+            AgeConfig,
           ],
         },
         validate: true,
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "ThankYouSurvey" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: { next: "ThankYouSurvey", style: { marginTop: GUTTER } },
+      },
+    ],
     key: "GeneralHealth",
   },
   {
