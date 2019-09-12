@@ -580,7 +580,6 @@ export interface GiftcardAttributes {
   theme: string;
   orderNumber: string;
   url: string;
-  isDemo: boolean;
   installationId?: string;
   barcode?: string;
 }
@@ -598,7 +597,6 @@ export function defineGiftcard(sql: SplitSql): Model<GiftcardAttributes> {
       theme: stringColumn("theme"),
       orderNumber: stringColumn("order_number"),
       url: stringColumn("url"),
-      isDemo: booleanColumn("is_demo"),
       installationId: nullable(unique(stringColumn("installation_id"))),
       barcode: nullable(unique(stringColumn("barcode"))),
     },

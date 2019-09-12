@@ -44,6 +44,8 @@ const MAX_IMPORT_ATTEMPTS = 24;
 const DEFAULT_SURVEY_COLLECTION = "surveys";
 const DEFAULT_PHOTO_COLLECTION = "photos";
 
+const DEMO_GIFTCARD_URL = "https://www.example.com/giftcard";
+
 function getSurveyCollection() {
   return process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
 }
@@ -376,6 +378,18 @@ export class CoughEndpoint {
     }
 
     await this.validateInstallationId(installationId);
+
+    if (isDemo) {
+      return {
+        giftcard: {
+          url: DEMO_GIFTCARD_URL,
+          denomination,
+          isDemo,
+          isNew: true,
+        },
+      };
+    }
+
     await this.validateBarcode(barcode);
 
     const existingCards = await this.models.giftcard.findAll({
@@ -389,7 +403,7 @@ export class CoughEndpoint {
         giftcard: {
           url: card.url,
           denomination: card.denomination,
-          isDemo: card.isDemo,
+          isDemo: false,
           isNew: false,
         },
       };
@@ -403,7 +417,6 @@ export class CoughEndpoint {
             denomination: {
               [Op.gte]: denomination,
             },
-            isDemo,
             installationId: null,
           },
           order: [["denomination", "ASC"]],
@@ -420,7 +433,7 @@ export class CoughEndpoint {
           giftcard: {
             url: newGiftcard.url,
             denomination: newGiftcard.denomination,
-            isDemo,
+            isDemo: false,
             isNew: true,
           },
         };

@@ -22,7 +22,6 @@ module.exports = {
         theme: column(Sequelize.STRING),
         order_number: column(Sequelize.STRING),
         url: column(Sequelize.STRING),
-        is_demo: column(Sequelize.BOOLEAN),
         installation_id: unique(nullableColumn(Sequelize.STRING)),
         barcode: unique(nullableColumn(Sequelize.STRING)),
       },
