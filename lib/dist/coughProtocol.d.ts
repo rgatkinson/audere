@@ -151,10 +151,11 @@ export interface GiftcardRequest {
     isDemo: boolean;
     secret: string;
 }
-export interface GiftcardResponse {
-    giftcard?: Giftcard;
-    failureReason?: GiftcardFailureReason;
-}
+export declare type GiftcardResponse = {
+    giftcard: Giftcard;
+} | {
+    failureReason: GiftcardFailureReason;
+};
 interface Giftcard {
     url: string;
     denomination: number;

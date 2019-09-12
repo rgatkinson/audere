@@ -244,10 +244,14 @@ export interface GiftcardRequest {
   secret: string;
 }
 
-export interface GiftcardResponse {
-  giftcard?: Giftcard;
-  failureReason?: GiftcardFailureReason;
-}
+export type GiftcardResponse =
+  | {
+      giftcard: Giftcard;
+    }
+  | {
+      failureReason: GiftcardFailureReason;
+    };
+
 interface Giftcard {
   url: string;
   denomination: number;
