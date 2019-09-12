@@ -31,7 +31,7 @@ export async function getGiftcard(
   }
   const giftcardRequest = createGiftcardRequest(barcode, denomination, isDemo);
   try {
-    const response = await axios.get(`${getApiBaseUrl()}/api/giftcard`, {
+    const response = await axios.get(`${getApiBaseUrl()}/api/cough/giftcard`, {
       params: { giftcardRequest },
     });
     return response.data;
@@ -63,7 +63,7 @@ export async function checkGiftcardAvailability(
   let response;
   try {
     const response = await axios.get(
-      `${getApiBaseUrl()}/api/giftcardAvailable`,
+      `${getApiBaseUrl()}/api/cough/giftcardAvailable`,
       {
         params: { giftcardRequest },
       }
