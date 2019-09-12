@@ -11,7 +11,6 @@ import {
   FONT_NORMAL,
   GUTTER,
   INPUT_HEIGHT,
-  TEXT_COLOR,
   REGULAR_TEXT,
 } from "../styles";
 
@@ -29,7 +28,6 @@ interface State {
 
 class AddressInput extends React.Component<Props & WithNamespaces, State> {
   lastName = React.createRef<TextInput>();
-  address = React.createRef<TextInput>();
   email = React.createRef<TextInput>();
   zipcode = React.createRef<NumberInput>();
 

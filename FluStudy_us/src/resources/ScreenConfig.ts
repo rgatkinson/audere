@@ -119,8 +119,7 @@ import DidYouKnow from "../ui/components/DidYouKnow";
 import { SMALL_TEXT } from "../ui/styles";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import { openSettingsApp } from "../util/openSettingsApp";
-import AddressInput from "../ui/components/AddressInput";
-import Subtitle from "../ui/components/Subtitle";
+import PatientPIIEntry from "../ui/components/flu/PatientPIIEntry";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -150,7 +149,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     automationNext: "ScanInstructions",
-    body: [{ tag: Title }, { tag: AddressInput }],
+    body: [{ tag: Title }, { tag: PatientPIIEntry }],
     chromeProps: { hideBackButton: true, splashImage: "whatsrequired" },
     key: "EnterInformation",
     footer: [
