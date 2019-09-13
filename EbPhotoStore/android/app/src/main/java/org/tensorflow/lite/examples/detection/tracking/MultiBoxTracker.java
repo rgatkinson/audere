@@ -213,8 +213,14 @@ public class MultiBoxTracker {
   final float RDT_WIDTH = 5;
   final int RDT_INSET_MARGIN = 3;
 
+  final float RDT_TEST_BOTTOM = 22;
+  final float RDT_TEST_TOP = 40;
+
+  final int TEST_RECOGNIZER_SIZE = 224;
+
   Bitmap rdtBitmap = null;
   float[] rdtOutline = null;
+  Bitmap testBitmap = null;
 
   private float scaleToCanvasFromRdt() {
     return (canvasSize.y - (2 * RDT_INSET_MARGIN)) / RDT_HEIGHT;
@@ -236,6 +242,16 @@ public class MultiBoxTracker {
         0,
         2
     );
+    return matrix;
+  }
+
+  private Matrix recognizerFromRdt() {
+    Matrix matrix = new Matrix();
+    matrix.preScale(
+      TEST_RECOGNIZER_SIZE / RDT_WIDTH,
+      TEST_RECOGNIZER_SIZE / (RDT_TEST_TOP - RDT_TEST_BOTTOM)
+    );
+    matrix.preTranslate(0, -RDT_TEST_BOTTOM);
     return matrix;
   }
 
@@ -265,37 +281,52 @@ public class MultiBoxTracker {
 
     Matrix rdtFromRecognition = this.rdtFromRecognition(index0, location0, index1, location1);
 
-    Matrix mat = new Matrix();
-    mat.preConcat(canvasFromRdt());
-    mat.preConcat(rdtFromRecognition);
+    Matrix rdtImageMatrix = new Matrix();
+    rdtImageMatrix.preConcat(canvasFromRdt());
+    rdtImageMatrix.preConcat(rdtFromRecognition);
 
-    Matrix outlineMatrix = new Matrix();
-    rdtFromRecognition.invert(outlineMatrix);
-    outlineMatrix.postConcat(frameToCanvasMatrix);
+    Matrix phase2Matrix = new Matrix();
+    phase2Matrix.preConcat(this.recognizerFromRdt());
+    phase2Matrix.preConcat(rdtFromRecognition);
 
+    Matrix outlineToCanvasMatrix = new Matrix();
+    rdtFromRecognition.invert(outlineToCanvasMatrix);
+    outlineToCanvasMatrix.postConcat(frameToCanvasMatrix);
+
+    float[] outline = this.rdtOutline();
+    outlineToCanvasMatrix.mapPoints(outline);
+    this.rdtOutline = outline;
+
+    float scaleToCanvasFromRdt = this.scaleToCanvasFromRdt();
+    int rdtCanvasWidth = (int) (RDT_WIDTH * scaleToCanvasFromRdt);
+    int rdtCanvasHeight = (int) (RDT_HEIGHT * scaleToCanvasFromRdt);
+
+    this.rdtBitmap = this.extractBitmap(sourceBitmap, rdtCanvasWidth, rdtCanvasHeight, rdtImageMatrix);
+    this.testBitmap = this.extractBitmap(sourceBitmap, 224, 224, phase2Matrix);
+
+    return this.testBitmap;
+  }
+
+  private float[] rdtOutline() {
     float rdtLeft = 0;
     float rdtTop = 0;
     float rdtRight = RDT_WIDTH;
     float rdtBottom = RDT_HEIGHT;
-    float[] outline = new float[]{
-      rdtLeft, rdtTop,
-      rdtRight, rdtTop,
-      rdtRight, rdtTop,
-      rdtRight, rdtBottom,
-      rdtRight, rdtBottom,
-      rdtLeft, rdtBottom,
-      rdtLeft, rdtBottom,
-      rdtLeft, rdtTop,
+    return new float[]{
+        rdtLeft, rdtTop,
+        rdtRight, rdtTop,
+        rdtRight, rdtTop,
+        rdtRight, rdtBottom,
+        rdtRight, rdtBottom,
+        rdtLeft, rdtBottom,
+        rdtLeft, rdtBottom,
+        rdtLeft, rdtTop,
     };
-    outlineMatrix.mapPoints(outline);
-    this.rdtOutline = outline;
+  }
 
+  private Bitmap extractBitmap(Bitmap sourceBitmap, int width, int height, Matrix destFromSource) {
     try {
-      float scaleToCanvasFromRdt = this.scaleToCanvasFromRdt();
-      int rdtCanvasWidth = (int) (RDT_WIDTH * scaleToCanvasFromRdt);
-      int rdtCanvasHeight = (int) (RDT_HEIGHT * scaleToCanvasFromRdt);
-
-      Bitmap rdtBitmap = Bitmap.createBitmap(rdtCanvasWidth, rdtCanvasHeight, Bitmap.Config.ARGB_8888);
+      Bitmap rdtBitmap = Bitmap.createBitmap(width, height, sourceBitmap.getConfig());
 
       Paint paint = new Paint();
       paint.setFilterBitmap(true);
@@ -303,16 +334,14 @@ public class MultiBoxTracker {
 
       Canvas canvas = new Canvas();
       canvas.setBitmap(rdtBitmap);
-      canvas.drawBitmap(sourceBitmap, mat, paint);
+      canvas.drawBitmap(sourceBitmap, destFromSource, paint);
       canvas.setBitmap(null);
 
-      this.rdtBitmap = rdtBitmap;
-      return Bitmap.createScaledBitmap(rdtBitmap, 224, 224, true);
+      return rdtBitmap;
     } catch (Exception e) {
       logger.e("Bitmap extraction threw "+ e.toString());
+      return null;
     }
-
-    return null;
   }
 
   private void rdtDraw(final Canvas canvas) {
@@ -325,8 +354,19 @@ public class MultiBoxTracker {
       canvas.drawLines(outline, paint);
     }
 
-    if (rdtBitmap != null) {
+    if (this.rdtBitmap != null) {
+      logger.i("Drawing rdtBitmap");
       canvas.drawBitmap(this.rdtBitmap, RDT_INSET_MARGIN, RDT_INSET_MARGIN, new Paint());
+    }
+
+    if (this.testBitmap != null) {
+      logger.i("Drawing testBitmap");
+      canvas.drawBitmap(
+          this.testBitmap,
+          canvas.getWidth() - (this.testBitmap.getWidth() + RDT_INSET_MARGIN),
+          canvas.getHeight() - (this.testBitmap.getHeight() + RDT_INSET_MARGIN + 200),
+          new Paint()
+      );
     }
   }
 
