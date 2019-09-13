@@ -86,7 +86,7 @@ export class CoughGiftcardEndpoint {
         failureReason: validationFailureReason,
       };
     }
-    const { giftcard, failureReason } = await this.getCard(request, true);
+    const { giftcard, failureReason } = await this.getCard(request, false);
     if (giftcard) {
       return { giftcardAvailable: true };
     } else {
