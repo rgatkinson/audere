@@ -96,9 +96,11 @@ class PushNotificationContinueButtonIOS extends React.Component<
   };
 
   _regEvent = (token: string) => {
-    const { dispatch, pushState } = this.props;
-    const newPushState = { ...pushState, token };
-    dispatch(setPushNotificationState(newPushState));
+    if (this.state.canAlert) {
+      const { dispatch, pushState } = this.props;
+      const newPushState = { ...pushState, token };
+      dispatch(setPushNotificationState(newPushState));
+    }
     this._scheduleNotification();
   };
 
@@ -117,7 +119,12 @@ class PushNotificationContinueButtonIOS extends React.Component<
         showedSystemPrompt: true,
       };
       dispatch(setPushNotificationState(newPushState));
-      PushNotificationIOS.requestPermissions();
+      // @ts-ignore
+      PushNotificationIOS.requestPermissions().then(
+        (permissions: PushNotificationPermissions) => {
+          this._updatePermissions(permissions);
+        }
+      );
     } else {
       this._scheduleNotification();
     }
