@@ -8,6 +8,7 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { getApiBaseUrl } from "./index";
 import { reportError } from "../util/tracker";
+import { createAccessKey } from "../util/accessKey";
 
 export async function getGiftcard(
   barcode: string,
@@ -83,15 +84,12 @@ function createGiftcardRequest(
   denomination: number,
   isDemo: boolean
 ): GiftcardRequest {
-  if (!process.env.GIFTCARD_KEY) {
-    throw new Error("GIFTCARD_KEY not configured");
-  }
   const installationId = Constants.installationId;
   return {
     installationId,
     barcode,
     denomination,
     isDemo,
-    secret: process.env.GIFTCARD_KEY,
+    secret: createAccessKey(),
   };
 }
