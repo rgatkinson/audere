@@ -224,7 +224,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 mappedRecognitions.add(result);
               }
             }
-            rdtBitmap = tracker.trackResults(sourceBitmap, mappedRecognitions, currTimestamp);
+            rdtBitmap = tracker.trackResults(rgbFrameBitmap, mappedRecognitions, currTimestamp);
             if (rdtBitmap != null) {
               final long classifierStartTime = SystemClock.uptimeMillis();
               classifierResults = imageClassifier.recognizeImage(rdtBitmap);
