@@ -244,16 +244,8 @@ export interface GiftcardRequest {
   secret: string;
 }
 
-export type GiftcardResponse =
-  | {
-      giftcard: Giftcard;
-    }
-  | {
-      failureReason: GiftcardFailureReason;
-    };
-
-export interface GiftcardAvailabilityResponse {
-  giftcardAvailable: boolean;
+export interface GiftcardResponse {
+  giftcard?: Giftcard;
   failureReason?: GiftcardFailureReason;
 }
 

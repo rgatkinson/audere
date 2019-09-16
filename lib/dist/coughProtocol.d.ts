@@ -151,13 +151,8 @@ export interface GiftcardRequest {
     isDemo: boolean;
     secret: string;
 }
-export declare type GiftcardResponse = {
-    giftcard: Giftcard;
-} | {
-    failureReason: GiftcardFailureReason;
-};
-export interface GiftcardAvailabilityResponse {
-    giftcardAvailable: boolean;
+export interface GiftcardResponse {
+    giftcard?: Giftcard;
     failureReason?: GiftcardFailureReason;
 }
 export interface GiftcardAvailabilityResponse {
