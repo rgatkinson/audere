@@ -10,7 +10,7 @@ import { getApiBaseUrl } from "./index";
 import { reportError } from "../util/tracker";
 import { createAccessKey } from "../util/accessKey";
 
-export async function getGiftcard(
+export async function getGiftCard(
   barcode: string,
   denomination: number,
   isDemo: boolean

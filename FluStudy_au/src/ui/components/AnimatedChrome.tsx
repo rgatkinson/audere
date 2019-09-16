@@ -31,7 +31,7 @@ import { connect } from "react-redux";
 interface Props {
   children?: any;
   dispatch(action: Action): void;
-  dispatchOnFirstLoad?: () => Action;
+  dispatchOnFirstLoad?: [() => Action];
   hasBeenOpened?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
@@ -97,7 +97,10 @@ class AnimatedChrome extends React.PureComponent<Props> {
           }),
         ]),
       ]).start(() => {
-        !!dispatchOnFirstLoad && this.props.dispatch(dispatchOnFirstLoad());
+        !!dispatchOnFirstLoad &&
+          dispatchOnFirstLoad.forEach((item: () => Action) => {
+            this.props.dispatch(item());
+          });
       });
     }
   }
