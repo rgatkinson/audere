@@ -17,7 +17,13 @@ import { FeverCronReportEndpoint } from "./endpoints/feverCronReport";
 import { FeverConsentEmailerEndpoint } from "./endpoints/feverConsentMailer";
 import { FeverValidateAddress } from "./endpoints/feverValidateAddress";
 import { BarcodeValidator } from "./endpoints/barcodeValidator";
-import { useOuch, createApp, wrap, requestId } from "./util/expressApp";
+import {
+  useOuch,
+  createApp,
+  wrap,
+  requestId,
+  jsonApi,
+} from "./util/expressApp";
 import { PortalConfig, portalApp } from "./endpoints/webPortal/endpoint";
 import { isAWS } from "./util/environment";
 import * as routeStats from "express-hot-shots";
@@ -30,6 +36,7 @@ import { CoughAsprenEndpoint } from "./endpoints/coughAsprenApi";
 import { ServerHealth } from "./endpoints/healthCheck";
 import { CoughFirebaseEndpoint } from "./endpoints/coughFirebaseApi";
 import { CoughFollowUpEndpoint } from "./endpoints/coughFollowUpApi";
+import { CoughGiftcardEndpoint } from "./endpoints/coughGiftcardApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -155,6 +162,19 @@ export async function createPublicApp(config: AppConfig) {
       res.sendStatus(code >= 100 && code <= 599 ? code : 404);
     })
   );
+
+  const coughGiftcardApi = new CoughGiftcardEndpoint(sql);
+  publicApp.get(
+    "/api/cough/giftcard",
+    stats("coughGiftcard"),
+    wrap(jsonApi(coughGiftcardApi.getGiftcard, "giftcardRequest"))
+  );
+  publicApp.get(
+    "/api/cough/giftcardAvailable",
+    stats("coughGiftcard"),
+    wrap(jsonApi(coughGiftcardApi.checkGiftcardAvailability, "giftcardRequest"))
+  );
+
   return useOuch(publicApp);
 }
 

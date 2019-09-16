@@ -49,6 +49,7 @@ import {
   SurveyInstance,
   SurveyModel,
 } from "../src/models/db/fever";
+import { defineCoughModels } from "../src/models/db/cough";
 import {
   DeviceInfo as FeverDevice,
   EventInfo,
@@ -80,6 +81,7 @@ type DocumentSnapshot = firebase.firestore.DocumentSnapshot;
 const sql = createSplitSql();
 const snifflesModels = defineSnifflesModels(sql);
 const feverModels = defineFeverModels(sql);
+const coughModels = defineCoughModels(sql);
 const auth = new AuthManager(sql);
 const deviceSetting = defineDeviceSetting(sql);
 
@@ -1473,9 +1475,7 @@ function accessKey(release: Release) {
   return forApp(release, {
     sniffles: () => snifflesModels.accessKey,
     fever: () => feverModels.accessKey,
-    cough: () => {
-      throw failRelease(release);
-    },
+    cough: () => coughModels.accessKey,
   });
 }
 

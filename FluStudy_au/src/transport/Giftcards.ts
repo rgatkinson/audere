@@ -11,6 +11,7 @@ import { reportError } from "../util/tracker";
 import { createAccessKey } from "../util/accessKey";
 
 export async function getGiftCard(
+  docId: string,
   barcode: string,
   denomination: number,
   isDemo: boolean
@@ -30,7 +31,12 @@ export async function getGiftCard(
       failureReason: parseInt(process.env.DEBUG_GIFTCARD_ERROR),
     };
   }
-  const giftcardRequest = createGiftcardRequest(barcode, denomination, isDemo);
+  const giftcardRequest = createGiftcardRequest(
+    docId,
+    barcode,
+    denomination,
+    isDemo
+  );
   try {
     const response = await axios.get(`${getApiBaseUrl()}/cough/giftcard`, {
       params: { giftcardRequest },
@@ -45,6 +51,7 @@ export async function getGiftCard(
 }
 
 export async function checkGiftcardAvailability(
+  docId: string,
   barcode: string,
   denomination: number,
   isDemo: boolean
@@ -60,7 +67,12 @@ export async function checkGiftcardAvailability(
       failureReason: parseInt(process.env.DEBUG_GIFTCARD_ERROR),
     };
   }
-  const giftcardRequest = createGiftcardRequest(barcode, denomination, isDemo);
+  const giftcardRequest = createGiftcardRequest(
+    docId,
+    barcode,
+    denomination,
+    isDemo
+  );
   let response;
   try {
     const response = await axios.get(
@@ -80,13 +92,13 @@ export async function checkGiftcardAvailability(
 }
 
 function createGiftcardRequest(
+  docId: string,
   barcode: string,
   denomination: number,
   isDemo: boolean
 ): GiftcardRequest {
-  const installationId = Constants.installationId;
   return {
-    installationId,
+    docId,
     barcode,
     denomination,
     isDemo,

@@ -25,6 +25,7 @@ import { emailSupport } from "../../resources/LinkConfig";
 import { getRemoteConfig } from "../../util/remoteConfig";
 
 interface Props {
+  docId: string;
   barcode: string;
   completed48HoursAgo: boolean;
   giftCardAmount: string;
@@ -44,7 +45,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
   }
 
   async componentDidMount() {
-    const { barcode, giftCardAmount, isDemo } = this.props;
+    const { docId, barcode, giftCardAmount, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
     const { failureReason } = this.state;
     const invalidBarcode =
@@ -53,9 +54,10 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       failureReason === GiftcardFailureReason.CARDS_EXHAUSTED;
     const APIError =
       failureReason === GiftcardFailureReason.API_ERROR ||
-      failureReason === GiftcardFailureReason.INVALID_INSTALLATION_ID;
+      failureReason === GiftcardFailureReason.INVALID_DOC_ID;
 
     const response = await checkGiftcardAvailability(
+      docId,
       barcode,
       parseInt(giftCardAmount),
       isDemo
@@ -77,13 +79,14 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
   }
 
   _onRedeemPress = async () => {
-    const { barcode, giftCardAmount, isDemo } = this.props;
+    const { docId, barcode, giftCardAmount, isDemo } = this.props;
 
     if (!isDemo) {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
     }
 
     const response = await getGiftCard(
+      docId,
       barcode,
       parseInt(giftCardAmount),
       isDemo
@@ -111,7 +114,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       failureReason === GiftcardFailureReason.CARDS_EXHAUSTED;
     const APIError =
       failureReason === GiftcardFailureReason.API_ERROR ||
-      failureReason === GiftcardFailureReason.INVALID_INSTALLATION_ID;
+      failureReason === GiftcardFailureReason.INVALID_DOC_ID;
 
     const thankYouText = giftCardsAvailable
       ? completed48HoursAgo
@@ -224,6 +227,7 @@ export default connect((state: StoreState) => ({
       60 /
       60 >
     48,
+  docId: state.survey.csruid,
   barcode: state.survey.kitBarcode ? state.survey.kitBarcode.code : "",
   isConnected: state.meta.isConnected,
   isDemo: state.meta.isDemo,

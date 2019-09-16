@@ -11,6 +11,7 @@ import {
   SplitSql,
   stringColumn,
   booleanColumn,
+  decimalColumn,
   integerColumn,
   jsonColumn,
   dateColumn,
@@ -37,6 +38,7 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     followUpSurveyFile: defineFollowUpSurveyFile(sql),
     followUpSurvey: defineFollowUpSurvey(sql),
+    giftcard: defineGiftcard(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
@@ -70,6 +72,7 @@ export interface CoughModels {
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   followUpSurveyFile: Model<FollowUpSurveyFileAttributes>;
   followUpSurvey: Model<FollowUpSurveyAttributes>;
+  giftcard: Model<GiftcardAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
@@ -561,6 +564,41 @@ export function defineFollowUpSurvey(
       QID28: stringColumn(),
       QID62: stringColumn(),
       QID63: stringColumn(),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface GiftcardAttributes {
+  sku: string;
+  denomination: number;
+  cardNumber: string;
+  pin: string;
+  expiry: Date;
+  theme: string;
+  orderNumber: string;
+  url: string;
+  docId?: string;
+  barcode?: string;
+}
+
+export function defineGiftcard(sql: SplitSql): Model<GiftcardAttributes> {
+  return defineModel<GiftcardAttributes>(
+    sql.nonPii,
+    "giftcards",
+    {
+      sku: stringColumn("sku"),
+      denomination: decimalColumn("denomination", 10, 2),
+      cardNumber: stringColumn("card_number"),
+      pin: stringColumn("pin"),
+      expiry: dateColumn("expiry"),
+      theme: stringColumn("theme"),
+      orderNumber: stringColumn("order_number"),
+      url: stringColumn("url"),
+      docId: nullable(unique(stringColumn("doc_id"))),
+      barcode: nullable(unique(stringColumn("barcode"))),
     },
     { schema }
   );

@@ -35,9 +35,27 @@ export class SqlLock {
       });
     };
   }
+
+  runWhenFree(scope: string, won: AsyncCall): AsyncCall {
+    const key = getKey(scope);
+    return async (...args) => {
+      return await this.sql.transaction(async transaction => {
+        const query = `select pg_advisory_xact_lock(${key.n0}, ${key.n1});`;
+        const options = { transaction, type: sequelize.QueryTypes.SELECT };
+        await this.sql.query(query, options);
+        logger.info(
+          `Acquired SQL lock '${scope}' (${key.hex64}), running callback`
+        );
+        const ret = await won(...args);
+        logger.info(`Releasing SQL lock '${scope}' (${key.hex64})`);
+        // Lock should be released when transaction completes.
+        return ret;
+      });
+    };
+  }
 }
 
-type AsyncCall = (...args: any[]) => Promise<void>;
+type AsyncCall = (...args: any[]) => Promise<any>;
 
 interface TryLockResult {
   acquired: boolean;
