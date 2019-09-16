@@ -14,6 +14,7 @@ import { PRIMARY_COLOR, LARGE_TEXT } from "../ui/styles";
 import { testSupport, appSupport } from "./LinkConfig";
 import Button from "../ui/components/Button";
 import { AppEvents } from "../util/tracker";
+import { getAppSupportText } from "../util/giftCard";
 
 function menuScreen(
   key: string,
@@ -116,6 +117,7 @@ export const MenuScreens: ScreenConfig[] = [
       {
         tag: ScreenText,
         props: {
+          conditionalTextFn: getAppSupportText,
           label: "appSupportDesc",
         },
       },

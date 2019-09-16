@@ -138,6 +138,7 @@
     "emailTestSupport": "EMAIL TEST SUPPORT",
     "appSupport": "flu@home app support",
     "appSupportDesc": "Use this link for technical problems with the flu@home app.",
+    "appSupportGiftCardsDesc": "Use this link for gift card problems or technical problems with the flu@home app.",
     "emailAppSupport": "EMAIL APP SUPPORT"
   },
   "ParticipantInformation": {
