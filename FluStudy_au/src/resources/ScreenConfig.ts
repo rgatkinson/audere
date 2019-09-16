@@ -12,6 +12,7 @@ import {
   setOneMinuteStartTime,
   setTotalTestStripTime,
   setHasBeenOpened,
+  setGiftCardAmount,
 } from "../store";
 import { FunnelEvents } from "../util/tracker";
 import {
@@ -94,6 +95,7 @@ import Button from "../ui/components/Button";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
 import ContinueButton from "../ui/components/ContinueButton";
 import Divider from "../ui/components/Divider";
+import GiftCard from "../ui/components/GiftCard";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import Questions from "../ui/components/Questions";
@@ -121,6 +123,11 @@ import DidYouKnow from "../ui/components/DidYouKnow";
 import { SMALL_TEXT } from "../ui/styles";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import { openSettingsApp } from "../util/openSettingsApp";
+import {
+  getWelcomeText,
+  getParticipantInfoText,
+  getGiftCardAmount,
+} from "../util/giftCard";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -129,9 +136,20 @@ const CAN_USE_RDT = !DeviceInfo.isEmulator();
 
 export const Screens: ScreenConfig[] = [
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    allowedRemoteConfigValues: ["giftCardsAvailable", "giftCardAmount"],
+    body: [
+      { tag: Title },
+      {
+        tag: ScreenText,
+        props: {
+          conditionalTextFn: getWelcomeText,
+          label: "desc",
+          getTextVariables: getGiftCardAmount,
+        },
+      },
+    ],
     chromeProps: {
-      dispatchOnFirstLoad: setHasBeenOpened,
+      dispatchOnFirstLoad: [setHasBeenOpened, setGiftCardAmount],
       hideBackButton: true,
       splashImage: "welcome",
       fadeIn: true,
@@ -193,6 +211,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           center: false,
           label: "desc",
+
           style: { marginHorizontal: 0 },
         },
       },
@@ -201,6 +220,8 @@ export const Screens: ScreenConfig[] = [
         props: {
           center: false,
           label: "desc2",
+          conditionalTextFn: getParticipantInfoText,
+          getTextVariables: getGiftCardAmount,
           style: { marginHorizontal: 0 },
         },
       },
@@ -958,10 +979,11 @@ export const Screens: ScreenConfig[] = [
 
   {
     body: [
-      { tag: MainImage, props: { uri: "finalthanks" } },
+      { tag: MainImage, props: { uri: "testcompleted" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      { tag: GiftCard },
       { tag: SurveyLinkBlock },
+      { tag: ScreenText, props: { label: "learnMore" } },
       {
         tag: LinkInfoBlock,
         props: {

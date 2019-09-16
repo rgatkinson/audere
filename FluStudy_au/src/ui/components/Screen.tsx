@@ -43,7 +43,7 @@ export interface Component {
 }
 
 export interface ChromeProps {
-  dispatchOnFirstLoad?: () => Action;
+  dispatchOnFirstLoad?: (() => Action)[];
   fadeIn?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;

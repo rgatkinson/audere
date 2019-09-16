@@ -8,8 +8,9 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { getApiBaseUrl } from "./index";
 import { reportError } from "../util/tracker";
+import { createAccessKey } from "../util/accessKey";
 
-export async function getGiftcard(
+export async function getGiftCard(
   barcode: string,
   denomination: number,
   isDemo: boolean
@@ -31,7 +32,7 @@ export async function getGiftcard(
   }
   const giftcardRequest = createGiftcardRequest(barcode, denomination, isDemo);
   try {
-    const response = await axios.get(`${getApiBaseUrl()}/api/cough/giftcard`, {
+    const response = await axios.get(`${getApiBaseUrl()}/cough/giftcard`, {
       params: { giftcardRequest },
     });
     return response.data;
@@ -63,7 +64,7 @@ export async function checkGiftcardAvailability(
   let response;
   try {
     const response = await axios.get(
-      `${getApiBaseUrl()}/api/cough/giftcardAvailable`,
+      `${getApiBaseUrl()}/cough/giftcardAvailable`,
       {
         params: { giftcardRequest },
       }
@@ -83,15 +84,12 @@ function createGiftcardRequest(
   denomination: number,
   isDemo: boolean
 ): GiftcardRequest {
-  if (!process.env.GIFTCARD_KEY) {
-    throw new Error("GIFTCARD_KEY not configured");
-  }
   const installationId = Constants.installationId;
   return {
     installationId,
     barcode,
     denomination,
     isDemo,
-    secret: process.env.GIFTCARD_KEY,
+    secret: createAccessKey(),
   };
 }

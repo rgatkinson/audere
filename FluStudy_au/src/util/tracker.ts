@@ -96,6 +96,8 @@ export const AppEvents = {
   APP_IDLE_SAME_USER: "app_idle_same_user",
   READ_CONFIG_VALUE: "read_config_value",
   LINK_PRESSED: "link_pressed",
+  GIFT_CARD_LINK_PRESSED: "gift_card_link_pressed",
+  GIFT_CARD_LINK_SHOWN: "gift_card_link_shown",
 };
 
 // Payloads of SHOWED_RDT_INTERPRETATION to designate which one was shown.

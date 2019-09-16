@@ -18,6 +18,7 @@ export const followUpSurveyUrl =
 
 const testQuestionsURL = "fluathome@adelaide.edu.au";
 const appSupportURL = "flu-support-au@auderenow.org";
+const supportURL = "fluathome@adelaide.edu.au";
 
 export function ausGov() {
   Linking.openURL(ausGovUrl);
@@ -29,6 +30,10 @@ export function CDC() {
 
 export function myDr() {
   Linking.openURL(myDrUrl);
+}
+
+export function emailSupport() {
+  Linking.openURL(supportURL);
 }
 
 export function testSupport() {

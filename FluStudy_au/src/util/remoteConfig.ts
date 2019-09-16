@@ -9,6 +9,8 @@ import { logFirebaseEvent, AppEvents, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
   advanceRDTCaptureOnMemoryWarning: boolean;
+  giftCardsAvailable: boolean;
+  giftCardAmount: string;
   showRDTInterpretation: string;
   rdtTimeoutSeconds: number;
   skipSurveyNotification: boolean;
@@ -24,6 +26,8 @@ interface RemoteConfig {
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
   advanceRDTCaptureOnMemoryWarning: false,
+  giftCardsAvailable: false,
+  giftCardAmount: "999",
   showRDTInterpretation: "",
   rdtTimeoutSeconds: 30,
   skipSurveyNotification: false,

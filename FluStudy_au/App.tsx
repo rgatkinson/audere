@@ -39,7 +39,7 @@ export default class App extends React.Component {
     appReady: false,
   };
 
-  async componentWillMount() {
+  async componentDidMount() {
     this._loadAssets();
     setupErrorHandler();
     startTracking();
@@ -52,6 +52,7 @@ export default class App extends React.Component {
     // parallelize those two.
     await loadAllRemoteConfigs();
     await initializeFirestore();
+    this.setState({ appReady: true });
   }
 
   componentDidCatch(error: Error) {
@@ -75,8 +76,6 @@ export default class App extends React.Component {
       getStore().then(store => (this.store = store)),
       getPersistor().then(persistor => (this.persistor = persistor)),
     ]);
-
-    this.setState({ appReady: true });
   }
 
   render() {

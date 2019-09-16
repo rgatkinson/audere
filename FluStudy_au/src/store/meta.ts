@@ -4,6 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { updateCollectionEnabled } from "../util/tracker";
+import { getRemoteConfig } from "../util/remoteConfig";
 
 export type MetaAction =
   | { type: "SET_ACTIVE_ROUTE_NAME"; activeRouteName: string }
@@ -16,11 +17,15 @@ export type MetaAction =
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
   | { type: "SET_RDT_CAPTURE_FAIL_WARNING"; shownRDTFailWarning: boolean }
   | { type: "SCHEDULED_SURVEY_NOTIF" }
-  | { type: "SET_DEMO"; isDemo: boolean };
+  | { type: "SET_DEMO"; isDemo: boolean }
+  | { type: "SET_GIFT_CARD_AMOUNT"; giftCardAmount: string };
+
+export const DEFAULT_GIFT_CARD_AMOUNT = "";
 
 export type MetaState = {
   activeRouteName: string;
   cameraSettingsGrantedPage: string;
+  giftCardAmount: string;
   hasBeenOpened: boolean;
   isConnected: boolean;
   isDemo: boolean;
@@ -33,6 +38,7 @@ export type MetaState = {
 const initialState: MetaState = {
   activeRouteName: "Welcome",
   cameraSettingsGrantedPage: "",
+  giftCardAmount: DEFAULT_GIFT_CARD_AMOUNT,
   hasBeenOpened: false,
   isConnected: true,
   isDemo: false,
@@ -63,6 +69,12 @@ export default function reducer(state = initialState, action: MetaAction) {
       return { ...state, isConnected: action.isConnected };
     case "SCHEDULED_SURVEY_NOTIF":
       return { ...state, scheduledSurveyNotif: true };
+    case "SET_GIFT_CARD_AMOUNT":
+      if (state.giftCardAmount === undefined || state.giftCardAmount === "") {
+        return { ...state, giftCardAmount: action.giftCardAmount };
+      } else {
+        return { ...state };
+      }
     default:
       return state;
   }
@@ -125,4 +137,9 @@ export function setHasBeenOpened(): MetaAction {
 
 export function setScheduledSurveyNotif(): MetaAction {
   return { type: "SCHEDULED_SURVEY_NOTIF" };
+}
+
+export function setGiftCardAmount(): MetaAction {
+  const giftCardAmount = getRemoteConfig("giftCardAmount");
+  return { type: "SET_GIFT_CARD_AMOUNT", giftCardAmount };
 }

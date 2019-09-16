@@ -43,6 +43,7 @@ export const Menu = (props: any) => {
         </SystemText>
         <DrawerItems
           activeTintColor={SECONDARY_COLOR}
+          onItemPress={close}
           inactiveTintColor={SECONDARY_COLOR}
           {...items}
         />

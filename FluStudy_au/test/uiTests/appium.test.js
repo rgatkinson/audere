@@ -26,6 +26,7 @@ import {
   choose_checkboxes,
   choose_radio,
 } from "./util/controls";
+import { app_setup_for_automation, display_rdt_stats } from "./util/tools";
 
 console.log(
   "Using test file",
@@ -93,7 +94,11 @@ async function runThroughApp(models, isDemo) {
   );
   await driver.setImplicitWaitTimeout(10000);
   await driver.sleep(1000); // let welcome animation finish
-  const installationId = await app_setup_for_automation(driver, isDemo);
+  const installationId = await app_setup_for_automation(
+    driver,
+    deviceInfo,
+    isDemo
+  );
 
   let files_to_write = {};
   let screen_num = 1;
@@ -421,7 +426,7 @@ async function rdt_screen(
     startTime = new Date();
     secondsElapsed = 0;
     console.log("RDT Capture attempted");
-    while (manual_capture_required && secondsElapsed <= 35) {
+    while (manual_capture_required && secondsElapsed <= 45) {
       if (
         await driver.hasElementByAccessibilityId(
           strings.TestStripConfirmation.title
@@ -577,71 +582,6 @@ async function verify_db_contents(
   });
 }
 
-//Display stats from previous RDT capture
-async function display_rdt_stats(driver, models, installationId) {
-  await driver.sleep(5000); // Let firestore sync
-  const response = await axios.get(
-    "http://localhost:3200/api/import/coughDocuments"
-  );
-  if (response.status !== 200) {
-    throw new Error(`Expected 200, got ${response.status}`);
-  }
-
-  const dbRowsAndNum = await models.survey.findAndCountAll({
-    where: {
-      device: {
-        installation: {
-          [Op.eq]: installationId,
-        },
-      },
-    },
-    order: [["id", "ASC"]],
-  });
-
-  //gets most recent row with same installationId
-  const dbRow = dbRowsAndNum["rows"][dbRowsAndNum["count"] - 1];
-  console.log(dbRow.survey.rdtInfo);
-}
-
-//Go to version menu, change to demo mode, return installation id
-async function app_setup_for_automation(driver, isDemo) {
-  expect(await driver.hasElementByAccessibilityId("flu@home")).toBe(true);
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.95, y: screen_y * 0.06 })
-    .perform();
-  expect(await driver.hasElementByAccessibilityId(strings.Version.title)).toBe(
-    true
-  );
-  await driver.elementByAccessibilityId(strings.Version.title).click();
-  expect(
-    await driver.hasElementByAccessibilityId(strings.Version.description)
-  ).toBe(true);
-  if (isDemo) {
-    await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.13, 3);
-    expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
-  }
-  let installation;
-  while (!installation) {
-    await driver
-      .elementByAccessibilityId(strings.buildInfo.copy.toUpperCase())
-      .click();
-    const versionInfo = Buffer.from(
-      await driver.getClipboard(),
-      "base64"
-    ).toString();
-    installation = /Installation:\*\* (.*)/.exec(versionInfo);
-  }
-
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.05, y: screen_y * 0.06 })
-    .perform();
-  if (isDemo) {
-    expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
-  }
-  return installation[1];
-}
-
-//If automation took screeshots, add them to appScreenshots folder
 async function printScreenshots(files_to_write) {
   const build = fs
     .readFileSync("./android/app/version.properties", "utf8")
