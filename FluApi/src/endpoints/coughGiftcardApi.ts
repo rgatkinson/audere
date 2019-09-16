@@ -105,12 +105,13 @@ export class CoughGiftcardEndpoint {
       throw new Error("Invalid giftcard request");
     }
 
-    const giftcardSecret = await this.secrets.getOrCreate(
-      "COUGH_GIFTCARD_SECRET"
-    );
-    if (request.secret !== giftcardSecret) {
+    const matchingKey = await this.models.accessKey.findOne({
+      where: { key: request.secret, valid: true },
+    });
+    if (!matchingKey) {
       throw new Error("Invalid secret");
     }
+
     if (!(await this.validateInstallationId(request.installationId))) {
       return {
         valid: false,
