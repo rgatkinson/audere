@@ -97,7 +97,7 @@ export class CoughGiftcardEndpoint {
   private async validateGiftcardRequest(request: GiftcardRequest) {
     if (
       request.denomination === undefined ||
-      request.installationId === undefined ||
+      request.docId === undefined ||
       request.barcode === undefined ||
       request.isDemo === undefined ||
       request.secret === undefined
@@ -112,10 +112,10 @@ export class CoughGiftcardEndpoint {
       throw new Error("Invalid secret");
     }
 
-    if (!(await this.validateInstallationId(request.installationId))) {
+    if (!(await this.validateDocId(request.docId))) {
       return {
         valid: false,
-        failureReason: GiftcardFailureReason.INVALID_INSTALLATION_ID,
+        failureReason: GiftcardFailureReason.INVALID_DOC_ID,
       };
     }
     if (!(await this.validateBarcode(request.barcode))) {
@@ -127,13 +127,14 @@ export class CoughGiftcardEndpoint {
     return { valid: true };
   }
 
-  private async validateInstallationId(installationId: string) {
+  private async validateDocId(docId: string) {
     const firebase = await connectorFromSqlSecrets(this.sql)();
-    const surveys = firebase.firestore().collection("surveys");
-    const matchingSurveys = await surveys
-      .where("device.installation", "==", installationId)
+    const survey = await firebase
+      .firestore()
+      .collection("surveys")
+      .doc(docId)
       .get();
-    return !matchingSurveys.empty;
+    return survey.exists;
   }
 
   private async validateBarcode(barcode: string) {
@@ -149,11 +150,11 @@ export class CoughGiftcardEndpoint {
     isNew?: boolean;
     failureReason?: GiftcardFailureReason;
   }> {
-    const { installationId, barcode, denomination, isDemo, secret } = request;
+    const { docId, barcode, denomination, isDemo, secret } = request;
 
     const existingCards = await this.models.giftcard.findAll({
       where: {
-        [Op.or]: [{ installationId }, { barcode }],
+        [Op.or]: [{ docId }, { barcode }],
       },
     });
     if (existingCards.length > 0) {
@@ -188,7 +189,7 @@ export class CoughGiftcardEndpoint {
         denomination: {
           [Op.gte]: request.denomination,
         },
-        installationId: null,
+        docId: null,
       },
       order: [["denomination", "ASC"]],
     });
@@ -196,7 +197,7 @@ export class CoughGiftcardEndpoint {
       return;
     }
     if (allocateCard) {
-      newGiftcard.installationId = request.installationId;
+      newGiftcard.docId = request.docId;
       newGiftcard.barcode = request.barcode;
       await newGiftcard.save();
     }
