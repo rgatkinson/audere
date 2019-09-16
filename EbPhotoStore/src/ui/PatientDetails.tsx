@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import TabMenu from "./components/TabMenu";
-import { BackCallback } from "./AppController";
+import { TitlebarCallback } from "./AppController";
 import {
   Action,
   Screen,
@@ -18,8 +18,8 @@ import { withNamespaces, WithNamespaces } from "react-i18next";
 import { PatientInfo, AuthUser } from "audere-lib/ebPhotoStoreProtocol";
 import {
   GUTTER,
-  EVD_POSITIVE_COLOR,
-  EVD_NEGATIVE_COLOR,
+  EBOLA_POSITIVE_COLOR,
+  EBOLA_NEGATIVE_COLOR,
   TITLEBAR_COLOR,
   EXTRA_SMALL_TEXT,
 } from "./styles";
@@ -38,7 +38,7 @@ interface Props {
   notes?: string;
   patientInfo: PatientInfo;
   selectedIndex: number;
-  setupBackInfo(s: Screen, info: BackCallback): void;
+  setupTitlebarInfo(s: Screen, info: TitlebarCallback): void;
 }
 
 interface State {
@@ -49,15 +49,25 @@ class PatientDetails extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     const { t } = this.props;
-    this.props.setupBackInfo(Screen.PatientDetails, {
+    this.props.setupTitlebarInfo(Screen.PatientDetails, {
       onBack: this._navToList,
-      backText: t("common:navigation:list"),
+      getTitlebarText: this._getTitlebarText,
     });
 
     this.state = {
       selectedIndex: this.props.selectedIndex || 0,
     };
   }
+
+  _getTitlebarText = () => {
+    const { isNew, t } = this.props;
+    if (isNew) {
+      return t("details:titlebarText");
+    } else {
+      const { firstName, lastName } = this.props.patientInfo;
+      return firstName.length > 0 ? firstName + " " + lastName : lastName;
+    }
+  };
 
   _navToList = () => {
     this.props.dispatch(viewPatients());
@@ -85,8 +95,8 @@ class PatientDetails extends React.Component<Props & WithNamespaces, State> {
                 styles.evdCommon,
                 {
                   color: !!evdPositive
-                    ? EVD_POSITIVE_COLOR
-                    : EVD_NEGATIVE_COLOR,
+                    ? EBOLA_POSITIVE_COLOR
+                    : EBOLA_NEGATIVE_COLOR,
                 },
               ]}
             />
@@ -150,4 +160,14 @@ export default connect((state: StoreState, props: Props) => ({
     props.id < state.patients.length
       ? state.patients[props.id].evdPositive
       : undefined,
+  patientInfo:
+    props.id < state.patients.length
+      ? state.patients[props.id].patientInfo
+      : {
+          firstName: "",
+          lastName: "",
+          phone: "",
+          details: "",
+          notes: "",
+        },
 }))(withNamespaces("patientDetails")(PatientDetails));

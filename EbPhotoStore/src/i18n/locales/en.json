@@ -60,10 +60,10 @@
     "incorrectCodeTitle": "Incorrect Code",
     "incorrectCodeBody": "Please check that the code you entered is correct"
   },
-<<<<<<< HEAD
+
   "details": {
-    "titlebarText": "Patient Details",
-=======
+    "titlebarText": "Patient Details"
+  },
   "addPatient": {
     "details": "Patient Details",
     "patientId": "ID: ",
@@ -78,7 +78,6 @@
     "patientNotesPlaceholder": "Will be shared with administration workers"
   },
   "patientDetails": {
->>>>>>> TabMenu and basic screens working
     "cancel": "Cancel",
     "discard": "Discard",
     "save": "Save",

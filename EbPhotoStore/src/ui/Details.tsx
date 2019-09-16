@@ -57,7 +57,6 @@ interface Props {
   isNew: boolean;
   patientInfo: PatientInfo;
   notes?: string;
-  setupTitlebarInfo(s: Screen, info: TitlebarCallback): void;
   dispatch(action: Action): void;
   toggleEditMode(): void;
 }
@@ -88,10 +87,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
 
   constructor(props: Props & WithNamespaces) {
     super(props);
-    // this.props.setupTitlebarInfo(Screen.PatientDetails, {
-    //   onBack: this._back,
-    //   getTitlebarText: this._getTitlebarText,
-    // });
 
     const { firstName, lastName, phone, details } = this.props.patientInfo;
     const { t } = this.props;
@@ -106,14 +101,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
       details: details || "",
       notes: this.props.notes || "",
     };
-
-    // TODO: CHANGE TO setupTitlebarInfo
-    // if (!!this.props.editModeEnabled && setupBackInfo) {
-    //   setupBackInfo(Screen.AddPatient, {
-    //     onBack: this._navToList,
-    //     backText: t("common:navigation:list"),
-    //   });
-    // }
 
     this._ageInput = React.createRef<NumberInput>();
     this._lastNameInput = React.createRef<TextInput>();
