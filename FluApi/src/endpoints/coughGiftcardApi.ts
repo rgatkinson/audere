@@ -260,8 +260,12 @@ export class CoughGiftcardEndpoint {
   }
 
   private async validateBarcode(barcode: string) {
-    //TODO(ram): validate barcode against list of valid barcodes
-    return true;
+    const prefixValidations = await this.models.barcodeValidation.findAll({
+      where: { type: BarcodeValidationType.PREFIX },
+    });
+    return prefixValidations.some(prefixValidation =>
+      barcode.startsWith(prefixValidation.value)
+    );
   }
 
   private async getAndAllocateCard(request: GiftcardRequest) {
