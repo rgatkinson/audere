@@ -403,6 +403,21 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
       deps: [],
       spec: "select * from cough.follow_up_surveys",
     }),
+
+    new ManagedView({
+      name: "cough_derived.giftcards",
+      deps: [],
+      spec: `
+        select
+          id,
+          "createdAt",
+          "updatedAt",
+          denomination,
+          doc_id,
+          barcode
+        from cough.giftcards
+      `,
+    }),
   ];
 }
 
