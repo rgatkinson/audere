@@ -37,35 +37,38 @@ function menuScreen(
   };
 }
 
-const FAQS = [
-  { label: "whyStudy" },
-  { label: "whoEligible" },
-  { label: "howSoon" },
-  { label: "howComplete" },
-  { label: "howFindOut" },
-  { label: "howLongTest" },
-  { label: "swabDirty" },
-  { label: "swabTubeLonger" },
-  { label: "stripLonger" },
-  { label: "whyPersonal" },
-  { label: "willConfidential" },
-  {
-    label: "appDelete",
-    bodyLabel: getRemoteConfig("giftCardsAvailable")
-      ? "appDeleteGiftCard"
-      : "appDelete",
-  },
-  { label: "getGiftCard", requiresGiftCardsAvailable: true },
-  { label: "useGiftCard", requiresGiftCardsAvailable: true },
-  { label: "noClaim", requiresGiftCardsAvailable: true },
-  { label: "swapProblem", requiresGiftCardsAvailable: true },
-];
+const createFAQS = () => {
+  return [
+    { label: "whyStudy" },
+    { label: "whoEligible" },
+    { label: "howSoon" },
+    { label: "howComplete" },
+    { label: "howFindOut" },
+    { label: "howLongTest" },
+    { label: "swabDirty" },
+    { label: "swabTubeLonger" },
+    { label: "stripLonger" },
+    { label: "whyPersonal" },
+    { label: "willConfidential" },
+    {
+      label: "appDelete",
+      bodyLabel: getRemoteConfig("giftCardsAvailable")
+        ? "appDeleteGiftCard"
+        : "appDelete",
+    },
+    { label: "getGiftCard", requiresGiftCardsAvailable: true },
+    { label: "useGiftCard", requiresGiftCardsAvailable: true },
+    { label: "noClaim", requiresGiftCardsAvailable: true },
+    { label: "swapProblem", requiresGiftCardsAvailable: true },
+  ];
+};
+
 const FAQ_ANSWER_SUFFIX = "++Answer";
 
 function getFAQComponents(key: string): Component[] {
   const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
   let FAQComponents: Component[] = [];
-  FAQS.forEach(q => {
+  createFAQS().forEach(q => {
     if (
       (!giftCardsAvailable &&
         !q.hasOwnProperty("requiresGiftCardsAvailable")) ||
