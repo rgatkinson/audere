@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import Text from "../components/Text";
 import { StoreState } from "../../store";
 import Divider from "./Divider";
@@ -21,8 +21,9 @@ import {
   checkGiftcardAvailability,
 } from "../../transport/Giftcards";
 import { NavigationScreenProp, withNavigation } from "react-navigation";
-import { emailSupport } from "../../resources/LinkConfig";
+import { emailSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
 import { getRemoteConfig } from "../../util/remoteConfig";
+import SurveyLinkBlock from "./flu/SurveyLinkBlock";
 
 interface Props {
   docId: string;
@@ -95,13 +96,17 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
     if (response.hasOwnProperty("failureReason")) {
       this.setState({ failureReason: response.failureReason! });
     } else if (!!response.giftcard) {
-      this.setState({ failureReason: "" });
       Linking.openURL(response.giftcard.url);
+      this.setState({ failureReason: "" });
     }
   };
 
   _navToFAQ = () => {
     this.props.navigation.navigate("GeneralQuestions");
+  };
+
+  _navToSurvey = () => {
+    Linking.openURL(`${followUpSurveyUrl}?r=${this.props.barcode}`);
   };
 
   render() {
@@ -145,11 +150,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
           <Divider style={styles.divider} />
           {!!completed48HoursAgo && (
             <Fragment>
-              <Text
-                style={styles.surveyTitle}
-                content={t("SurveyLinkBlock:title")}
-              />
-              <Text content={t("takeSurveyAvailable")} />
+              <SurveyLinkBlock containerStyle={styles.surveyLinkBlock} />
               <Divider style={styles.divider} />
             </Fragment>
           )}
@@ -214,8 +215,10 @@ const styles = StyleSheet.create({
     paddingVertical: GUTTER / 2,
     color: PRIMARY_COLOR,
   },
-  surveyTitle: {
-    marginBottom: GUTTER,
+  surveyLinkBlock: {
+    backgroundColor: "white",
+    margin: 0,
+    padding: 0,
   },
 });
 

@@ -465,8 +465,6 @@
     "surveyNoGiftCard": "Thanks for completing your test. If you haven't taken our follow-up survey, please tap on the link below.",
     "redeem": "Claim your gift card",
     "note": "Note: Please make sure to claim your gift card within 90 days of completing this test. You will not be able to claim your gift card if you uninstall this app.",
-    "takeSurveyNotAvailable": "The survey is not available yet. Please check back later.",
-    "takeSurveyAvailable": "Please tap here to be directed to our follow-up survey.\n\n[Go to the survey>](www.google.com)",
     "noGiftCard": "**We're sorry, but gift cards are not available at this time.** Please check back later.",
     "giftCard": "**You've earned a ${{giftCardAmount}} Prezzee gift card for completing your test.**\n\nPrezzee offers gift cards which can be used at a number of Australia's top retailers including Woolworth's, Kmart, Myer, David Jones, Target, Coles, and many more.",
     "offline": "Please reconnect to the internet in order to receive your gift card and take the follow-up survey.",
