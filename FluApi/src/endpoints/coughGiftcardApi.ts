@@ -17,11 +17,16 @@ import {
   CoughModels,
   defineCoughModels,
   GiftcardAttributes,
+  GiftcardRateLimitAttributes,
 } from "../models/db/cough";
 import { SplitSql } from "../util/sql";
 import { SqlLock } from "../util/sqlLock";
 
 const DEMO_GIFTCARD_URL = "https://www.example.com/giftcard";
+const DEFAULT_RATE_LIMIT = {
+  limit: 100,
+  periodInSeconds: 24 * 60 * 60,
+};
 
 export type PrezzeeCsvGiftcard = {
   sku: string;
@@ -232,6 +237,12 @@ export class CoughGiftcardEndpoint {
       };
     }
 
+    const rateLimit = await this.getRateLimit();
+    const cardsIssued = await this.countCardsIssued(rateLimit.periodInSeconds);
+    if (cardsIssued >= rateLimit.limit) {
+      return { failureReason: GiftcardFailureReason.CARDS_EXHAUSTED };
+    }
+
     let giftcard;
     if (allocateCard) {
       giftcard = await this.sqlLock.runWhenFree("coughGiftcard", () =>
@@ -279,6 +290,24 @@ export class CoughGiftcardEndpoint {
     return parse(file, {
       columns: true,
       skip_empty_lines: true,
+    });
+  }
+
+  private async getRateLimit(): Promise<GiftcardRateLimitAttributes> {
+    const limit = await this.models.giftcardRateLimit.findOne();
+    if (limit) {
+      return limit;
+    }
+    return await this.models.giftcardRateLimit.create(DEFAULT_RATE_LIMIT);
+  }
+
+  private async countCardsIssued(seconds: number): Promise<number> {
+    const startDate = new Date(new Date().getTime() - seconds * 1000);
+    return await this.models.giftcard.count({
+      where: {
+        docId: { [Op.ne]: null },
+        updatedAt: { [Op.gt]: startDate },
+      },
     });
   }
 }
