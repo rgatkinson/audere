@@ -48,15 +48,13 @@ import {
   createAppContainer,
 } from "react-navigation";
 import { EventInfoKind, WorkflowInfo } from "audere-lib/coughProtocol";
-import AppNavigator, { getActiveRouteName } from "./AppNavigator";
+import createAppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 import { newUID } from "../util/csruid";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import MultiTapContainer from "./components/MultiTapContainer";
 
 notificationLaunchHandler();
-
-const AppContainer = createAppContainer(AppNavigator);
 
 interface SplashProps {
   onUnmount(): void;
@@ -326,6 +324,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
+    const AppContainer = createAppContainer(createAppNavigator());
     return (
       <View style={{ flex: 1 }}>
         <AppContainer

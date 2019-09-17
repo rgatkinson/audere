@@ -12,7 +12,6 @@ import { GUTTER } from "../styles";
 interface Props {
   bold?: boolean;
   center?: boolean;
-  giftCardAmount?: string;
   italic?: boolean;
   label: string | string[];
   namespace: string;

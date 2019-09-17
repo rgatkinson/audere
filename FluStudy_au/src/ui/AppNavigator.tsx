@@ -15,7 +15,7 @@ import {
 } from "react-navigation";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import { Menu } from "./components/Menu";
-import { MenuScreens } from "../resources/MenuConfig";
+import { createMenuScreens } from "../resources/MenuConfig";
 import { Screens } from "../resources/ScreenConfig";
 import { generateScreen } from "./components/Screen";
 
@@ -85,18 +85,22 @@ Home.router.getStateForAction = withNavigationPreventDuplicate(
   Home.router.getStateForAction
 );
 
-const routeConfig = MenuScreens.reduce(
-  (routeConfig, config) => ({
-    ...routeConfig,
-    [config.key]: { screen: generateScreen(config) },
-  }),
-  { Home }
-);
+function createRouteConfig() {
+  return createMenuScreens().reduce(
+    (routeConfig, config) => ({
+      ...routeConfig,
+      [config.key]: { screen: generateScreen(config) },
+    }),
+    { Home }
+  );
+}
 
-export default createDrawerNavigator(routeConfig, {
-  contentComponent: Menu,
-  drawerPosition: "right",
-  // @ts-ignore
-  useNativeAnimations: Platform.OS === "ios", // Can't use on Android
-  drawerLockMode: "locked-open",
-});
+export default function createAppNavigator() {
+  return createDrawerNavigator(createRouteConfig(), {
+    contentComponent: Menu,
+    drawerPosition: "right",
+    // @ts-ignore
+    useNativeAnimations: Platform.OS === "ios", // Can't use on Android
+    drawerLockMode: "locked-open",
+  });
+}

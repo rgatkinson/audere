@@ -27,7 +27,7 @@ interface RemoteConfig {
 const DEFAULT_CONFIGS: RemoteConfig = {
   advanceRDTCaptureOnMemoryWarning: false,
   giftCardsAvailable: false,
-  giftCardAmount: "999",
+  giftCardAmount: "20",
   showRDTInterpretation: "",
   rdtTimeoutSeconds: 30,
   skipSurveyNotification: false,
@@ -76,6 +76,7 @@ export async function loadAllRemoteConfigs() {
 
   if (process.env.NODE_ENV === "development") {
     // This removes all caching and basically fetches the config each time
+
     config.enableDeveloperMode();
   }
 

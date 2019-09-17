@@ -52,6 +52,7 @@ export default class App extends React.Component {
     // parallelize those two.
     await loadAllRemoteConfigs();
     await initializeFirestore();
+
     this.setState({ appReady: true });
   }
 

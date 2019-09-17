@@ -116,7 +116,17 @@
     "willConfidential": "**Will my information be kept confidential?**",
     "willConfidential++Answer": "You will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information. Additionally, this study does not collect information such as your name, email, or mailing address.\n\nWe will not share your data with any third party or for purposes other than this study as described in the Participant Information Sheet and Consent Form.\n\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Human Research Ethics Committee, who approved this study, and other accrediting agencies may inspect and copy your non-identifiable records. They would only do this to ensure you were treated fairly and safely during the study.",
     "appDelete": "**After I finish the tests, can I delete the app?**",
-    "appDelete++Answer": "We will send you a single notification on your device a few days after you complete the test with a link to complete a survey about your experience using the app. Once you have received that notification and completed the survey you may delete the app."
+    "appDeleteGiftCard": "**After I finish the tests, can I delete the app?**",
+    "appDelete++Answer": "The app will send you a single notification on your device a couple days after you complete the test with a link to complete a survey about your experience using the app. Once you have received that notification and completed the survey you may delete the app.",
+    "appDeleteGiftCard++Answer": "Please complete the follow-up survey and claim your gift card before you uninstall this app. The app will send you a link to the survey a couple of days after you complete the test.",
+    "getGiftCard": "**When and how do I get my gift card?**",
+    "getGiftCard++Answer": "Your gift card will be made available on the final screen of the app (“Test completed” screen). This screen will give you a unique link to claim your gift card via Prezzee.com.au, a digital gift card website. Your device needs to be connected to the internet for this step. Make sure to tap this link in the app within 90 days of finishing the test and/or before you uninstall the app.",
+    "useGiftCard": "**How and where can I use my gift card?**",
+    "useGiftCard++Answer": "To claim your gift card you must click through on the link from the \"Test completed\" screen in this app. Your Prezzee gift card may then be swapped for a gift card at a number of Australia’s top retailers including Woolworths, Kmart, Myer, David Jones, Uber, Target, Coles, and many more. You do not need to decide the retailer that you wish to swap for immediately, and you may swap to multiple retailers.",
+    "noClaim": "**What happens if I don’t claim my gift card?**",
+    "noClaim++Answer": "Any unclaimed gift card funds will be returned for use in future research studies.",
+    "swapProblem": "**What if I have a problem swapping my gift card?**",
+    "swapProblem++Answer": "If you have already clicked the \"Claim my gift card\" button in the app and are having a problem swapping the gift card for a specific retailer, please contact [Prezzee](https://help.prezzee.com.au/hc/en-us) directly for help."
   },
   "buildInfo": {
     "version": "**Version:** ",
