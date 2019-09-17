@@ -1,3 +1,7 @@
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
 import os
 import argparse
 import sys
@@ -13,7 +17,8 @@ header_text = [" Copyright (c) " + str(now.year) + " by Audere", "",
 " can be found in the LICENSE file distributed with this file."]
 
 # File extensions that we care about
-source_file_extensions = (".ts", ".tsx", ".js", ".jsx", ".sh", ".py", ".html", ".css")
+source_file_extensions = (".ts", ".tsx", ".js", ".jsx", ".sh", ".py", ".html", 
+                          ".css", ".gitignore", ".gradle", ".h", ".java", ".tf")
 
 parser = argparse.ArgumentParser(description="Run this script from the working dir you want to recursively search.")
 parser.add_argument("--verbose", action="store_true", help="Report how each file was processed.")
@@ -76,13 +81,13 @@ def createHeader(file):
     header = ""
     comment_type = "//"
     is_block = False
-    if file.endswith(".py") or file.endswith(".sh"):
+    if file.endswith((".py", ".sh", ".gitignore")):
         comment_type = "#"
-    if file.endswith(".css"):
+    elif file.endswith(".css"):
         comment_type = "*/"
         is_block = True
         header = "/* \n"
-    if file.endswith(".html"):
+    elif file.endswith(".html"):
         comment_type = "-->"
         is_block = True
         header = "<!-- \n"
