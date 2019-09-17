@@ -4,10 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 import React from "react";
 import {
-  Alert,
-  findNodeHandle,
-  Dimensions,
-  Keyboard,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
@@ -23,15 +19,15 @@ import {
   StoreState,
   viewPatients,
   addPatient,
-  Screen,
   updatePatient,
+  Screen,
+  LocalPhotoInfo,
 } from "../store";
 import NumberInput from "./components/NumberInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
 import Divider from "./components/Divider";
 import {
-  EXTRA_SMALL_TEXT,
   EBOLA_NEGATIVE_COLOR,
   EBOLA_POSITIVE_COLOR,
   GUTTER,
@@ -42,13 +38,13 @@ import {
   LIGHT_COLOR,
   THICK_BORDER_WIDTH,
 } from "./styles";
-import { TitlebarCallback } from "./AppController";
 import LabelTextInput from "./components/LabelTextInput";
 import LabelNumberInput from "./components/LabelNumberInput";
-import i18n from "../i18n";
 import Button from "./components/Button";
 import RadioInput from "./components/RadioInput";
 import firebase from "react-native-firebase";
+import { TitlebarCallback } from "./AppController";
+import i18n from "../i18n";
 
 interface Props {
   editModeEnabled?: boolean;
@@ -56,8 +52,10 @@ interface Props {
   id: number;
   isNew: boolean;
   patientInfo: PatientInfo;
+
   notes?: string;
   dispatch(action: Action): void;
+  setupTitlebarInfo?(s: Screen, info: TitlebarCallback): void;
   toggleEditMode(): void;
 }
 
@@ -67,14 +65,12 @@ interface State {
   firstName: string;
   gender: string;
   lastName: string;
-  // details: string;
   phone: string;
   details?: string;
   notes?: string;
   chatMessage?: string;
   apiKey?: string;
   location?: string;
-  // notes: string;
 }
 
 class Details extends React.Component<Props & WithNamespaces, State> {
@@ -88,14 +84,27 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
     super(props);
 
-    const { firstName, lastName, phone, details } = this.props.patientInfo;
-    const { t } = this.props;
+    const {
+      age,
+      firstName,
+      gender,
+      lastName,
+      phone,
+      details,
+    } = this.props.patientInfo;
+
+    if (!!this.props.setupTitlebarInfo) {
+      this.props.setupTitlebarInfo(Screen.AddPatient, {
+        onBack: this._navToList,
+        getTitlebarText: this._getTitlebarText,
+      });
+    }
 
     this.state = {
-      age: "",
+      age: age || "",
       editModeEnabled: this.props.editModeEnabled || false,
       firstName: firstName || "",
-      gender: "",
+      gender: gender || "",
       lastName: lastName || "",
       phone: phone || "",
       details: details || "",
@@ -112,7 +121,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     this.getGoogleCloudApiKey();
   }
 
-  // TODO: MOVE TO
   async getGoogleCloudApiKey() {
     const response = await firebase
       .functions()
@@ -125,7 +133,6 @@ class Details extends React.Component<Props & WithNamespaces, State> {
   };
 
   _save = () => {
-    // TODO (JAY): Add age and gender
     const {
       age,
       firstName,
@@ -370,57 +377,18 @@ class Details extends React.Component<Props & WithNamespaces, State> {
     );
   };
 
-  _doGeocode = () => {
-    // const { photoInfo, t } = this.props;
-    // if (photoInfo && this.state.apiKey) {
-    //   fetch(
-    //     "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
-    //       photoInfo.photoInfo.gps.latitude +
-    //       "," +
-    //       photoInfo.photoInfo.gps.longitude +
-    //       "&key=" +
-    //       this.state.apiKey +
-    //       "&language=" +
-    //       i18n.languages[0]
-    //   )
-    //     .then(response => response.json())
-    //     .then(responseJson => {
-    //       if (
-    //         responseJson["status"] === "OK" &&
-    //         responseJson["results"] &&
-    //         responseJson["results"].length > 0
-    //       ) {
-    //         const result = responseJson["results"][0];
-    //         this.setState({
-    //           location: result["formatted_address"],
-    //         });
-    //       } else {
-    //         this.setState({
-    //           location: t("latLongLocation", {
-    //             lat: photoInfo.photoInfo.gps.latitude,
-    //             long: photoInfo.photoInfo.gps.longitude,
-    //           }),
-    //         });
-    //       }
-    //     });
-    // }
-  };
-
   render() {
     const { id, t, toggleable } = this.props;
     const {
+      age,
       firstName,
+      gender,
       lastName,
       phone,
       details,
       notes,
       editModeEnabled,
     } = this.state;
-
-    // const isValidForPhoto = !!firstName || !!lastName;
-    // if (photoInfo && !this.state.location) {
-    //   this._doGeocode();
-    // }
 
     return (
       <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -437,7 +405,7 @@ class Details extends React.Component<Props & WithNamespaces, State> {
               )}
             </View>
             <View style={[styles.spaceRow, styles.row]}>
-              <Text bold={true} content={`gender, age ${t("years")}`} />
+              <Text bold={true} content={`${gender}, ${age} ${t("years")}`} />
               <Text bold={true} content={t("id", { id })} />
             </View>
             <Divider style={styles.divider} />
@@ -541,6 +509,11 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState, props: Props) => ({
+  isNew: props.id === state.patients.length,
+  notes:
+    state.patients && props.id < state.patients.length
+      ? state.patients[props.id].notes
+      : undefined,
   patientInfo:
     props.id < state.patients.length
       ? state.patients[props.id].patientInfo
@@ -551,10 +524,12 @@ export default connect((state: StoreState, props: Props) => ({
           details: "",
           notes: "",
         },
-  notes:
-    state.patients && props.id < state.patients.length
-      ? state.patients[props.id].notes
+  photoInfo:
+    props.id < state.patients.length
+      ? state.patients[props.id].photoInfo.length > 0
+        ? state.patients[props.id].photoInfo[
+            state.patients[props.id].photoInfo.length - 1
+          ]
+        : undefined
       : undefined,
-
-  isNew: props.id === state.patients.length,
 }))(withNamespaces("patientDetails")(Details));

@@ -48,7 +48,6 @@ interface State {
 class PatientDetails extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
     super(props);
-    const { t } = this.props;
     this.props.setupTitlebarInfo(Screen.PatientDetails, {
       onBack: this._navToList,
       getTitlebarText: this._getTitlebarText,

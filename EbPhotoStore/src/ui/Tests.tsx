@@ -26,6 +26,8 @@ import {
   AnalysisStatus,
 } from "../store";
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
+import i18n from "../i18n";
+import firebase from "react-native-firebase";
 
 interface Props {
   analysisStatus?: AnalysisStatus;
@@ -38,9 +40,30 @@ interface Props {
   photoInfo?: LocalPhotoInfo;
 }
 
-class Tests extends Component<Props & WithNamespaces> {
+interface State {
+  apiKey?: string;
+  location?: string;
+}
+
+class Tests extends Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
     super(props);
+    this.state = { location: "", apiKey: "" };
+    //this.getGoogleCloudApiKey();
+  }
+
+  async componentDidMount() {
+    const { apiKey } = this.state;
+    if (!apiKey || apiKey.length === 0) {
+      await this.getGoogleCloudApiKey();
+    }
+  }
+
+  async getGoogleCloudApiKey() {
+    const response = await firebase
+      .functions()
+      .httpsCallable("googleCloudApiKey")(undefined);
+    this.setState({ apiKey: response.data });
   }
 
   _takePhoto = async () => {
@@ -174,8 +197,48 @@ class Tests extends Component<Props & WithNamespaces> {
     );
   };
 
+  _doGeocode = () => {
+    const { photoInfo, t } = this.props;
+    if (photoInfo && this.state.apiKey) {
+      fetch(
+        "https://maps.googleapis.com/maps/api/geocode/json?latlng=" +
+          photoInfo.photoInfo.gps.latitude +
+          "," +
+          photoInfo.photoInfo.gps.longitude +
+          "&key=" +
+          this.state.apiKey +
+          "&language=" +
+          i18n.languages[0]
+      )
+        .then(response => response.json())
+        .then(responseJson => {
+          if (
+            responseJson["status"] === "OK" &&
+            responseJson["results"] &&
+            responseJson["results"].length > 0
+          ) {
+            const result = responseJson["results"][0];
+            this.setState({
+              location: result["formatted_address"],
+            });
+          } else {
+            this.setState({
+              location: t("latLongLocation", {
+                lat: photoInfo.photoInfo.gps.latitude,
+                long: photoInfo.photoInfo.gps.longitude,
+              }),
+            });
+          }
+        });
+    }
+  };
+
   render() {
     const { photoInfo } = this.props;
+
+    if (photoInfo && !this.state.location) {
+      this._doGeocode();
+    }
 
     return (
       <ScrollView

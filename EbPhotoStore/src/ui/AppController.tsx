@@ -259,7 +259,7 @@ class AppController extends React.Component<Props, State> {
         return (
           <Details
             id={this.props.currentPatient}
-            setupBackInfo={this._setupBackInfo}
+            setupTitlebarInfo={this._setupTitlebarInfo}
             editable={true}
             editModeEnabled={true}
           />

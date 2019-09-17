@@ -3,19 +3,9 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import {
-  applyMiddleware,
-  createStore,
-  combineReducers,
-  Store,
-  Middleware,
-  Dispatch,
-  AnyAction,
-  MiddlewareAPI,
-} from "redux";
+import { applyMiddleware, createStore, combineReducers, Store } from "redux";
 import { persistStore, persistReducer, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import { Transform } from "redux-persist/es/createTransform";
 import immutableTransform from "redux-persist-transform-immutable";
 
 import { StoreState } from "./StoreState";

@@ -260,7 +260,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
     );
   };
 
-  _onScrollEndSnapToEdge = event => {
+  _onScrollEndSnapToEdge = (event: any) => {
     if (this._scrollView) {
       const y = event.nativeEvent.contentOffset.y;
       if (0 < y && y < TITLE_HEIGHT / 2) {
@@ -291,7 +291,7 @@ class Patients extends React.Component<Props & WithNamespaces, State> {
     return (
       <Fragment>
         <Animated.ScrollView
-          ref={scrollView => {
+          ref={(scrollView: any) => {
             this._scrollView = scrollView ? scrollView._component : null;
           }}
           keyboardShouldPersistTaps="handled"
