@@ -103,16 +103,6 @@ export class CoughGiftcardEndpoint {
   public getGiftcard = async (
     request: GiftcardRequest
   ): Promise<GiftcardResponse> => {
-    if (request.isDemo) {
-      return {
-        giftcard: {
-          url: DEMO_GIFTCARD_URL,
-          denomination: request.denomination,
-          isDemo: true,
-          isNew: true,
-        },
-      };
-    }
     const {
       valid,
       failureReason: validationFailureReason,
@@ -120,11 +110,20 @@ export class CoughGiftcardEndpoint {
     if (!valid) {
       return { failureReason: validationFailureReason };
     }
-    const { giftcard, isNew, failureReason } = await this.getCard(
-      request,
-      true
-    );
+    const { giftcard, isNew, failureReason } = request.isDemo
+      ? await this.getCard(request)
+      : await this.getAndAllocateCard(request);
     if (giftcard) {
+      if (request.isDemo) {
+        return {
+          giftcard: {
+            url: DEMO_GIFTCARD_URL,
+            denomination: request.denomination,
+            isDemo: true,
+            isNew,
+          },
+        };
+      }
       return {
         giftcard: {
           url: giftcard.url,
@@ -151,7 +150,7 @@ export class CoughGiftcardEndpoint {
         failureReason: validationFailureReason,
       };
     }
-    const { giftcard, failureReason } = await this.getCard(request, false);
+    const { giftcard, failureReason } = await this.getCard(request);
     if (giftcard) {
       return { giftcardAvailable: true };
     } else {
@@ -207,9 +206,13 @@ export class CoughGiftcardEndpoint {
     return true;
   }
 
+  private async getAndAllocateCard(request: GiftcardRequest) {
+    return this.getCard(request, true);
+  }
+
   private async getCard(
     request: GiftcardRequest,
-    allocateCard: boolean
+    allocateCard: boolean = false
   ): Promise<{
     giftcard?: GiftcardAttributes;
     isNew?: boolean;
