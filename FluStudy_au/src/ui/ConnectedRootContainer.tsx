@@ -42,6 +42,7 @@ import {
   DrawerActions,
   NavigationAction,
   NavigationActions,
+  NavigationContainer,
   NavigationContainerComponent,
   NavigationState,
   StackActions,
@@ -55,6 +56,8 @@ import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import MultiTapContainer from "./components/MultiTapContainer";
 
 notificationLaunchHandler();
+
+let AppContainer: NavigationContainer | null = null;
 
 interface SplashProps {
   onUnmount(): void;
@@ -324,7 +327,9 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const AppContainer = createAppContainer(createAppNavigator());
+    if (!AppContainer) {
+      AppContainer = createAppContainer(createAppNavigator());
+    }
     return (
       <View style={{ flex: 1 }}>
         <AppContainer
