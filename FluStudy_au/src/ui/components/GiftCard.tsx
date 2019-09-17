@@ -63,8 +63,8 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       isDemo
     );
 
-    if (!!response.failureReason) {
-      this.setState({ failureReason: response.failureReason });
+    if (response.hasOwnProperty("failureReason")) {
+      this.setState({ failureReason: response.failureReason! });
     }
 
     if (
@@ -92,8 +92,8 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       isDemo
     );
 
-    if (!!response.failureReason) {
-      this.setState({ failureReason: response.failureReason });
+    if (response.hasOwnProperty("failureReason")) {
+      this.setState({ failureReason: response.failureReason! });
     } else if (!!response.giftcard) {
       this.setState({ failureReason: "" });
       Linking.openURL(response.giftcard.url);
