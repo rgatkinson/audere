@@ -1,0 +1,65 @@
+<!--
+Copyright (c) 2019 by Audere
+
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file distributed with this file.
+-->
+
+<html>
+  <head>
+    <title>flu@home Australia Giftcard Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{static}}/css/metrics.css"/>
+    <link rel="icon" type="image/x-icon" href="{{static}}/favicon-32x32.png" />
+    <style type="text/css">
+      .successBox {
+        border: 2px solid green;
+        padding: 10px;
+        background: #efe;
+      }
+      .errorBox {
+        border: 2px solid red;
+        padding: 10px;
+        background: #fee;
+      }
+      td {
+        padding: 3px;
+        border: 1px solid lightgray;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>flu@home Australia Giftcard Upload</h1>
+    {{#if successfulUpload}}
+      <div class='successBox'>Uploaded {{giftcardsUploaded}} giftcards</div>
+    {{/if}}
+    {{#if error}}
+      <div class='errorBox'>{{error}}</div>
+    {{/if}}
+    <h3>Current Stats:</h3>
+    <div>Total Giftcards: {{total}}</div>
+    <div>Total Unassigned Giftcards: {{unassigned}}</div>
+    <h4> Unassigned giftcards by denomination:</h4>
+    <table>
+      <thead>
+        <td>Denomination</td>
+        <td># of giftcards</td>
+      </thead>
+      <tbody>
+        {{#each unassignedByDenomination}}
+          <tr>
+            <td>${{denomination}}</td>
+            <td>{{count}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <h3>Upload a Prezzee CSV:</h3>
+    <div>
+      <form action="?_csrf={{csrf}}" method="post" enctype="multipart/form-data">
+        <div><input type="file" name="giftcardFile" accept=".csv"/></div>
+        <div><input type="submit" value="upload"/></div>
+      </form>
+    </div>
+  </body>
+</html>

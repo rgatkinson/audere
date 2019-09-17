@@ -9,6 +9,8 @@ import {
   GiftcardRequest,
   GiftcardResponse,
 } from "audere-lib/coughProtocol";
+import parse from "csv-parse/lib/sync";
+import { promises as fs } from "fs";
 import { Op } from "sequelize";
 import { connectorFromSqlSecrets } from "../external/firebase";
 import {
@@ -16,23 +18,86 @@ import {
   defineCoughModels,
   GiftcardAttributes,
 } from "../models/db/cough";
-import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import { SqlLock } from "../util/sqlLock";
 
 const DEMO_GIFTCARD_URL = "https://www.example.com/giftcard";
 
+export type PrezzeeCsvGiftcard = {
+  sku: string;
+  denomination: number;
+  cardNumber: string;
+  pin: string;
+  expiry: Date;
+  theme: string;
+  orderNumber: string;
+  url: string;
+};
+type RawPrezzeeCsvGiftcard = {
+  SKU: string;
+  Denomination: string;
+  CardNumber: string;
+  PIN: string;
+  Expiry: string;
+  Theme: string;
+  OrderNumber: string;
+  Url: string;
+};
+
 export class CoughGiftcardEndpoint {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
-  private readonly secrets: SecretConfig;
   private readonly sqlLock: SqlLock;
+  private readonly getStatic?: () => string;
 
-  constructor(sql: SplitSql) {
+  constructor(sql: SplitSql, getStatic?: () => string) {
     this.sql = sql;
-    this.secrets = new SecretConfig(sql);
     this.models = defineCoughModels(sql);
     this.sqlLock = new SqlLock(sql.nonPii);
+    this.getStatic = getStatic;
+  }
+
+  public importGiftcards = async (req, res) => {
+    const { giftcardFile } = req.files;
+    const rawGifcards = await this.getGiftcardsFromFile(giftcardFile.path);
+    const giftcards = rawGifcards.map(convertRawGiftcard);
+    try {
+      const giftcardRecords = await this.models.giftcard.bulkCreate(giftcards);
+      await this.renderImportGiftcardForm(req, res, {
+        successfulUpload: true,
+        giftcardsUploaded: giftcardRecords.length,
+      });
+    } catch (e) {
+      await this.renderImportGiftcardForm(req, res, {
+        error: e.message,
+      });
+      console.error(e);
+    }
+  };
+
+  public importGiftcardForm = async (req, res) => {
+    await this.renderImportGiftcardForm(req, res, {});
+  };
+
+  private async renderImportGiftcardForm(req, res, extraParams) {
+    const total = await this.models.giftcard.count();
+    const unassignedByDenomination = await this.models.giftcard.count({
+      where: { docId: null },
+      attributes: ["denomination"],
+      group: ["denomination"],
+    });
+    const unassigned = (unassignedByDenomination as any).reduce(
+      (total, denomination) => total + parseInt(denomination.count),
+      0
+    );
+    res.render("giftcardUpload.html", {
+      static: this.getStatic(),
+      csrf: req.csrfToken(),
+      total,
+      unassigned,
+      unassignedByDenomination,
+      ...extraParams,
+    });
   }
 
   public getGiftcard = async (
@@ -203,4 +268,29 @@ export class CoughGiftcardEndpoint {
     }
     return newGiftcard;
   }
+
+  private async getGiftcardsFromFile(
+    filePath: string
+  ): Promise<RawPrezzeeCsvGiftcard[]> {
+    const file = await fs.readFile(filePath, "utf-8");
+    return parse(file, {
+      columns: true,
+      skip_empty_lines: true,
+    });
+  }
+}
+
+function convertRawGiftcard(
+  giftcard: RawPrezzeeCsvGiftcard
+): PrezzeeCsvGiftcard {
+  return {
+    sku: giftcard.SKU,
+    denomination: parseFloat(giftcard.Denomination),
+    cardNumber: giftcard.CardNumber,
+    pin: giftcard.PIN,
+    expiry: new Date(giftcard.Expiry),
+    theme: giftcard.Theme,
+    orderNumber: giftcard.OrderNumber,
+    url: giftcard.Url,
+  };
 }

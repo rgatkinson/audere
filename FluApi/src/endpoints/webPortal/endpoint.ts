@@ -12,6 +12,7 @@ import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
 import { AuthManager, Permissions, authorizationMiddleware } from "./auth";
+import { CoughGiftcardEndpoint } from "../coughGiftcardApi";
 import {
   useOuch,
   createApp,
@@ -202,6 +203,19 @@ function addHandlers(
     authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_WRITE),
     formidable(),
     wrap(rdtPhotosServer.replacePhoto)
+  );
+
+  const coughGiftcardServer = new CoughGiftcardEndpoint(config.sql, getStatic);
+  app.get(
+    "/coughGiftcards",
+    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    wrap(coughGiftcardServer.importGiftcardForm)
+  );
+  app.post(
+    "/coughGiftcards",
+    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    formidable(),
+    wrap(coughGiftcardServer.importGiftcards)
   );
 
   const manageAccount = new ManageAccount(config.sql, getStatic);
