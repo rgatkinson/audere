@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Text from "../components/Text";
-import { StoreState } from "../../store";
+import { StoreState, Action, setGiftCardURL } from "../../store";
 import Divider from "./Divider";
 import {
   GUTTER,
@@ -26,10 +26,12 @@ import { getRemoteConfig } from "../../util/remoteConfig";
 import SurveyLinkBlock from "./flu/SurveyLinkBlock";
 
 interface Props {
-  docId: string;
   barcode: string;
   completed48HoursAgo: boolean;
+  dispatch(action: Action): void;
+  docId: string;
   giftCardAmount: string;
+  giftCardURL?: string;
   isConnected: boolean;
   isDemo: boolean;
   navigation: NavigationScreenProp<any, any>;
@@ -80,24 +82,29 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
   }
 
   _onRedeemPress = async () => {
-    const { docId, barcode, giftCardAmount, isDemo } = this.props;
+    const { docId, barcode, giftCardAmount, isDemo, giftCardURL } = this.props;
 
     if (!isDemo) {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
     }
 
-    const response = await getGiftCard(
-      docId,
-      barcode,
-      parseInt(giftCardAmount),
-      isDemo
-    );
+    if (!giftCardURL || giftCardURL.length === 0) {
+      const response = await getGiftCard(
+        docId,
+        barcode,
+        parseInt(giftCardAmount),
+        isDemo
+      );
 
-    if (response.hasOwnProperty("failureReason")) {
-      this.setState({ failureReason: response.failureReason! });
-    } else if (!!response.giftcard) {
-      Linking.openURL(response.giftcard.url);
-      this.setState({ failureReason: "" });
+      if (response.hasOwnProperty("failureReason")) {
+        this.setState({ failureReason: response.failureReason! });
+      } else if (!!response.giftcard) {
+        this.props.dispatch(setGiftCardURL(response.giftcard.url));
+        Linking.openURL(response.giftcard.url);
+        this.setState({ failureReason: "" });
+      }
+    } else {
+      Linking.openURL(giftCardURL);
     }
   };
 
@@ -235,4 +242,5 @@ export default connect((state: StoreState) => ({
   isConnected: state.meta.isConnected,
   isDemo: state.meta.isDemo,
   giftCardAmount: state.meta.giftCardAmount,
+  giftCardURL: !!state.survey.giftCardURL ? state.survey.giftCardURL : "",
 }))(withNavigation(withNamespaces("Giftcard")(GiftCard)));
