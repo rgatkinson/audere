@@ -11,6 +11,7 @@ import {
 } from "audere-lib/coughProtocol";
 import parse from "csv-parse/lib/sync";
 import { promises as fs } from "fs";
+import querystring from "querystring";
 import { Op } from "sequelize";
 import { connectorFromSqlSecrets } from "../external/firebase";
 import {
@@ -18,6 +19,7 @@ import {
   defineCoughModels,
   GiftcardAttributes,
   GiftcardRateLimitAttributes,
+  BarcodeValidationType,
 } from "../models/db/cough";
 import { SplitSql } from "../util/sql";
 import { SqlLock } from "../util/sqlLock";
@@ -68,20 +70,65 @@ export class CoughGiftcardEndpoint {
     const giftcards = rawGifcards.map(convertRawGiftcard);
     try {
       const giftcardRecords = await this.models.giftcard.bulkCreate(giftcards);
-      await this.renderImportGiftcardForm(req, res, {
-        successfulUpload: true,
-        giftcardsUploaded: giftcardRecords.length,
-      });
+      res.redirect(
+        303,
+        "coughGiftcards?" +
+          querystring.stringify({
+            success: `Uploaded ${giftcardRecords.length} giftcards`,
+          })
+      );
     } catch (e) {
-      await this.renderImportGiftcardForm(req, res, {
-        error: e.message,
-      });
       console.error(e);
+      res.redirect(
+        303,
+        "coughGiftcards?" +
+          querystring.stringify({
+            error: e.message,
+          })
+      );
     }
   };
 
+  public setRateLimit = async (req, res) => {
+    const { limit } = req.body;
+    const rateLimit = await this.models.giftcardRateLimit.findOne();
+    rateLimit.limit = limit;
+    await rateLimit.save();
+    res.redirect(
+      303,
+      "coughGiftcards?" +
+        querystring.stringify({
+          success: `Rate limit updated`,
+        })
+    );
+  };
+
+  public setBarcodeValidations = async (req, res) => {
+    const { barcodePrefixes } = req.body;
+    const barcodeValidations = barcodePrefixes
+      .split("\n")
+      .filter(prefix => prefix)
+      .map(prefix => ({
+        value: prefix.trim(),
+        type: BarcodeValidationType.PREFIX,
+      }));
+    await this.models.barcodeValidation.destroy({ where: {} });
+    await this.models.barcodeValidation.bulkCreate(barcodeValidations);
+    res.redirect(
+      303,
+      "coughGiftcards?" +
+        querystring.stringify({
+          success: `Barcode validations updated`,
+        })
+    );
+  };
+
   public importGiftcardForm = async (req, res) => {
-    await this.renderImportGiftcardForm(req, res, {});
+    const { success, error } = req.query;
+    await this.renderImportGiftcardForm(req, res, {
+      success,
+      error,
+    });
   };
 
   private async renderImportGiftcardForm(req, res, extraParams) {
@@ -95,12 +142,18 @@ export class CoughGiftcardEndpoint {
       (total, denomination) => total + parseInt(denomination.count),
       0
     );
+    const rateLimit = (await this.models.giftcardRateLimit.findOne()).limit;
+    const barcodePrefixes = (await this.models.barcodeValidation.findAll())
+      .map(validation => validation.value)
+      .join("\n");
     res.render("giftcardUpload.html", {
       static: this.getStatic(),
       csrf: req.csrfToken(),
       total,
       unassigned,
       unassignedByDenomination,
+      rateLimit,
+      barcodePrefixes,
       ...extraParams,
     });
   }

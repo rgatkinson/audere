@@ -212,10 +212,20 @@ function addHandlers(
     wrap(coughGiftcardServer.importGiftcardForm)
   );
   app.post(
-    "/coughGiftcards",
+    "/uploadGiftcards",
     authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
     formidable(),
     wrap(coughGiftcardServer.importGiftcards)
+  );
+  app.post(
+    "/setRateLimit",
+    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    wrap(coughGiftcardServer.setRateLimit)
+  );
+  app.post(
+    "/setBarcodeValidations",
+    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    wrap(coughGiftcardServer.setBarcodeValidations)
   );
 
   const manageAccount = new ManageAccount(config.sql, getStatic);
