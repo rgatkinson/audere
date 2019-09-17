@@ -59,6 +59,11 @@ const INDEX_PAGE_LINKS = [
     url: "./coughPhotos",
     permissionsRequired: [Permissions.COUGH_RDT_PHOTOS_ACCESS],
   },
+  {
+    label: "Manage Giftcards for flu@home Australia",
+    url: "./coughGiftcards",
+    permissionsRequired: [Permissions.COUGH_GIFTCARD_UPLOAD],
+  },
 ];
 
 const SequelizeSessionStore = require("connect-session-sequelize")(
