@@ -391,7 +391,7 @@ export class CoughGiftcardEndpoint {
     return await this.models.giftcard.count({
       where: {
         docId: { [Op.ne]: null },
-        updatedAt: { [Op.gt]: startDate },
+        allocatedAt: { [Op.gt]: startDate },
       },
     });
   }
