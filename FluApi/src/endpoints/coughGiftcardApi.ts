@@ -18,9 +18,8 @@ import {
   CoughModels,
   defineCoughModels,
   GiftcardAttributes,
-  GiftcardRateLimitAttributes,
-  BarcodeValidationType,
 } from "../models/db/cough";
+import { LiveConfig, Project } from "../util/liveConfig";
 import { SplitSql } from "../util/sql";
 import { SqlLock } from "../util/sqlLock";
 
@@ -51,17 +50,38 @@ type RawPrezzeeCsvGiftcard = {
   Url: string;
 };
 
+enum BarcodeValidationType {
+  PREFIX = "prefix",
+}
+
+type BarcodeValidation = {
+  type: BarcodeValidationType;
+  value: string;
+};
+
+type RateLimit = {
+  limit: number;
+  periodInSeconds: number;
+};
+
+export type CoughConfig = {
+  rateLimit: RateLimit;
+  barcodeValidations: BarcodeValidation[];
+};
+
 export class CoughGiftcardEndpoint {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
   private readonly sqlLock: SqlLock;
   private readonly getStatic?: () => string;
+  private readonly liveConfig: LiveConfig<CoughConfig>;
 
   constructor(sql: SplitSql, getStatic?: () => string) {
     this.sql = sql;
     this.models = defineCoughModels(sql);
     this.sqlLock = new SqlLock(sql.nonPii);
     this.getStatic = getStatic;
+    this.liveConfig = new LiveConfig(sql, Project.COUGH);
   }
 
   public importGiftcards = async (req, res) => {
@@ -91,9 +111,10 @@ export class CoughGiftcardEndpoint {
 
   public setRateLimit = async (req, res) => {
     const { limit } = req.body;
-    const rateLimit = await this.models.giftcardRateLimit.findOne();
-    rateLimit.limit = limit;
-    await rateLimit.save();
+    this.liveConfig.set("rateLimit", {
+      limit: parseInt(limit),
+      periodInSeconds: 24 * 60 * 60,
+    });
     res.redirect(
       303,
       "coughGiftcards?" +
@@ -112,8 +133,7 @@ export class CoughGiftcardEndpoint {
         value: prefix.trim(),
         type: BarcodeValidationType.PREFIX,
       }));
-    await this.models.barcodeValidation.destroy({ where: {} });
-    await this.models.barcodeValidation.bulkCreate(barcodeValidations);
+    await this.liveConfig.set("barcodeValidations", barcodeValidations);
     res.redirect(
       303,
       "coughGiftcards?" +
@@ -142,8 +162,14 @@ export class CoughGiftcardEndpoint {
       (total, denomination) => total + parseInt(denomination.count),
       0
     );
-    const rateLimit = (await this.models.giftcardRateLimit.findOne()).limit;
-    const barcodePrefixes = (await this.models.barcodeValidation.findAll())
+    const rateLimit = (await this.liveConfig.get(
+      "rateLimit",
+      DEFAULT_RATE_LIMIT
+    )).limit;
+    const barcodePrefixes = (await this.liveConfig.get(
+      "barcodeValidations",
+      []
+    ))
       .map(validation => validation.value)
       .join("\n");
     res.render("giftcardUpload.html", {
@@ -260,9 +286,10 @@ export class CoughGiftcardEndpoint {
   }
 
   private async validateBarcode(barcode: string) {
-    const prefixValidations = await this.models.barcodeValidation.findAll({
-      where: { type: BarcodeValidationType.PREFIX },
-    });
+    const prefixValidations = (await this.liveConfig.get(
+      "barcodeValidations",
+      []
+    )).filter(validation => validation.type === BarcodeValidationType.PREFIX);
     return prefixValidations.some(prefixValidation =>
       barcode.startsWith(prefixValidation.value)
     );
@@ -294,7 +321,10 @@ export class CoughGiftcardEndpoint {
       };
     }
 
-    const rateLimit = await this.getRateLimit();
+    const rateLimit = await this.liveConfig.get(
+      "rateLimit",
+      DEFAULT_RATE_LIMIT
+    );
     const cardsIssued = await this.countCardsIssued(rateLimit.periodInSeconds);
     if (cardsIssued >= rateLimit.limit) {
       return { failureReason: GiftcardFailureReason.CARDS_EXHAUSTED };
@@ -348,14 +378,6 @@ export class CoughGiftcardEndpoint {
       columns: true,
       skip_empty_lines: true,
     });
-  }
-
-  private async getRateLimit(): Promise<GiftcardRateLimitAttributes> {
-    const limit = await this.models.giftcardRateLimit.findOne();
-    if (limit) {
-      return limit;
-    }
-    return await this.models.giftcardRateLimit.create(DEFAULT_RATE_LIMIT);
   }
 
   private async countCardsIssued(seconds: number): Promise<number> {
