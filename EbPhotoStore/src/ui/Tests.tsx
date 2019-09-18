@@ -23,14 +23,14 @@ import {
   openCamera,
   viewCameraPermission,
   viewLocationPermission,
-  AnalysisStatus,
+  // AnalysisStatus,
 } from "../store";
 import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 import i18n from "../i18n";
 import firebase from "react-native-firebase";
 
 interface Props {
-  analysisStatus?: AnalysisStatus;
+  // analysisStatus?: AnalysisStatus;
   dispatch(action: Action): void;
   evdPositive?: boolean;
   healthWorkerInfo: HealthWorkerInfo;
@@ -49,7 +49,7 @@ class Tests extends Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = { location: "", apiKey: "" };
-    //this.getGoogleCloudApiKey();
+    this.getGoogleCloudApiKey();
   }
 
   async componentDidMount() {
@@ -125,8 +125,9 @@ class Tests extends Component<Props & WithNamespaces, State> {
             />
             <Text
               content={t("location", {
-                lat: photoInfo!.photoInfo.gps.latitude,
-                long: photoInfo!.photoInfo.gps.longitude,
+                location: this.state.location
+                  ? this.state.location
+                  : t("computingLocation"),
               })}
             />
           </View>
@@ -322,9 +323,9 @@ export default connect((state: StoreState, props: Props) => ({
         : undefined
       : undefined
     : undefined,
-  analysisStatus: state.patients
-    ? props.id < state.patients.length
-      ? state.patients[props.id].analysisStatus
-      : state.patients[props.id].analysisStatus
-    : undefined,
+  // analysisStatus: state.patients
+  //   ? props.id < state.patients.length
+  //     ? state.patients[props.id].analysisStatus
+  //     : state.patients[props.id].analysisStatus
+  //   : undefined,
 }))(withNamespaces("photos")(Tests));
