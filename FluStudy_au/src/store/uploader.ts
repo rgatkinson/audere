@@ -176,6 +176,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     consents: [],
     samples: [],
     responses: [],
+    giftCardURL: state.survey.giftCardURL,
     events: state.survey.events,
     workflow: state.survey.workflow,
     rdtInfo: state.survey.rdtInfo,

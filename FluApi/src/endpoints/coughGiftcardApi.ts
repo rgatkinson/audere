@@ -60,7 +60,11 @@ export class CoughGiftcardEndpoint {
   public importGiftcards = async (req, res) => {
     const { giftcardFile } = req.files;
     const rawGifcards = await this.getGiftcardsFromFile(giftcardFile.path);
-    const giftcards = rawGifcards.map(convertRawGiftcard);
+    const prezzeeGiftcards = rawGifcards.map(convertRawGiftcard);
+    const giftcards = prezzeeGiftcards.map(giftcard => ({
+      ...giftcard,
+      isDemo: false,
+    }));
     try {
       const giftcardRecords = await this.models.giftcard.bulkCreate(giftcards);
       await this.renderImportGiftcardForm(req, res, {
@@ -103,16 +107,6 @@ export class CoughGiftcardEndpoint {
   public getGiftcard = async (
     request: GiftcardRequest
   ): Promise<GiftcardResponse> => {
-    if (request.isDemo) {
-      return {
-        giftcard: {
-          url: DEMO_GIFTCARD_URL,
-          denomination: request.denomination,
-          isDemo: true,
-          isNew: true,
-        },
-      };
-    }
     const {
       valid,
       failureReason: validationFailureReason,
@@ -120,16 +114,15 @@ export class CoughGiftcardEndpoint {
     if (!valid) {
       return { failureReason: validationFailureReason };
     }
-    const { giftcard, isNew, failureReason } = await this.getCard(
-      request,
-      true
+    const { giftcard, isNew, failureReason } = await this.getAndAllocateCard(
+      request
     );
     if (giftcard) {
       return {
         giftcard: {
           url: giftcard.url,
           denomination: giftcard.denomination,
-          isDemo: false,
+          isDemo: giftcard.isDemo,
           isNew,
         },
       };
@@ -151,7 +144,7 @@ export class CoughGiftcardEndpoint {
         failureReason: validationFailureReason,
       };
     }
-    const { giftcard, failureReason } = await this.getCard(request, false);
+    const { giftcard, failureReason } = await this.getCard(request);
     if (giftcard) {
       return { giftcardAvailable: true };
     } else {
@@ -207,15 +200,19 @@ export class CoughGiftcardEndpoint {
     return true;
   }
 
+  private async getAndAllocateCard(request: GiftcardRequest) {
+    return this.getCard(request, true);
+  }
+
   private async getCard(
     request: GiftcardRequest,
-    allocateCard: boolean
+    allocateCard: boolean = false
   ): Promise<{
     giftcard?: GiftcardAttributes;
     isNew?: boolean;
     failureReason?: GiftcardFailureReason;
   }> {
-    const { docId, barcode, denomination, isDemo, secret } = request;
+    const { docId, barcode, denomination, secret } = request;
 
     const existingCards = await this.models.giftcard.findAll({
       where: {
@@ -255,6 +252,7 @@ export class CoughGiftcardEndpoint {
           [Op.gte]: request.denomination,
         },
         docId: null,
+        isDemo: request.isDemo,
       },
       order: [["denomination", "ASC"]],
     });
@@ -264,6 +262,7 @@ export class CoughGiftcardEndpoint {
     if (allocateCard) {
       newGiftcard.docId = request.docId;
       newGiftcard.barcode = request.barcode;
+      newGiftcard.allocatedAt = new Date();
       await newGiftcard.save();
     }
     return newGiftcard;

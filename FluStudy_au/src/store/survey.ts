@@ -51,13 +51,15 @@ export type SurveyAction =
       resultShown: string;
       resultShownExplanation: string;
     }
-  | { type: "RESET_TIMESTAMP" };
+  | { type: "RESET_TIMESTAMP" }
+  | { type: "SET_GIFT_CARD_URL"; giftCardURL: string };
 
 export type SurveyState = {
   consent?: NonPIIConsentInfo;
   csruid?: string;
   email?: string;
   events: EventInfo[];
+  giftCardURL?: string;
   invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
   oneMinuteStartTime?: number;
@@ -295,6 +297,11 @@ export default function reducer(state = initialState, action: SurveyAction) {
         ...state,
         timestamp: new Date().getTime(),
       };
+    case "SET_GIFT_CARD_URL":
+      return {
+        ...state,
+        giftCardURL: action.giftCardURL,
+      };
 
     default:
       return state;
@@ -476,6 +483,13 @@ export function setResultShown(
 export function resetTimestamp(): SurveyAction {
   return {
     type: "RESET_TIMESTAMP",
+  };
+}
+
+export function setGiftCardURL(giftCardURL: string): SurveyAction {
+  return {
+    type: "SET_GIFT_CARD_URL",
+    giftCardURL,
   };
 }
 

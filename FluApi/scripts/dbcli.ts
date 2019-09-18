@@ -49,7 +49,7 @@ import {
   SurveyInstance,
   SurveyModel,
 } from "../src/models/db/fever";
-import { defineCoughModels } from "../src/models/db/cough";
+import { defineCoughModels, GiftcardAttributes } from "../src/models/db/cough";
 import {
   DeviceInfo as FeverDevice,
   EventInfo,
@@ -345,6 +345,11 @@ yargs.command({
   command: "recover-visit <barcode>",
   builder: yargs => yargs.string("barcode"),
   handler: command(cmdRecoverVisit),
+});
+yargs.command({
+  command: "add-demo-cough-giftcards <count> <denomination>",
+  builder: yargs => yargs.number("count").number("denomination"),
+  handler: command(cmdAddDemoCoughGiftcards),
 });
 yargs.demandCommand().argv;
 
@@ -1606,4 +1611,32 @@ function fail(message: string): never {
   const error = new Error(message);
   (<any>error).checked = true;
   throw error;
+}
+
+interface AddDemoCoughGiftcardsArgs {
+  count: number;
+  denomination: number;
+}
+
+async function cmdAddDemoCoughGiftcards(argv: AddDemoCoughGiftcardsArgs) {
+  const lastGiftcard = await coughModels.giftcard.findOne({
+    limit: 1,
+    order: [["id", "DESC"]],
+  });
+  const lastId = lastGiftcard ? lastGiftcard.id : -1;
+  const giftcards: GiftcardAttributes[] = Array.from(
+    new Array(argv.count),
+    (_, i) => ({
+      sku: "sku",
+      denomination: argv.denomination,
+      cardNumber: "1234123412341234",
+      pin: "1234",
+      expiry: new Date("July 11, 2041"),
+      theme: "blue",
+      orderNumber: "seven",
+      url: `http://www.example.com/giftcard_${lastId + i + 1}`,
+      isDemo: true,
+    })
+  );
+  await coughModels.giftcard.bulkCreate(giftcards);
 }

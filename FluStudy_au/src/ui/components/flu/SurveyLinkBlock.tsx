@@ -4,7 +4,14 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { AppState, Linking, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  AppState,
+  Linking,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+  StyleProp,
+} from "react-native";
 import { connect } from "react-redux";
 import { WorkflowInfo } from "audere-lib/coughProtocol";
 import {
@@ -16,14 +23,15 @@ import {
 import { StoreState } from "../../../store";
 import { followUpSurveyUrl } from "../../../resources/LinkConfig";
 import ScreenText from "../ScreenText";
-import { getRemoteConfig } from "../../../util/remoteConfig";
 import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
+import { getRemoteConfig } from "../../../util/remoteConfig";
 
 const MILLIS_IN_TWO_DAYS = 1000 * 60 * 60 * 24 * 2;
 
 interface Props {
   barcode: string;
   workflow: WorkflowInfo;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
 interface State {
@@ -71,10 +79,13 @@ class SurveyLinkBlock extends React.PureComponent<Props, State> {
     if (getRemoteConfig("skipSurveyNotification")) {
       return null;
     }
-
+    const { containerStyle } = this.props;
     const namespace = "SurveyLinkBlock";
     return (
-      <TouchableOpacity style={styles.container} onPress={this._onPress}>
+      <TouchableOpacity
+        style={[styles.container, containerStyle && containerStyle]}
+        onPress={this._onPress}
+      >
         <ScreenText
           label={"title"}
           namespace={namespace}
