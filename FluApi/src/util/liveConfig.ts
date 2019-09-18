@@ -12,7 +12,7 @@ import {
 
 export { Project } from "../models/db/config";
 
-export class LiveConfig<ConfigAttrs> {
+export class LiveConfig<ProjectConfig> {
   private readonly configModel: Model<ConfigAttributes>;
   private readonly project: Project;
 
@@ -21,10 +21,10 @@ export class LiveConfig<ConfigAttrs> {
     this.project = project;
   }
 
-  public async get<K extends Extract<keyof ConfigAttrs, string>>(
+  public async get<K extends Extract<keyof ProjectConfig, string>>(
     key: K,
-    defaultValue: ConfigAttrs[K] = null
-  ): Promise<ConfigAttrs[K]> {
+    defaultValue: ProjectConfig[K] = null
+  ): Promise<ProjectConfig[K]> {
     const record = await this.configModel.findOne({
       where: { project: this.project, key },
     });
@@ -36,9 +36,9 @@ export class LiveConfig<ConfigAttrs> {
     }
   }
 
-  public async set<K extends Extract<keyof ConfigAttrs, string>>(
+  public async set<K extends Extract<keyof ProjectConfig, string>>(
     key: K,
-    value: ConfigAttrs[K]
+    value: ProjectConfig[K]
   ) {
     this.configModel.upsert({
       project: this.project,
