@@ -6,32 +6,25 @@
 'use strict';
 
 const { baseColumns, column, foreignIdKey, nullableColumn, unique } = require("../../util");
-const schema = "cough";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable(
-      "giftcard_rate_limit",
+      "config",
       {
         ...baseColumns(Sequelize),
-        limit: column(Sequelize.INTEGER),
-        period_in_seconds: column(Sequelize.INTEGER),
+        project: column(Sequelize.STRING),
+        key: column(Sequelize.STRING),
+        value: column(Sequelize.JSONB),
       },
-      { schema }
     );
-    await queryInterface.createTable(
-      "barcode_validations",
-      {
-        ...baseColumns(Sequelize),
-        type: column(Sequelize.ENUM('prefix')),
-        value: column(Sequelize.STRING),
-      },
-      { schema }
-    );
+    await queryInterface.addConstraint("config", ["project", "key"], {
+      type: "unique",
+      name: "config_unique_project_key",
+    });
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable({ tableName: "giftcard_rate_limit", schema });
-    await queryInterface.dropTable({ tableName: "barcode_validations", schema });
+    await queryInterface.dropTable("config");
   }
 };

@@ -34,14 +34,12 @@ export function defineCoughModels(sql: SplitSql): CoughModels {
     accessKey: defineAccessKey(sql),
     asprenData: defineAsprenData(sql),
     asprenFile: defineAsprenFile(sql),
-    barcodeValidation: defineBarcodeValidations(sql),
     expertRead: defineExpertRead(sql),
     firebaseAnalytics: defineFirebaseAnalytics(sql),
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     followUpSurveyFile: defineFollowUpSurveyFile(sql),
     followUpSurvey: defineFollowUpSurvey(sql),
     giftcard: defineGiftcard(sql),
-    giftcardRateLimit: defineGiftcardRateLimit(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
@@ -70,14 +68,12 @@ export interface CoughModels {
   accessKey: Model<AccessKeyAttributes>;
   asprenData: Model<AsprenDataAttributes>;
   asprenFile: Model<AsprenFileAttributes>;
-  barcodeValidation: Model<BarcodeValidationAttributes>;
   expertRead: Model<ExpertReadAttributes>;
   firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   followUpSurveyFile: Model<FollowUpSurveyFileAttributes>;
   followUpSurvey: Model<FollowUpSurveyAttributes>;
   giftcard: Model<GiftcardAttributes>;
-  giftcardRateLimit: Model<GiftcardRateLimitAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
@@ -604,49 +600,6 @@ export function defineGiftcard(sql: SplitSql): Model<GiftcardAttributes> {
       url: stringColumn("url"),
       docId: nullable(unique(stringColumn("doc_id"))),
       barcode: nullable(unique(stringColumn("barcode"))),
-    },
-    { schema }
-  );
-}
-
-export interface GiftcardRateLimitAttributes {
-  limit: number;
-  periodInSeconds: number;
-}
-
-function defineGiftcardRateLimit(
-  sql: SplitSql
-): Model<GiftcardRateLimitAttributes> {
-  return defineModel<GiftcardRateLimitAttributes>(
-    sql.nonPii,
-    "giftcard_rate_limit",
-    {
-      limit: integerColumn("limit"),
-      periodInSeconds: integerColumn("period_in_seconds"),
-    },
-    { schema }
-  );
-}
-
-// ---------------------------------------------------------------
-
-export enum BarcodeValidationType {
-  PREFIX = "prefix",
-}
-export interface BarcodeValidationAttributes {
-  type: BarcodeValidationType;
-  value: string;
-}
-
-function defineBarcodeValidations(
-  sql: SplitSql
-): Model<BarcodeValidationAttributes> {
-  return defineModel<BarcodeValidationAttributes>(
-    sql.nonPii,
-    "barcode_validations",
-    {
-      type: enumColumn("type", ["prefix"]),
-      value: stringColumn("value"),
     },
     { schema }
   );
