@@ -9,6 +9,7 @@ import {
   ConfigAttributes,
   Project,
 } from "../models/db/config";
+import logger from "./logger";
 
 export { Project } from "../models/db/config";
 
@@ -40,6 +41,11 @@ export class LiveConfig<ProjectConfig> {
     key: K,
     value: ProjectConfig[K]
   ) {
+    logger.info(
+      `[LiveConfig] Updating ${
+        this.project
+      } config, setting ${key} to ${JSON.stringify(value)}`
+    );
     this.configModel.upsert({
       project: this.project,
       key,
