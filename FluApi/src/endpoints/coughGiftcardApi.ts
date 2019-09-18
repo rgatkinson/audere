@@ -87,7 +87,11 @@ export class CoughGiftcardEndpoint {
   public importGiftcards = async (req, res) => {
     const { giftcardFile } = req.files;
     const rawGifcards = await this.getGiftcardsFromFile(giftcardFile.path);
-    const giftcards = rawGifcards.map(convertRawGiftcard);
+    const prezzeeGiftcards = rawGifcards.map(convertRawGiftcard);
+    const giftcards = prezzeeGiftcards.map(giftcard => ({
+      ...giftcard,
+      isDemo: false,
+    }));
     try {
       const giftcardRecords = await this.models.giftcard.bulkCreate(giftcards);
       res.redirect(
@@ -194,9 +198,9 @@ export class CoughGiftcardEndpoint {
     if (!valid) {
       return { failureReason: validationFailureReason };
     }
-    const { giftcard, isNew, failureReason } = request.isDemo
-      ? await this.getCard(request)
-      : await this.getAndAllocateCard(request);
+    const { giftcard, isNew, failureReason } = await this.getAndAllocateCard(
+      request
+    );
     if (giftcard) {
       if (request.isDemo) {
         return {
@@ -212,7 +216,7 @@ export class CoughGiftcardEndpoint {
         giftcard: {
           url: giftcard.url,
           denomination: giftcard.denomination,
-          isDemo: false,
+          isDemo: giftcard.isDemo,
           isNew,
         },
       };
@@ -307,7 +311,7 @@ export class CoughGiftcardEndpoint {
     isNew?: boolean;
     failureReason?: GiftcardFailureReason;
   }> {
-    const { docId, barcode, denomination, isDemo, secret } = request;
+    const { docId, barcode, denomination, secret } = request;
 
     const existingCards = await this.models.giftcard.findAll({
       where: {
@@ -356,6 +360,7 @@ export class CoughGiftcardEndpoint {
           [Op.gte]: request.denomination,
         },
         docId: null,
+        isDemo: request.isDemo,
       },
       order: [["denomination", "ASC"]],
     });
@@ -365,6 +370,7 @@ export class CoughGiftcardEndpoint {
     if (allocateCard) {
       newGiftcard.docId = request.docId;
       newGiftcard.barcode = request.barcode;
+      newGiftcard.allocatedAt = new Date();
       await newGiftcard.save();
     }
     return newGiftcard;

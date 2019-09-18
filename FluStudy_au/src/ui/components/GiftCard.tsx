@@ -3,7 +3,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { StyleSheet, View } from "react-native";
 import Text from "../components/Text";
-import { StoreState } from "../../store";
+import { StoreState, Action, setGiftCardURL } from "../../store";
 import Divider from "./Divider";
 import {
   GUTTER,
@@ -14,21 +14,28 @@ import {
 } from "../styles";
 import { Linking } from "expo";
 import Button from "./Button";
-import { logFirebaseEvent, AppEvents } from "../../util/tracker";
+import {
+  logFirebaseEvent,
+  AppEvents,
+  AppHealthEvents,
+} from "../../util/tracker";
 import { GiftcardFailureReason } from "audere-lib/coughProtocol";
 import {
   getGiftCard,
   checkGiftcardAvailability,
 } from "../../transport/Giftcards";
 import { NavigationScreenProp, withNavigation } from "react-navigation";
-import { emailSupport } from "../../resources/LinkConfig";
+import { emailSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
 import { getRemoteConfig } from "../../util/remoteConfig";
+import SurveyLinkBlock from "./flu/SurveyLinkBlock";
 
 interface Props {
-  docId: string;
   barcode: string;
   completed48HoursAgo: boolean;
+  dispatch(action: Action): void;
+  docId: string;
   giftCardAmount: string;
+  giftCardURL?: string;
   isConnected: boolean;
   isDemo: boolean;
   navigation: NavigationScreenProp<any, any>;
@@ -64,44 +71,51 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
     );
 
     if (response.hasOwnProperty("failureReason")) {
+      logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+        failureReason: response.failureReason,
+      });
       this.setState({ failureReason: response.failureReason! });
     }
 
-    if (
-      !isDemo &&
-      giftCardsAvailable &&
-      !invalidBarcode &&
-      !APIError &&
-      !cardsExhausted
-    ) {
+    if (giftCardsAvailable && !invalidBarcode && !APIError && !cardsExhausted) {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_SHOWN);
     }
   }
 
   _onRedeemPress = async () => {
-    const { docId, barcode, giftCardAmount, isDemo } = this.props;
+    const { docId, barcode, giftCardAmount, isDemo, giftCardURL } = this.props;
 
-    if (!isDemo) {
+    if (!giftCardURL || giftCardURL.length === 0) {
+      const response = await getGiftCard(
+        docId,
+        barcode,
+        parseInt(giftCardAmount),
+        isDemo
+      );
+
+      if (response.hasOwnProperty("failureReason")) {
+        logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+          failureReason: response.failureReason,
+        });
+        this.setState({ failureReason: response.failureReason! });
+      } else if (!!response.giftcard) {
+        this.props.dispatch(setGiftCardURL(response.giftcard.url));
+        logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
+        Linking.openURL(response.giftcard.url);
+        this.setState({ failureReason: "" });
+      }
+    } else {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
-    }
-
-    const response = await getGiftCard(
-      docId,
-      barcode,
-      parseInt(giftCardAmount),
-      isDemo
-    );
-
-    if (response.hasOwnProperty("failureReason")) {
-      this.setState({ failureReason: response.failureReason! });
-    } else if (!!response.giftcard) {
-      this.setState({ failureReason: "" });
-      Linking.openURL(response.giftcard.url);
+      Linking.openURL(giftCardURL);
     }
   };
 
   _navToFAQ = () => {
     this.props.navigation.navigate("GeneralQuestions");
+  };
+
+  _navToSurvey = () => {
+    Linking.openURL(`${followUpSurveyUrl}?r=${this.props.barcode}`);
   };
 
   render() {
@@ -145,11 +159,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
           <Divider style={styles.divider} />
           {!!completed48HoursAgo && (
             <Fragment>
-              <Text
-                style={styles.surveyTitle}
-                content={t("SurveyLinkBlock:title")}
-              />
-              <Text content={t("takeSurveyAvailable")} />
+              <SurveyLinkBlock containerStyle={styles.surveyLinkBlock} />
               <Divider style={styles.divider} />
             </Fragment>
           )}
@@ -214,8 +224,10 @@ const styles = StyleSheet.create({
     paddingVertical: GUTTER / 2,
     color: PRIMARY_COLOR,
   },
-  surveyTitle: {
-    marginBottom: GUTTER,
+  surveyLinkBlock: {
+    backgroundColor: "white",
+    margin: 0,
+    padding: 0,
   },
 });
 
@@ -232,4 +244,5 @@ export default connect((state: StoreState) => ({
   isConnected: state.meta.isConnected,
   isDemo: state.meta.isDemo,
   giftCardAmount: state.meta.giftCardAmount,
+  giftCardURL: !!state.survey.giftCardURL ? state.survey.giftCardURL : "",
 }))(withNavigation(withNamespaces("Giftcard")(GiftCard)));

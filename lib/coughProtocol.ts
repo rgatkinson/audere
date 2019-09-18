@@ -118,7 +118,7 @@ export type SurveyInfo = SurveyNonPIIInfo;
 export interface SurveyNonPIIInfo extends CommonInfo {
   consents: NonPIIConsentInfo[];
   samples: SampleInfo[];
-
+  giftCardURL?: string;
   invalidBarcodes?: SampleInfo[];
 
   // Filtered to include only non-PII, like health data.

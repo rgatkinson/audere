@@ -573,6 +573,7 @@ export function defineFollowUpSurvey(
 // ---------------------------------------------------------------
 
 export interface GiftcardAttributes {
+  id?: number;
   sku: string;
   denomination: number;
   cardNumber: string;
@@ -583,6 +584,8 @@ export interface GiftcardAttributes {
   url: string;
   docId?: string;
   barcode?: string;
+  isDemo: boolean;
+  allocatedAt?: Date;
 }
 
 export function defineGiftcard(sql: SplitSql): Model<GiftcardAttributes> {
@@ -600,6 +603,8 @@ export function defineGiftcard(sql: SplitSql): Model<GiftcardAttributes> {
       url: stringColumn("url"),
       docId: nullable(unique(stringColumn("doc_id"))),
       barcode: nullable(unique(stringColumn("barcode"))),
+      isDemo: booleanColumn("is_demo"),
+      allocatedAt: nullable(dateColumn("allocated_at")),
     },
     { schema }
   );
