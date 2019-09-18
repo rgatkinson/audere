@@ -14,7 +14,11 @@ import {
 } from "../styles";
 import { Linking } from "expo";
 import Button from "./Button";
-import { logFirebaseEvent, AppEvents } from "../../util/tracker";
+import {
+  logFirebaseEvent,
+  AppEvents,
+  AppHealthEvents,
+} from "../../util/tracker";
 import { GiftcardFailureReason } from "audere-lib/coughProtocol";
 import {
   getGiftCard,
@@ -67,26 +71,19 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
     );
 
     if (response.hasOwnProperty("failureReason")) {
+      logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+        failureReason: response.failureReason,
+      });
       this.setState({ failureReason: response.failureReason! });
     }
 
-    if (
-      !isDemo &&
-      giftCardsAvailable &&
-      !invalidBarcode &&
-      !APIError &&
-      !cardsExhausted
-    ) {
+    if (giftCardsAvailable && !invalidBarcode && !APIError && !cardsExhausted) {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_SHOWN);
     }
   }
 
   _onRedeemPress = async () => {
     const { docId, barcode, giftCardAmount, isDemo, giftCardURL } = this.props;
-
-    if (!isDemo) {
-      logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
-    }
 
     if (!giftCardURL || giftCardURL.length === 0) {
       const response = await getGiftCard(
@@ -97,13 +94,18 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       );
 
       if (response.hasOwnProperty("failureReason")) {
+        logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+          failureReason: response.failureReason,
+        });
         this.setState({ failureReason: response.failureReason! });
       } else if (!!response.giftcard) {
         this.props.dispatch(setGiftCardURL(response.giftcard.url));
+        logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
         Linking.openURL(response.giftcard.url);
         this.setState({ failureReason: "" });
       }
     } else {
+      logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
       Linking.openURL(giftCardURL);
     }
   };
