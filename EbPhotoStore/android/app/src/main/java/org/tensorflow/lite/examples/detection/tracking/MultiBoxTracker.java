@@ -38,27 +38,17 @@ import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.tflite.Classifier.Recognition;
 
-/** A tracker that handles non-max suppression and matches existing objects to new detections. */
+/**
+ * A tracker that handles non-max suppression and matches existing objects to
+ * new detections.
+ */
 public class MultiBoxTracker {
   private static final float TEXT_SIZE_DIP = 18;
   private static final float MIN_SIZE = 16.0f;
-  private static final int[] COLORS = {
-    Color.BLUE,
-    Color.RED,
-    Color.GREEN,
-    Color.YELLOW,
-    Color.CYAN,
-    Color.MAGENTA,
-    Color.WHITE,
-    Color.parseColor("#55FF55"),
-    Color.parseColor("#FFA500"),
-    Color.parseColor("#FF8888"),
-    Color.parseColor("#AAAAFF"),
-    Color.parseColor("#FFFFAA"),
-    Color.parseColor("#55AAAA"),
-    Color.parseColor("#AA33AA"),
-    Color.parseColor("#0D0068")
-  };
+  private static final int[] COLORS = { Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.CYAN, Color.MAGENTA,
+      Color.WHITE, Color.parseColor("#55FF55"), Color.parseColor("#FFA500"), Color.parseColor("#FF8888"),
+      Color.parseColor("#AAAAFF"), Color.parseColor("#FFFFAA"), Color.parseColor("#55AAAA"),
+      Color.parseColor("#AA33AA"), Color.parseColor("#0D0068") };
   final List<Pair<Float, RectF>> screenRects = new LinkedList<Pair<Float, RectF>>();
   private final Logger logger = new Logger();
   private final Queue<Integer> availableColors = new LinkedList<Integer>();
@@ -84,21 +74,20 @@ public class MultiBoxTracker {
     boxPaint.setStrokeJoin(Join.ROUND);
     boxPaint.setStrokeMiter(100);
 
-    textSizePx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, activity.getResources().getDisplayMetrics());
+    textSizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP,
+        activity.getResources().getDisplayMetrics());
     borderedText = new BorderedText(textSizePx);
   }
 
-  public synchronized void setFrameConfiguration(
-      final int width, final int height, final int sensorOrientation) {
+  public synchronized void setFrameConfiguration(final int width, final int height, final int sensorOrientation) {
     frameWidth = width;
     frameHeight = height;
     this.sensorOrientation = sensorOrientation;
   }
 
-  public synchronized Bitmap trackResults(final Bitmap sourceBitmap, final List<Recognition> results, final long timestamp) {
-//     logger.i("Processing %d results from %d", results.size(), timestamp);
+  public synchronized Bitmap trackResults(final Bitmap sourceBitmap, final List<Recognition> results,
+      final long timestamp) {
+    // logger.i("Processing %d results from %d", results.size(), timestamp);
     processResults(results);
     return this.rdtTrack(sourceBitmap, results);
   }
@@ -108,44 +97,33 @@ public class MultiBoxTracker {
   }
 
   public synchronized void draw(final Canvas canvas) {
-    logger.i(
-        "draw: frame=(%d, %d) canvas=(%d, %d) orientation=%d",
-        frameWidth, frameHeight, canvas.getWidth(), canvas.getHeight(), this.sensorOrientation
-    );
+    logger.i("draw: frame=(%d, %d) canvas=(%d, %d) orientation=%d", frameWidth, frameHeight, canvas.getWidth(),
+        canvas.getHeight(), this.sensorOrientation);
     final boolean rotated = sensorOrientation % 180 == 90;
-    final float multiplier =
-        Math.min(
-            canvas.getHeight() / (float) (rotated ? frameWidth : frameHeight),
-            canvas.getWidth() / (float) (rotated ? frameHeight : frameWidth));
-    frameToCanvasMatrix =
-        ImageUtils.getTransformationMatrix(
-            frameWidth,
-            frameHeight,
-            (int) (multiplier * (rotated ? frameHeight : frameWidth)),
-            (int) (multiplier * (rotated ? frameWidth : frameHeight)),
-            sensorOrientation,
-            false);
+    final float multiplier = Math.min(canvas.getHeight() / (float) (rotated ? frameWidth : frameHeight),
+        canvas.getWidth() / (float) (rotated ? frameHeight : frameWidth));
+    frameToCanvasMatrix = ImageUtils.getTransformationMatrix(frameWidth, frameHeight,
+        (int) (multiplier * (rotated ? frameHeight : frameWidth)),
+        (int) (multiplier * (rotated ? frameWidth : frameHeight)), sensorOrientation, false);
 
     this.canvasSize = new PointF(canvas.getWidth(), canvas.getHeight());
 
-     for (final TrackedRecognition recognition : trackedObjects) {
-       final RectF trackedPos = new RectF(recognition.location);
+    for (final TrackedRecognition recognition : trackedObjects) {
+      final RectF trackedPos = new RectF(recognition.location);
 
-       getFrameToCanvasMatrix().mapRect(trackedPos);
-       boxPaint.setColor(recognition.color);
+      getFrameToCanvasMatrix().mapRect(trackedPos);
+      boxPaint.setColor(recognition.color);
 
-       float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 8.0f;
-       canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
+      float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 8.0f;
+      canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
 
-       final String labelString =
-           !TextUtils.isEmpty(recognition.title)
-               ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
-               : String.format("%.2f", (100 * recognition.detectionConfidence));
-       //            borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
-       // labelString);
-       borderedText.drawText(
-           canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
-     }
+      final String labelString = !TextUtils.isEmpty(recognition.title)
+          ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
+          : String.format("%.2f", (100 * recognition.detectionConfidence));
+      // borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top,
+      // labelString);
+      borderedText.drawText(canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
+    }
 
     this.rdtDraw(canvas);
   }
@@ -165,8 +143,7 @@ public class MultiBoxTracker {
       final RectF detectionScreenRect = new RectF();
       rgbFrameToScreen.mapRect(detectionScreenRect, detectionFrameRect);
 
-      logger.v(
-          "Result! Frame: " + result.getLocation() + " mapped to screen:" + detectionScreenRect);
+      logger.v("Result! Frame: " + result.getLocation() + " mapped to screen:" + detectionScreenRect);
 
       screenRects.add(new Pair<Float, RectF>(result.getConfidence(), detectionScreenRect));
 
@@ -207,14 +184,15 @@ public class MultiBoxTracker {
 
   // AUDERE CODE BELOW
 
-  final String[] RDT_NAMES = new String[]{ "arrows", "test", "ABC", "squares", "influenza" };
-  final float[] RDT_OFFSETS = new float[]{ 15, 30, 50, 70, 80 };
+  final String[] RDT_NAMES = new String[] { "arrows", "test", "ABC", "squares", "influenza" };
+  final float[] RDT_OFFSETS = new float[] { (67 + 78) / 2.0f, (50 + 64) / 2.0f, (30 + 43) / 2.0f, (13 + 18) / 2.0f,
+      (1 + 12) / 2.0f, };
   final float RDT_HEIGHT = 87;
   final float RDT_WIDTH = 5;
   final int RDT_INSET_MARGIN = 3;
 
-  final float RDT_TEST_BOTTOM = 22;
-  final float RDT_TEST_TOP = 40;
+  final float RDT_TEST_TOP = 51;
+  final float RDT_TEST_BOTTOM = 61;
 
   final int TEST_RECOGNIZER_SIZE = 224;
 
@@ -235,23 +213,15 @@ public class MultiBoxTracker {
 
   private Matrix rdtFromRecognition(int index0, PointF location0, int index1, PointF location1) {
     Matrix matrix = new Matrix();
-    matrix.setPolyToPoly(
-        new float[]{location0.x, location0.y, location1.x, location1.y},
-        0,
-        new float[]{RDT_WIDTH/2, RDT_OFFSETS[index0], RDT_WIDTH/2, RDT_OFFSETS[index1]},
-        0,
-        2
-    );
+    matrix.setPolyToPoly(new float[] { location0.x, location0.y, location1.x, location1.y }, 0,
+        new float[] { RDT_WIDTH / 2, RDT_OFFSETS[index0], RDT_WIDTH / 2, RDT_OFFSETS[index1] }, 0, 2);
     return matrix;
   }
 
   private Matrix recognizerFromRdt() {
     Matrix matrix = new Matrix();
-    matrix.preScale(
-      TEST_RECOGNIZER_SIZE / RDT_WIDTH,
-      TEST_RECOGNIZER_SIZE / (RDT_TEST_TOP - RDT_TEST_BOTTOM)
-    );
-    matrix.preTranslate(0, -RDT_TEST_BOTTOM);
+    matrix.preScale(TEST_RECOGNIZER_SIZE / RDT_WIDTH, TEST_RECOGNIZER_SIZE / (RDT_TEST_BOTTOM - RDT_TEST_TOP));
+    matrix.preTranslate(0, -RDT_TEST_TOP);
     return matrix;
   }
 
@@ -262,8 +232,10 @@ public class MultiBoxTracker {
     int index1 = -1;
     for (int i = 0; i < findings.length; i++) {
       if (findings[i] != null) {
-        if (i < index0) index0 = i;
-        if (index1 < i) index1 = i;
+        if (i < index0)
+          index0 = i;
+        if (index1 < i)
+          index1 = i;
       }
     }
     if (index0 >= index1) {
@@ -312,16 +284,8 @@ public class MultiBoxTracker {
     float rdtTop = 0;
     float rdtRight = RDT_WIDTH;
     float rdtBottom = RDT_HEIGHT;
-    return new float[]{
-        rdtLeft, rdtTop,
-        rdtRight, rdtTop,
-        rdtRight, rdtTop,
-        rdtRight, rdtBottom,
-        rdtRight, rdtBottom,
-        rdtLeft, rdtBottom,
-        rdtLeft, rdtBottom,
-        rdtLeft, rdtTop,
-    };
+    return new float[] { rdtLeft, rdtTop, rdtRight, rdtTop, rdtRight, rdtTop, rdtRight, rdtBottom, rdtRight, rdtBottom,
+        rdtLeft, rdtBottom, rdtLeft, rdtBottom, rdtLeft, rdtTop, };
   }
 
   private Bitmap extractBitmap(Bitmap sourceBitmap, int width, int height, Matrix destFromSource) {
@@ -339,7 +303,7 @@ public class MultiBoxTracker {
 
       return rdtBitmap;
     } catch (Exception e) {
-      logger.e("Bitmap extraction threw "+ e.toString());
+      logger.e("Bitmap extraction threw " + e.toString());
       return null;
     }
   }
@@ -361,12 +325,8 @@ public class MultiBoxTracker {
 
     if (this.testBitmap != null) {
       logger.i("Drawing testBitmap");
-      canvas.drawBitmap(
-          this.testBitmap,
-          canvas.getWidth() - (this.testBitmap.getWidth() + RDT_INSET_MARGIN),
-          canvas.getHeight() - (this.testBitmap.getHeight() + RDT_INSET_MARGIN + 200),
-          new Paint()
-      );
+      canvas.drawBitmap(this.testBitmap, canvas.getWidth() - (this.testBitmap.getWidth() + RDT_INSET_MARGIN),
+          canvas.getHeight() - (this.testBitmap.getHeight() + RDT_INSET_MARGIN + 200), new Paint());
     }
   }
 
