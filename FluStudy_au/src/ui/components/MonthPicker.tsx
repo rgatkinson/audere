@@ -75,14 +75,14 @@ class MonthModal extends React.Component<
     );
   }
 
-  _onValueChange = (selected: number | string) => {
-    if (selected === this.props.t("selectDate")) {
-      this.setState({ date: undefined });
-    } else {
-      if (Platform.OS === "android") {
-        this.props.onDismiss(new Date(selected));
-      }
-      this.setState({ date: new Date(selected) });
+  _onValueChange = (value: number | string) => {
+    let date: Date | undefined;
+    if (value !== this.props.t("selectDate")) {
+      date = new Date(value);
+    }
+    this.setState({ date });
+    if (Platform.OS === "android") {
+      this.props.onDismiss(date);
     }
   };
 

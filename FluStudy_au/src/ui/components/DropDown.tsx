@@ -68,14 +68,13 @@ class DropDownModal extends React.Component<
   }
 
   _onValueChange = (value: string) => {
-    const { placeholder, t } = this.props;
-    if (value === placeholder) {
-      this.setState({ selected: undefined });
-    } else {
-      this.setState({ selected: value });
-      if (Platform.OS === "android") {
-        this.props.onDismiss(value);
-      }
+    let selected: string | undefined;
+    if (value !== this.props.placeholder) {
+      selected = value;
+    }
+    this.setState({ selected });
+    if (Platform.OS === "android") {
+      this.props.onDismiss(selected);
     }
   };
 
