@@ -159,7 +159,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
           <Divider style={styles.divider} />
           {!!completed48HoursAgo && (
             <Fragment>
-              <SurveyLinkBlock containerStyle={styles.surveyLinkBlock} />
+              <SurveyLinkBlock />
               <Divider style={styles.divider} />
             </Fragment>
           )}
@@ -223,11 +223,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: GUTTER,
     paddingVertical: GUTTER / 2,
     color: PRIMARY_COLOR,
-  },
-  surveyLinkBlock: {
-    backgroundColor: "white",
-    margin: 0,
-    padding: 0,
   },
 });
 

@@ -4,22 +4,10 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  AppState,
-  Linking,
-  StyleSheet,
-  TouchableOpacity,
-  ViewStyle,
-  StyleProp,
-} from "react-native";
+import { AppState, Linking, StyleSheet, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import { WorkflowInfo } from "audere-lib/coughProtocol";
-import {
-  GUTTER,
-  BORDER_RADIUS,
-  SECONDARY_COLOR,
-  LARGE_TEXT,
-} from "../../styles";
+import { BORDER_RADIUS, SECONDARY_COLOR, LARGE_TEXT } from "../../styles";
 import { StoreState } from "../../../store";
 import { followUpSurveyUrl } from "../../../resources/LinkConfig";
 import ScreenText from "../ScreenText";
@@ -31,7 +19,6 @@ const MILLIS_IN_TWO_DAYS = 1000 * 60 * 60 * 24 * 2;
 interface Props {
   barcode: string;
   workflow: WorkflowInfo;
-  containerStyle?: StyleProp<ViewStyle>;
 }
 
 interface State {
@@ -79,13 +66,9 @@ class SurveyLinkBlock extends React.PureComponent<Props, State> {
     if (getRemoteConfig("skipSurveyNotification")) {
       return null;
     }
-    const { containerStyle } = this.props;
     const namespace = "SurveyLinkBlock";
     return (
-      <TouchableOpacity
-        style={[styles.container, containerStyle && containerStyle]}
-        onPress={this._onPress}
-      >
+      <TouchableOpacity style={styles.container} onPress={this._onPress}>
         <ScreenText
           label={"title"}
           namespace={namespace}
@@ -105,11 +88,9 @@ class SurveyLinkBlock extends React.PureComponent<Props, State> {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#E5EEF8",
     borderRadius: BORDER_RADIUS,
-    margin: GUTTER,
-    padding: GUTTER,
-    paddingBottom: 0,
+    margin: 0,
+    padding: 0,
   },
   title: {
     fontSize: LARGE_TEXT,

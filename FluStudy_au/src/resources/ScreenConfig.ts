@@ -103,7 +103,6 @@ import RDTImageHC from "../ui/components/flu/RDTImageHC";
 import RDTReader from "../ui/components/flu/RDTReader";
 import ScreenText from "../ui/components/ScreenText";
 import SelectableComponent from "../ui/components/SelectableComponent";
-import SurveyLinkBlock from "../ui/components/flu/SurveyLinkBlock";
 import TestResult from "../ui/components/flu/TestResult";
 import TestResultRDT from "../ui/components/flu/TestResultRDT";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
@@ -986,7 +985,6 @@ export const Screens: ScreenConfig[] = [
       { tag: MainImage, props: { uri: "testcompleted" } },
       { tag: Title },
       { tag: GiftCard },
-      { tag: SurveyLinkBlock },
       { tag: ScreenText, props: { label: "learnMore" } },
       {
         tag: LinkInfoBlock,
