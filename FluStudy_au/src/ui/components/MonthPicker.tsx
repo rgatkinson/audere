@@ -227,9 +227,9 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
           >
             <Text
               content={
-                (!!date
+                !!date
                   ? t(months[date.getMonth()]) + " " + date.getFullYear()
-                  : t("selectDate")) + t("common:device:iosHint")
+                  : t("selectDate") + t("common:device:iosHint")
               }
               bold={true}
               style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}

@@ -173,8 +173,9 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
     const text = (
       <Text
         content={
-          (!!selected ? t(selected) : t(question.placeholder)) +
-          t("common:device:iosHint")
+          !!selected
+            ? t(selected)
+            : t(question.placeholder) + t("common:device:iosHint")
         }
         bold={true}
         style={{ color: !!selected ? SECONDARY_COLOR : LINK_COLOR }}
