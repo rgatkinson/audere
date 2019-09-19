@@ -45,6 +45,10 @@ const createFAQS = () => {
     { label: "howComplete" },
     { label: "howFindOut" },
     { label: "howLongTest" },
+    { label: "getGiftCard", requiresGiftCardsAvailable: true },
+    { label: "useGiftCard", requiresGiftCardsAvailable: true },
+    { label: "noClaim", requiresGiftCardsAvailable: true },
+    { label: "swapProblem", requiresGiftCardsAvailable: true },
     { label: "swabDirty" },
     { label: "swabTubeLonger" },
     { label: "stripLonger" },
@@ -56,10 +60,6 @@ const createFAQS = () => {
         ? "appDeleteGiftCard"
         : "appDelete",
     },
-    { label: "getGiftCard", requiresGiftCardsAvailable: true },
-    { label: "useGiftCard", requiresGiftCardsAvailable: true },
-    { label: "noClaim", requiresGiftCardsAvailable: true },
-    { label: "swapProblem", requiresGiftCardsAvailable: true },
   ];
 };
 
