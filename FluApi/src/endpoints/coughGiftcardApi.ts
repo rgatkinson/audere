@@ -11,6 +11,7 @@ import {
 } from "audere-lib/coughProtocol";
 import parse from "csv-parse/lib/sync";
 import { promises as fs } from "fs";
+import querystring from "querystring";
 import { Op } from "sequelize";
 import { connectorFromSqlSecrets } from "../external/firebase";
 import {
@@ -18,10 +19,15 @@ import {
   defineCoughModels,
   GiftcardAttributes,
 } from "../models/db/cough";
+import { LiveConfig, Project } from "../util/liveConfig";
 import { SplitSql } from "../util/sql";
 import { SqlLock } from "../util/sqlLock";
 
 const DEMO_GIFTCARD_URL = "https://www.example.com/giftcard";
+const DEFAULT_RATE_LIMIT = {
+  limit: 100,
+  periodInSeconds: 24 * 60 * 60,
+};
 
 export type PrezzeeCsvGiftcard = {
   sku: string;
@@ -44,17 +50,38 @@ type RawPrezzeeCsvGiftcard = {
   Url: string;
 };
 
+enum BarcodeValidationType {
+  PREFIX = "prefix",
+}
+
+type BarcodeValidation = {
+  type: BarcodeValidationType;
+  value: string;
+};
+
+type RateLimit = {
+  limit: number;
+  periodInSeconds: number;
+};
+
+export type CoughConfig = {
+  rateLimit: RateLimit;
+  barcodeValidations: BarcodeValidation[];
+};
+
 export class CoughGiftcardEndpoint {
   private readonly sql: SplitSql;
   private readonly models: CoughModels;
   private readonly sqlLock: SqlLock;
   private readonly getStatic?: () => string;
+  private readonly liveConfig: LiveConfig<CoughConfig>;
 
   constructor(sql: SplitSql, getStatic?: () => string) {
     this.sql = sql;
     this.models = defineCoughModels(sql);
     this.sqlLock = new SqlLock(sql.nonPii);
     this.getStatic = getStatic;
+    this.liveConfig = new LiveConfig(sql, Project.COUGH);
   }
 
   public importGiftcards = async (req, res) => {
@@ -67,20 +94,65 @@ export class CoughGiftcardEndpoint {
     }));
     try {
       const giftcardRecords = await this.models.giftcard.bulkCreate(giftcards);
-      await this.renderImportGiftcardForm(req, res, {
-        successfulUpload: true,
-        giftcardsUploaded: giftcardRecords.length,
-      });
+      res.redirect(
+        303,
+        "coughGiftcards?" +
+          querystring.stringify({
+            success: `Uploaded ${giftcardRecords.length} giftcards`,
+          })
+      );
     } catch (e) {
-      await this.renderImportGiftcardForm(req, res, {
-        error: e.message,
-      });
       console.error(e);
+      res.redirect(
+        303,
+        "coughGiftcards?" +
+          querystring.stringify({
+            error: e.message,
+          })
+      );
     }
   };
 
+  public setRateLimit = async (req, res) => {
+    const { limit } = req.body;
+    this.liveConfig.set("rateLimit", {
+      limit: parseInt(limit),
+      periodInSeconds: 24 * 60 * 60,
+    });
+    res.redirect(
+      303,
+      "coughGiftcards?" +
+        querystring.stringify({
+          success: `Rate limit updated`,
+        })
+    );
+  };
+
+  public setBarcodeValidations = async (req, res) => {
+    const { barcodePrefixes } = req.body;
+    const barcodeValidations = barcodePrefixes
+      .split("\n")
+      .filter(prefix => prefix)
+      .map(prefix => ({
+        value: prefix.trim(),
+        type: BarcodeValidationType.PREFIX,
+      }));
+    await this.liveConfig.set("barcodeValidations", barcodeValidations);
+    res.redirect(
+      303,
+      "coughGiftcards?" +
+        querystring.stringify({
+          success: `Barcode validations updated`,
+        })
+    );
+  };
+
   public importGiftcardForm = async (req, res) => {
-    await this.renderImportGiftcardForm(req, res, {});
+    const { success, error } = req.query;
+    await this.renderImportGiftcardForm(req, res, {
+      success,
+      error,
+    });
   };
 
   private async renderImportGiftcardForm(req, res, extraParams) {
@@ -94,12 +166,24 @@ export class CoughGiftcardEndpoint {
       (total, denomination) => total + parseInt(denomination.count),
       0
     );
+    const rateLimit = (await this.liveConfig.get(
+      "rateLimit",
+      DEFAULT_RATE_LIMIT
+    )).limit;
+    const barcodePrefixes = (await this.liveConfig.get(
+      "barcodeValidations",
+      []
+    ))
+      .map(validation => validation.value)
+      .join("\n");
     res.render("giftcardUpload.html", {
       static: this.getStatic(),
       csrf: req.csrfToken(),
       total,
       unassigned,
       unassignedByDenomination,
+      rateLimit,
+      barcodePrefixes,
       ...extraParams,
     });
   }
@@ -118,6 +202,16 @@ export class CoughGiftcardEndpoint {
       request
     );
     if (giftcard) {
+      if (request.isDemo) {
+        return {
+          giftcard: {
+            url: DEMO_GIFTCARD_URL,
+            denomination: request.denomination,
+            isDemo: true,
+            isNew,
+          },
+        };
+      }
       return {
         giftcard: {
           url: giftcard.url,
@@ -196,8 +290,13 @@ export class CoughGiftcardEndpoint {
   }
 
   private async validateBarcode(barcode: string) {
-    //TODO(ram): validate barcode against list of valid barcodes
-    return true;
+    const prefixValidations = (await this.liveConfig.get(
+      "barcodeValidations",
+      []
+    )).filter(validation => validation.type === BarcodeValidationType.PREFIX);
+    return prefixValidations.some(prefixValidation =>
+      barcode.startsWith(prefixValidation.value)
+    );
   }
 
   private async getAndAllocateCard(request: GiftcardRequest) {
@@ -224,6 +323,15 @@ export class CoughGiftcardEndpoint {
         giftcard: existingCards[0],
         isNew: false,
       };
+    }
+
+    const rateLimit = await this.liveConfig.get(
+      "rateLimit",
+      DEFAULT_RATE_LIMIT
+    );
+    const cardsIssued = await this.countCardsIssued(rateLimit.periodInSeconds);
+    if (cardsIssued >= rateLimit.limit) {
+      return { failureReason: GiftcardFailureReason.CARDS_EXHAUSTED };
     }
 
     let giftcard;
@@ -275,6 +383,16 @@ export class CoughGiftcardEndpoint {
     return parse(file, {
       columns: true,
       skip_empty_lines: true,
+    });
+  }
+
+  private async countCardsIssued(seconds: number): Promise<number> {
+    const startDate = new Date(new Date().getTime() - seconds * 1000);
+    return await this.models.giftcard.count({
+      where: {
+        docId: { [Op.ne]: null },
+        allocatedAt: { [Op.gt]: startDate },
+      },
     });
   }
 }

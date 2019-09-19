@@ -5,20 +5,21 @@
 
 import { Sequelize } from "sequelize";
 import {
-  defineModel,
   Inst,
   Model,
   SplitSql,
-  stringColumn,
+  bigIntColumn,
   booleanColumn,
+  dateColumn,
   decimalColumn,
+  defineModel,
+  enumColumn,
   integerColumn,
   jsonColumn,
-  dateColumn,
-  nullable,
-  unique,
   jsonbColumn,
-  bigIntColumn,
+  nullable,
+  stringColumn,
+  unique,
 } from "../../util/sql";
 import {
   DeviceInfo,

@@ -11,6 +11,7 @@ import Sequelize, {
   BOOLEAN as SQL_BOOLEAN,
   DATE as SQL_DATE,
   DECIMAL as SQL_DECIMAL,
+  ENUM as SQL_ENUM,
   FLOAT as SQL_FLOAT,
   INTEGER as SQL_INTEGER,
   JSON as SQL_JSON,
@@ -128,6 +129,10 @@ export function floatColumn(field?: string) {
 export function decimalColumn(field: string, precision: number, scale: number) {
   return column(SQL_DECIMAL(precision, scale), field);
 }
+export function enumColumn(field: string, values: string[]) {
+  return column(SQL_ENUM(...values), field);
+}
+
 export function foreignIdKey(column, model) {
   return {
     ...column,

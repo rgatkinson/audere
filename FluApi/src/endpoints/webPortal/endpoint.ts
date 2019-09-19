@@ -59,6 +59,11 @@ const INDEX_PAGE_LINKS = [
     url: "./coughPhotos",
     permissionsRequired: [Permissions.COUGH_RDT_PHOTOS_ACCESS],
   },
+  {
+    label: "Manage Giftcards for flu@home Australia",
+    url: "./coughGiftcards",
+    permissionsRequired: [Permissions.COUGH_GIFTCARD_UPLOAD],
+  },
 ];
 
 const SequelizeSessionStore = require("connect-session-sequelize")(
@@ -212,10 +217,20 @@ function addHandlers(
     wrap(coughGiftcardServer.importGiftcardForm)
   );
   app.post(
-    "/coughGiftcards",
+    "/uploadGiftcards",
     authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
     formidable(),
     wrap(coughGiftcardServer.importGiftcards)
+  );
+  app.post(
+    "/setRateLimit",
+    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    wrap(coughGiftcardServer.setRateLimit)
+  );
+  app.post(
+    "/setBarcodeValidations",
+    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    wrap(coughGiftcardServer.setBarcodeValidations)
   );
 
   const manageAccount = new ManageAccount(config.sql, getStatic);
