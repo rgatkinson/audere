@@ -332,9 +332,7 @@ export function setConsent(): SurveyAction {
         "\n" +
         i18n.t("Consent:consentFormText") +
         "\n" +
-        i18n.t("surveyTitle:researchByTheseResearchers") +
-        "\n" +
-        i18n.t("surveyTitle:researchByAnyResearchers") +
+        i18n.t("surveyTitle:researchBySameResearchers") +
         "\n" +
         i18n.t("Consent:consentFormText2"),
       date: format(new Date(), "YYYY-MM-DD"),
