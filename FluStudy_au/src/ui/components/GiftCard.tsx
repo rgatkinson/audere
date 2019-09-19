@@ -25,7 +25,7 @@ import {
   checkGiftcardAvailability,
 } from "../../transport/Giftcards";
 import { NavigationScreenProp, withNavigation } from "react-navigation";
-import { emailSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
+import { appSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
 import { getRemoteConfig } from "../../util/remoteConfig";
 import SurveyLinkBlock from "./flu/SurveyLinkBlock";
 
@@ -209,7 +209,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
                   <Button
                     label={t("emailSupport")}
                     enabled={true}
-                    onPress={emailSupport}
+                    onPress={appSupport}
                     primary={true}
                     style={[styles.redeemButton, { marginBottom: 0 }]}
                   />
