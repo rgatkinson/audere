@@ -52,7 +52,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
   }
 
   async componentDidMount() {
-    const { docId, barcode, giftCardAmount, isDemo } = this.props;
+    const { docId, barcode, giftCardAmount, isConnected, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
 
     try {
@@ -70,10 +70,12 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
         this.setState({ failureReason: response.failureReason! });
       }
     } catch (e) {
-      logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
-        failureReason: GiftcardFailureReason.API_ERROR,
-      });
-      this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
+      if (isConnected) {
+        logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+          failureReason: GiftcardFailureReason.API_ERROR,
+        });
+        this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
+      }
     }
 
     const { failureReason } = this.state;
@@ -202,16 +204,16 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
                   />
                 </Fragment>
               )}
-              {((invalidBarcode && !cardsExhausted) ||
-                (APIError && !cardsExhausted)) && (
-                <Button
-                  label={t("emailSupport")}
-                  enabled={true}
-                  onPress={emailSupport}
-                  primary={true}
-                  style={[styles.redeemButton, { marginBottom: 0 }]}
-                />
-              )}
+              {(invalidBarcode || APIError) &&
+                (!cardsExhausted && isConnected) && (
+                  <Button
+                    label={t("emailSupport")}
+                    enabled={true}
+                    onPress={emailSupport}
+                    primary={true}
+                    style={[styles.redeemButton, { marginBottom: 0 }]}
+                  />
+                )}
               <Divider style={styles.divider} />
             </Fragment>
           )}
