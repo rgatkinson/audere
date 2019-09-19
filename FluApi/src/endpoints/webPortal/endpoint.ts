@@ -232,6 +232,11 @@ function addHandlers(
     authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
     wrap(coughGiftcardServer.setBarcodeValidations)
   );
+  app.post(
+    "/addDemoGiftcards",
+    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    wrap(coughGiftcardServer.addDemoGiftcards)
+  );
 
   const manageAccount = new ManageAccount(config.sql, getStatic);
   app.get("/manageAccount", wrap(manageAccount.getForm));

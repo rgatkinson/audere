@@ -113,6 +113,22 @@ export class CoughGiftcardEndpoint {
     }
   };
 
+  public addDemoGiftcards = async (req, res) => {
+    const { count, denomination } = req.body;
+    await addDemoGiftcards(
+      this.models,
+      parseInt(count),
+      parseInt(denomination)
+    );
+    res.redirect(
+      303,
+      "coughGiftcards?" +
+        querystring.stringify({
+          success: `Added ${count} demo giftcards of $${denomination} each`,
+        })
+    );
+  };
+
   public setRateLimit = async (req, res) => {
     const { limit } = req.body;
     this.liveConfig.set("rateLimit", {
@@ -156,16 +172,8 @@ export class CoughGiftcardEndpoint {
   };
 
   private async renderImportGiftcardForm(req, res, extraParams) {
-    const total = await this.models.giftcard.count();
-    const unassignedByDenomination = await this.models.giftcard.count({
-      where: { docId: null },
-      attributes: ["denomination"],
-      group: ["denomination"],
-    });
-    const unassigned = (unassignedByDenomination as any).reduce(
-      (total, denomination) => total + parseInt(denomination.count),
-      0
-    );
+    const stats = await this.getGiftcardStats(false);
+    const demoStats = await this.getGiftcardStats(true);
     const rateLimit = (await this.liveConfig.get(
       "rateLimit",
       DEFAULT_RATE_LIMIT
@@ -179,13 +187,26 @@ export class CoughGiftcardEndpoint {
     res.render("giftcardUpload.html", {
       static: this.getStatic(),
       csrf: req.csrfToken(),
-      total,
-      unassigned,
-      unassignedByDenomination,
+      stats,
+      demoStats,
       rateLimit,
       barcodePrefixes,
       ...extraParams,
     });
+  }
+
+  private async getGiftcardStats(isDemo: boolean) {
+    const total = await this.models.giftcard.count({ where: { isDemo } });
+    const unassignedByDenomination = await this.models.giftcard.count({
+      where: { docId: null, isDemo },
+      attributes: ["denomination"],
+      group: ["denomination"],
+    });
+    const unassigned = (unassignedByDenomination as any).reduce(
+      (total, denomination) => total + parseInt(denomination.count),
+      0
+    );
+    return { total, unassignedByDenomination, unassigned };
   }
 
   public getGiftcard = async (
@@ -395,6 +416,33 @@ export class CoughGiftcardEndpoint {
       },
     });
   }
+}
+
+export async function addDemoGiftcards(
+  coughModels: CoughModels,
+  count: number,
+  denomination: number
+) {
+  const lastGiftcard = await coughModels.giftcard.findOne({
+    limit: 1,
+    order: [["id", "DESC"]],
+  });
+  const lastId = lastGiftcard ? lastGiftcard.id : -1;
+  const giftcards: GiftcardAttributes[] = Array.from(
+    new Array(count),
+    (_, i) => ({
+      sku: "sku",
+      denomination,
+      cardNumber: "1234123412341234",
+      pin: "1234",
+      expiry: new Date("July 11, 2041"),
+      theme: "blue",
+      orderNumber: "seven",
+      url: `http://www.example.com/giftcard_${lastId + i + 1}`,
+      isDemo: true,
+    })
+  );
+  await coughModels.giftcard.bulkCreate(giftcards);
 }
 
 function convertRawGiftcard(
