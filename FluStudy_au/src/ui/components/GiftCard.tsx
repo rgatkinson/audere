@@ -54,39 +54,9 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
   async componentDidMount() {
     const { docId, barcode, giftCardAmount, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
-    const { failureReason } = this.state;
-    const invalidBarcode =
-      failureReason === GiftcardFailureReason.INVALID_BARCODE;
-    const cardsExhausted =
-      failureReason === GiftcardFailureReason.CARDS_EXHAUSTED;
-    const APIError =
-      failureReason === GiftcardFailureReason.API_ERROR ||
-      failureReason === GiftcardFailureReason.INVALID_DOC_ID;
 
-    const response = await checkGiftcardAvailability(
-      docId,
-      barcode,
-      parseInt(giftCardAmount),
-      isDemo
-    );
-
-    if (response.hasOwnProperty("failureReason")) {
-      logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
-        failureReason: response.failureReason,
-      });
-      this.setState({ failureReason: response.failureReason! });
-    }
-
-    if (giftCardsAvailable && !invalidBarcode && !APIError && !cardsExhausted) {
-      logFirebaseEvent(AppEvents.GIFT_CARD_LINK_SHOWN);
-    }
-  }
-
-  _onRedeemPress = async () => {
-    const { docId, barcode, giftCardAmount, isDemo, giftCardURL } = this.props;
-
-    if (!giftCardURL || giftCardURL.length === 0) {
-      const response = await getGiftCard(
+    try {
+      const response = await checkGiftcardAvailability(
         docId,
         barcode,
         parseInt(giftCardAmount),
@@ -98,11 +68,58 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
           failureReason: response.failureReason,
         });
         this.setState({ failureReason: response.failureReason! });
-      } else if (!!response.giftcard) {
-        this.props.dispatch(setGiftCardURL(response.giftcard.url));
-        logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
-        Linking.openURL(response.giftcard.url);
-        this.setState({ failureReason: "" });
+      }
+    } catch (e) {
+      logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+        failureReason: GiftcardFailureReason.API_ERROR,
+      });
+      this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
+    }
+
+    const { failureReason } = this.state;
+    const invalidBarcode =
+      failureReason === GiftcardFailureReason.INVALID_BARCODE;
+    const cardsExhausted =
+      failureReason === GiftcardFailureReason.CARDS_EXHAUSTED;
+    const APIError =
+      failureReason === GiftcardFailureReason.API_ERROR ||
+      failureReason === GiftcardFailureReason.INVALID_DOC_ID;
+
+    if (giftCardsAvailable && !invalidBarcode && !APIError && !cardsExhausted) {
+      logFirebaseEvent(AppEvents.GIFT_CARD_LINK_SHOWN);
+    }
+  }
+
+  _onRedeemPress = async () => {
+    const { docId, barcode, giftCardAmount, isDemo, giftCardURL } = this.props;
+
+    if (!giftCardURL || giftCardURL.length === 0) {
+      try {
+        const response = await getGiftCard(
+          docId,
+          barcode,
+          parseInt(giftCardAmount),
+          isDemo
+        );
+
+        if (response.hasOwnProperty("failureReason")) {
+          logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+            failureReason: response.failureReason,
+          });
+          this.setState({ failureReason: response.failureReason! });
+        } else if (!!response.giftcard) {
+          this.props.dispatch(setGiftCardURL(response.giftcard.url));
+          logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
+
+          this.setState({ failureReason: "" }, () => {
+            Linking.openURL(response.giftcard!.url);
+          });
+        }
+      } catch (e) {
+        logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+          failureReason: GiftcardFailureReason.API_ERROR,
+        });
+        this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
       }
     } else {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
