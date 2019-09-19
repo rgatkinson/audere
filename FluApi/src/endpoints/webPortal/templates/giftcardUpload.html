@@ -37,8 +37,8 @@ can be found in the LICENSE file distributed with this file.
       <div class='errorBox'>{{error}}</div>
     {{/if}}
     <h3>Current Stats:</h3>
-    <div>Total Giftcards: {{total}}</div>
-    <div>Total Unassigned Giftcards: {{unassigned}}</div>
+    <div>Total Giftcards: {{stats.total}}</div>
+    <div>Unassigned Giftcards: {{stats.unassigned}}</div>
     <h4> Unassigned giftcards by denomination:</h4>
     <table>
       <thead>
@@ -46,7 +46,7 @@ can be found in the LICENSE file distributed with this file.
         <td># of giftcards</td>
       </thead>
       <tbody>
-        {{#each unassignedByDenomination}}
+        {{#each stats.unassignedByDenomination}}
           <tr>
             <td>${{denomination}}</td>
             <td>{{count}}</td>
@@ -74,8 +74,34 @@ can be found in the LICENSE file distributed with this file.
     <div>
       <form action="setBarcodeValidations" method="post">
         <input type="hidden" name="_csrf" value="{{csrf}}"/>
-        <div><textarea  id="barcodePrefixes" name="barcodePrefixes" rows=25 columns=15>{{barcodePrefixes}}</textarea></div>
+        <div><textarea  id="barcodePrefixes" name="barcodePrefixes" rows=25>{{barcodePrefixes}}</textarea></div>
         <div><input type="submit" value="save"/></div>
+      </form>
+    </div>
+    <h3>Add demo mode gift cards</h3>
+    <div>Total Demo Giftcards: {{demoStats.total}}</div>
+    <div>Unassigned Demo Giftcards: {{demoStats.unassigned}}</div>
+    <h4> Unassigned demo giftcards by denomination:</h4>
+    <table>
+      <thead>
+        <td>Denomination</td>
+        <td># of giftcards</td>
+      </thead>
+      <tbody>
+        {{#each demoStats.unassignedByDenomination}}
+          <tr>
+            <td>${{denomination}}</td>
+            <td>{{count}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <div>
+      <form action="addDemoGiftcards" method="post">
+        <input type="hidden" name="_csrf" value="{{csrf}}"/>
+        <div>Denomination: <input type="text" name="denomination" value="25"/></div>
+        <div>Number of cards to add: <input type="text" name="count" value="10"/></div>
+        <div><input type="submit" value="add"/></div>
       </form>
     </div>
   </body>

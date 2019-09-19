@@ -65,6 +65,7 @@ import { AuthManager } from "../src/endpoints/webPortal/auth";
 import { defineDeviceSetting } from "../src/models/db/devices";
 import { extractVisitNonPii } from "../src/endpoints/snifflesApi";
 import { extractVisitPii } from "../src/endpoints/snifflesApi";
+import { addDemoGiftcards } from "../src/endpoints/coughGiftcardApi";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -1619,24 +1620,5 @@ interface AddDemoCoughGiftcardsArgs {
 }
 
 async function cmdAddDemoCoughGiftcards(argv: AddDemoCoughGiftcardsArgs) {
-  const lastGiftcard = await coughModels.giftcard.findOne({
-    limit: 1,
-    order: [["id", "DESC"]],
-  });
-  const lastId = lastGiftcard ? lastGiftcard.id : -1;
-  const giftcards: GiftcardAttributes[] = Array.from(
-    new Array(argv.count),
-    (_, i) => ({
-      sku: "sku",
-      denomination: argv.denomination,
-      cardNumber: "1234123412341234",
-      pin: "1234",
-      expiry: new Date("July 11, 2041"),
-      theme: "blue",
-      orderNumber: "seven",
-      url: `http://www.example.com/giftcard_${lastId + i + 1}`,
-      isDemo: true,
-    })
-  );
-  await coughModels.giftcard.bulkCreate(giftcards);
+  await addDemoGiftcards(coughModels, argv.count, argv.denomination);
 }
