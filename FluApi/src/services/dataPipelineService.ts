@@ -412,6 +412,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           id,
           "createdAt",
           "updatedAt",
+          is_demo,
           allocated_at,
           denomination,
           doc_id,
