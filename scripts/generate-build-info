@@ -9,6 +9,11 @@
 
 set -euo pipefail
 
+if ! [ -x "$(command -v jq)" ]; then
+  echo "Error generating buildInfo: jq is not installed." >&2
+  exit 1
+fi
+
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 PRODUCT_DIR="$REPO_ROOT_DIR/$1"
 if [[ "$#" -eq 2 ]]; then 
