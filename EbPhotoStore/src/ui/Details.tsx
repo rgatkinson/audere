@@ -2,49 +2,47 @@
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
+import { PatientInfo } from "audere-lib/ebPhotoStoreProtocol";
 import React from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
+  Image,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
-  View,
   TouchableOpacity,
-  Image,
+  View,
 } from "react-native";
+import firebase from "react-native-firebase";
 import { connect } from "react-redux";
-import { WithNamespaces, withNamespaces } from "react-i18next";
-import { PatientInfo } from "audere-lib/ebPhotoStoreProtocol";
 import {
   Action,
-  StoreState,
-  viewPatients,
   addPatient,
-  updatePatient,
   Screen,
-  LocalPhotoInfo,
+  StoreState,
+  updatePatient,
+  viewPatients,
 } from "../store";
+import { TitlebarCallback } from "./AppController";
+import Button from "./components/Button";
+import Divider from "./components/Divider";
+import LabelNumberInput from "./components/LabelNumberInput";
+import LabelTextInput from "./components/LabelTextInput";
 import NumberInput from "./components/NumberInput";
+import RadioInput from "./components/RadioInput";
 import Text from "./components/Text";
 import TextInput from "./components/TextInput";
-import Divider from "./components/Divider";
 import {
   EBOLA_NEGATIVE_COLOR,
   EBOLA_POSITIVE_COLOR,
-  GUTTER,
   FONT_COLOR_LIGHT,
-  LARGE_TEXT,
+  GUTTER,
   ICON_SIZE,
-  REGULAR_TEXT,
+  LARGE_TEXT,
   LIGHT_COLOR,
+  REGULAR_TEXT,
   THICK_BORDER_WIDTH,
 } from "./styles";
-import LabelTextInput from "./components/LabelTextInput";
-import LabelNumberInput from "./components/LabelNumberInput";
-import Button from "./components/Button";
-import RadioInput from "./components/RadioInput";
-import firebase from "react-native-firebase";
-import { TitlebarCallback } from "./AppController";
-import i18n from "../i18n";
 
 interface Props {
   editModeEnabled?: boolean;

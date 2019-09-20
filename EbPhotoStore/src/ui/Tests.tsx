@@ -2,32 +2,31 @@
 //
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
+import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
 import React, { Component, Fragment } from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
+  Dimensions,
   Image,
+  PermissionsAndroid,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   View,
-  PermissionsAndroid,
-  Dimensions,
-  ScrollView,
 } from "react-native";
+import firebase from "react-native-firebase";
 import { connect } from "react-redux";
-import { WithNamespaces, withNamespaces } from "react-i18next";
-import Text from "./components/Text";
-import { GUTTER, HIGHLIGHT_COLOR, INPUT_HEIGHT } from "./styles";
+import i18n from "../i18n";
 import {
-  StoreState,
   Action,
   LocalPhotoInfo,
   openCamera,
+  StoreState,
   viewCameraPermission,
   viewLocationPermission,
-  // AnalysisStatus,
 } from "../store";
-import { HealthWorkerInfo } from "audere-lib/ebPhotoStoreProtocol";
-import i18n from "../i18n";
-import firebase from "react-native-firebase";
+import Text from "./components/Text";
+import { GUTTER, HIGHLIGHT_COLOR, INPUT_HEIGHT } from "./styles";
 
 interface Props {
   // analysisStatus?: AnalysisStatus;
@@ -127,6 +126,9 @@ class Tests extends Component<Props & WithNamespaces, State> {
               content={t("location", {
                 location: this.state.location
                   ? this.state.location
+                      .split(",")
+                      .map(item => item.trim())
+                      .join(",\n")
                   : t("computingLocation"),
               })}
             />
