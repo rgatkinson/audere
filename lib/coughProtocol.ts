@@ -118,7 +118,7 @@ export type SurveyInfo = SurveyNonPIIInfo;
 export interface SurveyNonPIIInfo extends CommonInfo {
   consents: NonPIIConsentInfo[];
   samples: SampleInfo[];
-  giftCardURL?: string;
+  giftCardInfo?: GiftCardInfo;
   invalidBarcodes?: SampleInfo[];
 
   // Filtered to include only non-PII, like health data.
@@ -265,4 +265,9 @@ export enum GiftcardFailureReason {
   INVALID_DOC_ID,
   INVALID_BARCODE,
   API_ERROR,
+}
+
+export interface GiftCardInfo {
+  giftCardURL?: string;
+  giftCardAmount?: string;
 }

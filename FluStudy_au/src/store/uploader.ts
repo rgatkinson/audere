@@ -143,6 +143,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_RDT_INTERPRETATION_SHOWN": // FEV-695
       case "SET_RESULT_SHOWN": // FEV-929
       case "APPEND_EVENT":
+      case "SET_GIFT_CARD_URL": // FEV-1262 & FEV-1257
         /*
          * Testing only writing to pouch when the user navigates between screens
          * for performance reasons.
@@ -176,7 +177,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     consents: [],
     samples: [],
     responses: [],
-    giftCardURL: state.survey.giftCardURL,
+    giftCardInfo: state.survey.giftCardInfo,
     events: state.survey.events,
     workflow: state.survey.workflow,
     rdtInfo: state.survey.rdtInfo,

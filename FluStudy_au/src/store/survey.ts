@@ -13,9 +13,13 @@ import {
   RDTReaderResult,
   SampleInfo,
   WorkflowInfo,
+  GiftCardInfo,
 } from "audere-lib/coughProtocol";
 import { onCSRUIDEstablished } from "../util/tracker";
 import i18n from "i18next";
+import { getRemoteConfig } from "../util/remoteConfig";
+
+export const DEFAULT_GIFT_CARD_AMOUNT = "";
 
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
@@ -52,14 +56,15 @@ export type SurveyAction =
       resultShownExplanation: string;
     }
   | { type: "RESET_TIMESTAMP" }
-  | { type: "SET_GIFT_CARD_URL"; giftCardURL: string };
+  | { type: "SET_GIFT_CARD_URL"; giftCardURL: string }
+  | { type: "SET_GIFT_CARD_AMOUNT"; giftCardAmount: string };
 
 export type SurveyState = {
   consent?: NonPIIConsentInfo;
   csruid?: string;
   email?: string;
   events: EventInfo[];
-  giftCardURL?: string;
+  giftCardInfo?: GiftCardInfo;
   invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
   oneMinuteStartTime?: number;
@@ -85,6 +90,7 @@ export type SurveyState = {
     | RDTInfo
     | number
     | WorkflowInfo
+    | GiftCardInfo
     | undefined;
 };
 
@@ -300,9 +306,29 @@ export default function reducer(state = initialState, action: SurveyAction) {
     case "SET_GIFT_CARD_URL":
       return {
         ...state,
-        giftCardURL: action.giftCardURL,
+        giftCardInfo: {
+          ...state.giftCardInfo,
+          giftCardURL: action.giftCardURL,
+        },
       };
 
+    case "SET_GIFT_CARD_AMOUNT":
+      if (
+        !state.giftCardInfo ||
+        (state.giftCardInfo &&
+          (state.giftCardInfo.giftCardAmount === DEFAULT_GIFT_CARD_AMOUNT ||
+            state.giftCardInfo.giftCardAmount === undefined))
+      ) {
+        return {
+          ...state,
+          giftCardInfo: {
+            ...state.giftCardInfo,
+            giftCardAmount: action.giftCardAmount,
+          },
+        };
+      } else {
+        return { ...state };
+      }
     default:
       return state;
   }
@@ -489,6 +515,11 @@ export function setGiftCardURL(giftCardURL: string): SurveyAction {
     type: "SET_GIFT_CARD_URL",
     giftCardURL,
   };
+}
+
+export function setGiftCardAmount(): SurveyAction {
+  const giftCardAmount = getRemoteConfig("giftCardAmount");
+  return { type: "SET_GIFT_CARD_AMOUNT", giftCardAmount };
 }
 
 function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {

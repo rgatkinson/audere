@@ -3,7 +3,12 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { StyleSheet, View } from "react-native";
 import Text from "../components/Text";
-import { StoreState, Action, setGiftCardURL } from "../../store";
+import {
+  StoreState,
+  Action,
+  setGiftCardURL,
+  DEFAULT_GIFT_CARD_AMOUNT,
+} from "../../store";
 import Divider from "./Divider";
 import {
   GUTTER,
@@ -257,6 +262,12 @@ export default connect((state: StoreState) => ({
   barcode: state.survey.kitBarcode ? state.survey.kitBarcode.code : "",
   isConnected: state.meta.isConnected,
   isDemo: state.meta.isDemo,
-  giftCardAmount: state.meta.giftCardAmount,
-  giftCardURL: !!state.survey.giftCardURL ? state.survey.giftCardURL : "",
+  giftCardAmount:
+    !!state.survey.giftCardInfo && !!state.survey.giftCardInfo.giftCardAmount
+      ? state.survey.giftCardInfo.giftCardAmount
+      : DEFAULT_GIFT_CARD_AMOUNT,
+  giftCardURL:
+    !!state.survey.giftCardInfo && !!state.survey.giftCardInfo.giftCardURL
+      ? state.survey.giftCardInfo.giftCardURL
+      : "",
 }))(withNavigation(withNamespaces("Giftcard")(GiftCard)));

@@ -58,7 +58,7 @@ export declare type SurveyInfo = SurveyNonPIIInfo;
 export interface SurveyNonPIIInfo extends CommonInfo {
     consents: NonPIIConsentInfo[];
     samples: SampleInfo[];
-    giftCardURL?: string;
+    giftCardInfo?: GiftCardInfo;
     invalidBarcodes?: SampleInfo[];
     responses: ResponseInfo[];
     rdtInfo?: RDTInfo;
@@ -171,4 +171,8 @@ export declare enum GiftcardFailureReason {
     INVALID_DOC_ID = 1,
     INVALID_BARCODE = 2,
     API_ERROR = 3
+}
+export interface GiftCardInfo {
+    giftCardURL?: string;
+    giftCardAmount?: string;
 }
