@@ -3,40 +3,41 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import "./src/hacks";
+import { AppLoading } from "expo";
+import * as Font from "expo-font";
 import React from "react";
+import { I18nextProvider, withNamespaces } from "react-i18next";
+import { YellowBox } from "react-native";
+import { useScreens } from "react-native-screens";
+import { Provider } from "react-redux";
 import { Store } from "redux";
 import { Persistor } from "redux-persist";
-import { YellowBox } from "react-native";
+import { PersistGate } from "redux-persist/integration/react";
+import "./src/hacks";
+import i18n from "./src/i18n";
+import { getPersistor, getStore } from "./src/store/";
+import { initializeFirestore } from "./src/store/FirebaseStore";
+import ConnectedRootContainer from "./src/ui/ConnectedRootContainer";
+import { PubSubHub } from "./src/util/pubsub";
+import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
+import { startTracking } from "./src/util/tracker";
+import {
+  setupErrorHandler,
+  uploadingErrorHandler,
+} from "./src/util/uploadingErrorHandler";
 YellowBox.ignoreWarnings([
   "Class EXHomeModule",
   "Class EXTest",
   "Class EXDisabledDevMenu",
   "Class EXDisabledRedBox",
 ]);
-import { I18nextProvider, withNamespaces } from "react-i18next";
-import { AppLoading } from "expo";
-import * as Font from "expo-font";
-import { getStore, getPersistor } from "./src/store/";
-import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
-import ConnectedRootContainer from "./src/ui/ConnectedRootContainer";
-import i18n from "./src/i18n";
 
-import {
-  setupErrorHandler,
-  uploadingErrorHandler,
-} from "./src/util/uploadingErrorHandler";
-import { startTracking } from "./src/util/tracker";
-import { loadAllRemoteConfigs } from "./src/util/remoteConfig";
-import { initializeFirestore } from "./src/store/FirebaseStore";
-import { PubSubHub } from "./src/util/pubsub";
-import { useScreens } from "react-native-screens";
 useScreens();
 
 export default class App extends React.Component {
   state = {
     appReady: false,
+    assetsLoaded: false,
   };
 
   async componentDidMount() {
@@ -77,10 +78,11 @@ export default class App extends React.Component {
       getStore().then(store => (this.store = store)),
       getPersistor().then(persistor => (this.persistor = persistor)),
     ]);
+    this.setState({ assetsLoaded: true });
   }
 
   render() {
-    if (!this.state.appReady) {
+    if (!this.state.appReady || !this.state.assetsLoaded) {
       return <AppLoading />;
     }
 
