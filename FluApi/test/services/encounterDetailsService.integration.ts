@@ -215,7 +215,7 @@ describe("encounterDetailsService", () => {
     });
   });
 
-  describe("retrieve surveys", async () => {
+  describe("retrieve surveys", () => {
     beforeEach(async () => {
       await cleanupFever();
     });

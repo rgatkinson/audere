@@ -154,7 +154,7 @@ describe("survey batch data access", () => {
     }
   }
 
-  describe("get existing batch", async () => {
+  describe("get existing batch", () => {
     it("should retrieve existing batches", async () => {
       await createTestData(false);
 
@@ -240,7 +240,7 @@ describe("survey batch data access", () => {
     });
   });
 
-  describe("get existing items", async () => {
+  describe("get existing items", () => {
     it("should fetch items based on a list of ids", async () => {
       await createTestData(false);
 

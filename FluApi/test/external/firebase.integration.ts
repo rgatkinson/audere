@@ -27,7 +27,7 @@ const DOC1 = {
   key: "value1",
 };
 
-describe("FirebaseReceiver", async () => {
+describe("FirebaseReceiver", () => {
   let sql;
   let app;
   let firestore;

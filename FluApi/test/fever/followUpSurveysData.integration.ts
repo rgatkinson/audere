@@ -175,7 +175,7 @@ describe("survey batch data access", () => {
     }
   }
 
-  describe("get existing batch", async () => {
+  describe("get existing batch", () => {
     it("should retrieve existing batches", async () => {
       await createTestData(false);
 
@@ -326,7 +326,7 @@ describe("survey batch data access", () => {
     });
   });
 
-  describe("importing follow-up surveys", async () => {
+  describe("importing follow-up surveys", () => {
     const followUpData = {
       record_id: 1,
       email: "zaza@mail.com",

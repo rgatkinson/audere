@@ -118,7 +118,7 @@ describe("survey batch data access", () => {
     await kitItems.bulkCreate(batchItems);
   }
 
-  describe("get existing batch", async () => {
+  describe("get existing batch", () => {
     it("should retrieve existing batches", async () => {
       await createTestData(false);
 
