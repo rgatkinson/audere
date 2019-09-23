@@ -80,7 +80,7 @@ export class EncountersService {
         scrubbed = this.scrubEncounter(
           encounter.key,
           encounter.encounter,
-          geocodedAddresses.get(encounter.key.id + "_" + encounter.key.release)
+          geocodedAddresses.get(this.getKeyString(encounter.key))
         );
       } catch (e) {
         logger.error(
@@ -182,6 +182,11 @@ export class EncountersService {
     );
   }
 
+  // Encounter key as a string
+  private getKeyString(key: EncounterKey): string {
+    return key.release + "_" + key.id;
+  }
+
   private hasAddressInfo(details: PIIEncounterDetails) {
     return (
       details != null &&
@@ -216,7 +221,7 @@ export class EncountersService {
           }
         }
 
-        requests.set(e.key.release + "_" + e.key.id, e.encounter.addresses);
+        requests.set(this.getKeyString(e.key), e.encounter.addresses);
       }
     });
 

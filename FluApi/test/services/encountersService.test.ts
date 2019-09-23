@@ -201,7 +201,7 @@ describe("encounters service", () => {
 
     it("should scrub address data by geocoding and append census tract", async () => {
       const homeAddress: GeocodingResponse = {
-        id: details.id + "_" + Release.Sniffles,
+        id: Release.Sniffles + "_" + details.id,
         use: AddressInfoUse.Home,
         addresses: [
           {
@@ -217,7 +217,7 @@ describe("encounters service", () => {
         ],
       };
       const workAddress: GeocodingResponse = {
-        id: details.id + "_" + Release.Sniffles,
+        id: Release.Sniffles + "_" + details.id,
         use: AddressInfoUse.Work,
         addresses: [
           {
@@ -233,7 +233,7 @@ describe("encounters service", () => {
         ],
       };
       const tempAddress: GeocodingResponse = {
-        id: details.id + "_" + Release.Sniffles,
+        id: Release.Sniffles + "_" + details.id,
         use: AddressInfoUse.Temp,
         addresses: [
           {
