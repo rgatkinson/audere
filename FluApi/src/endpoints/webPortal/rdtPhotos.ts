@@ -307,6 +307,14 @@ export class RDTPhotos {
       newPhotoHash,
       replacerId: req.user.id,
     });
+
+    // Replace the photo in S3 as well
+    await this.models.photoUploadLog.destroy({
+      where: {
+        coughSurveyId: surveyId,
+      },
+    });
+
     res.redirect(303, `./coughPhoto?id=${surveyId}`);
   };
 }
