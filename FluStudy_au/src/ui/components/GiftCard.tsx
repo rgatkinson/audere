@@ -2,7 +2,7 @@ import { GiftcardFailureReason } from "audere-lib/coughProtocol";
 import { Linking } from "expo";
 import React, { Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { StyleSheet, View } from "react-native";
+import { AppState, StyleSheet, View } from "react-native";
 import { NavigationScreenProp, withNavigation } from "react-navigation";
 import { connect } from "react-redux";
 import { appSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
@@ -57,6 +57,8 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
   }
 
   async componentDidMount() {
+    AppState.addEventListener("change", this._handleAppStateChange);
+
     const { docId, barcode, giftCardAmount, isConnected, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
 
@@ -96,6 +98,18 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_SHOWN);
     }
   }
+
+  componentWillUnmount() {
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = async (nextAppState: string) => {
+    if (nextAppState === "active") {
+      // Force a re-render in case remoteConfig values have changed;
+      // e.g. giftCardsAvailable or skipSurveyNotification
+      this.forceUpdate();
+    }
+  };
 
   _onRedeemPress = async () => {
     const {
@@ -185,12 +199,14 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
         : "offline"
       : "noGiftCard";
 
+    const skipSurveyNotification = getRemoteConfig("skipSurveyNotification");
+
     return (
       <View>
         <Fragment>
           <Text content={t(thankYouText)} />
           <Divider style={styles.divider} />
-          {!!completed48HoursAgo && (
+          {!!completed48HoursAgo && !skipSurveyNotification && (
             <Fragment>
               <SurveyLinkBlock />
               <Divider style={styles.divider} />
@@ -265,7 +281,7 @@ export default connect((state: StoreState) => ({
       new Date(state.survey.workflow.surveyCompletedAt!).getTime()) /
       1000 /
       60 /
-      60 >
+      60 >=
     48,
   docId: state.survey.csruid,
   barcode: state.survey.kitBarcode ? state.survey.kitBarcode.code : "",
