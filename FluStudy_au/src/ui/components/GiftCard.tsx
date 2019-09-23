@@ -1,37 +1,37 @@
+import { GiftcardFailureReason } from "audere-lib/coughProtocol";
+import { Linking } from "expo";
 import React, { Component, Fragment } from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { connect } from "react-redux";
 import { StyleSheet, View } from "react-native";
-import Text from "../components/Text";
+import { NavigationScreenProp, withNavigation } from "react-navigation";
+import { connect } from "react-redux";
+import { appSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
 import {
-  StoreState,
   Action,
-  setGiftCardURL,
   DEFAULT_GIFT_CARD_AMOUNT,
+  setGiftCardURL,
+  StoreState,
 } from "../../store";
-import Divider from "./Divider";
 import {
-  GUTTER,
-  THICK_BORDER_WIDTH,
-  PRIMARY_COLOR,
-  BORDER_RADIUS,
-  SECONDARY_COLOR,
-} from "../styles";
-import { Linking } from "expo";
-import Button from "./Button";
+  checkGiftcardAvailability,
+  getGiftCard,
+} from "../../transport/Giftcards";
+import { getRemoteConfig } from "../../util/remoteConfig";
 import {
-  logFirebaseEvent,
   AppEvents,
   AppHealthEvents,
+  logFirebaseEvent,
 } from "../../util/tracker";
-import { GiftcardFailureReason } from "audere-lib/coughProtocol";
+import Text from "../components/Text";
 import {
-  getGiftCard,
-  checkGiftcardAvailability,
-} from "../../transport/Giftcards";
-import { NavigationScreenProp, withNavigation } from "react-navigation";
-import { appSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
-import { getRemoteConfig } from "../../util/remoteConfig";
+  BORDER_RADIUS,
+  GUTTER,
+  PRIMARY_COLOR,
+  SECONDARY_COLOR,
+  THICK_BORDER_WIDTH,
+} from "../styles";
+import Button from "./Button";
+import Divider from "./Divider";
 import SurveyLinkBlock from "./flu/SurveyLinkBlock";
 
 interface Props {
@@ -98,7 +98,14 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
   }
 
   _onRedeemPress = async () => {
-    const { docId, barcode, giftCardAmount, isDemo, giftCardURL } = this.props;
+    const {
+      docId,
+      barcode,
+      giftCardAmount,
+      isConnected,
+      isDemo,
+      giftCardURL,
+    } = this.props;
 
     if (!giftCardURL || giftCardURL.length === 0) {
       try {
@@ -123,10 +130,12 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
           });
         }
       } catch (e) {
-        logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
-          failureReason: GiftcardFailureReason.API_ERROR,
-        });
-        this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
+        if (isConnected) {
+          logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+            failureReason: GiftcardFailureReason.API_ERROR,
+          });
+          this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
+        }
       }
     } else {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
