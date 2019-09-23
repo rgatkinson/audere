@@ -470,7 +470,7 @@
     "offline": "Please reconnect to the internet in order to receive your gift card and take the follow-up survey.",
     "APIError": "We are experiencing an issue. Please contact customer support using the link below to claim your gift card.",
     "invalidBarcode": "There is an issue with the kit barcode you entered. Please contact customer support using the link below.",
-    "faqLink": "Gift card FAQ>",
+    "faqLink": "Gift card FAQ >",
     "emailSupport": "email support"
   },
   "PendingData": {
