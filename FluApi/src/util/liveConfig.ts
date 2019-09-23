@@ -46,7 +46,7 @@ export class LiveConfig<ProjectConfig> {
         this.project
       } config, setting ${key} to ${JSON.stringify(value)}`
     );
-    this.configModel.upsert({
+    await this.configModel.upsert({
       project: this.project,
       key,
       value,
