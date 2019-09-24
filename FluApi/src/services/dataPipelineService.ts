@@ -187,9 +187,10 @@ class SequelizeSourceTable extends ManagedTable {
           tbl.id
         from
           ${meta.name} as tbl
-          join ${ref.tableName} as source on source.id = tbl."${ref.id}"
+          left join ${ref.tableName} as source on source.id = tbl."${ref.id}"
         where
-          tbl."${ref.timestamp}" < source."updatedAt"
+          source."updatedAt" is null
+          or tbl."${ref.timestamp}" < source."updatedAt"
       )
       `,
       `
