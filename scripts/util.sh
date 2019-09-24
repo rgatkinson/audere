@@ -103,7 +103,7 @@ function notify-slack() {
   if [[ -z "${SLACK_WEBHOOK:-}" ]]; then
     echo "Set SLACK_WEBHOOK in scripts/.env to send slack notifications"
   else
-    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$1\"}" $SLACK_WEBHOOK &> /dev/null
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"($USER) $1\"}" $SLACK_WEBHOOK &> /dev/null
   fi
   echo $1
 }

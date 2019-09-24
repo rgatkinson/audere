@@ -60,6 +60,9 @@ fi
 
 "$SELF_DIR/../terraform/modules/assets/push.sh"
 
+# Verify we have valid credentials
+aws sts get-caller-identity
+
 notify-slack "Deploying ${environment} to \`${commit}\`"
 
 (set -x
