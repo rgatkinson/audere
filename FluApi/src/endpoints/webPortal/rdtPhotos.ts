@@ -10,7 +10,7 @@ import { sha256 } from "../../util/crypto";
 import { SplitSql } from "../../util/sql";
 import { CoughModels, defineCoughModels } from "../../models/db/cough";
 import { SiteUserModels, defineSiteUserModels } from "./models";
-import { AuthManager, Permissions } from "./auth";
+import { AuthManager, Permission } from "./auth";
 
 const LABELS = {
   RDTReaderPhotoGUID: "Automatic Capture",
@@ -64,7 +64,7 @@ export class RDTPhotos {
     const order = ORDER_OPTIONS[orderBy];
     const shouldShowPII = await this.authManager.authorize(
       req.user.userid,
-      Permissions.COUGH_INTERPRETATION_WRITE
+      Permission.COUGH_INTERPRETATION_WRITE
     );
     const piiRestriction = shouldShowPII
       ? {}
@@ -158,7 +158,7 @@ export class RDTPhotos {
 
     const canInterpret = await this.authManager.authorize(
       req.user.userid,
-      Permissions.COUGH_INTERPRETATION_WRITE
+      Permission.COUGH_INTERPRETATION_WRITE
     );
     const piiReview = await this.models.piiReview.findOne({
       where: { surveyId: id },
@@ -213,7 +213,7 @@ export class RDTPhotos {
 
     const canReplace = await this.authManager.authorize(
       req.user.userid,
-      Permissions.COUGH_RDT_PHOTOS_WRITE
+      Permission.COUGH_RDT_PHOTOS_WRITE
     );
     const previousReviewer =
       piiReview &&

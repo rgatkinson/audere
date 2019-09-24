@@ -109,7 +109,7 @@ export class AuthManager {
     await user.destroy();
   }
 
-  async grantPermission(userid: string, permission: string): Promise<void> {
+  async grantPermission(userid: string, permission: Permission): Promise<void> {
     const user = await this.findUser(userid);
     await this.models.permissions.create({
       userId: user.id,
@@ -130,7 +130,7 @@ export class AuthManager {
     }
   }
 
-  async authorize(userid: string, permission: string): Promise<boolean> {
+  async authorize(userid: string, permission: Permission): Promise<boolean> {
     try {
       logger.info(
         `[AuthManager#authorize] authorizing ${userid} to ${permission} @audit`
@@ -173,17 +173,17 @@ function makeToken({ salt, userid, password }: TokenParts): string {
   return sha256(salt, userid, password);
 }
 
-export const Permissions = {
-  SEATTLE_CHILDRENS_HIPAA_ACCESS: "seattleChildrensHipaaAccess",
-  COUGH_GIFTCARD_UPLOAD: "coughGiftcardUpload",
-  COUGH_RDT_PHOTOS_ACCESS: "coughRdtPhotosAccess",
-  COUGH_RDT_PHOTOS_WRITE: "coughRdtPhotosWrite",
-  COUGH_INTERPRETATION_WRITE: "coughInterpretationWrite",
-};
+export enum Permission {
+  SEATTLE_CHILDRENS_HIPAA_ACCESS = "seattleChildrensHipaaAccess",
+  COUGH_GIFTCARD_UPLOAD = "coughGiftcardUpload",
+  COUGH_RDT_PHOTOS_ACCESS = "coughRdtPhotosAccess",
+  COUGH_RDT_PHOTOS_WRITE = "coughRdtPhotosWrite",
+  COUGH_INTERPRETATION_WRITE = "coughInterpretationWrite",
+}
 
 export function authorizationMiddleware(
   authManager: AuthManager,
-  requiredPermission: string
+  requiredPermission: Permission
 ) {
   return async (req, res, next) => {
     if (!req.user) {

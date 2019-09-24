@@ -61,7 +61,7 @@ import {
   SurveyPIIUpdater,
 } from "./util/feverSurveyUpdater";
 import { Updater } from "./util/updater";
-import { AuthManager } from "../src/endpoints/webPortal/auth";
+import { AuthManager, Permission } from "../src/endpoints/webPortal/auth";
 import { defineDeviceSetting } from "../src/models/db/devices";
 import { extractVisitNonPii } from "../src/endpoints/snifflesApi";
 import { extractVisitPii } from "../src/endpoints/snifflesApi";
@@ -768,7 +768,14 @@ interface PermissionArgs {
 }
 
 async function cmdGrantPermission(argv: PermissionArgs) {
+  if (!isPermission(argv.permission)) {
+    throw new Error("Invalid permission");
+  }
   await auth.grantPermission(argv.userid, argv.permission);
+}
+
+function isPermission(p: string): p is Permission {
+  return Object.values(Permission).includes(p as Permission);
 }
 
 async function cmdRevokePermission(argv: PermissionArgs) {

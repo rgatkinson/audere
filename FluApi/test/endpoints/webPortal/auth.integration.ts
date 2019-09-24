@@ -1,6 +1,9 @@
 import { createSplitSql } from "../../../src/util/sql";
-import { AuthManager } from "../../../src/endpoints/webPortal/auth";
+import { AuthManager, Permission } from "../../../src/endpoints/webPortal/auth";
 import { defineSiteUserModels } from "../../../src/endpoints/webPortal/models";
+
+const SOME_PERMISSION = Permission.COUGH_GIFTCARD_UPLOAD;
+const SOME_OTHER_PERMISSION = Permission.COUGH_RDT_PHOTOS_ACCESS;
 
 describe("authManager", () => {
   describe("authorize", () => {
@@ -24,29 +27,29 @@ describe("authManager", () => {
 
     it("rejects unauthorized users", async () => {
       expect(
-        await authManager.authorize("auth_test_user1", "some_permission")
+        await authManager.authorize("auth_test_user1", SOME_PERMISSION)
       ).toBe(false);
       expect(
-        await authManager.authorize("auth_test_user2", "some_permission")
+        await authManager.authorize("auth_test_user2", SOME_PERMISSION)
       ).toBe(false);
     });
 
     it("allows an authorized user", async () => {
-      await authManager.grantPermission("auth_test_user1", "some_permission");
+      await authManager.grantPermission("auth_test_user1", SOME_PERMISSION);
       expect(
-        await authManager.authorize("auth_test_user1", "some_permission")
+        await authManager.authorize("auth_test_user1", SOME_PERMISSION)
       ).toBe(true);
       expect(
-        await authManager.authorize("auth_test_user1", "some_other_permission")
+        await authManager.authorize("auth_test_user1", SOME_OTHER_PERMISSION)
       ).toBe(false);
       expect(
-        await authManager.authorize("auth_test_user2", "some_permission")
+        await authManager.authorize("auth_test_user2", SOME_PERMISSION)
       ).toBe(false);
-      await authManager.revokePermission("auth_test_user1", "some_permission");
+      await authManager.revokePermission("auth_test_user1", SOME_PERMISSION);
     });
 
     it("reject an unknown user", async () => {
-      expect(await authManager.authorize("fake_user", "some_permission")).toBe(
+      expect(await authManager.authorize("fake_user", SOME_PERMISSION)).toBe(
         false
       );
     });

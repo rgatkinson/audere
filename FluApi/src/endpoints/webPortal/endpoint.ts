@@ -11,7 +11,7 @@ import formidable from "express-formidable";
 import bodyParser from "body-parser";
 import consolidate from "consolidate";
 import csurf from "csurf";
-import { AuthManager, Permissions, authorizationMiddleware } from "./auth";
+import { AuthManager, Permission, authorizationMiddleware } from "./auth";
 import { CoughGiftcardEndpoint } from "../coughGiftcardApi";
 import {
   useOuch,
@@ -52,17 +52,17 @@ const INDEX_PAGE_LINKS = [
   {
     label: "Seattle Children's HIPAA and consent forms",
     url: "./seattleChildrensForms",
-    permissionsRequired: [Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS],
+    permissionsRequired: [Permission.SEATTLE_CHILDRENS_HIPAA_ACCESS],
   },
   {
     label: "RDT Photos from flu@home Australia",
     url: "./coughPhotos",
-    permissionsRequired: [Permissions.COUGH_RDT_PHOTOS_ACCESS],
+    permissionsRequired: [Permission.COUGH_RDT_PHOTOS_ACCESS],
   },
   {
     label: "Manage Giftcards for flu@home Australia",
     url: "./coughGiftcards",
-    permissionsRequired: [Permissions.COUGH_GIFTCARD_UPLOAD],
+    permissionsRequired: [Permission.COUGH_GIFTCARD_UPLOAD],
   },
 ];
 
@@ -179,7 +179,7 @@ function addHandlers(
     "/seattleChildrensForms",
     authorizationMiddleware(
       authManager,
-      Permissions.SEATTLE_CHILDRENS_HIPAA_ACCESS
+      Permission.SEATTLE_CHILDRENS_HIPAA_ACCESS
     ),
     wrap(s3DirectoryServer.performRequest)
   );
@@ -187,25 +187,22 @@ function addHandlers(
   const rdtPhotosServer = new RDTPhotos(config.sql, getStatic, authManager);
   app.get(
     "/coughPhotos",
-    authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
+    authorizationMiddleware(authManager, Permission.COUGH_RDT_PHOTOS_ACCESS),
     wrap(rdtPhotosServer.listBarcodes)
   );
   app.get(
     "/coughPhoto",
-    authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_ACCESS),
+    authorizationMiddleware(authManager, Permission.COUGH_RDT_PHOTOS_ACCESS),
     wrap(rdtPhotosServer.showPhotos)
   );
   app.post(
     "/setExpertRead",
-    authorizationMiddleware(
-      authManager,
-      Permissions.COUGH_INTERPRETATION_WRITE
-    ),
+    authorizationMiddleware(authManager, Permission.COUGH_INTERPRETATION_WRITE),
     wrap(rdtPhotosServer.setExpertRead)
   );
   app.post(
     "/replacePhoto",
-    authorizationMiddleware(authManager, Permissions.COUGH_RDT_PHOTOS_WRITE),
+    authorizationMiddleware(authManager, Permission.COUGH_RDT_PHOTOS_WRITE),
     formidable(),
     wrap(rdtPhotosServer.replacePhoto)
   );
@@ -213,28 +210,28 @@ function addHandlers(
   const coughGiftcardServer = new CoughGiftcardEndpoint(config.sql, getStatic);
   app.get(
     "/coughGiftcards",
-    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    authorizationMiddleware(authManager, Permission.COUGH_GIFTCARD_UPLOAD),
     wrap(coughGiftcardServer.importGiftcardForm)
   );
   app.post(
     "/uploadGiftcards",
-    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    authorizationMiddleware(authManager, Permission.COUGH_GIFTCARD_UPLOAD),
     formidable(),
     wrap(coughGiftcardServer.importGiftcards)
   );
   app.post(
     "/setRateLimit",
-    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    authorizationMiddleware(authManager, Permission.COUGH_GIFTCARD_UPLOAD),
     wrap(coughGiftcardServer.setRateLimit)
   );
   app.post(
     "/setBarcodeValidations",
-    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    authorizationMiddleware(authManager, Permission.COUGH_GIFTCARD_UPLOAD),
     wrap(coughGiftcardServer.setBarcodeValidations)
   );
   app.post(
     "/addDemoGiftcards",
-    authorizationMiddleware(authManager, Permissions.COUGH_GIFTCARD_UPLOAD),
+    authorizationMiddleware(authManager, Permission.COUGH_GIFTCARD_UPLOAD),
     wrap(coughGiftcardServer.addDemoGiftcards)
   );
 
