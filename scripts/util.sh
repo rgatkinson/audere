@@ -5,6 +5,13 @@
 
 set -euo pipefail
 
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+if [ -e "$REPO_ROOT_DIR/scripts/.env" ]; then
+  set -o allexport
+  source $REPO_ROOT_DIR/scripts/.env
+  set +o allexport
+fi
+
 function aws-wait-for-instance-state() {
   local instance="$1"
   local state="$2"
@@ -90,4 +97,13 @@ function jqraw() {
 
 function echo2() {
   echo 1>&2 "$*"
+}
+
+function notify-slack() {
+  if [[ -z "${SLACK_WEBHOOK:-}" ]]; then
+    echo "Set SLACK_WEBHOOK in scripts/.env to send slack notifications"
+  else
+    curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$1\"}" $SLACK_WEBHOOK &> /dev/null
+  fi
+  echo $1
 }

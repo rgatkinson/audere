@@ -19,6 +19,7 @@
 /**/*.auto.tfvars
 .DS_Store
 .vscode
+/**/.env
 
 # circleci generated files
 /.bundle/**
