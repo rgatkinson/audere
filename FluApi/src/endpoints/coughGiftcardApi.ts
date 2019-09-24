@@ -148,9 +148,10 @@ export class CoughGiftcardEndpoint {
     const { barcodePrefixes } = req.body;
     const barcodeValidations = barcodePrefixes
       .split("\n")
+      .map(prefix => prefix.trim())
       .filter(prefix => prefix)
       .map(prefix => ({
-        value: prefix.trim(),
+        value: prefix,
         type: BarcodeValidationType.PREFIX,
       }));
     await this.liveConfig.set("barcodeValidations", barcodeValidations);
