@@ -378,13 +378,10 @@ export class CoughGiftcardEndpoint {
   ): Promise<GiftcardAttributes> {
     const newGiftcard = await this.models.giftcard.findOne({
       where: {
-        denomination: {
-          [Op.gte]: request.denomination,
-        },
+        denomination: request.denomination,
         docId: null,
         isDemo: request.isDemo,
       },
-      order: [["denomination", "ASC"]],
     });
     if (!newGiftcard) {
       return;
