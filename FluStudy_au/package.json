@@ -32,7 +32,7 @@
   "scripts": {
     "start": "scripts/build-hacks; ../scripts/generate-build-info FluStudy_au; expo start",
     "start-localapi": "REACT_NATIVE_USE_LOCAL_SERVER=1 yarn run start",
-    "start-automation": "FIRESTORE_SURVEY_COLLECTION=surveys_automation FIRESTORE_PHOTO_COLLECTION=photos_automation yarn run start-localapi",
+    "start-automation": "FIRESTORE_SURVEY_COLLECTION=surveys_automation FIRESTORE_PHOTO_COLLECTION=photos_automation yarn run start-localapi --no-dev",
     "stop": "expo stop",
     "eject": "expo eject",
     "android": "expo start --android",
