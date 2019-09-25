@@ -3,21 +3,21 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { format } from "date-fns";
 import {
   EventInfo,
   EventInfoKind,
+  GiftCardInfo,
   NonPIIConsentInfo,
   PushNotificationState,
   RDTInfo,
   RDTReaderResult,
   SampleInfo,
   WorkflowInfo,
-  GiftCardInfo,
 } from "audere-lib/coughProtocol";
-import { onCSRUIDEstablished } from "../util/tracker";
+import { format } from "date-fns";
 import i18n from "i18next";
 import { getRemoteConfig } from "../util/remoteConfig";
+import { onCSRUIDEstablished } from "../util/tracker";
 
 export const DEFAULT_GIFT_CARD_AMOUNT = "";
 
@@ -313,11 +313,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
       };
 
     case "SET_GIFT_CARD_AMOUNT":
+      const cardsAvailable = getRemoteConfig("giftCardsAvailable");
       if (
-        !state.giftCardInfo ||
-        (state.giftCardInfo &&
-          (state.giftCardInfo.giftCardAmount === DEFAULT_GIFT_CARD_AMOUNT ||
-            state.giftCardInfo.giftCardAmount === undefined))
+        cardsAvailable &&
+        (!state.giftCardInfo ||
+          (state.giftCardInfo &&
+            (state.giftCardInfo.giftCardAmount === DEFAULT_GIFT_CARD_AMOUNT ||
+              !state.giftCardInfo.giftCardAmount)))
       ) {
         return {
           ...state,
