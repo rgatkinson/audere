@@ -62,9 +62,9 @@ export const ConsentSameResearchersConfig: SurveyQuestion = {
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true },
   ],
-  id: "ResearchBySameResearchers",
+  id: "researchByAnyResearchers",
   required: true,
-  title: "researchBySameResearchers",
+  title: "researchByAnyResearchers",
   type: SurveyQuestionType.ButtonGrid,
 };
 

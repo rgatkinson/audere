@@ -65,7 +65,7 @@ export const content = [
     key: "Consent",
     input: [
       {
-        name: strings.surveyTitle.researchBySameResearchers,
+        name: strings.surveyTitle.researchByAnyResearchers,
         type: "buttonGrid",
         dbLocation: "responses",
         options: [strings.surveyButton.no, strings.surveyButton.yes],

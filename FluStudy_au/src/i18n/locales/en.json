@@ -174,7 +174,7 @@
   },
   "surveyTitle": {
     "age": "How old are you?",
-    "researchBySameResearchers": "9. I agree to my information being used for future research by any researchers conducting research in this field:",
+    "researchByAnyResearchers": "9. I agree to my information being used for future research by any researchers conducting research in this field:",
     "whatSymptoms": "Which of the following were present during your illness?",
     "symptomsStart": "How long ago did symptoms start?",
     "symptomsLast48": "Were these symptoms present in the last 48 hours?",
