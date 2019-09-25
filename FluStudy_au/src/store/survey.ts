@@ -19,7 +19,7 @@ import i18n from "i18next";
 import { getRemoteConfig } from "../util/remoteConfig";
 import { onCSRUIDEstablished } from "../util/tracker";
 
-export const DEFAULT_GIFT_CARD_AMOUNT = "";
+export const DEFAULT_GIFT_CARD_AMOUNT = 0;
 
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
@@ -57,7 +57,7 @@ export type SurveyAction =
     }
   | { type: "RESET_TIMESTAMP" }
   | { type: "SET_GIFT_CARD_URL"; giftCardURL: string }
-  | { type: "SET_GIFT_CARD_AMOUNT"; giftCardAmount: string };
+  | { type: "SET_GIFT_CARD_AMOUNT"; giftCardAmount: number };
 
 export type SurveyState = {
   consent?: NonPIIConsentInfo;

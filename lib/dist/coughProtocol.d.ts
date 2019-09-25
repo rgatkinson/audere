@@ -174,5 +174,5 @@ export declare enum GiftcardFailureReason {
 }
 export interface GiftCardInfo {
     giftCardURL?: string;
-    giftCardAmount?: string;
+    giftCardAmount?: number;
 }

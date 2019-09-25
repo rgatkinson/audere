@@ -40,7 +40,7 @@ interface Props {
   completed48HoursAgo: boolean;
   dispatch(action: Action): void;
   docId: string;
-  giftCardAmount: string;
+  giftCardAmount: number;
   giftCardURL?: string;
   isConnected: boolean;
   isDemo: boolean;
@@ -68,7 +68,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
         const response = await checkGiftcardAvailability(
           docId,
           barcode,
-          parseInt(giftCardAmount),
+          giftCardAmount,
           isDemo
         );
 
@@ -111,7 +111,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       if (
         !!getRemoteConfig("giftCardsAvailable") &&
         (this.props.giftCardAmount === undefined ||
-          this.props.giftCardAmount === "")
+          this.props.giftCardAmount === 0)
       ) {
         this.props.dispatch(setGiftCardAmount());
       } else {
@@ -135,7 +135,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
         const response = await getGiftCard(
           docId,
           barcode,
-          parseInt(giftCardAmount),
+          giftCardAmount,
           isDemo
         );
 
