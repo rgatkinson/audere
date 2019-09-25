@@ -62,22 +62,22 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
     const { docId, barcode, giftCardAmount, isConnected, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
 
-    try {
-      const response = await checkGiftcardAvailability(
-        docId,
-        barcode,
-        parseInt(giftCardAmount),
-        isDemo
-      );
+    if (isConnected) {
+      try {
+        const response = await checkGiftcardAvailability(
+          docId,
+          barcode,
+          parseInt(giftCardAmount),
+          isDemo
+        );
 
-      if (response.hasOwnProperty("failureReason")) {
-        logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
-          failureReason: response.failureReason,
-        });
-        this.setState({ failureReason: response.failureReason! });
-      }
-    } catch (e) {
-      if (isConnected) {
+        if (response.hasOwnProperty("failureReason")) {
+          logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+            failureReason: response.failureReason,
+          });
+          this.setState({ failureReason: response.failureReason! });
+        }
+      } catch (e) {
         logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
           failureReason: GiftcardFailureReason.API_ERROR,
         });
@@ -121,7 +121,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       giftCardURL,
     } = this.props;
 
-    if (!giftCardURL || giftCardURL.length === 0) {
+    if ((!giftCardURL || giftCardURL.length === 0) && isConnected) {
       try {
         const response = await getGiftCard(
           docId,
@@ -144,12 +144,10 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
           });
         }
       } catch (e) {
-        if (isConnected) {
-          logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
-            failureReason: GiftcardFailureReason.API_ERROR,
-          });
-          this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
-        }
+        logFirebaseEvent(AppHealthEvents.GIFTCARD_API_ERROR, {
+          failureReason: GiftcardFailureReason.API_ERROR,
+        });
+        this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
       }
     } else {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_PRESSED);
