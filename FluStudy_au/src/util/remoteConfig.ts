@@ -34,9 +34,6 @@ const DEFAULT_CONFIGS: RemoteConfig = {
   skipSurveyNotification: false,
 };
 
-// Properties for which their last value is cached, for offline scenarios.
-const OFFLINE_PROPERTIES: string[] = ["giftCardsAvailable", "giftCardAmount"];
-
 // Values you put into here will always be applied on top of remote config
 // values (merged over) in non-production environments.
 const DEV_CONFIG_OVERRIDES = {};
@@ -56,49 +53,45 @@ async function loadConfig(): Promise<RemoteConfig> {
   logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, localConfig);
   crashlytics.log(`Remote config loaded: ${JSON.stringify(localConfig)}`);
 
-  // Handle "offline properties". These are remote config values that are
-  // persistently cached beyond the normal lifetime of the Firebase remote
-  // config cache. This is specifically for when the device is offline -
-  // we'll use the last values seen from the remote config.
-  // Instead of doing this functionailty for all remote config values,
-  // we use the OFFLINE_PROPERTIES array to define the subset of rcv's
-  // to use.
-  if (OFFLINE_PROPERTIES.length > 0) {
-    const isConnected = await NetInfo.isConnected.fetch();
-    if (isConnected) {
-      // We're connected to a network which means the remote config values
-      // are up to date and should be persisted.
-      let items: Array<Array<string>> = [];
-      OFFLINE_PROPERTIES.map(key => {
-        items.push([key, localConfig[key].toString()]);
-      });
-      try {
-        await AsyncStorage.multiSet(items);
-      } catch (error) {
-        const errorMessage = `Remote Config Load Error: ${
-          error && error.message ? error.message : error
-        }`;
+  // Handle offline cases - we'll persistently cache beyond the normal
+  // lifetime of the Firebase remote config cache. The last values seen from
+  // the remote config will be used.
+  const isConnected = await NetInfo.isConnected.fetch();
+  if (isConnected) {
+    // We're connected to a network which means the remote config values
+    // are up to date and should be persisted.
+    let items: Array<Array<string>> = [];
+    Object.getOwnPropertyNames(DEFAULT_CONFIGS).forEach(key => {
+      items.push([key, localConfig[key].toString()]);
+    });
+    try {
+      await AsyncStorage.multiSet(items);
+    } catch (error) {
+      const errorMessage = `Remote Config Load Error: ${
+        error && error.message ? error.message : error
+      }`;
 
-        logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
-          errorMessage,
-        });
-        crashlytics.log(errorMessage);
-      }
-    } else {
-      // We're not connected to a network which means we should use the most
-      // recently persisted values.
-      (await AsyncStorage.multiGet(OFFLINE_PROPERTIES)).map(pair => {
-        if (pair[1] !== undefined && pair[1] !== null) {
-          if (typeof localConfig[pair[0]] == "boolean") {
-            localConfig[pair[0]] = !!pair[1];
-          } else if (typeof localConfig[pair[0]] == "number") {
-            localConfig[pair[0]] = Number(pair[1]);
-          } else {
-            localConfig[pair[0]] = pair[1];
-          }
-        }
+      logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
+        errorMessage,
       });
+      crashlytics.log(errorMessage);
     }
+  } else {
+    // We're not connected to a network which means we should use the most
+    // recently persisted values.
+    (await AsyncStorage.multiGet(
+      Object.getOwnPropertyNames(DEFAULT_CONFIGS)
+    )).forEach(pair => {
+      if (pair[1] !== undefined && pair[1] !== null) {
+        if (typeof localConfig[pair[0]] == "boolean") {
+          localConfig[pair[0]] = !!pair[1];
+        } else if (typeof localConfig[pair[0]] == "number") {
+          localConfig[pair[0]] = Number(pair[1]);
+        } else {
+          localConfig[pair[0]] = pair[1];
+        }
+      }
+    });
   }
 
   if (process.env.NODE_ENV === "development") {

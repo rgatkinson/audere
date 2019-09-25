@@ -8,7 +8,6 @@ import { connect } from "react-redux";
 import { appSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
 import {
   Action,
-  DEFAULT_GIFT_CARD_AMOUNT,
   setGiftCardAmount,
   setGiftCardURL,
   StoreState,
@@ -110,8 +109,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       // e.g. giftCardsAvailable or skipSurveyNotification
       if (
         !!getRemoteConfig("giftCardsAvailable") &&
-        (this.props.giftCardAmount === undefined ||
-          this.props.giftCardAmount === 0)
+        !this.props.giftCardAmount
       ) {
         this.props.dispatch(setGiftCardAmount());
       } else {
@@ -297,7 +295,7 @@ export default connect((state: StoreState) => ({
   giftCardAmount:
     !!state.survey.giftCardInfo && !!state.survey.giftCardInfo.giftCardAmount
       ? state.survey.giftCardInfo.giftCardAmount
-      : DEFAULT_GIFT_CARD_AMOUNT,
+      : 0,
   giftCardURL:
     !!state.survey.giftCardInfo && !!state.survey.giftCardInfo.giftCardURL
       ? state.survey.giftCardInfo.giftCardURL

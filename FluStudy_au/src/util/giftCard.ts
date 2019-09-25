@@ -1,5 +1,5 @@
 import { getRemoteConfig } from "./remoteConfig";
-import { getStore, DEFAULT_GIFT_CARD_AMOUNT } from "../store";
+import { getStore } from "../store";
 
 export function getWelcomeText() {
   return getRemoteConfig("giftCardsAvailable") ? "descGiftCard" : "desc";
@@ -17,10 +17,7 @@ export function getAppSupportText() {
 
 export async function getGiftCardAmount() {
   const state = (await getStore()).getState();
-  if (
-    !state.survey.giftCardInfo ||
-    state.survey.giftCardInfo.giftCardAmount === DEFAULT_GIFT_CARD_AMOUNT
-  ) {
+  if (!state.survey.giftCardInfo || !state.survey.giftCardInfo.giftCardAmount) {
     return { giftCardAmount: getRemoteConfig("giftCardAmount") };
   }
   return { giftCardAmount: state.survey.giftCardInfo.giftCardAmount };

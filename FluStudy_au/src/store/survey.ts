@@ -19,8 +19,6 @@ import i18n from "i18next";
 import { getRemoteConfig } from "../util/remoteConfig";
 import { onCSRUIDEstablished } from "../util/tracker";
 
-export const DEFAULT_GIFT_CARD_AMOUNT = 0;
-
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
@@ -317,9 +315,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
       if (
         cardsAvailable &&
         (!state.giftCardInfo ||
-          (state.giftCardInfo &&
-            (state.giftCardInfo.giftCardAmount === DEFAULT_GIFT_CARD_AMOUNT ||
-              !state.giftCardInfo.giftCardAmount)))
+          (state.giftCardInfo && !state.giftCardInfo.giftCardAmount))
       ) {
         return {
           ...state,
