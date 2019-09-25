@@ -11,9 +11,8 @@
 // Prints out unused keys an extra time if both a key and its child(ren) not found
 
 import fs from "fs";
-import yargs from "yargs";
 
-const argv: any = yargs.argv;
+const argv: any = require("yargs").argv;
 
 interface CheckDirArgs {
   enjson: string;

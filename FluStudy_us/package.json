@@ -44,7 +44,7 @@
     "lint": "prettier --list-different *.{j,t} src/**/**/**/*.ts{,x}",
     "lint-fix": "prettier --write *.{j,t} src/**/*.ts{,x}; prettier --write *.{j,t} App.tsx; prettier --write src/**/**/*.ts{,x}; prettier --write *.{j,t} src/**/**/**/*.ts{,x}",
     "typecheck": "tsc --noEmit",
-    "unused-keys": "./node_modules/.bin/ts-node ./scripts/unusedKeys.ts"
+    "unused-keys": "./node_modules/.bin/ts-node ../scripts/i18n/unusedKeys.ts"
   },
   "prettier": {
     "trailingComma": "es5"
