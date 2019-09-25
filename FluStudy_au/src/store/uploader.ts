@@ -3,35 +3,35 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { Option, SurveyResponse } from "./types";
-import { SurveyState, QuestionsState, StoreState } from "./index";
 import {
   NonPIIConsentInfo,
+  PatientInfoGender,
   QuestionAnswerOption,
   ResponseInfo,
   ResponseItemInfo,
   SurveyInfo,
-  PatientInfoGender,
 } from "audere-lib/coughProtocol";
 import {
+  AssignedSexConfig,
+  BlueLineConfig,
+  ChildrenWithChildrenConfig,
+  CoughSneezeConfig,
   FluShotConfig,
   FluShotDateConfig,
-  BlueLineConfig,
-  PinkWhenBlueConfig,
-  PinkLineConfig,
-  InContactConfig,
-  CoughSneezeConfig,
-  ChildrenWithChildrenConfig,
-  HouseholdChildrenConfig,
-  AssignedSexConfig,
   FluShotNationalImmunization,
   FluShotNationalImmunizationCondition,
+  HouseholdChildrenConfig,
+  InContactConfig,
+  PinkLineConfig,
+  PinkWhenBlueConfig,
   PreviousSeason,
 } from "audere-lib/coughQuestionConfig";
+import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { crashlytics } from "../crashReporter";
 import { logFirebaseEvent, TransportEvents } from "../util/tracker";
 import { syncSurvey } from "./FirebaseStore";
+import { QuestionsState, StoreState, SurveyState } from "./index";
+import { Option, SurveyResponse } from "./types";
 
 // See comment below on cleanupResponses.
 const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
@@ -144,6 +144,7 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
       case "SET_RESULT_SHOWN": // FEV-929
       case "APPEND_EVENT":
       case "SET_GIFT_CARD_URL": // FEV-1262 & FEV-1257
+      case "SET_GIFT_CARD_AMOUNT": // FEV-1276
         /*
          * Testing only writing to pouch when the user navigates between screens
          * for performance reasons.

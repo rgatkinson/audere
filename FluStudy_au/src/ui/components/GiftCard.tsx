@@ -9,6 +9,7 @@ import { appSupport, followUpSurveyUrl } from "../../resources/LinkConfig";
 import {
   Action,
   DEFAULT_GIFT_CARD_AMOUNT,
+  setGiftCardAmount,
   setGiftCardURL,
   StoreState,
 } from "../../store";
@@ -62,7 +63,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
     const { docId, barcode, giftCardAmount, isConnected, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
 
-    if (isConnected) {
+    if (isConnected && giftCardsAvailable) {
       try {
         const response = await checkGiftcardAvailability(
           docId,
@@ -107,7 +108,15 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
     if (nextAppState === "active") {
       // Force a re-render in case remoteConfig values have changed;
       // e.g. giftCardsAvailable or skipSurveyNotification
-      this.forceUpdate();
+      if (
+        !!getRemoteConfig("giftCardsAvailable") &&
+        (this.props.giftCardAmount === undefined ||
+          this.props.giftCardAmount === "")
+      ) {
+        this.props.dispatch(setGiftCardAmount());
+      } else {
+        this.forceUpdate();
+      }
     }
   };
 
@@ -175,7 +184,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
       failureReason === GiftcardFailureReason.API_ERROR ||
       failureReason === GiftcardFailureReason.INVALID_DOC_ID;
 
-    const thankYouText = giftCardsAvailable
+    const thankYouText = !!giftCardsAvailable
       ? completed48HoursAgo
         ? cardsExhausted
           ? "surveyNoGiftCard"
@@ -185,7 +194,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
         : "noSurveyGiftCard"
       : "desc";
 
-    const giftcardText = giftCardsAvailable
+    const giftcardText = !!giftCardsAvailable
       ? isConnected
         ? invalidBarcode
           ? "invalidBarcode"
@@ -211,7 +220,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
             </Fragment>
           )}
 
-          {giftCardsAvailable && (
+          {!!giftCardsAvailable && (
             <Fragment>
               <Text content={t(giftcardText, { giftCardAmount })} />
               {!cardsExhausted && isConnected && !invalidBarcode && !APIError && (
