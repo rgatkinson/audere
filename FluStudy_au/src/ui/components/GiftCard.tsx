@@ -58,6 +58,7 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
 
   async componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
+    this._checkGiftCardAmount();
     this._checkGiftCardAvailability();
   }
 
@@ -67,25 +68,29 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
 
   _handleAppStateChange = async (nextAppState: string) => {
     if (nextAppState === "active") {
-      this._checkGiftCardAvailability();
-
       // Force a re-render in case remoteConfig values have changed;
       // e.g. giftCardsAvailable or skipSurveyNotification
-      if (
-        !!getRemoteConfig("giftCardsAvailable") &&
-        !this.props.giftCardAmount
-      ) {
-        this.props.dispatch(setGiftCardAmount());
-      } else {
+      if (!this._checkGiftCardAmount()) {
         this.forceUpdate();
       }
+      this._checkGiftCardAvailability();
     }
+  };
+
+  _checkGiftCardAmount = (): boolean => {
+    const needsAmount =
+      !!getRemoteConfig("giftCardsAvailable") && !this.props.giftCardAmount;
+    if (needsAmount) {
+      this.props.dispatch(setGiftCardAmount());
+    }
+    return needsAmount;
   };
 
   _checkGiftCardAvailability = async () => {
     const { docId, barcode, giftCardAmount, isConnected, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
 
+    this.setState({ failureReason: "" });
     if (isConnected && giftCardsAvailable) {
       try {
         const response = await checkGiftcardAvailability(
