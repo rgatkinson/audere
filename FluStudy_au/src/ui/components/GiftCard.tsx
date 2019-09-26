@@ -58,7 +58,31 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
 
   async componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
+    this._checkGiftCardAvailability();
+  }
 
+  componentWillUnmount() {
+    AppState.removeEventListener("change", this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = async (nextAppState: string) => {
+    if (nextAppState === "active") {
+      this._checkGiftCardAvailability();
+
+      // Force a re-render in case remoteConfig values have changed;
+      // e.g. giftCardsAvailable or skipSurveyNotification
+      if (
+        !!getRemoteConfig("giftCardsAvailable") &&
+        !this.props.giftCardAmount
+      ) {
+        this.props.dispatch(setGiftCardAmount());
+      } else {
+        this.forceUpdate();
+      }
+    }
+  };
+
+  _checkGiftCardAvailability = async () => {
     const { docId, barcode, giftCardAmount, isConnected, isDemo } = this.props;
     const giftCardsAvailable = getRemoteConfig("giftCardsAvailable");
 
@@ -100,25 +124,6 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
 
     if (giftCardsAvailable && !invalidBarcode && !APIError && !cardsExhausted) {
       logFirebaseEvent(AppEvents.GIFT_CARD_LINK_SHOWN);
-    }
-  }
-
-  componentWillUnmount() {
-    AppState.removeEventListener("change", this._handleAppStateChange);
-  }
-
-  _handleAppStateChange = async (nextAppState: string) => {
-    if (nextAppState === "active") {
-      // Force a re-render in case remoteConfig values have changed;
-      // e.g. giftCardsAvailable or skipSurveyNotification
-      if (
-        !!getRemoteConfig("giftCardsAvailable") &&
-        !this.props.giftCardAmount
-      ) {
-        this.props.dispatch(setGiftCardAmount());
-      } else {
-        this.forceUpdate();
-      }
     }
   };
 
