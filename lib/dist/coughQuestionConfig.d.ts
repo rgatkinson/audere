@@ -95,6 +95,7 @@ export declare const SmokeTobaccoConfig: SurveyQuestion;
 export declare const HouseholdTobaccoConfig: SurveyQuestion;
 export declare const InterferingConfig: SurveyQuestion;
 export declare const AntibioticsConfig: SurveyQuestion;
+export declare const AntiviralConfig: SurveyQuestion;
 export declare const AgeConfig: DropDownQuestion;
 export declare const RaceConfig: OptionQuestion;
 export declare const BlueLineConfig: SurveyQuestion;

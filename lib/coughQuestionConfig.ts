@@ -996,9 +996,21 @@ export const AntibioticsConfig: SurveyQuestion = {
     { key: "no", primary: false, enabled: true },
     { key: "dontKnow", primary: false, enabled: true },
   ],
-  id: "Antibiotics",
+  id: "MedicationAntibiotics",
   required: true,
   title: "antibiotics",
+  type: SurveyQuestionType.ButtonGrid,
+};
+
+export const AntiviralConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  id: "MedicationAntiviral",
+  required: true,
+  title: "antiviral",
   type: SurveyQuestionType.ButtonGrid,
 };
 
