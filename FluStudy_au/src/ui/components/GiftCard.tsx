@@ -112,10 +112,6 @@ class GiftCard extends Component<Props & WithNamespaces, State> {
         });
         this.setState({ failureReason: GiftcardFailureReason.API_ERROR });
       }
-
-      if (!this.props.giftCardAmount) {
-        this.props.dispatch(setGiftCardAmount());
-      }
     }
 
     const { failureReason } = this.state;
