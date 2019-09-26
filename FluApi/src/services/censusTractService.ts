@@ -57,7 +57,7 @@ export class CensusTractService {
 
     const tracts: Map<string, string> = new Map();
     result.forEach(row => {
-      if (row.tract != null) {
+      if (row.tract != null && /\d+/.test(row.tract)) {
         const key = row.lat + "|" + row.lng;
         tracts.set(key, row.tract);
       }

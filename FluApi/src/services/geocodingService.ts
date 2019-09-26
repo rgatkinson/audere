@@ -183,17 +183,25 @@ export class GeocodingService {
     if (unique.length > 0) {
       logger.info(`[Geocoder] Querying coordinates for census data`);
       const tracts = await this.censusTractService.lookupCensusTract(unique);
+      let numMatchedTracts = 0;
       const appended = responses.map(r => {
         if (r.addresses != null) {
           r.addresses.forEach(a => {
             const key = a.latitude + "|" + a.longitude;
             const tract = tracts.get(key);
+
+            if (tract != null) numMatchedTracts++;
+
             a.censusTract = tract;
           });
         }
 
         return r;
       });
+
+      logger.info(
+        `[Geocoder] Matched ${numMatchedTracts} of ${tracts.size} census tracts`
+      );
 
       return appended;
     } else {
