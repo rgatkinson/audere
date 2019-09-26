@@ -73,14 +73,22 @@ export class EncountersService {
     logger.info("[getEncounters] Geocoding address data");
     const geocodedAddresses = await this.geocodeAddressData(pending);
 
+    logger.info(
+      `[getEncounters] Scrubbing PII for ${pending.length} encounters`
+    );
+    let numGeocoded = 0;
     const encounters = pending.map(encounter => {
-      logger.info("[getEncounters] Scrubbing PII data");
       let scrubbed: NonPIIEncounterDetails;
+      const key = this.getKeyString(encounter.key);
+      const geocodedAddress = geocodedAddresses.get(key);
+
+      if (geocodedAddress != null) numGeocoded++;
+
       try {
         scrubbed = this.scrubEncounter(
           encounter.key,
           encounter.encounter,
-          geocodedAddresses.get(this.getKeyString(encounter.key))
+          geocodedAddress
         );
       } catch (e) {
         logger.error(
@@ -95,6 +103,16 @@ export class EncountersService {
         encounter: Mapper.mapEncounter(scrubbed),
       };
     });
+
+    const numCensusTracts = encounters.filter(e =>
+      e.encounter.locations.some(l => l.region != null)
+    ).length;
+
+    logger.info(
+      `[getEncounters] Scrubbed ${encounters.length} encounters - ` +
+        `${numGeocoded} matched a geocoded address, ` +
+        `${numCensusTracts} had a matching census tract`
+    );
 
     return encounters;
   }
