@@ -34,6 +34,7 @@ describe("Cough Giftcard API", () => {
   let accessKey;
   let liveConfig: LiveConfig<CoughConfig>;
   let barcodeValidations;
+  let rateLimit;
 
   beforeAll(async done => {
     sql = createSplitSql();
@@ -46,12 +47,16 @@ describe("Cough Giftcard API", () => {
     });
     liveConfig = new LiveConfig(sql, Project.COUGH);
     barcodeValidations = await liveConfig.get("barcodeValidations", []);
+    rateLimit = await liveConfig.get("rateLimit", {
+      limit: 50,
+      periodInSeconds: 24 * 60 * 60,
+    });
     await liveConfig.set(
       "barcodeValidations",
       barcodeValidations.concat([
         {
           type: BarcodeValidationType.PREFIX,
-          value: TEST_BARCODE,
+          value: TEST_BARCODE.substring(0, 4),
         },
       ])
     );
@@ -65,6 +70,7 @@ describe("Cough Giftcard API", () => {
   afterAll(async done => {
     await accessKey.destroy();
     await liveConfig.set("barcodeValidations", barcodeValidations);
+    await liveConfig.set("rateLimit", rateLimit);
     done();
   });
 
@@ -242,6 +248,79 @@ describe("Cough Giftcard API", () => {
         secret: TEST_ACCESS_KEY,
       });
       expect(response.giftcard).toBeUndefined();
+    });
+
+    it("Does not return a giftcard if the rate limit has been exceeded", async () => {
+      await liveConfig.set("rateLimit", {
+        limit: 3,
+        periodInSeconds: 24 * 60 * 60,
+      });
+      for (let i = 0; i < 5; i++) {
+        await coughModels.giftcard.create(giftcard(i.toString()));
+      }
+      for (let i = 0; i < 3; i++) {
+        const response = await api.getGiftcard({
+          docId: "1234" + i.toString(),
+          barcode: TEST_BARCODE + i.toString(),
+          denomination: 50,
+          isDemo: false,
+          secret: TEST_ACCESS_KEY,
+        });
+        expect(response.giftcard).toBeDefined();
+      }
+      const response = await api.getGiftcard({
+        docId: "12343",
+        barcode: TEST_BARCODE + "3",
+        denomination: 50,
+        isDemo: false,
+        secret: TEST_ACCESS_KEY,
+      });
+      expect(response.giftcard).toBeUndefined();
+      expect(response.failureReason).toBe(
+        GiftcardFailureReason.CARDS_EXHAUSTED
+      );
+    });
+
+    it("Starts to return gift cards again once the rate limit period has elapsed", async () => {
+      await liveConfig.set("rateLimit", {
+        limit: 3,
+        periodInSeconds: 1,
+      });
+      for (let i = 0; i < 5; i++) {
+        await coughModels.giftcard.create(giftcard(i.toString()));
+      }
+      for (let i = 0; i < 3; i++) {
+        const response = await api.getGiftcard({
+          docId: "1234" + i.toString(),
+          barcode: TEST_BARCODE + i.toString(),
+          denomination: 50,
+          isDemo: false,
+          secret: TEST_ACCESS_KEY,
+        });
+        expect(response.giftcard).toBeDefined();
+      }
+      const failureResponse = await api.getGiftcard({
+        docId: "12343",
+        barcode: TEST_BARCODE + "3",
+        denomination: 50,
+        isDemo: false,
+        secret: TEST_ACCESS_KEY,
+      });
+      expect(failureResponse.giftcard).toBeUndefined();
+      expect(failureResponse.failureReason).toBe(
+        GiftcardFailureReason.CARDS_EXHAUSTED
+      );
+
+      await new Promise(res => setTimeout(res, 1100));
+
+      const successResponse = await api.getGiftcard({
+        docId: "12343",
+        barcode: TEST_BARCODE + "3",
+        denomination: 50,
+        isDemo: false,
+        secret: TEST_ACCESS_KEY,
+      });
+      expect(successResponse.giftcard).toBeDefined();
     });
   });
 });

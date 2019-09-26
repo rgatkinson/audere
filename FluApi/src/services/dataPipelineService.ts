@@ -421,6 +421,21 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
         from cough.giftcards
       `,
     }),
+
+    new ManagedView({
+      name: "cough_derived.config",
+      deps: [],
+      spec: `
+        select
+          id,
+          "createdAt",
+          "updatedAt",
+          key,
+          value
+        from config
+        where project = 'cough'
+      `,
+    }),
   ];
 }
 

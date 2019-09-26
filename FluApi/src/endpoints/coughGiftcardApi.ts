@@ -132,7 +132,7 @@ export class CoughGiftcardEndpoint {
 
   public setRateLimit = async (req, res) => {
     const { limit } = req.body;
-    this.liveConfig.set("rateLimit", {
+    await this.liveConfig.set("rateLimit", {
       limit: parseInt(limit),
       periodInSeconds: 24 * 60 * 60,
     });
@@ -208,7 +208,18 @@ export class CoughGiftcardEndpoint {
       (total, denomination) => total + parseInt(denomination.count),
       0
     );
-    return { total, unassignedByDenomination, unassigned };
+    const rateLimit = await this.liveConfig.get("rateLimit");
+    const cardsIssued = await this.countCardsIssued(
+      rateLimit.periodInSeconds,
+      isDemo
+    );
+    return {
+      total,
+      unassignedByDenomination,
+      unassigned,
+      cardsIssued,
+      limit: rateLimit.limit,
+    };
   }
 
   public getGiftcard = async (
@@ -342,7 +353,10 @@ export class CoughGiftcardEndpoint {
       "rateLimit",
       DEFAULT_RATE_LIMIT
     );
-    const cardsIssued = await this.countCardsIssued(rateLimit.periodInSeconds);
+    const cardsIssued = await this.countCardsIssued(
+      rateLimit.periodInSeconds,
+      request.isDemo
+    );
     if (cardsIssued >= rateLimit.limit) {
       return { failureReason: GiftcardFailureReason.CARDS_EXHAUSTED };
     }
@@ -399,10 +413,14 @@ export class CoughGiftcardEndpoint {
     });
   }
 
-  private async countCardsIssued(seconds: number): Promise<number> {
+  private async countCardsIssued(
+    seconds: number,
+    isDemo: boolean
+  ): Promise<number> {
     const startDate = new Date(new Date().getTime() - seconds * 1000);
     return await this.models.giftcard.count({
       where: {
+        isDemo,
         docId: { [Op.ne]: null },
         allocatedAt: { [Op.gt]: startDate },
       },

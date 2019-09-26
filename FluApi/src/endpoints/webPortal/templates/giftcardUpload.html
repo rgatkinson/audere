@@ -37,8 +37,9 @@ can be found in the LICENSE file distributed with this file.
       <div class='errorBox'>{{error}}</div>
     {{/if}}
     <h3>Current Stats:</h3>
-    <div>Total Giftcards: {{stats.total}}</div>
+    <div>Giftcards Assigned Today: {{stats.cardsIssued}} of {{stats.limit}}</div>
     <div>Unassigned Giftcards: {{stats.unassigned}}</div>
+    <div>Total Giftcards: {{stats.total}}</div>
     <h4> Unassigned giftcards by denomination:</h4>
     <table>
       <thead>
@@ -79,8 +80,9 @@ can be found in the LICENSE file distributed with this file.
       </form>
     </div>
     <h3>Add demo mode gift cards</h3>
-    <div>Total Demo Giftcards: {{demoStats.total}}</div>
+    <div>Demo Giftcards Assigned Today: {{stats.cardsIssued}} of {{stats.limit}}</div>
     <div>Unassigned Demo Giftcards: {{demoStats.unassigned}}</div>
+    <div>Total Demo Giftcards: {{demoStats.total}}</div>
     <h4> Unassigned demo giftcards by denomination:</h4>
     <table>
       <thead>
