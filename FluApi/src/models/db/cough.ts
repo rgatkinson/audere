@@ -94,7 +94,7 @@ export enum EditableTableType {
 
 // ---------------------------------------------------------------
 
-interface AccessKeyAttributes {
+export interface AccessKeyAttributes {
   id?: string;
   key: string;
   valid: boolean;
@@ -575,7 +575,8 @@ export function defineFollowUpSurvey(
 export interface GiftcardAttributes {
   id?: number;
   sku: string;
-  denomination: number;
+  // Denomination is stored as a decimal, which sequelize returns as a string
+  denomination: string;
   cardNumber: string;
   pin: string;
   expiry: Date;

@@ -50,11 +50,11 @@ type RawPrezzeeCsvGiftcard = {
   Url: string;
 };
 
-enum BarcodeValidationType {
+export enum BarcodeValidationType {
   PREFIX = "prefix",
 }
 
-type BarcodeValidation = {
+export type BarcodeValidation = {
   type: BarcodeValidationType;
   value: string;
 };
@@ -90,6 +90,7 @@ export class CoughGiftcardEndpoint {
     const prezzeeGiftcards = rawGifcards.map(convertRawGiftcard);
     const giftcards = prezzeeGiftcards.map(giftcard => ({
       ...giftcard,
+      denomination: giftcard.denomination.toFixed(2),
       isDemo: false,
     }));
     try {
@@ -224,20 +225,10 @@ export class CoughGiftcardEndpoint {
       request
     );
     if (giftcard) {
-      if (request.isDemo) {
-        return {
-          giftcard: {
-            url: DEMO_GIFTCARD_URL,
-            denomination: request.denomination,
-            isDemo: true,
-            isNew,
-          },
-        };
-      }
       return {
         giftcard: {
           url: giftcard.url,
-          denomination: giftcard.denomination,
+          denomination: parseFloat(giftcard.denomination),
           isDemo: giftcard.isDemo,
           isNew,
         },
@@ -433,7 +424,7 @@ export async function addDemoGiftcards(
     new Array(count),
     (_, i) => ({
       sku: "sku",
-      denomination,
+      denomination: denomination.toFixed(2),
       cardNumber: "1234123412341234",
       pin: "1234",
       expiry: new Date("July 11, 2041"),
