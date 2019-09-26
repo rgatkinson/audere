@@ -17,7 +17,7 @@ import {
   ChillsLast48Config,
   ChillsSeverityConfig,
   ChillsStartConfig,
-  ConsentSameResearchersConfig,
+  ConsentAnyResearchersConfig,
   CoughLast48Config,
   CoughSeverityConfig,
   CoughSneezeConfig,
@@ -242,7 +242,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ConsentText },
       {
         tag: Questions,
-        props: { questions: [ConsentSameResearchersConfig] },
+        props: { questions: [ConsentAnyResearchersConfig] },
         validate: true,
       },
       {

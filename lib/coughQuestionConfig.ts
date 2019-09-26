@@ -57,7 +57,18 @@ export interface DropDownQuestion extends SurveyQuestion {
 //
 // ================================================================
 
-export const ConsentSameResearchersConfig: SurveyQuestion = {
+export const ObsoleteConsentSameResearchersConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  id: "ResearchBySameResearchers",
+  required: true,
+  title: "obsolete question - do not use",
+  type: SurveyQuestionType.ButtonGrid,
+};
+
+export const ConsentAnyResearchersConfig: SurveyQuestion = {
   buttons: [
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true },
@@ -990,6 +1001,18 @@ export const InterferingConfig: SurveyQuestion = {
   type: SurveyQuestionType.ButtonGrid,
 };
 
+export const ObsoleteAntibioticsConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  id: "Antibiotics",
+  required: true,
+  title: "obsolete question - do not use",
+  type: SurveyQuestionType.ButtonGrid,
+};
+
 export const AntibioticsConfig: SurveyQuestion = {
   buttons: [
     { key: "yes", primary: false, enabled: true },
@@ -1180,7 +1203,8 @@ export const TestFeedbackConfig: SurveyQuestion = {
 };
 
 export const SURVEY_QUESTIONS = [
-  ConsentSameResearchersConfig,
+  ObsoleteConsentSameResearchersConfig,
+  ConsentAnyResearchersConfig,
   WhatSymptomsConfig,
   SymptomsStartConfig,
   FeverStartConfig,
@@ -1233,7 +1257,9 @@ export const SURVEY_QUESTIONS = [
   SmokeTobaccoConfig,
   HouseholdTobaccoConfig,
   InterferingConfig,
+  ObsoleteAntibioticsConfig,
   AntibioticsConfig,
+  AntiviralConfig,
   AgeConfig,
   RaceConfig,
   BlueLineConfig,
