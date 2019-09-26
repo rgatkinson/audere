@@ -45,6 +45,7 @@ export const inputs = {
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.yes,
   [strings.surveyTitle.interfering]: strings.surveyButton.yes,
   [strings.surveyTitle.antibiotics]: strings.surveyButton.yes,
+  [strings.surveyTitle.antiviral]: strings.surveyButton.yes,
   [strings.surveyTitle.age]: strings.surveyButton["18to19"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.male,
   [strings.surveyTitle.race]: [

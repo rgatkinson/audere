@@ -465,6 +465,16 @@ export const content = [
         ],
       },
       {
+        name: strings.surveyTitle.antiviral,
+        type: "buttonGrid",
+        dbLocation: "responses",
+        options: [
+          strings.surveyButton.no,
+          strings.surveyButton.yes,
+          strings.surveyButton.dontKnow,
+        ],
+      },
+      {
         name: strings.surveyTitle.assignedSex,
         type: "buttonGrid",
         dbLocation: "responses",

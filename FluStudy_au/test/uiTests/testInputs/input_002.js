@@ -38,6 +38,7 @@ export const inputs = {
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.no,
   [strings.surveyTitle.interfering]: strings.surveyButton.no,
   [strings.surveyTitle.antibiotics]: strings.surveyButton.no,
+  [strings.surveyTitle.antiviral]: strings.surveyButton.no,
   [strings.surveyTitle.age]: strings.surveyButton["20to24"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.female,
   [strings.surveyTitle.race]: [
