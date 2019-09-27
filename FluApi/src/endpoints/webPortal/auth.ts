@@ -179,6 +179,8 @@ export enum Permission {
   COUGH_RDT_PHOTOS_ACCESS = "coughRdtPhotosAccess",
   COUGH_RDT_PHOTOS_WRITE = "coughRdtPhotosWrite",
   COUGH_INTERPRETATION_WRITE = "coughInterpretationWrite",
+  SNIFFLES_METRICS_ACCESS = "snifflesMetricsAccess",
+  FEVER_METRICS_ACCESS = "feverMetricsAccess",
 }
 
 export function authorizationMiddleware(

@@ -42,12 +42,12 @@ const INDEX_PAGE_LINKS = [
   {
     label: "Metrics for FluTrack kiosk app (codename Sniffles)",
     url: "./metrics",
-    permissionsRequired: [],
+    permissionsRequired: [Permission.SNIFFLES_METRICS_ACCESS],
   },
   {
     label: "Metrics for flu@home (codename Fever)",
     url: "./feverMetrics",
-    permissionsRequired: [],
+    permissionsRequired: [Permission.FEVER_METRICS_ACCESS],
   },
   {
     label: "Seattle Children's HIPAA and consent forms",
@@ -307,6 +307,7 @@ function addHandlers(
   function addMetricsHandlers(app: Express): void {
     app.get(
       "/metrics",
+      authorizationMiddleware(authManager, Permission.SNIFFLES_METRICS_ACCESS),
       wrap(async (req, res) => {
         const startDate = req.query.startDate || getLastMonday();
         const endDate = req.query.endDate || getThisSunday();
@@ -331,6 +332,7 @@ function addHandlers(
 
     app.get(
       "/feverMetrics",
+      authorizationMiddleware(authManager, Permission.FEVER_METRICS_ACCESS),
       wrap(async (req, res) => {
         const startDate = req.query.startDate || getLastMonday();
         const endDate = req.query.endDate || getThisSunday();
