@@ -90,8 +90,11 @@ export class EncountersService {
       if (geocodedAddress != null) numGeocoded++;
 
       if (
-        geocodedAddress.some(a =>
-          a.addresses.some(aa => aa.censusTract != null)
+        geocodedAddress != null &&
+        geocodedAddress.some(
+          a =>
+            a.addresses != null &&
+            a.addresses.some(aa => aa.censusTract != null)
         )
       ) {
         start++;
