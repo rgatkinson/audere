@@ -158,7 +158,8 @@ export class EncountersService {
     if (geocodedAddress != null) {
       streetAddress = geocodedAddress.canonicalAddress;
       region = geocodedAddress.censusTract;
-      (city = geocodedAddress.city), (state = geocodedAddress.state);
+      city = geocodedAddress.city;
+      state = geocodedAddress.state;
     } else if (inputAddress != null) {
       // If there is no geocoding result then we rely on the user input.
       // This will be a weaker guarantee of uniqueness.
@@ -174,42 +175,36 @@ export class EncountersService {
       state = inputAddress.state;
 
       streetAddress = input.join(", ");
+    } else {
+      return undefined;
     }
 
-    if (streetAddress != null) {
-      let use: Encounter.LocationUse;
-      switch (addressUse) {
-        case Model.AddressInfoUse.Home:
-          use = Encounter.LocationUse.Home;
-          break;
-        case Model.AddressInfoUse.Temp:
-          use = Encounter.LocationUse.Temp;
-          break;
-        case Model.AddressInfoUse.Work:
-          use = Encounter.LocationUse.Work;
-          break;
-      }
-
-      if (includeCityAndState) {
-        return {
-          use: use,
-          id: sha256(this.hashSecret, streetAddress),
-          region: region,
-          city: city,
-          state: state,
-        };
-      } else {
-        return {
-          use: use,
-          id: sha256(this.hashSecret, streetAddress),
-          region: region,
-          city: undefined,
-          state: undefined,
-        };
-      }
+    let use: Encounter.LocationUse;
+    switch (addressUse) {
+      case Model.AddressInfoUse.Home:
+        use = Encounter.LocationUse.Home;
+        break;
+      case Model.AddressInfoUse.Temp:
+        use = Encounter.LocationUse.Temp;
+        break;
+      case Model.AddressInfoUse.Work:
+        use = Encounter.LocationUse.Work;
+        break;
     }
 
-    return undefined;
+    const de = {
+      use: use,
+      id: sha256(this.hashSecret, streetAddress),
+      region: region,
+      city: includeCityAndState ? city : undefined,
+      state: includeCityAndState ? state : undefined,
+    };
+
+    if (de.region == null && geocodedAddress.censusTract != null) {
+      logger.info("Census disappeared in deidentify");
+    }
+
+    return de;
   }
 
   private deidentifyParticipant({
@@ -324,6 +319,16 @@ export class EncountersService {
           geocoded != null && geocoded.addresses.length > 0
             ? geocoded.addresses[0]
             : undefined;
+
+        if (
+          geocodedAddresses != null &&
+          geocodedAddresses.some(a =>
+            a.addresses.some(aa => aa.censusTract != null)
+          ) &&
+          (geocodedAddress == null || geocodedAddress.censusTract == null)
+        ) {
+          logger.info("Census disappeared in scrub");
+        }
 
         // Get the postal code most closely associated with the user's home
         // address. This is part of the unique identifier generated for each
