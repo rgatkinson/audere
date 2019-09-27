@@ -331,7 +331,16 @@ export class EncountersService {
           ) &&
           (geocodedAddress == null || geocodedAddress.censusTract == null)
         ) {
+          let s = a.use.toString();
+          for (let i = 0; i < geocoded.addresses.length; i++) {
+            s =
+              s +
+              `${i} - ${
+                geocoded.addresses[i].censusTract != null ? "y" : "n"
+              },`;
+          }
           logger.info("Census disappeared in scrub");
+          logger.info(s);
         }
 
         // Get the postal code most closely associated with the user's home
