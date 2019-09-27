@@ -345,6 +345,11 @@ export class EncountersService {
             logger.info(s);
           } else {
             logger.info(`${s} missing`);
+
+            if (geocodedAddresses != null) {
+              const u = geocodedAddresses.map(x => x.use.toString()).join(", ");
+              logger.info(`${u} available`);
+            }
           }
         }
 
