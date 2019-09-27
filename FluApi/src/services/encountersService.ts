@@ -200,7 +200,11 @@ export class EncountersService {
       state: includeCityAndState ? state : undefined,
     };
 
-    if (de.region == null && geocodedAddress.censusTract != null) {
+    if (
+      de.region == null &&
+      geocodedAddress != null &&
+      geocodedAddress.censusTract != null
+    ) {
       logger.info("Census disappeared in deidentify");
     }
 
