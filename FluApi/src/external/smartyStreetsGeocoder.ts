@@ -94,6 +94,10 @@ export class SmartyStreetsGeocoder implements Geocoder {
   ): SmartyStreetsSDK.usStreet.Lookup {
     const lookup = new SmartyStreetsSDK.usStreet.Lookup();
 
+    if (a.use == null) {
+      logger.info("Null input use");
+    }
+
     // The input id must encode both the record identifier and address use.
     lookup.inputId = k + "_" + a.use;
 
@@ -127,6 +131,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
       const useInput = input.pop();
       const id = input.join("_");
 
+      logger.info(`Input id - ${<string>lookup.inputId}`);
       logger.info(`Address use - ${useInput}`);
 
       // Converts string back to enumeration.
