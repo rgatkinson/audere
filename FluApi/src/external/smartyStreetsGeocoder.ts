@@ -127,6 +127,8 @@ export class SmartyStreetsGeocoder implements Geocoder {
       const useInput = input.pop();
       const id = input.join("_");
 
+      logger.info(`Address use - ${useInput}`);
+
       // Converts string back to enumeration.
       const useKey = Object.keys(AddressInfoUse).find(
         k => AddressInfoUse[k] === useInput

@@ -347,7 +347,16 @@ export class EncountersService {
             logger.info(`${s} missing`);
 
             if (geocodedAddresses != null) {
-              const u = geocodedAddresses.map(x => x.use.toString()).join(", ");
+              const uses = [];
+              geocodedAddresses.forEach(x => {
+                if (x.use == null) {
+                  logger.info("Null use");
+                } else {
+                  uses.push(x.use.toString());
+                }
+              });
+
+              const u = uses.join(", ");
               logger.info(`${u} available`);
             }
           }
