@@ -367,9 +367,7 @@ async function onNewCHW(agent: WebhookAgent) {
       .set(chw);
     agent.add(
       `Thank you for registering as a community health worker, ` +
-        `${
-          chw.chwGivenName
-        }!  Whenever you'd like to register a new patient, ` +
+        `${chw.chwGivenName}!  Whenever you'd like to register a new patient, ` +
         `just say, "New patient."`
     );
   } else {
