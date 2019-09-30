@@ -15,14 +15,21 @@ import {
 import logger from "../util/logger";
 import moment from "moment";
 import _ from "lodash";
+import { AddressInfoUse } from "audere-lib/dist/common";
+
+export interface AddressInfoWithUse extends AddressInfo {
+  use: AddressInfoUse;
+}
 
 export interface Geocoder {
-  geocode(addresses: Map<string, AddressInfo[]>): Promise<GeocodingResponse[]>;
+  geocode(
+    addresses: Map<string, AddressInfoWithUse[]>
+  ): Promise<GeocodingResponse[]>;
 }
 
 type GetCachedAddressesResult = {
   cachedResults: GeocodingResponse[];
-  uncachedAddressesMap: Map<string, AddressInfo[]>;
+  uncachedAddressesMap: Map<string, AddressInfoWithUse[]>;
 };
 
 /**
@@ -97,7 +104,7 @@ export class GeocodingService {
       },
     });
 
-    const uncachedAddressesMap: Map<string, AddressInfo[]> = new Map();
+    const uncachedAddressesMap: Map<string, AddressInfoWithUse[]> = new Map();
     const cachedResults: GeocodingResponse[] = [];
     let emptyCachedResponseCount = 0;
 
@@ -120,7 +127,10 @@ export class GeocodingService {
           }
         } else {
           const uncached = uncachedAddressesMap.get(k) || [];
-          uncached.push(a);
+          uncached.push({
+            ...a,
+            use: addressInfo.use,
+          });
           uncachedAddressesMap.set(k, uncached);
         }
       });
@@ -154,9 +164,9 @@ export class GeocodingService {
       });
     }
 
-    await this.smartyStreetResponses.bulkCreate(newResponses, {
-      ignoreDuplicates: true,
-    });
+    for (let i = 0; i < newResponses.length; i++) {
+      await this.smartyStreetResponses.upsert(newResponses[i]);
+    }
   }
 
   /**

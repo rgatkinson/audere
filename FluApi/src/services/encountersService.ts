@@ -324,44 +324,6 @@ export class EncountersService {
             ? geocoded.addresses[0]
             : undefined;
 
-        if (
-          geocodedAddresses != null &&
-          geocodedAddresses.some(a =>
-            a.addresses.some(aa => aa.censusTract != null)
-          ) &&
-          (geocodedAddress == null || geocodedAddress.censusTract == null)
-        ) {
-          logger.info("Census disappeared in scrub");
-
-          let s = a.use.toString();
-          if (geocoded != null && geocoded.addresses != null) {
-            for (let i = 0; i < geocoded.addresses.length; i++) {
-              s =
-                s +
-                `${i} - ${
-                  geocoded.addresses[i].censusTract != null ? "y" : "n"
-                },`;
-            }
-            logger.info(s);
-          } else {
-            logger.info(`${s} missing`);
-
-            if (geocodedAddresses != null) {
-              const uses = [];
-              geocodedAddresses.forEach(x => {
-                if (x.use == null) {
-                  logger.info("Null use");
-                } else {
-                  uses.push(x.use.toString());
-                }
-              });
-
-              const u = uses.join(", ");
-              logger.info(`${u} available`);
-            }
-          }
-        }
-
         // Get the postal code most closely associated with the user's home
         // address. This is part of the unique identifier generated for each
         // participant.

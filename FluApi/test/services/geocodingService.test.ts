@@ -115,11 +115,15 @@ describe("geocoding service", () => {
   const makeMockSmartyStreetsCacheModel = (cachedAddresses = []) => {
     // It's hard to mock sequelize models, hence the weird casting here
     return ({
+      cachedResponsesCreated: [],
       findAll() {
         return cachedAddresses;
       },
       bulkCreate(responses) {
         this.cachedResponsesCreated = responses;
+      },
+      upsert(value) {
+        this.cachedResponsesCreated.push(value);
       },
     } as unknown) as SmartyStreetsResponseModel;
   };

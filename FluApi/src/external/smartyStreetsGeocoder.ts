@@ -4,9 +4,9 @@
 // can be found in the LICENSE file distributed with this file.
 
 import * as SmartyStreetsSDK from "smartystreets-javascript-sdk";
-import { AddressInfo, AddressInfoUse } from "audere-lib/snifflesProtocol";
+import { AddressInfoUse } from "audere-lib/dist/common";
 import { GeocodingResponse, GeocodedAddress } from "../models/geocoding";
-import { Geocoder } from "../services/geocodingService";
+import { Geocoder, AddressInfoWithUse } from "../services/geocodingService";
 import logger from "../util/logger";
 
 /**
@@ -57,7 +57,7 @@ export class SmartyStreetsGeocoder implements Geocoder {
    * records.
    */
   public async geocode(
-    addresses: Map<string, AddressInfo[]>
+    addresses: Map<string, AddressInfoWithUse[]>
   ): Promise<GeocodingResponse[]> {
     const lookups: SmartyStreetsSDK.usStreet.Lookup[] = [];
 
@@ -90,13 +90,9 @@ export class SmartyStreetsGeocoder implements Geocoder {
 
   private createLookup(
     k: string,
-    a: AddressInfo
+    a: AddressInfoWithUse
   ): SmartyStreetsSDK.usStreet.Lookup {
     const lookup = new SmartyStreetsSDK.usStreet.Lookup();
-
-    if (a.use == null) {
-      logger.info("Null input use");
-    }
 
     // The input id must encode both the record identifier and address use.
     lookup.inputId = k + "_" + a.use;
@@ -130,9 +126,6 @@ export class SmartyStreetsGeocoder implements Geocoder {
       const input = (<string>lookup.inputId).split("_");
       const useInput = input.pop();
       const id = input.join("_");
-
-      logger.info(`Input id - ${<string>lookup.inputId}`);
-      logger.info(`Address use - ${useInput}`);
 
       // Converts string back to enumeration.
       const useKey = Object.keys(AddressInfoUse).find(
