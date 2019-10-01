@@ -1,0 +1,7 @@
+{
+  "fluapi": {
+    "staging_service": "fluapi-staging",
+    "prod_service": "fluapi-prod",
+    "repo": "fluapi"
+  }
+}

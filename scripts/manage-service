@@ -1,0 +1,111 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+. "$SELF_DIR/util.sh"
+
+function usage() {
+  echo2 "$*"
+  echo2 "Usage:"
+  echo2 "  ${BASH_SOURCE[0]} <command> <service> [<git-revision>]"
+  echo2 ""
+  echo2 "where"
+  echo2 "  <command> is one of 'publish' or 'deploy' or 'promote'"
+  echo2 "  <service> is a valid service name"
+  echo2 "  <git-revision> is a valid revision in the audere repo"
+  exit 1
+}
+
+function ecr_login() {
+  echo "=================================================="
+  echo "Logging in to ECR"
+  $(aws ecr get-login --no-include-email)
+}
+
+function ecr_publish() {
+  echo "=================================================="
+  echo "Tagging $repo for upload to ECR"
+  docker tag $repo:$commit $registry/$repo:$commit
+  echo "Pushing $repo to ECR"
+  docker push $registry/$repo:$commit
+}
+
+function ecs_deploy() {
+  local service="$1"
+  local current_tag="$2"
+  local new_tag="$3"
+
+  echo "=================================================="
+  echo "Re-tagging $repo:$current_tag as $repo:$new_tag"
+  local manifest=$(aws ecr batch-get-image --repository-name $repo --image-ids imageTag=$current_tag --query 'images[].imageManifest' --output text)
+  aws ecr put-image --repository-name $repo --image-tag $new_tag --image-manifest "$manifest"
+
+  echo "Updating ECS service - $service"
+  aws ecs update-service --service $service --force-new-deployment
+}
+
+function ecs_promote() {
+  ecs_deploy $prod_service staging prod
+}
+
+case "$#" in
+  2)
+    readonly command="$1"
+    readonly service="$2"
+    readonly commit="$(cd "$SELF_DIR/.." && git rev-parse HEAD)"
+    ;;
+  3)
+    readonly command="$1"
+    readonly service="$2"
+    readonly commit="$3"
+    ;;
+  *) usage "Expected 2-3 arguments, got $#.";;
+esac
+
+case "$command" in
+  "publish" | "deploy" | "promote") ;;
+  *) usage "Unexpected command '$command'";;
+esac
+
+readonly account=$(aws sts get-caller-identity --output text --query 'Account')
+readonly registry="$account.dkr.ecr.region.amazonaws.com"
+
+if [[ -z $(jq .$service $SELF_DIR/service-registry.json) ]]; then
+  usage "Expected a defined service, got $service."
+else
+  readonly repo=$(jq -r .$service.repo $SELF_DIR/service-registry.json)
+fi
+
+case $command in
+  "publish")
+    ecr_login
+    ecr_publish
+
+    echo "=================================================="
+    echo "Published $repo:$commit to ECR"
+    echo "=================================================="
+    ;;
+  "deploy")
+    readonly staging_service=$(jq -r .$service.staging_service $SELF_DIR/service-registry.json)
+    ecr_login
+    ecs_deploy $staging_service $commit staging
+
+    echo "=================================================="
+    echo "Deployed $staging_service to $commit"
+    echo "=================================================="
+    ;;
+  "promote")
+    readonly prod_service=$(jq -r .$service.prod_service $SELF_DIR/service-registry.json)
+    ecr_login
+    ecs_promote
+
+    echo "=================================================="
+    echo "Promoted a new version of $prod_service from staging"
+    echo "=================================================="
+    ;;
+esac
