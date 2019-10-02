@@ -29,10 +29,10 @@ function ecr_login() {
 
 function ecr_publish() {
   echo "=================================================="
-  echo "Tagging $repo for upload to ECR"
-  docker tag $repo:$commit $registry/$repo:$commit
-  echo "Pushing $repo to ECR"
-  docker push $registry/$repo:$commit
+  echo "Tagging '$repo' for upload to ECR"
+  docker tag "$repo:$commit" "$registry/$repo:$commit"
+  echo "Pushing '$repo' to ECR"
+  docker push "$registry/$repo:$commit"
 }
 
 function ecs_deploy() {
@@ -41,71 +41,65 @@ function ecs_deploy() {
   local new_tag="$3"
 
   echo "=================================================="
-  echo "Re-tagging $repo:$current_tag as $repo:$new_tag"
-  local manifest=$(aws ecr batch-get-image --repository-name $repo --image-ids imageTag=$current_tag --query 'images[].imageManifest' --output text)
-  aws ecr put-image --repository-name $repo --image-tag $new_tag --image-manifest "$manifest"
+  echo "Re-tagging '$repo:$current_tag' as '$repo:$new_tag'"
+  local manifest="$(aws ecr batch-get-image --repository-name "$repo" --image-ids "imageTag=$current_tag" --query 'images[].imageManifest' --output text)"
+  aws ecr put-image --repository-name "$repo" --image-tag "$new_tag" --image-manifest "$manifest"
 
-  echo "Updating ECS service - $service"
-  aws ecs update-service --service $service --force-new-deployment
+  echo "Updating ECS service - '$service'"
+  aws ecs update-service --service "$service" --force-new-deployment
 }
 
 function ecs_promote() {
-  ecs_deploy $prod_service staging prod
+  ecs_deploy "$prod_service" staging prod
 }
 
 case "$#" in
-  2)
-    readonly command="$1"
-    readonly service="$2"
-    readonly commit="$(cd "$SELF_DIR/.." && git rev-parse HEAD)"
-    ;;
-  3)
-    readonly command="$1"
-    readonly service="$2"
-    readonly commit="$3"
+  2|3)
+    command="$1"
+    service="$2"
+    commit="${3:-$(cd "$SELF_DIR/.." && git rev-parse HEAD)}"
     ;;
   *) usage "Expected 2-3 arguments, got $#.";;
 esac
 
-case "$command" in
-  "publish" | "deploy" | "promote") ;;
-  *) usage "Unexpected command '$command'";;
-esac
+account="$(aws sts get-caller-identity --output text --query 'Account')"
+registry="$account.dkr.ecr.region.amazonaws.com"
 
-readonly account=$(aws sts get-caller-identity --output text --query 'Account')
-readonly registry="$account.dkr.ecr.region.amazonaws.com"
-
-if [[ -z $(jq .$service $SELF_DIR/service-registry.json) ]]; then
+if [[ -z "$(jq ".$service" "$SELF_DIR/service-registry.json")" ]]; then
   usage "Expected a defined service, got $service."
 else
-  readonly repo=$(jq -r .$service.repo $SELF_DIR/service-registry.json)
+  repo="$(jq -r ".$service.repo" "$SELF_DIR/service-registry.json")"
 fi
 
-case $command in
-  "publish")
+case "$command" in
+  publish)
     ecr_login
     ecr_publish
 
     echo "=================================================="
-    echo "Published $repo:$commit to ECR"
+    echo "Published '$repo:$commit' to ECR"
     echo "=================================================="
     ;;
-  "deploy")
-    readonly staging_service=$(jq -r .$service.staging_service $SELF_DIR/service-registry.json)
+  deploy)
+    staging_service="$(jq -r ".$service.staging_service" "$SELF_DIR/service-registry.json")"
     ecr_login
-    ecs_deploy $staging_service $commit staging
+    ecs_deploy "$staging_service" "$commit" staging
 
     echo "=================================================="
-    echo "Deployed $staging_service to $commit"
+    echo "Deployed '$staging_service' to '$commit'"
     echo "=================================================="
     ;;
-  "promote")
-    readonly prod_service=$(jq -r .$service.prod_service $SELF_DIR/service-registry.json)
+  promote)
+    prod_service="$(jq -r ".$service.prod_service" "$SELF_DIR/service-registry.json")"
     ecr_login
     ecs_promote
 
     echo "=================================================="
-    echo "Promoted a new version of $prod_service from staging"
+    echo "Promoted a new version of '$prod_service' from staging"
     echo "=================================================="
+    ;;
+
+  *)
+    usage "Unexpected command '$command'"
     ;;
 esac
