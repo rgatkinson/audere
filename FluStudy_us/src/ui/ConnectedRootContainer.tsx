@@ -39,7 +39,6 @@ import {
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
-  DrawerActions,
   NavigationAction,
   NavigationActions,
   NavigationContainerComponent,
@@ -47,6 +46,7 @@ import {
   StackActions,
   createAppContainer,
 } from "react-navigation";
+import { DrawerActions } from "react-navigation-drawer";
 import { EventInfoKind, WorkflowInfo } from "audere-lib/chillsProtocol";
 import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
@@ -87,9 +87,14 @@ interface Props {
 }
 
 const persistenceKey = "NavigationStateAus";
-const persistNavigationState = async (navState: NavigationState) => {
+const persistNavigationState = async (navState: any) => {
   try {
-    await AsyncStorage.setItem(persistenceKey, JSON.stringify(navState));
+    // Scrub out drawer-specific navState IDs that are not unique across relaunch
+    const { openId, closeId, toggleId, ...scrubbedNavState } = navState;
+    await AsyncStorage.setItem(
+      persistenceKey,
+      JSON.stringify(scrubbedNavState)
+    );
   } catch (err) {
     // handle the error according to your needs
   }

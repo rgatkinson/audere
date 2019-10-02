@@ -3,14 +3,15 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { AsyncStorage, NetInfo } from "react-native";
 import firebase from "react-native-firebase";
 import { crashlytics } from "../crashReporter";
 import { logFirebaseEvent, AppEvents, AppHealthEvents } from "../util/tracker";
 
 interface RemoteConfig {
+  advanceRDTCaptureOnMemoryWarning: boolean;
   showRDTInterpretation: string;
   rdtTimeoutSeconds: number;
-  skipSurveyNotification: boolean;
   [key: string]: boolean | number | string[] | string;
 }
 
@@ -22,9 +23,9 @@ interface RemoteConfig {
 // properties that aren't shallow, we need to update that code to do a deep
 // clone.
 const DEFAULT_CONFIGS: RemoteConfig = {
+  advanceRDTCaptureOnMemoryWarning: false,
   showRDTInterpretation: "",
   rdtTimeoutSeconds: 30,
-  skipSurveyNotification: false,
 };
 
 // Values you put into here will always be applied on top of remote config
@@ -45,6 +46,47 @@ async function loadConfig(): Promise<RemoteConfig> {
   });
   logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_LOADED, localConfig);
   crashlytics.log(`Remote config loaded: ${JSON.stringify(localConfig)}`);
+
+  // Handle offline cases - we'll persistently cache beyond the normal
+  // lifetime of the Firebase remote config cache. The last values seen from
+  // the remote config will be used.
+  const isConnected = await NetInfo.isConnected.fetch();
+  if (isConnected) {
+    // We're connected to a network which means the remote config values
+    // are up to date and should be persisted.
+    let items: Array<Array<string>> = [];
+    Object.getOwnPropertyNames(DEFAULT_CONFIGS).forEach(key => {
+      items.push([key, localConfig[key].toString()]);
+    });
+    try {
+      await AsyncStorage.multiSet(items);
+    } catch (error) {
+      const errorMessage = `Remote Config Load Error: ${
+        error && error.message ? error.message : error
+      }`;
+
+      logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
+        errorMessage,
+      });
+      crashlytics.log(errorMessage);
+    }
+  } else {
+    // We're not connected to a network which means we should use the most
+    // recently persisted values.
+    (await AsyncStorage.multiGet(
+      Object.getOwnPropertyNames(DEFAULT_CONFIGS)
+    )).forEach(pair => {
+      if (pair[1] !== undefined && pair[1] !== null) {
+        if (typeof localConfig[pair[0]] == "boolean") {
+          localConfig[pair[0]] = !!pair[1];
+        } else if (typeof localConfig[pair[0]] == "number") {
+          localConfig[pair[0]] = Number(pair[1]);
+        } else {
+          localConfig[pair[0]] = pair[1];
+        }
+      }
+    });
+  }
 
   if (process.env.NODE_ENV === "development") {
     localConfig = { ...localConfig, ...DEV_CONFIG_OVERRIDES };
@@ -70,6 +112,7 @@ export async function loadAllRemoteConfigs() {
 
   if (process.env.NODE_ENV === "development") {
     // This removes all caching and basically fetches the config each time
+
     config.enableDeveloperMode();
   }
 

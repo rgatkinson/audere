@@ -3,10 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Dimensions, NativeModules, Platform, StatusBar } from "react-native";
+import { Dimensions, Platform, StatusBar } from "react-native";
 import DeviceInfo from "react-native-device-info";
-const { PlatformConstants } = NativeModules;
-const deviceType = PlatformConstants.interfaceIdiom;
 
 const X_WIDTH = 375;
 const X_HEIGHT = 812;
@@ -49,6 +47,7 @@ export const BORDER_RADIUS = 20;
 export const BUTTON_BORDER_RADIUS = 6;
 export const BORDER_WIDTH = 1;
 export const THIN_BORDER_WIDTH = 1;
+export const THICK_BORDER_WIDTH = 3;
 export const EXTRA_LARGE_TEXT = isTablet ? 40 : 24;
 export const LARGE_TEXT = isTablet ? 24 : 20;
 export const REGULAR_TEXT = isTablet ? 20 : 18;

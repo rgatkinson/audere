@@ -24,19 +24,25 @@
     "device": {
       "handset": "phone",
       "tablet": "iPad",
-      "unknown": "device"
+      "unknown": "device",
+      "iosHint": " >"
     },
     "testResult": {
       "desc": "Your test strip indicates you may be:",
-      "positive": "**POSITIVE** for **INFLUENZA**",
-      "negative": "**NEGATIVE** for **INFLUENZA**",
+      "descNegative": "Your test strip indicates you **may be **",
+      "positive": "**POSITIVE for INFLUENZA**",
+      "negative": "**negative for influenza.**",
       "whyTitle": "**Why did I get this result?**",
       "blueLine": "A blue line in the middle of your test strip",
       "positive++WhatToDo": "**What should I do if my test is positive?**\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
       "negative++WhatToDo": "**What should I do if my test is negative?**\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
       "whatToDoCommon": "Most people with flu or other respiratory viruses will get better over a few days, but sometimes flu can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. For more information on the flu, visit:\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
       "urgeToContinue": "Please tap 'Continue' below to complete the final steps.",
-      "disclaimer": "**Medical Disclaimer:**\n\nThis app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom."
+      "disclaimer": "**Medical Disclaimer:**\n\nThis app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom.",
+      "negativeExplanation": "Sometimes you can have the flu but get a negative result because:\n",
+      "negativeExplanationBullet": "The swab did not collect enough virus to indicate a positive result",
+      "negativeExplanationBulletAllUnder4Days": "Too much time passed between when you first felt sick and took the test",
+      "negativeExplanationBulletOne4Days": "Your symptoms started 4+ days ago, in which case the test may be less accurate"
     },
     "validationErrors": {
       "zipcode": "Invalid zipcode"
@@ -113,7 +119,7 @@
     "willConfidential": "**Will my information be kept confidential?**",
     "willConfidential++Answer": "You will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information. Additionally, this study does not collect information such as your name, email, or mailing address.\n\nWe will not share your data with any third party or for purposes other than this study as described in the Participant Information Sheet and Consent Form.\n\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Human Research Ethics Committee, who approved this study, and other accrediting agencies may inspect and copy your non-identifiable records. They would only do this to ensure you were treated fairly and safely during the study.",
     "appDelete": "**After I finish the tests, can I delete the app?**",
-    "appDelete++Answer": "We will send you a single notification on your device a few days after you complete the test with a link to complete a survey about your experience using the app. Once you have received that notification and completed the survey you may delete the app."
+    "appDelete++Answer": "The app will send you a single notification on your device a couple days after you complete the test with a link to complete a survey about your experience using the app. Once you have received that notification and completed the survey you may delete the app."
   },
   "buildInfo": {
     "version": "**Version:** ",
@@ -165,7 +171,7 @@
   },
   "surveyTitle": {
     "age": "How old are you?",
-    "researchBySameResearchers": "9. I agree to my information being used for future research undertaken by these same researchers:",
+    "researchByAnyResearchers": "9. I agree to my information being used for future research by any researchers conducting research in this field:",
     "whatSymptoms": "Which of the following were present during your illness?",
     "symptomsStart": "How long ago did symptoms start?",
     "symptomsLast48": "Were these symptoms present in the last 48 hours?",
@@ -180,7 +186,8 @@
     "smokeTobacco": "Do you smoke tobacco?",
     "householdTobacco": "Does anyone in your household smoke tobacco?",
     "interfering": "Is your illness preventing you from going to work or school, going to social events, or exercising/working out?",
-    "antibiotics": "Are you currently taking antibiotics (e.g. Amoxil, penicillin, azithromycin, co-trimoxazole (Bactrim), co-amoxiclav (Augmentin)) or antivirals (e.g. Tamiflu, Xofluza, Relenza) prescribed by a doctor (GP or hospital) for this illness?",
+    "antibiotics": "Are you currently taking antibiotics (e.g. Amoxil, penicillin, azithromycin, co-trimoxazole (Bactrim), co-amoxiclav (Augmentin)) prescribed by a doctor (GP or hospital) for this illness?",
+    "antiviral": "Are you currently taking antivirals (e.g. Tamiflu, Xofluza, Relenza) prescribed by a doctor (GP or hospital) for this illness?",
     "assignedSex": "What is the sex on your medical records?",
     "race": "How would you describe your race?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
@@ -359,7 +366,7 @@
     "waiting": "Now, just wait for the timer to end and the app will direct you to the next steps.",
     "titleTimerUp": "Timer finished",
     "descTimerUp": "Thanks for hanging in there. Tap 'Continue' and we'll move on to reading your test strip.",
-    "descThanksForAnswering": "Thanks for handing in there. Tap 'Continue' and we'll move on to the next test."
+    "descThanksForAnswering": "Thanks for hanging in there. Tap 'Continue' and we'll move on to the next test."
   },
   "PrepareUTM": {
     "title": "Prepare for UTM Test",
@@ -498,7 +505,7 @@
     "androidInstructions": "We'll send a notification to your device in 2 days with a link to the web survey.\nIt's important that you don't delete this app until you've received the notification."
   },
   "Thanks": {
-    "title": "All done!",
+    "title": "Test completed",
     "desc": "Thank you. Your participation in this research study could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.",
     "treatmentTitle": "Influenza Treatment",
     "treatmentLinkLabel": "healthdirect: How to treat cold and flu symptoms",
@@ -557,7 +564,7 @@
     "other": "Other",
     "dontKnow": "Don't know",
     "noneOfTheAbove": "None of the above",
-    "selectAge": "Select age",
+    "selectAge": "Select age range",
     "18to19": "18 to 19",
     "20to24": "20 to 24",
     "25to29": "25 to 29",

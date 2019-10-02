@@ -15,10 +15,7 @@ import {
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Action, updateAnswer, StoreState } from "../../store";
-import {
-  DropDownQuestion,
-  SurveyQuestion,
-} from "audere-lib/chillsQuestionConfig";
+import { DropDownQuestion } from "audere-lib/chillsQuestionConfig";
 import { getSelectedButton } from "../../util/survey";
 import Modal from "./Modal";
 import Text from "./Text";
@@ -68,14 +65,13 @@ class DropDownModal extends React.Component<
   }
 
   _onValueChange = (value: string) => {
-    const { placeholder, t } = this.props;
-    if (value === placeholder) {
-      this.setState({ selected: undefined });
-    } else {
-      this.setState({ selected: value });
-      if (Platform.OS === "android") {
-        this.props.onDismiss(value);
-      }
+    let selected: string | undefined;
+    if (value !== this.props.placeholder) {
+      selected = value;
+    }
+    this.setState({ selected });
+    if (Platform.OS === "android") {
+      this.props.onDismiss(selected);
     }
   };
 
@@ -173,7 +169,12 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
     const { highlighted, question, selected, t } = this.props;
     const text = (
       <Text
-        content={!!selected ? t(selected) : t(question.placeholder)}
+        content={
+          !!selected
+            ? t(selected)
+            : t(question.placeholder) + t("common:device:iosHint")
+        }
+        bold={true}
         style={{ color: !!selected ? SECONDARY_COLOR : LINK_COLOR }}
       />
     );

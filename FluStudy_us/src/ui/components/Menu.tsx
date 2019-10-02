@@ -10,7 +10,8 @@ import {
   Text as SystemText,
   TouchableOpacity,
 } from "react-native";
-import { DrawerItems, SafeAreaView } from "react-navigation";
+import { SafeAreaView } from "react-navigation";
+import { DrawerNavigatorItems } from "react-navigation-drawer";
 import { Feather } from "@expo/vector-icons";
 import i18n from "i18next";
 import {
@@ -41,8 +42,9 @@ export const Menu = (props: any) => {
         <SystemText style={styles.header}>
           {i18n.t("menu:fluAtHomeHelp")}
         </SystemText>
-        <DrawerItems
+        <DrawerNavigatorItems
           activeTintColor={SECONDARY_COLOR}
+          onItemPress={close}
           inactiveTintColor={SECONDARY_COLOR}
           {...items}
         />

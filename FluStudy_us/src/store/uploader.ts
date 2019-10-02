@@ -3,33 +3,35 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { MiddlewareAPI, Dispatch, AnyAction } from "redux";
-import { Option, SurveyResponse } from "./types";
-import { SurveyState, QuestionsState, StoreState } from "./index";
 import {
   NonPIIConsentInfo,
+  PatientInfoGender,
   QuestionAnswerOption,
   ResponseInfo,
   ResponseItemInfo,
   SurveyInfo,
-  PatientInfoGender,
 } from "audere-lib/chillsProtocol";
 import {
+  AssignedSexConfig,
+  BlueLineConfig,
+  ChildrenWithChildrenConfig,
+  CoughSneezeConfig,
   FluShotConfig,
   FluShotDateConfig,
-  BlueLineConfig,
-  PinkWhenBlueConfig,
-  PinkLineConfig,
-  InContactConfig,
-  CoughSneezeConfig,
-  ChildrenWithChildrenConfig,
+  FluShotNationalImmunization,
+  FluShotNationalImmunizationCondition,
   HouseholdChildrenConfig,
-  AssignedSexConfig,
+  InContactConfig,
+  PinkLineConfig,
+  PinkWhenBlueConfig,
   PreviousSeason,
 } from "audere-lib/chillsQuestionConfig";
+import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { crashlytics } from "../crashReporter";
 import { logFirebaseEvent, TransportEvents } from "../util/tracker";
 import { syncSurvey } from "./FirebaseStore";
+import { QuestionsState, StoreState, SurveyState } from "./index";
+import { Option, SurveyResponse } from "./types";
 
 // See comment below on cleanupResponses.
 const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [

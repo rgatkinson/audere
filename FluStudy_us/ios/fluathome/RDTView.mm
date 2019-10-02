@@ -37,7 +37,7 @@
             }
         );
     };
-    viewController.onRDTDetected = ^(bool passed, bool testStripDetected, UIImage *testStrip, UIImage *croppedTestStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime){
+    viewController.onRDTDetected = ^(bool passed, bool testStripDetected, UIImage *testStrip, UIImage *croppedTestStrip, UIImage *resultWindow, bool fiducial, ExposureResult exposureResult, SizeResult sizeResult, bool center, bool orientation, float angle, bool sharpness, bool shadow, bool control, bool testA, bool testB, double captureTime, std::vector<Point2f> boundary){
         RDTView *strongSelf = weakSelf;
         NSLog(@"Callback called with %@", passed ? @"true" : @"false");
         if (!strongSelf || !strongSelf.onRDTCaptured) {
@@ -49,6 +49,14 @@
         if (testStrip && passed && fiducial) {
             base64img = [UIImagePNGRepresentation(testStrip) base64EncodedStringWithOptions: 0];
             base64ResultWindowImg = [UIImagePNGRepresentation(resultWindow) base64EncodedStringWithOptions: 0];
+        }
+        NSMutableArray *boxedBoundary = [NSMutableArray arrayWithCapacity:boundary.size()];
+        for(int i = 0; i < boundary.size(); i++) {
+            boxedBoundary[i] =
+                @{
+                    @"x": @(boundary[i].x),
+                    @"y": @(boundary[i].y),
+                };
         }
         dispatch_async(dispatch_get_main_queue(), ^{
             strongSelf.onRDTCaptured(
@@ -68,6 +76,7 @@
                     @"control": @(control),
                     @"testA": @(testA),
                     @"testB": @(testB),
+                    @"boundary": boxedBoundary,
                 }
             );
         });
@@ -107,6 +116,11 @@
     } else {
         [self.imageQualityViewController hideViewFinder];
     }
+}
+
+- (void) setFrameImageScale:(double) frameImageScale
+{
+    [[ImageProcessor sharedProcessor] setFrameImageScale: frameImageScale];
 }
 
 @end

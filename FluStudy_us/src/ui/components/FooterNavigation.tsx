@@ -7,10 +7,9 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
-import { isTablet, FOOTER_HEIGHT } from "../styles";
+import { FOOTER_HEIGHT } from "../styles";
 import Button from "./Button";
 import StepDots from "./StepDots";
-import { Action } from "../../store";
 
 interface StepConfig {
   step: number;

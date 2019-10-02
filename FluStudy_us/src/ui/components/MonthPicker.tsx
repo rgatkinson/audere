@@ -16,7 +16,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { getAnswer } from "../../util/survey";
 import { Action, updateAnswer, StoreState } from "../../store";
-import { MonthQuestion, SurveyQuestion } from "audere-lib/chillsQuestionConfig";
+import { MonthQuestion } from "audere-lib/chillsQuestionConfig";
 import Modal from "./Modal";
 import Text from "./Text";
 import {
@@ -75,14 +75,14 @@ class MonthModal extends React.Component<
     );
   }
 
-  _onValueChange = (selected: number | string) => {
-    if (selected === this.props.t("selectDate")) {
-      this.setState({ date: undefined });
-    } else {
-      if (Platform.OS === "android") {
-        this.props.onDismiss(new Date(selected));
-      }
-      this.setState({ date: new Date(selected) });
+  _onValueChange = (value: number | string) => {
+    let date: Date | undefined;
+    if (value !== this.props.t("selectDate")) {
+      date = new Date(value);
+    }
+    this.setState({ date });
+    if (Platform.OS === "android") {
+      this.props.onDismiss(date);
     }
   };
 
@@ -229,8 +229,9 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
               content={
                 !!date
                   ? t(months[date.getMonth()]) + " " + date.getFullYear()
-                  : t("selectDate")
+                  : t("selectDate") + t("common:device:iosHint")
               }
+              bold={true}
               style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
             />
           </TouchableOpacity>

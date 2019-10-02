@@ -3,123 +3,123 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import {
+  AchesLast48Config,
+  AchesSeverityConfig,
+  AchesStartConfig,
+  AgeConfig,
+  AntibioticsConfig,
+  AntiviralConfig,
+  AssignedSexConfig,
+  BedroomsConfig,
+  BlueLineConfig,
+  ChildrenWithChildrenConfig,
+  ChillsLast48Config,
+  ChillsSeverityConfig,
+  ChillsStartConfig,
+  ConsentAnyResearchersConfig,
+  CoughLast48Config,
+  CoughSeverityConfig,
+  CoughSneezeConfig,
+  CoughStartConfig,
+  FatigueLast48Config,
+  FatigueSeverityConfig,
+  FatigueStartConfig,
+  FeverLast48Config,
+  FeverSeverityConfig,
+  FeverStartConfig,
+  FluShotConfig,
+  FluShotDateConfig,
+  HeadacheLast48Config,
+  HeadacheSeverityConfig,
+  HeadacheStartConfig,
+  HealthCareWorkerConfig,
+  HouseholdChildrenConfig,
+  HouseholdTobaccoConfig,
+  InContactConfig,
+  InterferingConfig,
+  MedicalConditionConfig,
+  NumLinesSeenConfig,
+  PeopleInHouseholdConfig,
+  PinkWhenBlueConfig,
+  PreviousSeason,
+  RaceConfig,
+  RunningNoseLast48Config,
+  RunningNoseSeverityConfig,
+  RunningNoseStartConfig,
+  ShortBreathLast48Config,
+  ShortBreathSeverityConfig,
+  ShortBreathStartConfig,
+  SmokeTobaccoConfig,
+  SoreThroatLast48Config,
+  SoreThroatSeverityConfig,
+  SoreThroatStartConfig,
+  SymptomsLast48Config,
+  SymptomsSeverityConfig,
+  SymptomsStartConfig,
+  TestFeedbackConfig,
+  VomitingLast48Config,
+  VomitingSeverityConfig,
+  VomitingStartConfig,
+  WhatSymptomsConfig,
+  YoungChildrenConfig,
+} from "audere-lib/chillsQuestionConfig";
 import { Platform } from "react-native";
 import DeviceInfo from "react-native-device-info";
 import {
   setConsent,
+  setHasBeenOpened,
+  setOneMinuteStartTime,
   setTenMinuteStartTime,
   setTenMinuteTimerDone,
-  setOneMinuteStartTime,
   setTotalTestStripTime,
-  setHasBeenOpened,
 } from "../store";
-import { FunnelEvents } from "../util/tracker";
-import {
-  getTestStripConfirmationNextScreen,
-  getTestStripSurveyNextScreen,
-  getPinkWhenBlueNextScreen,
-  getPostRDTTestStripSurveyNextScreen,
-  logFluResult,
-  logNumLines,
-} from "../util/fluResults";
-import {
-  ConsentSameResearchersConfig,
-  WhatSymptomsConfig,
-  SymptomsStartConfig,
-  FeverStartConfig,
-  CoughStartConfig,
-  FatigueStartConfig,
-  ChillsStartConfig,
-  SoreThroatStartConfig,
-  HeadacheStartConfig,
-  AchesStartConfig,
-  RunningNoseStartConfig,
-  ShortBreathStartConfig,
-  VomitingStartConfig,
-  SymptomsLast48Config,
-  FeverLast48Config,
-  CoughLast48Config,
-  FatigueLast48Config,
-  ChillsLast48Config,
-  SoreThroatLast48Config,
-  HeadacheLast48Config,
-  AchesLast48Config,
-  RunningNoseLast48Config,
-  ShortBreathLast48Config,
-  VomitingLast48Config,
-  SymptomsSeverityConfig,
-  FeverSeverityConfig,
-  CoughSeverityConfig,
-  FatigueSeverityConfig,
-  ChillsSeverityConfig,
-  SoreThroatSeverityConfig,
-  HeadacheSeverityConfig,
-  AchesSeverityConfig,
-  RunningNoseSeverityConfig,
-  ShortBreathSeverityConfig,
-  VomitingSeverityConfig,
-  InContactConfig,
-  CoughSneezeConfig,
-  YoungChildrenConfig,
-  HouseholdChildrenConfig,
-  ChildrenWithChildrenConfig,
-  PeopleInHouseholdConfig,
-  BedroomsConfig,
-  FluShotConfig,
-  FluShotDateConfig,
-  PreviousSeason,
-  MedicalConditionConfig,
-  HealthCareWorkerConfig,
-  SmokeTobaccoConfig,
-  HouseholdTobaccoConfig,
-  InterferingConfig,
-  AntibioticsConfig,
-  AgeConfig,
-  AssignedSexConfig,
-  RaceConfig,
-  TestFeedbackConfig,
-  BlueLineConfig,
-  PinkWhenBlueConfig,
-  PinkLineConfig,
-  NumLinesSeenConfig,
-} from "audere-lib/chillsQuestionConfig";
-import { ScreenConfig } from "../ui/components/Screen";
-import Barcode from "../ui/components/flu/Barcode";
+import BackButton from "../ui/components/BackButton";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
-import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import BulletPointsComponent from "../ui/components/BulletPoint";
 import Button from "../ui/components/Button";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
+import ConsentText from "../ui/components/ConsentText";
 import ContinueButton from "../ui/components/ContinueButton";
+import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
-import Links from "../ui/components/Links";
-import MainImage from "../ui/components/MainImage";
-import Questions from "../ui/components/Questions";
+import Barcode from "../ui/components/flu/Barcode";
+import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
+import PatientPIIEntry from "../ui/components/flu/PatientPIIEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
 import RDTImageHC from "../ui/components/flu/RDTImageHC";
 import RDTReader from "../ui/components/flu/RDTReader";
-import ScreenText from "../ui/components/ScreenText";
-import SelectableComponent from "../ui/components/SelectableComponent";
 import SurveyLinkBlock from "../ui/components/flu/SurveyLinkBlock";
 import TestResult from "../ui/components/flu/TestResult";
 import TestResultRDT from "../ui/components/flu/TestResultRDT";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
-import Timer from "../ui/components/Timer";
-import Title from "../ui/components/Title";
-import VideoPlayer from "../ui/components/VideoPlayer";
 import FooterNavigation from "../ui/components/FooterNavigation";
+import LinkInfoBlock from "../ui/components/LinkInfoBlock";
+import Links from "../ui/components/Links";
+import MainImage from "../ui/components/MainImage";
 import PendingButton from "../ui/components/PendingButton";
 import PushNotificationContinueButtonAndroid from "../ui/components/PushNotificationContinueButtonAndroid";
 import PushNotificationContinueButtonIOS from "../ui/components/PushNotificationContinueButtonIOS";
-import { uploadPendingSuccess, pendingNavigation } from "../util/pendingData";
+import Questions from "../ui/components/Questions";
+import { ScreenConfig } from "../ui/components/Screen";
+import ScreenText from "../ui/components/ScreenText";
+import SelectableComponent from "../ui/components/SelectableComponent";
+import Timer from "../ui/components/Timer";
+import Title from "../ui/components/Title";
+import VideoPlayer from "../ui/components/VideoPlayer";
+import { GUTTER, SMALL_TEXT } from "../ui/styles";
+import {
+  getPinkWhenBlueNextScreen,
+  getPostRDTTestStripSurveyNextScreen,
+  getTestStripConfirmationNextScreen,
+  getTestStripSurveyNextScreen,
+  logFluResult,
+  logNumLines,
+} from "../util/fluResults";
 import { followUpSurvey } from "../util/notifications";
-import ConsentText from "../ui/components/ConsentText";
-import BackButton from "../ui/components/BackButton";
-import DidYouKnow from "../ui/components/DidYouKnow";
-import { SMALL_TEXT } from "../ui/styles";
-import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import { openSettingsApp } from "../util/openSettingsApp";
-import PatientPIIEntry from "../ui/components/flu/PatientPIIEntry";
+import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
+import { FunnelEvents } from "../util/tracker";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -131,7 +131,7 @@ export const Screens: ScreenConfig[] = [
     automationNext: "EnterInformation",
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: {
-      dispatchOnFirstLoad: setHasBeenOpened,
+      dispatchOnFirstLoad: [setHasBeenOpened],
       hideBackButton: true,
       splashImage: "welcome",
       fadeIn: true,
@@ -286,6 +286,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           center: false,
           label: "desc",
+
           style: { marginHorizontal: 0 },
         },
       },
@@ -315,7 +316,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ConsentText },
       {
         tag: Questions,
-        props: { questions: [ConsentSameResearchersConfig] },
+        props: { questions: [ConsentAnyResearchersConfig] },
         validate: true,
       },
       {
@@ -614,9 +615,10 @@ export const Screens: ScreenConfig[] = [
             HouseholdTobaccoConfig,
             InterferingConfig,
             AntibioticsConfig,
-            AgeConfig,
+            AntiviralConfig,
             AssignedSexConfig,
             RaceConfig,
+            AgeConfig,
           ],
         },
         validate: true,

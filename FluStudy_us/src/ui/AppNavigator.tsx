@@ -10,9 +10,9 @@ import {
   NavigationActions,
   NavigationState,
   StackActions,
-  createDrawerNavigator,
-  createStackNavigator,
 } from "react-navigation";
+import { createDrawerNavigator } from "react-navigation-drawer";
+import { createStackNavigator } from "react-navigation-stack";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import { Menu } from "./components/Menu";
 import { MenuScreens } from "../resources/MenuConfig";

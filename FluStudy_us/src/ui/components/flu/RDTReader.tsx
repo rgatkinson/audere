@@ -44,7 +44,11 @@ import {
 } from "audere-lib/chillsProtocol";
 import { GUTTER, SCREEN_MARGIN, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
 import { savePhoto } from "../../../store";
-import { logFirebaseEvent, AppEvents } from "../../../util/tracker";
+import {
+  logFirebaseEvent,
+  AppEvents,
+  AppHealthEvents,
+} from "../../../util/tracker";
 import { getRemoteConfig } from "../../../util/remoteConfig";
 
 interface Props {
@@ -81,7 +85,7 @@ interface FeedbackInstructionRequest {
 }
 
 const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
-const ALLOW_ICON_FEEDBACK = false; // Experimental for now; we'll revisit whether we should add icons back in
+const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
 const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
@@ -109,6 +113,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     instructionIsOK: false,
     appState: "",
     supportsTorchMode: false,
+    frameImageScale: 1,
   };
 
   _didFocus: any;
@@ -119,6 +124,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   _instructionTimer: NodeJS.Timeout | null | undefined;
   _instructionLastUpdate: number = 0;
   _lastRDTReaderResult?: RDTReaderResult;
+  _interpreting: boolean = false;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
@@ -302,6 +308,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         1000
       );
     }
+    this._interpreting = false;
   };
 
   _handleWillBlur = () => {
@@ -318,7 +325,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     this._clearTimer();
     this._timer = global.setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
-      if (isFocused) {
+      if (!this._interpreting && isFocused) {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
@@ -330,6 +337,13 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         dispatch(
           setRDTReaderResult(
             this._lastRDTReaderResult || { testStripFound: false }
+          )
+        );
+        dispatch(
+          setRDTCaptureInfo(
+            this.state.supportsTorchMode && this.state.flashEnabled,
+            this.state.supportsTorchMode &&
+              this.state.flashDisabledAutomatically
           )
         );
       }
@@ -358,6 +372,16 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _handleMemoryWarning = () => {
+    logFirebaseEvent(AppHealthEvents.LOW_MEMORY_WARNING);
+    if (this.state.frameImageScale === 1) {
+      this.setState({ frameImageScale: 0.5 });
+      logFirebaseEvent(AppHealthEvents.REDUCED_FRAME_SCALE);
+      return;
+    }
+    if (!getRemoteConfig("advanceRDTCaptureOnMemoryWarning")) {
+      return;
+    }
+
     const { dispatch, fallback, isFocused, navigation } = this.props;
     if (isFocused) {
       // Make sure timer cleanup happens since since this event can fire
@@ -510,6 +534,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
 
   _onRDTInterpreting = (args: RDTInterpretingArgs) => {
     this.setState({ spinner: true });
+    this._interpreting = true;
   };
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
@@ -709,6 +734,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           enabled={isFocused}
           showDefaultViewfinder={false}
           flashEnabled={this.state.flashEnabled}
+          frameImageScale={this.state.frameImageScale}
           appState={this.state.appState}
         />
         <View style={styles.overlayContainer}>
@@ -876,6 +902,7 @@ export default connect((state: StoreState) => ({
 function rdtCapturedArgsToResult(args: RDTCapturedArgs): RDTReaderResult {
   return {
     testStripFound: args.testStripFound,
+    testStripBoundary: args.testStripBoundary,
     isCentered: args.isCentered,
     sizeResult: args.sizeResult,
     isFocused: args.isFocused,

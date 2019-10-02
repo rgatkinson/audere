@@ -47,7 +47,10 @@ class PushNotificationContinueButtonAndroid extends React.Component<
       t,
       dispatch,
     } = this.props;
-    if (!scheduledSurveyNotif && !getRemoteConfig("skipSurveyNotification")) {
+    if (
+      !scheduledSurveyNotif &&
+      false /*!getRemoteConfig("skipSurveyNotification")*/
+    ) {
       PushNotification.cancelLocalNotifications({
         id: notification.id.toString(),
       });

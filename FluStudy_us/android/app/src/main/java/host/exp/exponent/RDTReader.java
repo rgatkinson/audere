@@ -12,8 +12,13 @@ import android.widget.LinearLayout;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+
+import org.opencv.core.Point;
 
 import edu.washington.cs.ubicomplab.rdt_reader.ImageProcessor;
 import edu.washington.cs.ubicomplab.rdt_reader.ImageQualityView;
@@ -91,6 +96,16 @@ public class RDTReader extends LinearLayout implements ImageQualityView.ImageQua
         if (captureResult.allChecksPassed && captureResult.fiducial) {
             event.putString("img", ImageUtil.matToBase64(captureResult.resultMat));
             event.putString("resultWindowImg", ImageUtil.matToBase64(interpretationResult.resultMat));
+        }
+        if (captureResult.boundary != null) {
+            WritableArray boundary = new WritableNativeArray();
+            for (Point p : captureResult.boundary.toArray()) {
+                WritableMap point = new WritableNativeMap();
+                point.putDouble("x", p.x);
+                point.putDouble("y", p.y);
+                boundary.pushMap(point);
+            }
+            event.putArray("boundary", boundary);
         }
         event.putBoolean("passed", captureResult.allChecksPassed);
         event.putBoolean("testStripDetected", captureResult.testStripDetected);

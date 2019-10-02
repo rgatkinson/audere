@@ -301,11 +301,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 startTime = 0;
                 
                 if (self.onRDTDetected) {
-                    self.onRDTDetected(passed, testStripDetected, testStripImage, croppedTestStripImage, resultWindowImage, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB, captureTime);
+                    self.onRDTDetected(passed, testStripDetected, testStripImage, croppedTestStripImage, resultWindowImage, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, control, testA, testB, captureTime, boundary);
                 }
             } else {
                 if (self.onRDTDetected) {
-                    self.onRDTDetected(passed, testStripDetected, testStripImage, croppedTestStripImage, NULL, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, false, false, false, captureTime);
+                    self.onRDTDetected(passed, testStripDetected, testStripImage, croppedTestStripImage, NULL, fiducial, exposureResult, sizeResult, center, orientation, angle, sharpness, shadow, false, false, false, captureTime, boundary);
                 }
                 @synchronized (self) {
                     self.isProcessing = false;

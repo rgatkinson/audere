@@ -4,7 +4,7 @@ platform :ios, '10.0'
 target 'fluathome' do
   pod 'ExpoKit',
     :git => "http://github.com/expo/expo.git",
-    :tag => "ios/2.11.0",
+    :tag => "ios/2.13.0",
     :subspecs => [
       "Core"
     ],
@@ -20,15 +20,15 @@ target 'fluathome' do
   ])
 
   # Fixes FBSDKShareKit compile error "Unknown type name FBSDKBridgeAPIResponseBlock"
-  pod 'FBSDKCoreKit', '= 4.40'
-  pod 'FBSDKLoginKit', '= 4.40'
-  pod 'FBSDKShareKit', '= 4.40'
+  pod 'FBSDKCoreKit', '= 5.6.0'
+  pod 'FBSDKLoginKit', '= 5.6.0'
+  pod 'FBSDKShareKit', '= 5.6.0'
 
   pod 'RNFirebase', 
     :path => "../node_modules/react-native-firebase/ios"
   pod 'Firebase/Core', '~> 6.2.0'
-  pod 'Firebase/Performance', '~> 6.2.0'
   pod 'Firebase/Firestore'
+  pod 'Firebase/RemoteConfig'
   pod 'Firebase/Storage', '~> 6.2.0'
   pod 'libopencv-contrib-audere-3.4.6-xcode10.1', :podspec => 'opencv/libopencv-contrib-audere.podspec'
 

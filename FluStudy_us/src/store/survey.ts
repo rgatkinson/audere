@@ -3,7 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { format } from "date-fns";
 import {
   EventInfo,
   EventInfoKind,
@@ -14,8 +13,9 @@ import {
   SampleInfo,
   WorkflowInfo,
 } from "audere-lib/chillsProtocol";
-import { onCSRUIDEstablished } from "../util/tracker";
+import { format } from "date-fns";
 import i18n from "i18next";
+import { onCSRUIDEstablished } from "../util/tracker";
 
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
@@ -295,7 +295,6 @@ export default function reducer(state = initialState, action: SurveyAction) {
         ...state,
         timestamp: new Date().getTime(),
       };
-
     default:
       return state;
   }
@@ -324,8 +323,6 @@ export function setConsent(): SurveyAction {
         i18n.t("Consent:consentFormHeader1") +
         "\n" +
         i18n.t("Consent:consentFormText") +
-        "\n" +
-        i18n.t("surveyTitle:researchByTheseResearchers") +
         "\n" +
         i18n.t("surveyTitle:researchByAnyResearchers") +
         "\n" +

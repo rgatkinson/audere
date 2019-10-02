@@ -27,7 +27,6 @@ import {
   Action,
   setTestStripImg,
   setPhoto,
-  setRDTCaptureInfo,
   setShownRDTFailWarning,
   StoreState,
 } from "../../../store";
@@ -180,12 +179,6 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           })
         );
         dispatch(setPhoto(photo.uri));
-        dispatch(
-          setRDTCaptureInfo(
-            this.state.supportsTorchMode && this.state.flashEnabled,
-            false
-          )
-        );
 
         this.setState({ spinner: false });
         navigation.push(next);
