@@ -208,7 +208,7 @@ class Login extends React.Component<Props & WithNamespaces, State> {
             label={t("launchDetector")}
             primary={false}
             style={styles.button}
-            onPress={() => NativeModules.ObjectDetection.launchDetector()}
+            onPress={NativeModules.ObjectDetection.launchDetector}
           />
           <Button
             enabled={!!lastName && !!firstName && !!phone}
