@@ -26,6 +26,7 @@ import {
   createSplitSql,
   nonPiiDatabaseUrl,
   piiDatabaseUrl,
+  Inst,
 } from "../src/util/sql";
 import { generateRandomKey, sha256 } from "../src/util/crypto";
 import { Locations as snifflesLocations } from "audere-lib/locations";
@@ -45,6 +46,7 @@ import {
 } from "audere-lib/snifflesProtocol";
 import {
   defineFeverModels,
+  PhotoAttributes as FeverPhotoAttributes,
   SurveyAttributes,
   SurveyInstance,
   SurveyModel,
@@ -60,6 +62,7 @@ import {
   SurveyNonPIIUpdater,
   SurveyPIIUpdater,
 } from "./util/feverSurveyUpdater";
+import { PhotoAttributes as CoughPhotoAttributes } from "../src/models/db/cough";
 import { Updater } from "./util/updater";
 import { AuthManager, Permission } from "../src/endpoints/webPortal/auth";
 import { defineDeviceSetting } from "../src/models/db/devices";
@@ -117,6 +120,9 @@ type SomeSurveyModel = SurveyModel<PIIInfo | SurveyNonPIIDbInfo>;
 type SomeSurveyInstance = SurveyInstance<PIIInfo | SurveyNonPIIDbInfo>;
 type SomeVisitModel = VisitModel<VisitPIIInfo | VisitNonPIIDbInfo>;
 type SomeVisitInstance = VisitInstance<VisitPIIInfo | VisitNonPIIDbInfo>;
+type SomePhotoInstance =
+  | Inst<CoughPhotoAttributes>
+  | Inst<FeverPhotoAttributes>;
 
 type PerReleaseUpdater<TNonPii, TPii> = {
   nonPii: TNonPii;
@@ -408,14 +414,30 @@ async function cmdPasswd(argv: UserPasswordArgs): Promise<void> {
 }
 
 interface PhotosArgs {
+  release: Release;
   csruid: string;
 }
 
 async function cmdPhoto(argv: PhotosArgs): Promise<void> {
   const csruid = argv.csruid;
-  const rows = await feverModels.photo.findAll({
-    where: { csruid: { [Op.like]: `${csruid}%` } },
-  });
+  let rows: SomePhotoInstance[];
+  switch (argv.release) {
+    case Release.Cough:
+      rows = await coughModels.photo.findAll({
+        where: { csruid: { [Op.like]: `${csruid}%` } },
+      });
+      break;
+    case Release.Fever:
+      rows = await feverModels.photo.findAll({
+        where: { csruid: { [Op.like]: `${csruid}%` } },
+      });
+      break;
+    case Release.Sniffles:
+      throw fail("Sniffles doesn't have photos");
+    default:
+      throw failRelease(argv.release);
+  }
+
   switch (rows.length) {
     case 0:
       throw new Error(`No photo found with csruid '${csruid}'`);
@@ -425,7 +447,7 @@ async function cmdPhoto(argv: PhotosArgs): Promise<void> {
     default:
       throw new Error(
         `Multiple records found: '${rows
-          .map(row => pubId(row.csruid))
+          .map((row: any) => pubId(row.csruid || row.docId))
           .join("', '")}'`
       );
   }
@@ -438,6 +460,26 @@ interface PhotoOfArgs {
 
 async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
   switch (argv.release) {
+    case Release.Cough: {
+      const surveyRow = expectOne(
+        await coughModels.survey.findAll({
+          where: { csruid: { [Op.like]: `${argv.row}%` } },
+        })
+      );
+      const sample = expectOne(
+        surveyRow.survey.samples.filter(
+          x => x.sample_type === "TestStripBase64"
+        )
+      );
+      const photoRow = expectOne(
+        await coughModels.photo.findAll({
+          where: { csruid: { [Op.eq]: sample.code } },
+        })
+      );
+      console.log(photoRow.photo.jpegBase64);
+      break;
+    }
+
     case Release.Fever: {
       const surveyRow = expectOne(
         await feverModels.surveyNonPii.findAll({
