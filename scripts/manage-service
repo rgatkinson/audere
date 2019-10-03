@@ -12,15 +12,8 @@ SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 ACCOUNT="$(aws sts get-caller-identity --output text --query 'Account')"
 REGISTRY="$ACCOUNT.dkr.ecr.region.amazonaws.com"
 
-function usage() {
+function fail() {
   echo2 "$*"
-  echo2 "Usage:"
-  echo2 "  ${BASH_SOURCE[0]} <command> <service> [<git-revision>]"
-  echo2 ""
-  echo2 "where"
-  echo2 "  <command> is one of 'publish' or 'deploy' or 'promote'"
-  echo2 "  <service> is a valid service name"
-  echo2 "  <git-revision> is a valid revision in the audere repo"
   exit 1
 }
 
@@ -64,7 +57,7 @@ function service_repo() {
   local service="$1"
 
   [[ -n "$(config_get "$service")" ]] \
-    || usage "Expected a defined service, got '$service'."
+    || fail "Expected a defined service, got '$service'."
 
   config_get "$service.repo"
 }
@@ -120,6 +113,6 @@ case "$subcommand" in
     ;;
 
   *)
-    usage "Unexpected sub-command '$subcommand'"
+    fail "Unrecognized sub-command '$subcommand'"
     ;;
 esac
