@@ -107,18 +107,16 @@ import SelectableComponent from "../ui/components/SelectableComponent";
 import Timer from "../ui/components/Timer";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
-import { GUTTER, SMALL_TEXT } from "../ui/styles";
+import { SMALL_TEXT } from "../ui/styles";
 import {
   getPinkWhenBlueNextScreen,
-  getPostRDTTestStripSurveyNextScreen,
-  getTestStripConfirmationNextScreen,
   getTestStripSurveyNextScreen,
   logFluResult,
-  logNumLines,
 } from "../util/fluResults";
 import { followUpSurvey } from "../util/notifications";
 import { openSettingsApp } from "../util/openSettingsApp";
-import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
+import { uploadPendingSuccess } from "../util/pendingData";
+import { getShippingTextVariables } from "../util/shipping";
 import { FunnelEvents } from "../util/tracker";
 
 const SECOND_MS = 1000;
@@ -128,7 +126,7 @@ const CAN_USE_RDT = !DeviceInfo.isEmulator();
 
 export const Screens: ScreenConfig[] = [
   {
-    automationNext: "EnterInformation",
+    automationNext: "ScanInstructions",
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     chromeProps: {
       dispatchOnFirstLoad: [setHasBeenOpened],
@@ -142,20 +140,8 @@ export const Screens: ScreenConfig[] = [
         tag: FooterNavigation,
         props: {
           hideBackButton: true,
-          next: "EnterInformation", // TODO: Make name better
+          next: "ScanInstructions", // TODO: Make name better
         },
-      },
-    ],
-  },
-  {
-    automationNext: "ScanInstructions",
-    body: [{ tag: Title }, { tag: PatientPIIEntry }],
-    chromeProps: { hideBackButton: true, splashImage: "whatsrequired" },
-    key: "EnterInformation",
-    footer: [
-      {
-        tag: FooterNavigation,
-        props: { next: "ScanInstructions" },
       },
     ],
   },
@@ -205,18 +191,13 @@ export const Screens: ScreenConfig[] = [
     key: "ManualEntry",
   },
   {
-    body: [],
-    key: "HowTestWorks",
-    footer: [{ tag: ContinueButton, props: { next: "Unpacking" } }],
-  },
-  {
     body: [
       { tag: MainImage, props: { uri: "barcodesuccess" } },
       { tag: Title },
       { tag: Barcode },
       { tag: ScreenText, props: { label: "desc" } },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "SeattleFluMap" } }],
+    footer: [{ tag: ContinueButton, props: { next: "EmailConfirmation" } }],
     funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
     key: "ScanConfirmation", // TODO: Add Kit validation checks
     workflowEvent: "surveyStartedAt",
@@ -228,7 +209,7 @@ export const Screens: ScreenConfig[] = [
       { tag: Barcode },
       { tag: ScreenText, props: { label: "desc" } },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "SeattleFluMap" } }],
+    footer: [{ tag: ContinueButton, props: { next: "EmailConfirmation" } }],
     funnelEvent: FunnelEvents.MANUAL_CODE_CONFIRMATION,
     key: "ManualConfirmation", // TODO: Add Kit validation checks
     workflowEvent: "surveyStartedAt",
@@ -244,12 +225,20 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "SeattleFluMap",
+    key: "EmailConfirmation",
     footer: [
       {
         tag: ContinueButton,
         props: {
+          label: "common:button:yes",
           next: "HowTestWorks",
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          label: "common:button:no",
+          next: "EmailError",
         },
       },
     ],
@@ -262,6 +251,26 @@ export const Screens: ScreenConfig[] = [
         tag: ContinueButton,
         props: {
           next: "Unpacking",
+        },
+      },
+    ],
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    key: "EmailError",
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          label: "common:button:yes",
+          next: "ScanInstructions",
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          label: "common:button:no",
+          next: "BarcodeContactSupport",
         },
       },
     ],
@@ -654,7 +663,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: Timer,
         props: {
-          next: "PrepareUTM",
+          next: "TestStripReady",
           startTimeConfig: "tenMinuteStartTime",
           totalTimeMs: TEST_STRIP_MS,
           dispatchOnDone: setTenMinuteTimerDone,
@@ -663,123 +672,6 @@ export const Screens: ScreenConfig[] = [
     ],
     funnelEvent: FunnelEvents.COMPLETED_SURVEY,
     key: "ThankYouSurvey",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "opennasalswab" } },
-      { tag: Title },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
-      },
-    ],
-    footer: [{ tag: ContinueButton, props: { next: "MucusUTM" } }],
-    key: "PrepareUTM",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "collectmucus" } },
-      { tag: Title },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
-      },
-      { tag: VideoPlayer, props: { id: "collectSample" } },
-    ],
-    footer: [{ tag: ContinueButton, props: { next: "SwabInTubeUTM" } }],
-    key: "MucusUTM",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "putswabintube" } },
-      { tag: Title },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
-      },
-    ],
-    footer: [
-      {
-        tag: ContinueButton,
-        props: {
-          dispatchOnNext: () => setOneMinuteStartTime(),
-          label: "startTimer",
-          next: "PackUpUTM",
-        },
-      },
-    ],
-    funnelEvent: FunnelEvents.SURVIVED_SWAB,
-    key: "SwabInTubeUTM",
-  },
-  {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    footer: [
-      {
-        tag: ContinueButton,
-        props: {
-          next: "TimerDoneUTM",
-        },
-      },
-    ],
-    key: "PackUpUTM",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "questionsthankyou" } },
-      {
-        tag: SelectableComponent,
-        props: {
-          components: [
-            [
-              { tag: Title },
-              { tag: ScreenText, props: { label: "desc" } },
-              { tag: ScreenText, props: { label: "waiting" } },
-            ],
-            [
-              { tag: Title, props: { label: "titleTimerUp" } },
-              { tag: ScreenText, props: { label: "descThanksForAnswering" } },
-              undefined,
-            ],
-          ],
-          componentSelectorProp: "tenMinuteTimerDone",
-          keyBase: "TimerChangeover",
-        },
-      },
-    ],
-    footer: [
-      {
-        tag: Timer,
-        props: {
-          next: "TestStripReadyUTM",
-          startTimeConfig: "tenMinuteStartTime",
-          totalTimeMs: TEST_STRIP_MS,
-          dispatchOnDone: setTenMinuteTimerDone,
-        },
-      },
-    ],
-    funnelEvent: FunnelEvents.COMPLETED_SURVEY,
-    key: "TimerDoneUTM",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "removeteststrip" } },
-      { tag: Title },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
-      },
-    ],
-    footer: [
-      {
-        tag: ContinueButton,
-        props: {
-          dispatchOnNext: setTotalTestStripTime,
-          next: "TestStripSurvey", // MARK
-        },
-      },
-    ],
-    funnelEvent: FunnelEvents.PASSED_SECOND_TIMER,
-    key: "TestStripReadyUTM",
   },
   {
     body: [
@@ -801,49 +693,6 @@ export const Screens: ScreenConfig[] = [
     ],
     funnelEvent: FunnelEvents.PASSED_SECOND_TIMER,
     key: "TestStripReady",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "updatesettings" } },
-      { tag: Title },
-      {
-        tag: ScreenText,
-        props: { label: "desc" },
-      },
-      {
-        tag: BulletPointsComponent,
-        props: {
-          label: Platform.OS === "android" ? "howToAndroid" : "howToIOS",
-          customBulletUri: "listarrow",
-        },
-      },
-    ],
-    footer: [
-      {
-        tag: Button,
-        props: {
-          enabled: true,
-          label: "goToSettings",
-          primary: true,
-          onPress: openSettingsApp,
-        },
-      },
-    ],
-    key: "CameraSettings",
-  },
-  {
-    body: [
-      { tag: RDTImage },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-    ],
-    footer: [
-      {
-        tag: ContinueButton,
-        props: { surveyGetNextFn: getTestStripConfirmationNextScreen },
-      },
-    ],
-    key: "TestStripConfirmation",
   },
   {
     body: [
@@ -892,30 +741,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: RDTImageHC },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: Questions,
-        props: {
-          questions: [NumLinesSeenConfig],
-          logOnSave: logNumLines,
-        },
-        validate: true,
-      },
-    ],
-    footer: [
-      {
-        tag: ContinueButton,
-        props: {
-          surveyGetNextFn: getPostRDTTestStripSurveyNextScreen,
-        },
-      },
-    ],
-    key: "PostRDTTestStripSurvey",
-  },
-  {
-    body: [
       { tag: MainImage, props: { uri: "defectiveteststrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
@@ -926,7 +751,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     footer: [
-      { tag: ContinueButton, props: { next: "CleanTest" } },
+      { tag: ContinueButton, props: { next: "PackUpTest" } },
       { tag: Divider },
       {
         tag: ScreenText,
@@ -942,51 +767,224 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
+      { tag: MainImage, props: { uri: "takepictureteststrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: Links, props: { links: ["ausGov", "CDC", "myDr"] } },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          label: "instructions",
+          customBulletUri: "listarrow",
+        },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "CleanTest" } }],
-    key: "Advice",
+    automationNext: "TestStripConfirmation",
+    allowedRemoteConfigValues: ["rdtTimeoutSeconds"],
+    footer: [
+      {
+        tag: CameraPermissionContinueButton,
+        props: {
+          grantedNext: CAN_USE_RDT ? "RDTReader" : "TestStripCamera",
+          deniedNext: "CameraSettings",
+        },
+      },
+    ],
+    key: "RDTInstructions",
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "cleanuptest" } },
+      { tag: MainImage, props: { uri: "takepictureteststrip" } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "instructions", customBulletUri: "listarrow" },
+      },
+    ],
+    automationNext: "TestStripConfirmation",
+    footer: [
+      {
+        tag: CameraPermissionContinueButton,
+        props: {
+          grantedNext: "TestStripCamera",
+          deniedNext: "CameraSettings",
+        },
+      },
+    ],
+    key: "NonRDTInstructions",
+  },
+  {
+    body: [
+      {
+        tag: RDTReader,
+        props: { next: "TestStripConfirmation", fallback: "TestStripCamera" },
+      },
+    ],
+    chromeProps: {
+      disableBounce: true,
+    },
+    backgroundColor: "black",
+    key: "RDTReader",
+  },
+  {
+    body: [
+      {
+        tag: TestStripCamera,
+        props: { next: "TestStripConfirmation" },
+      },
+    ],
+    chromeProps: {
+      disableBounce: true,
+    },
+    backgroundColor: "black",
+    key: "TestStripCamera",
+  },
+  {
+    body: [
+      { tag: RDTImage },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "Packing" } }],
-    key: "CleanTest",
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          next:
+            "PackUpTest" /*surveyGetNextFn: getTestStripConfirmationNextScreen*/,
+        },
+      },
+    ],
+    key: "TestStripConfirmation",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "updatesettings" } },
+      { tag: Title },
+      {
+        tag: ScreenText,
+        props: { label: "desc" },
+      },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          label: Platform.OS === "android" ? "howToAndroid" : "howToIOS",
+          customBulletUri: "listarrow",
+        },
+      },
+    ],
+    footer: [
+      {
+        tag: Button,
+        props: {
+          enabled: true,
+          label: "goToSettings",
+          primary: true,
+          onPress: openSettingsApp,
+        },
+      },
+    ],
+    key: "CameraSettings",
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "Packing",
-    footer: [{ tag: ContinueButton, props: { next: "Shipping" } }],
+    key: "PackUpTest",
+    footer: [{ tag: ContinueButton, props: { next: "PrepareUTM" } }],
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "opennasalswab" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "MucusUTM" } }],
+    key: "PrepareUTM",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "collectmucus" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+      { tag: VideoPlayer, props: { id: "collectSample" } },
+    ],
+    footer: [{ tag: ContinueButton, props: { next: "SwabInTubeUTM" } }],
+    key: "MucusUTM",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "putswabintube" } },
+      { tag: Title },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc", customBulletUri: "listarrow" },
+      },
+    ],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          next: "PackUpUTM",
+        },
+      },
+    ],
+    funnelEvent: FunnelEvents.SURVIVED_SWAB,
+    key: "SwabInTubeUTM",
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          next: "PackUpBox",
+        },
+      },
+    ],
+    key: "PackUpUTM",
+  },
+  {
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    footer: [
+      {
+        tag: ContinueButton,
+        props: {
+          next: "Shipping",
+        },
+      },
+    ],
+    key: "PackUpBox",
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     key: "Shipping",
-    footer: [{ tag: ContinueButton, props: { next: "PickUpAddress" } }],
-  },
-  {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "PickUpAddress", // TODO: Add path split based on choice
-    footer: [{ tag: ContinueButton, props: { next: "SelectPickUpWindow" } }],
-  },
-  {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "SelectPickUpWindow",
-    footer: [{ tag: ContinueButton, props: { next: "PickUpWindowConfirm" } }],
-  },
-  {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "PickUpWindowConfirm",
     footer: [
       {
         tag: ContinueButton,
-        props: { surveyGetNextFn: getPostRDTTestStripSurveyNextScreen }, // TODO: Add selective based on if they used RDT function
+        props: { label: "pickup", next: "SchedulePickup" },
+      },
+      { tag: ContinueButton, props: { label: "dropoff", next: "TestResult" } },
+    ],
+  },
+  {
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc2", customBulletUri: "listarrow" },
+      },
+      {
+        tag: ScreenText,
+        props: { label: "desc3", textVariablesFn: getShippingTextVariables },
       },
     ],
+    key: "SchedulePickup",
+    footer: [{ tag: ContinueButton, props: { next: "TestResult" } }],
   },
   {
     body: [
@@ -1014,7 +1012,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: ContinueButton,
         props: {
-          next: "OptInNotifications",
+          next: "SelfCare",
         },
       },
     ],
@@ -1044,15 +1042,10 @@ export const Screens: ScreenConfig[] = [
           },
         },
       },
-      { tag: ContinueButton, props: { next: "OptInNotifications" } },
+      { tag: ContinueButton, props: { next: "SelfCare" } },
     ],
     funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResultRDT",
-  },
-  {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "OptInNotifications",
-    footer: [{ tag: ContinueButton, props: { next: "SelfCare" } }],
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
@@ -1154,79 +1147,5 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "PendingData",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "takepictureteststrip" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: BulletPointsComponent,
-        props: {
-          label: "instructions",
-          customBulletUri: "listarrow",
-        },
-      },
-    ],
-    automationNext: "TestStripConfirmation",
-    allowedRemoteConfigValues: ["rdtTimeoutSeconds"],
-    footer: [
-      {
-        tag: CameraPermissionContinueButton,
-        props: {
-          grantedNext: CAN_USE_RDT ? "RDTReader" : "TestStripCamera",
-          deniedNext: "CameraSettings",
-        },
-      },
-    ],
-    key: "RDTInstructions",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "takepictureteststrip" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "instructions", customBulletUri: "listarrow" },
-      },
-    ],
-    automationNext: "TestStripConfirmation",
-    footer: [
-      {
-        tag: CameraPermissionContinueButton,
-        props: {
-          grantedNext: "TestStripCamera",
-          deniedNext: "CameraSettings",
-        },
-      },
-    ],
-    key: "NonRDTInstructions",
-  },
-  {
-    body: [
-      {
-        tag: RDTReader,
-        props: { next: "TestStripConfirmation", fallback: "TestStripCamera" },
-      },
-    ],
-    chromeProps: {
-      disableBounce: true,
-    },
-    backgroundColor: "black",
-    key: "RDTReader",
-  },
-  {
-    body: [
-      {
-        tag: TestStripCamera,
-        props: { next: "TestStripConfirmation" },
-      },
-    ],
-    chromeProps: {
-      disableBounce: true,
-    },
-    backgroundColor: "black",
-    key: "TestStripCamera",
   },
 ];

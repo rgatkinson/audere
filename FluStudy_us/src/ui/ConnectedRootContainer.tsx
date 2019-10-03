@@ -10,6 +10,7 @@ import {
   AppState,
   AsyncStorage,
   Dimensions,
+  Platform,
   StyleSheet,
   View,
 } from "react-native";
@@ -236,7 +237,15 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
           { cancelable: false }
         );
       } else if (this.props.activeRouteName === "CameraSettings") {
-        const { status } = await Permissions.getAsync(Permissions.CAMERA);
+        // Expo V35 currently has an issue on iOS where permissions aren't queried
+        // correctly when using Permissions.getAsync. The workaround is to use
+        // Permissions.askAsync instead, but on Android this has the unfortunate side-effect
+        // of repeatedly asking the user for camera permissions. To avoid that, we'll only
+        // use askAsync on iOS.
+        const { status } =
+          Platform.OS === "ios"
+            ? await Permissions.askAsync(Permissions.CAMERA)
+            : await Permissions.getAsync(Permissions.CAMERA);
         if (status === "granted") {
           this.navigator &&
             this.navigator.current &&

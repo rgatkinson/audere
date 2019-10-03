@@ -221,16 +221,9 @@
     "title": "Welcome",
     "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick. With your help, we want to understand if people (like you) can test themselves at home for the flu."
   },
-  "EnterInformation": {
-    "title": "Enter Information"
-  },
   "WhatsRequired": {
     "title": "What's required?",
     "desc": "In order to proceed, we'll need your consent to participate in a medical study. In addition, the app will need to access your device's camera to scan your test strip."
-  },
-  "HowTestWorks": {
-    "title": "How The Test Works",
-    "desc": "Accuracy is important"
   },
   "ReadyToBegin": {
     "title": "Ready to begin?",
@@ -269,9 +262,17 @@
     "title": "Your code was accepted",
     "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
   },
-  "SeattleFluMap": {
-    "title": "Seattle Flu Map",
-    "desc": "Is the flu near you?"
+  "EmailConfirmation": {
+    "title": "Email Confirmation",
+    "desc": "Is this your email address?\n\n**p----p@auderenow.org**"
+  },
+  "HowTestWorks": {
+    "title": "How The Test Works",
+    "desc": "Accuracy is important"
+  },
+  "EmailError": {
+    "title": "Email Error",
+    "desc": "You indicated that the email address that's associated with the barcode you scanned is unexpected. Do you happen to have another kit to try the barcode of instead?"
   },
   "VideoPlayer": {
     "offline": "Video is not available while device is offline."
@@ -454,45 +455,34 @@
     "noPink": "No other lines above or below the blue line",
     "why": "The app has interpreted your test strip and found the following:"
   },
-  "OptInNotifications": {
-    "title": "Notifications",
-    "desc": "Would you like to be notified of your results?"
-  },
   "SelfCare": {
     "title": "Self Care Tips",
     "desc": "Also refer a friend"
-  },
-  "Advice": {
-    "title": "What do I do now?",
-    "desc": "We're sorry you're not feeling well and we'd like to help. Here are a few resources from leading health organizations with tips and information on how to get well."
   },
   "InvalidResult": {
     "title": "Your test strip is defective",
     "desc": "We're sorry, but something went wrong. If there is no visible blue line on the test strip then the test strip is likely defective.",
     "whatToDo": "**What should I do if my test strip is defective?**\n\nIf your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon."
   },
-  "CleanTest": {
-    "title": "Clean up the test",
-    "desc": "Now that you've completed the test, you can discard the kit components. Make sure to wash your hands after disposing of your flu test kit."
-  },
-  "Packing": {
+  "PackUpTest": {
     "title": "Pack Up Your Kit",
     "desc": "Put the swab and strip in the box"
   },
+  "PackUpBox": {
+    "title": "Pack Up The Box",
+    "desc": "Put the box in the other box"
+  },
   "Shipping": {
-    "title": "Schedule Pick-up"
+    "title": "Shipping",
+    "desc": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don’t have an outgoing mail service to leave the package with, locate a nearby USPS location, blue mailbox, or schedule a pickup from your location.",
+    "pickup": "Schedule a pickup",
+    "dropoff": "I will drop off"
   },
-  "PickUpAddress": {
-    "title": "Pick Up Address",
-    "desc": "Would you like to use the same address we shipped to for pick up?"
-  },
-  "SelectPickUpWindow": {
-    "title": "Select Pick-Up Window",
-    "desc": "Please choose the times you would be available for package pick up"
-  },
-  "PickUpWindowConfirm": {
-    "title": "Confirm Pick Up Window",
-    "desc": "Are these the times you will be available for package pick up?"
+  "SchedulePickup": {
+    "title": "Schedule a pickup",
+    "desc": "You will be directed to the USPS site where you can enter the pickup address.\n\nThe mailperson can pick up the package directly from your doorstep while on their typical route. Indicate the following items on the form:",
+    "desc2": "One **Priority Mail** package for pickup.\nPick up during your **regular mail delivery** so there is no additional charge.  The weight of the package is **1 lb**.",
+    "desc3": "[Go to USPS site to schedule pickup](https://tools.usps.com/go/POLocatorAction!input.action?address={{zipcode}}&radius=10&locationTypeQ=po)"
   },
   "TestFeedback": {
     "title": "How did you do?",

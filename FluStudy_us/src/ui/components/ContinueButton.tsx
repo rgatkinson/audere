@@ -63,7 +63,13 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
     return (
       <Button
         enabled={true}
-        label={label ? t(namespace + ":" + label) : t("common:button:continue")}
+        label={
+          label
+            ? label.includes(":")
+              ? t(label)
+              : t(namespace + ":" + label)
+            : t("common:button:continue")
+        }
         primary={primary === false ? primary : true}
         style={style}
         onPress={this._onNext}

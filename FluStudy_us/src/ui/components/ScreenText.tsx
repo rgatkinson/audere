@@ -17,14 +17,12 @@ interface Props {
   namespace: string;
   style?: StyleProp<TextStyle>;
   conditionalTextFn?(): string | null;
-  getTextVariables?(): any;
+  textVariablesFn?(): any;
 }
 
 interface State {
-  textVariables: TextVariables | null;
+  textVariables: any;
 }
-
-interface TextVariables {}
 
 function getScopedLabel(label: string, namespace: string): string {
   return label.includes(":") ? label : namespace + ":" + label;
@@ -47,11 +45,11 @@ class ScreenText extends React.Component<Props & WithNamespaces, State> {
   }
 
   async componentDidMount() {
-    const { getTextVariables } = this.props;
+    const { textVariablesFn } = this.props;
     let textVariables;
 
-    if (!!getTextVariables) {
-      textVariables = await getTextVariables();
+    if (!!textVariablesFn) {
+      textVariables = await textVariablesFn();
       this.setState({ textVariables });
     }
   }
