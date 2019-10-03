@@ -31,6 +31,7 @@
     "sequelize": "sequelize",
     "lint": "prettier --list-different '{scripts,src,test}/**/*.ts' 'db/**/*.js'",
     "lint-fix": "prettier --write '{scripts,src,test}/**/*.ts' 'db/**/*.js'",
+    "lint-mod": "prettier --write \"$(git ls-files --modified --others --exclude-standard | grep '\\(.ts\\|.js\\)$')\"",
     "typecheck": "tsc --noEmit",
     "dbcli": "./node_modules/.bin/ts-node scripts/dbcli.ts"
   },
