@@ -9,6 +9,9 @@ umask 077
 SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 . "$SELF_DIR/util.sh"
 
+ACCOUNT="$(aws sts get-caller-identity --output text --query 'Account')"
+REGISTRY="$ACCOUNT.dkr.ecr.region.amazonaws.com"
+
 function usage() {
   echo2 "$*"
   echo2 "Usage:"
@@ -24,21 +27,25 @@ function usage() {
 function ecr_login() {
   echo "=================================================="
   echo "Logging in to ECR"
-  $(aws ecr get-login --no-include-email)
+  "$SELF_DIR/ecr-login"
 }
 
 function ecr_publish() {
+  local repo="$1"
+  local commit="$2"
+
   echo "=================================================="
   echo "Tagging '$repo' for upload to ECR"
-  docker tag "$repo:$commit" "$registry/$repo:$commit"
+  docker tag "$repo:$commit" "$REGISTRY/$repo:$commit"
   echo "Pushing '$repo' to ECR"
-  docker push "$registry/$repo:$commit"
+  docker push "$REGISTRY/$repo:$commit"
 }
 
 function ecs_deploy() {
   local service="$1"
   local current_tag="$2"
   local new_tag="$3"
+  local repo="$(service_repo "$service")"
 
   echo "=================================================="
   echo "Re-tagging '$repo:$current_tag' as '$repo:$new_tag'"
@@ -53,35 +60,44 @@ function ecs_promote() {
   ecs_deploy "$prod_service" staging prod
 }
 
-case "$#" in
-  2|3)
-    command="$1"
-    service="$2"
-    commit="${3:-$(cd "$SELF_DIR/.." && git rev-parse HEAD)}"
-    ;;
-  *) usage "Expected 2-3 arguments, got $#.";;
-esac
+function service_repo() {
+  local service="$1"
 
-account="$(aws sts get-caller-identity --output text --query 'Account')"
-registry="$account.dkr.ecr.region.amazonaws.com"
+  [[ -n "$(config_get "$service")" ]] \
+    || usage "Expected a defined service, got '$service'."
 
-if [[ -z "$(jq ".$service" "$SELF_DIR/service-registry.json")" ]]; then
-  usage "Expected a defined service, got $service."
-else
-  repo="$(jq -r ".$service.repo" "$SELF_DIR/service-registry.json")"
-fi
+  config_get "$service.repo"
+}
 
-case "$command" in
+function config_get() {
+  jqraw ".$1" "$SELF_DIR/service-registry.json"
+}
+
+function default_commit() {
+  cd "$SELF_DIR"
+  git rev-parse HEAD
+}
+
+subcommand="$1"
+shift
+case "$subcommand" in
   publish)
+    service="$1"
+    commit="${2:-$(default_commit)}"
+
     ecr_login
-    ecr_publish
+    ecr_publish "$(service_repo "$service")" "$commit"
 
     echo "=================================================="
     echo "Published '$repo:$commit' to ECR"
     echo "=================================================="
     ;;
+
   deploy)
-    staging_service="$(jq -r ".$service.staging_service" "$SELF_DIR/service-registry.json")"
+    service="$1"
+    commit="${2:-$(default_commit)}"
+    staging_service="$(config_get "$service.staging_service")"
+
     ecr_login
     ecs_deploy "$staging_service" "$commit" staging
 
@@ -89,8 +105,12 @@ case "$command" in
     echo "Deployed '$staging_service' to '$commit'"
     echo "=================================================="
     ;;
+
   promote)
-    prod_service="$(jq -r ".$service.prod_service" "$SELF_DIR/service-registry.json")"
+    service="$1"
+    commit="${2:-$(default_commit)}"
+    prod_service="$(config_get "$service.prod_service")"
+
     ecr_login
     ecs_promote
 
@@ -100,6 +120,6 @@ case "$command" in
     ;;
 
   *)
-    usage "Unexpected command '$command'"
+    usage "Unexpected sub-command '$subcommand'"
     ;;
 esac

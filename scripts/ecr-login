@@ -1,0 +1,19 @@
+#!/bin/bash
+# Copyright (c) 2018 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+. "$SELF_DIR/util.sh"
+
+TOKEN="$HOME/.aws/audere-ecr-token.json"
+aws ecr get-authorization-token >"$TOKEN"
+endpoint="$(jqraw .authorizationData[0].proxyEndpoint "$TOKEN")"
+
+jqraw .authorizationData[0].authorizationToken "$TOKEN" \
+  | base64 --decode \
+  | cut -d: -f2 \
+  | docker login --username AWS --password-stdin "$endpoint"
