@@ -13,7 +13,11 @@ import {
   View,
 } from "react-native";
 import { connect } from "react-redux";
-import { withNavigationFocus, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigationFocus,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
@@ -329,9 +333,14 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
-        navigation.push(fallback, {
-          supportsTorchMode: this.state.supportsTorchMode,
-        });
+        navigation.dispatch(
+          StackActions.push({
+            routeName: fallback,
+            params: {
+              supportsTorchMode: this.state.supportsTorchMode,
+            },
+          })
+        );
         dispatch(setRDTPhoto(""));
         dispatch(setRDTPhotoHC(""));
         dispatch(
@@ -388,9 +397,14 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
       // pre-transition completion and therefore won't trigger willBlur.
       this._handleWillBlur();
       dispatch(setShownRDTFailWarning(false));
-      navigation.push(fallback, {
-        supportsTorchMode: this.state.supportsTorchMode,
-      });
+      navigation.dispatch(
+        StackActions.push({
+          routeName: fallback,
+          params: {
+            supportsTorchMode: this.state.supportsTorchMode,
+          },
+        })
+      );
       dispatch(
         setRDTReaderResult({
           testStripFound: false,
@@ -581,7 +595,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           this.state.supportsTorchMode && this.state.flashDisabledAutomatically
         )
       );
-      navigation.push(next);
+      navigation.dispatch(StackActions.push({ routeName: next }));
     } catch (e) {
       console.log(e);
     }
@@ -696,7 +710,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         testBLineFound: false,
       })
     );
-    navigation.push(next);
+    navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
   // Simulate positive RDT result of Flu-A
@@ -710,7 +724,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
         testBLineFound: false,
       })
     );
-    navigation.push(next);
+    navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
   render() {

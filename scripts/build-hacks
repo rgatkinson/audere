@@ -70,8 +70,10 @@ EOT
 }
 
 function fix_ExpoGlCpp_android() {
-  echo "Update expo gl cpp build file to not require ndk"
-  cp "$REPO_ROOT_DIR/scripts/expoGlCppBuild.gradle" "$REPO_ROOT_DIR/$1/node_modules/expo-gl-cpp/android/build.gradle"
+  echo "Update expo-gl-cpp build file to not require ndk if needed"
+  if [ -f $REPO_ROOT_DIR/$1/node_modules/expo-gl-cpp/android/build.gradle ]; then
+    cp "$REPO_ROOT_DIR/scripts/expoGlCppBuild.gradle" "$REPO_ROOT_DIR/$1/node_modules/expo-gl-cpp/android/build.gradle"
+  fi
 }
 
 function download_android_openCVLibrary() {

@@ -7,7 +7,7 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
-import { NavigationScreenProp } from "react-navigation";
+import { NavigationScreenProp, StackActions } from "react-navigation";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { StoreState } from "../../store";
 import Text from "./Text";
@@ -51,7 +51,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
       this._debounce = 0;
     }, 1000);
 
-    this.props.navigation.pop();
+    this.props.navigation.dispatch(StackActions.pop({ n: 1 }));
   };
 
   _onMenu = () => {

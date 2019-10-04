@@ -6,7 +6,11 @@
 import React from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import { connect } from "react-redux";
 import { Action } from "../../store";
 import Button from "./Button";
@@ -44,9 +48,11 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
     } = this.props;
     if (overrideValidate || !validate || validate()) {
       if (!!surveyGetNextFn) {
-        navigation.push(await surveyGetNextFn());
+        navigation.dispatch(
+          StackActions.push({ routeName: await surveyGetNextFn() })
+        );
       } else {
-        next && navigation.push(next);
+        next && navigation.dispatch(StackActions.push({ routeName: next }));
       }
       dispatchOnNext && dispatch(dispatchOnNext());
     }

@@ -5,7 +5,11 @@
 
 import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import Button from "./Button";
 
 interface Props {
@@ -17,7 +21,7 @@ interface Props {
 
 class BackButton extends React.Component<Props & WithNamespaces> {
   _onNext = () => {
-    this.props.navigation.pop();
+    this.props.navigation.dispatch(StackActions.pop({ n: 1 }));
   };
 
   render() {

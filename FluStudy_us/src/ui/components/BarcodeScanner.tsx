@@ -11,7 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { NavigationScreenProp, withNavigationFocus } from "react-navigation";
+import {
+  NavigationScreenProp,
+  withNavigationFocus,
+  StackActions,
+} from "react-navigation";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Camera } from "expo-camera";
@@ -112,7 +116,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
     this._timeoutTimer = global.setTimeout(() => {
       if (navigation.isFocused()) {
         logFirebaseEvent(AppEvents.BARCODE_TIMEOUT);
-        navigation.push(timeoutScreen);
+        navigation.dispatch(StackActions.push({ routeName: timeoutScreen }));
       }
     }, 30000);
   };
@@ -148,7 +152,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
           })
         );
         if (priorUnverifiedAttempts > maxAttempts) {
-          navigation.push(errorScreen);
+          navigation.dispatch(StackActions.push({ routeName: errorScreen }));
         } else {
           invalidBarcodeShapeAlert(barcode, this._setTimeoutTimer);
         }
@@ -159,13 +163,15 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
             code: barcode,
           })
         );
-        navigation.push(next);
+        navigation.dispatch(StackActions.push({ routeName: next }));
       }
     }
   };
 
   _onManualEntry = () => {
-    this.props.navigation.push(this.props.timeoutScreen);
+    this.props.navigation.dispatch(
+      StackActions.push({ routeName: this.props.timeoutScreen })
+    );
   };
 
   render() {

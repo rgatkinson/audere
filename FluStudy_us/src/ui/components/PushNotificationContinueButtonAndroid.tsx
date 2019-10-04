@@ -5,7 +5,11 @@
 
 import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import { connect } from "react-redux";
 import PushNotification from "react-native-push-notification";
 import { setScheduledSurveyNotif, Action, StoreState } from "../../store";
@@ -62,7 +66,7 @@ class PushNotificationContinueButtonAndroid extends React.Component<
       });
       dispatch(setScheduledSurveyNotif());
     }
-    navigation.push(next);
+    navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
   render() {

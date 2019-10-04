@@ -7,7 +7,11 @@ import React from "react";
 import { PushNotificationIOS, PushNotificationPermissions } from "react-native";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import { format } from "date-fns";
 import {
   PushNotificationState,
@@ -161,7 +165,7 @@ class PushNotificationContinueButtonIOS extends React.Component<
       dispatch(setScheduledSurveyNotif());
     }
 
-    navigation.push(next);
+    navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
   _handleNotification = () => {

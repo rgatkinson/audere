@@ -4,7 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { Linking } from "react-native";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import Constants from "expo-constants";
 import { logFirebaseEvent, AppEvents } from "../util/tracker";
 import i18n from "i18next";
@@ -68,21 +72,24 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
   [
     "changeResultAnswer",
     {
-      action: ({ navigation }) => navigation.pop(),
+      action: ({ navigation }) =>
+        navigation.dispatch(StackActions.pop({ n: 1 })),
       key: "changeResultAnswer",
     },
   ],
   [
     "inputManually",
     {
-      action: ({ navigation }) => navigation.push("ManualEntry"),
+      action: ({ navigation }) =>
+        navigation.dispatch(StackActions.push({ routeName: "ManualEntry" })),
       key: "inputManually",
     },
   ],
   [
     "skipTestStripPhoto",
     {
-      action: ({ navigation }) => navigation.push("CleanFirstTest"),
+      action: ({ navigation }) =>
+        navigation.dispatch(StackActions.push({ routeName: "CleanFirstTest" })),
       key: "skipTestStripPhoto",
     },
   ],

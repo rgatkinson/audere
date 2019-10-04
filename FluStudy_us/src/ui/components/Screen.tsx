@@ -5,7 +5,7 @@
 
 import React, { ComponentType, RefObject } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { NavigationScreenProp } from "react-navigation";
+import { NavigationScreenProp, StackActions } from "react-navigation";
 import { connect } from "react-redux";
 import i18n from "i18next";
 import { wrapScrollView } from "react-native-scroll-into-view";
@@ -43,7 +43,7 @@ export interface Component {
 }
 
 export interface ChromeProps {
-  dispatchOnFirstLoad?: () => Action;
+  dispatchOnFirstLoad?: [() => Action];
   fadeIn?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
@@ -187,7 +187,9 @@ export const generateScreen = (config: ScreenConfig) => {
     _advanceToNextScreen = () => {
       const nextScreen = this._findNextScreen();
       if (nextScreen) {
-        this.props.navigation.push(nextScreen);
+        this.props.navigation.dispatch(
+          StackActions.push({ routeName: nextScreen })
+        );
       }
     };
 

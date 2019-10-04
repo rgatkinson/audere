@@ -12,7 +12,11 @@ import {
   View,
 } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import { connect } from "react-redux";
 import { SampleInfo } from "audere-lib/chillsProtocol";
 import {
@@ -130,7 +134,9 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
         })
       );
       if (priorUnverifiedAttempts > maxAttempts) {
-        this.props.navigation.push(errorScreen);
+        this.props.navigation.dispatch(
+          StackActions.push({ routeName: errorScreen })
+        );
       } else {
         invalidBarcodeShapeAlert(barcode1);
       }

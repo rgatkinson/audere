@@ -6,7 +6,11 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import { FOOTER_HEIGHT } from "../styles";
 import Button from "./Button";
 import StepDots from "./StepDots";
@@ -33,11 +37,11 @@ class FooterNavigation extends React.Component<Props & WithNamespaces> {
 
   _onNext = () => {
     const { navigation, next } = this.props;
-    next && navigation.push(next);
+    next && navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
   _pop = () => {
-    this.props.navigation.pop();
+    this.props.navigation.dispatch(StackActions.pop({ n: 1 }));
   };
 
   render() {

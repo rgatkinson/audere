@@ -5,7 +5,11 @@
 
 import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import Button from "./Button";
 import { ActivityIndicator, NetInfo, Alert } from "react-native";
 import { GUTTER } from "../styles";
@@ -46,7 +50,7 @@ class PendingButton extends React.Component<Props & WithNamespaces, State> {
     if (navigation.isFocused()) {
       this.setState({ showLoading: false });
       if (done && next) {
-        navigation.push(next);
+        navigation.dispatch(StackActions.push({ routeName: next }));
       }
     }
   };

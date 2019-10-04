@@ -6,7 +6,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { withNavigation, NavigationScreenProp } from "react-navigation";
+import {
+  withNavigation,
+  NavigationScreenProp,
+  StackActions,
+} from "react-navigation";
 import * as Permissions from "expo-permissions";
 import { Action, StoreState, setCameraSettingsGrantedPage } from "../../store/";
 
@@ -30,10 +34,10 @@ class CameraPermissionContinueButton extends React.Component<
     const { deniedNext, dispatch, grantedNext, navigation } = this.props;
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status === "granted") {
-      navigation.push(grantedNext);
+      navigation.dispatch(StackActions.push({ routeName: grantedNext }));
     } else {
       dispatch(setCameraSettingsGrantedPage(grantedNext));
-      navigation.push(deniedNext);
+      navigation.dispatch(StackActions.push({ routeName: deniedNext }));
     }
   };
 
