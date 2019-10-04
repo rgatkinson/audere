@@ -86,23 +86,14 @@ class TestResult extends React.Component<Props & WithNamespaces> {
                 content={t("common:testResult:negativeExplanationBullet")}
                 customBulletUri="listarrow"
               />
-
-              {hasNoSymptoms4Days && (
-                <BulletPoint
-                  content={t(
-                    "common:testResult:negativeExplanationBulletAllUnder4Days"
-                  )}
-                  customBulletUri="listarrow"
-                />
-              )}
-              {!hasNoSymptoms4Days && (
-                <BulletPoint
-                  content={t(
-                    "common:testResult:negativeExplanationBulletOne4Days"
-                  )}
-                  customBulletUri="listarrow"
-                />
-              )}
+              <BulletPoint
+                content={t(
+                  hasNoSymptoms4Days
+                    ? "common:testResult:negativeExplanationBulletAllUnder4Days"
+                    : "common:testResult:negativeExplanationBulletOne4Days"
+                )}
+                customBulletUri="listarrow"
+              />
             </View>
           </Fragment>
         )}

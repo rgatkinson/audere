@@ -54,14 +54,13 @@ async function loadConfig(): Promise<RemoteConfig> {
   if (isConnected) {
     // We're connected to a network which means the remote config values
     // are up to date and should be persisted.
-    let items: Array<Array<string>> = [];
-    Object.getOwnPropertyNames(DEFAULT_CONFIGS).forEach(key => {
-      items.push([key, localConfig[key].toString()]);
-    });
     try {
-      await AsyncStorage.multiSet(items);
+      await AsyncStorage.setItem(
+        "remoteConfigCache",
+        JSON.stringify(localConfig)
+      );
     } catch (error) {
-      const errorMessage = `Remote Config Load Error: ${
+      const errorMessage = `Remote Config Save Error: ${
         error && error.message ? error.message : error
       }`;
 
@@ -73,19 +72,21 @@ async function loadConfig(): Promise<RemoteConfig> {
   } else {
     // We're not connected to a network which means we should use the most
     // recently persisted values.
-    (await AsyncStorage.multiGet(
-      Object.getOwnPropertyNames(DEFAULT_CONFIGS)
-    )).forEach(pair => {
-      if (pair[1] !== undefined && pair[1] !== null) {
-        if (typeof localConfig[pair[0]] == "boolean") {
-          localConfig[pair[0]] = !!pair[1];
-        } else if (typeof localConfig[pair[0]] == "number") {
-          localConfig[pair[0]] = Number(pair[1]);
-        } else {
-          localConfig[pair[0]] = pair[1];
-        }
+    try {
+      const cache = await AsyncStorage.getItem("remoteConfigCache");
+      if (!!cache && cache.length > 0) {
+        localConfig = JSON.parse(cache);
       }
-    });
+    } catch (error) {
+      const errorMessage = `Remote Config Load Error: ${
+        error && error.message ? error.message : error
+      }`;
+
+      logFirebaseEvent(AppHealthEvents.REMOTE_CONFIG_ERROR, {
+        errorMessage,
+      });
+      crashlytics.log(errorMessage);
+    }
   }
 
   if (process.env.NODE_ENV === "development") {

@@ -97,25 +97,24 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
     const result = this._getResult();
     const explanation = this._getExplanation();
     const showNegativeExplanation = result === "negative";
+    const description = !showNegativeExplanation ? (
+      <Fragment>
+        <Text content={t("common:testResult:desc")} />
+        <BorderView style={styles.border}>
+          <Text center={true} content={t(`common:testResult:${result}`)} />
+        </BorderView>
+      </Fragment>
+    ) : (
+      <Text
+        style={styles.resultText}
+        content={
+          t("common:testResult:descNegative") + t(`common:testResult:${result}`)
+        }
+      />
+    );
     return (
       <Fragment>
-        {!showNegativeExplanation && (
-          <Fragment>
-            <Text content={t("common:testResult:desc")} />
-            <BorderView style={styles.border}>
-              <Text center={true} content={t(`common:testResult:${result}`)} />
-            </BorderView>
-          </Fragment>
-        )}
-        {showNegativeExplanation && (
-          <Text
-            style={styles.resultText}
-            content={
-              t("common:testResult:descNegative") +
-              t(`common:testResult:${result}`)
-            }
-          />
-        )}
+        {description}
         <Text content={t("common:testResult:whyTitle")} style={styles.text} />
         <Text content={testResultString} style={styles.text} />
         <View style={{ marginHorizontal: GUTTER }}>
@@ -133,23 +132,14 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
                 content={t("common:testResult:negativeExplanationBullet")}
                 customBulletUri="listarrow"
               />
-
-              {hasNoSymptoms4Days && (
-                <BulletPoint
-                  content={t(
-                    "common:testResult:negativeExplanationBulletAllUnder4Days"
-                  )}
-                  customBulletUri="listarrow"
-                />
-              )}
-              {!hasNoSymptoms4Days && (
-                <BulletPoint
-                  content={t(
-                    "common:testResult:negativeExplanationBulletOne4Days"
-                  )}
-                  customBulletUri="listarrow"
-                />
-              )}
+              <BulletPoint
+                content={t(
+                  hasNoSymptoms4Days
+                    ? "common:testResult:negativeExplanationBulletAllUnder4Days"
+                    : "common:testResult:negativeExplanationBulletOne4Days"
+                )}
+                customBulletUri="listarrow"
+              />
             </View>
           </Fragment>
         )}

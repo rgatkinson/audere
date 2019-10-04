@@ -98,8 +98,8 @@ class AnimatedChrome extends React.PureComponent<Props> {
         ]),
       ]).start(() => {
         !!dispatchOnFirstLoad &&
-          dispatchOnFirstLoad.forEach((item: () => Action) => {
-            this.props.dispatch(item());
+          dispatchOnFirstLoad.forEach((actionGenerator: () => Action) => {
+            this.props.dispatch(actionGenerator());
           });
       });
     }
