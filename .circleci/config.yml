@@ -483,7 +483,7 @@ jobs:
       FL_OUTPUT_DIR: output # Fastlane env variable for where it should put output files
       <<: *const
     macos:
-      xcode: 10.2.1
+      xcode: 11.1.0
     shell: /bin/bash --login -o pipefail
     steps:
       - checkout:
