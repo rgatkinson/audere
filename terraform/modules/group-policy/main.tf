@@ -41,6 +41,18 @@ data "aws_iam_policy_document" "administrator_access" {
 }
 
 // --------------------------------------------------------------------------------
+// Policy Group: Commiters
+
+resource "aws_iam_group" "committers" {
+  name = "AudereCommitters"
+}
+
+resource "aws_iam_group_policy_attachment" "committer_access" {
+  group = "${aws_iam_group.committers.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeCommitPowerUser"
+}
+
+// --------------------------------------------------------------------------------
 // Policy Group: DataScientists
 
 resource "aws_iam_group" "datascientists" {
@@ -797,6 +809,21 @@ resource "aws_iam_group_membership" "administrators" {
     "ram",
     "sam",
     "shawna"
+  ]
+}
+
+resource "aws_iam_group_membership" "committers" {
+  name = "Committers"
+  group = "${aws_iam_group.committers.name}"
+
+  users = [
+    "billy",
+    "jenny",
+    "mmarucheck",
+    "philip",
+    "ram",
+    "sam",
+    "terri",
   ]
 }
 
