@@ -1,4 +1,4 @@
-git_url "git@github.com:AudereNow/signing"
+git_url "ssh://au-aws-git/v1/repos/signing"
 
 
 type "development" # The default type, can be: appstore, adhoc, enterprise or development
