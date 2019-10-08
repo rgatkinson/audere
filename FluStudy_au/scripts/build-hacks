@@ -5,6 +5,19 @@
 # can be found in the LICENSE file distributed with this file.
 set -euo pipefail
 
+function update_RCTModuleMethod_for_Xcode11() {
+  MM_FILE="$REPO_ROOT_DIR/FluStudy_au/node_modules/react-native/React/Base/RCTModuleMethod.mm"
+  match='RCTReadString(input, "__attribute__((unused))");'
+  if grep -q "$match" "$MM_FILE"; then
+    echo "Updating RCTModuleMethod.mm"
+    replace='RCTReadString(input, "__attribute__((unused))") || RCTReadString(input, "__attribute__((__unused__))");'
+    FILEBAK="$MM_FILE.bak"
+    sed -i.bak "s/$match/$replace/" $MM_FILE && rm $FILEBAK
+  fi
+}
+
 REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 source "$REPO_ROOT_DIR/scripts/build-hacks"
 do_FluStudy_hacks FluStudy_au
+update_RCTModuleMethod_for_Xcode11
+
