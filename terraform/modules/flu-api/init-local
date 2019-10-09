@@ -1,7 +1,0 @@
-#!/bin/bash
-set -euo pipefail
-set -x
-umask 077
-SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
-
-tar cj init | base64 >$SELF_DIR/../../../local/flu-api-staging-init.tar.bz2.base64

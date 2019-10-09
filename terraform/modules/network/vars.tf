@@ -14,6 +14,12 @@ variable "availability_zone" {
   default = "us-west-2a"
 }
 
+variable "secondary_availability_zone" {
+  description = "Secondary/backup availability zone for high-availability"
+  type = "string"
+  default = "us-west-2b"
+}
+
 variable "bastion_cidr_whitelist" {
   description = "CIDR blocks for source IPs allowed to connect to bastion server."
   type = "list"

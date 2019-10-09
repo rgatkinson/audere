@@ -36,19 +36,6 @@ resource "aws_internet_gateway" "gw" {
   }
 }
 
-resource "aws_route_table" "rt" {
-  vpc_id = "${aws_vpc.env_vpc.id}"
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.gw.id}"
-  }
-
-  tags = {
-    Name = "rt-${var.environment}"
-  }
-}
-
 // --------------------------------------------------------------------------------
 // Subnets
 
@@ -65,6 +52,22 @@ resource "aws_subnet" "app" {
 
   tags = {
     Name = "${local.api_base_name}-instance"
+  }
+}
+
+resource "aws_route_table_association" "app_b" {
+  subnet_id      = "${aws_subnet.app_b.id}"
+  route_table_id = "${aws_route_table.rt.id}"
+}
+
+resource "aws_subnet" "app_b" {
+  availability_zone = "${var.secondary_availability_zone}"
+  cidr_block = "${local.subnet_app_b_cidr}"
+  map_public_ip_on_launch = true
+  vpc_id = "${aws_vpc.env_vpc.id}"
+
+  tags = {
+    Name = "${local.api_base_name}-instance-b"
   }
 }
 
@@ -265,8 +268,10 @@ locals {
   db_base_name = "flu-${var.environment}-db"
   dev_base_name = "flu-${var.environment}-dev"
 
-  subnet_app_cidr = "${cidrsubnet(var.app_cidr, 1, 0)}"
-  subnet_transient_cidr = "${cidrsubnet(var.app_cidr, 1, 1)}"
+  subnet_app_cidr = "${cidrsubnet(var.app_cidr, 2, 0)}"
+  subnet_transient_cidr = "${cidrsubnet(var.app_cidr, 2, 1)}"
+  subnet_app_b_cidr = "${cidrsubnet(var.app_cidr, 2, 2)}"
+  subnet_app_private_cidr = "${cidrsubnet(var.app_cidr, 2, 3)}"
   subnet_db_pii_cidr = "${cidrsubnet(var.db_cidr, 2, 0)}"
   subnet_db_nonpii_cidr = "${cidrsubnet(var.db_cidr, 2, 1)}"
   subnet_dev_bastion_cidr = "${cidrsubnet(var.dev_cidr, 1, 0)}"

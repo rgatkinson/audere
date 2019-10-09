@@ -9,6 +9,7 @@ umask 077
 SELF_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 time (
+  set +x
   function check() { echo 'select 1;' | psql "$@"; }
   until check "$NONPII_DATABASE_URL" && check "$PII_DATABASE_URL"; do
     sleep 1

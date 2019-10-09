@@ -1,0 +1,90 @@
+[
+  {
+    "name": "fluapi-${environment}",
+    "image": "${account}.dkr.ecr.${region}.amazonaws.com/fluapi:${environment}",
+    "portMappings": [
+      {
+        "containerPort": 3000,
+        "hostPort": 3000
+      },
+      {
+        "containerPort": 3200,
+        "hostPort": 3200
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "fluapi-${environment}",
+        "awslogs-create-group": "true",
+        "awslogs-region": "us-west-2",
+        "awslogs-stream-prefix": "fluapi"
+      }
+    },
+    "essential": true,
+    "environment": [
+      {
+        "name": "NODE_ENV",
+        "value": "production"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "PII_DATABASE_URL",
+        "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/fluapi-${environment}.pii_db"
+      },
+      {
+        "name": "NONPII_DATABASE_URL",
+        "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/fluapi-${environment}.nonpii_db"
+      }
+    ]
+  },
+  {
+    "name": "nginx-${environment}",
+    "image": "${account}.dkr.ecr.${region}.amazonaws.com/nginx:${environment}",
+    "portMappings": [
+      {
+        "containerPort": 443,
+        "hostPort": 443
+      },
+      {
+        "containerPort": 444,
+        "hostPort": 444
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "nginx-${environment}",
+        "awslogs-create-group": "true",
+        "awslogs-region": "us-west-2",
+        "awslogs-stream-prefix": "nginx"
+      }
+    },
+    "essential": true,
+    "environment": [
+      {
+        "name": "DOMAIN",
+        "value": "${domain}"
+      },
+      {
+        "name": "SUBDOMAIN",
+        "value": "${subdomain}"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "VPC_CERT",
+        "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/fluapi-${environment}.vpc_cert"
+      },
+      {
+        "name": "VPC_CERT_KEY",
+        "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/fluapi-${environment}.vpc_key"
+      },
+      {
+        "name": "VPC_CERT_DHPARAM",
+        "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/fluapi-${environment}.vpc_dhparam"
+      }
+    ]
+  }
+]

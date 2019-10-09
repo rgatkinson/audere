@@ -7,6 +7,14 @@ output "app_subnet_id" {
   value = "${module.env_network.app_subnet_id}"
 }
 
+output "app_b_subnet_id" {
+  value = "${module.env_network.app_b_subnet_id}"
+}
+
+output "app_private_subnet_id" {
+  value = "${module.env_network.app_private_subnet_id}"
+}
+
 output "bastion_ingress_sg_id" {
   value = "${module.env_network.bastion_ingress_sg_id}"
 }

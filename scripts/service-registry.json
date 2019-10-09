@@ -1,7 +1,14 @@
 {
+  "cluster": {
+    "staging": "flu-staging-api-ecs-staging",
+    "prod": "flu-prod-api-ecs-prod"
+  },
   "fluapi": {
     "staging_service": "fluapi-staging",
     "prod_service": "fluapi-prod",
-    "repo": "fluapi"
+    "repo": [
+      "fluapi",
+      "nginx"
+    ]
   }
 }

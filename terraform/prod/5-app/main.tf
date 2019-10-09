@@ -12,7 +12,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 1.50"
+  version = "~> 2.30"
   region = "us-west-2"
 }
 
@@ -36,29 +36,33 @@ module "shared" {
 module "flu_api" {
   source = "../../modules/flu-api"
 
+  account = "${var.account}"
   app_subnet_id = "${data.terraform_remote_state.network.app_subnet_id}"
+  app_b_subnet_id = "${data.terraform_remote_state.network.app_b_subnet_id}"
   auderenow_certificate_arn = "${module.shared.auderenow_certificate_arn}"
   auderenow_route53_zone_id = "${module.shared.auderenow_route53_zone_id}"
   auderenow_route53_zone_name = "${module.shared.auderenow_route53_zone_name}"
-  commit = "${var.commit}"
   cough_aspren_bucket = "${module.shared.cough_aspren_bucket_arn}"
   cough_qualtrics_bucket = "${module.shared.cough_follow_ups_bucket_arn}"
   audere_share_bucket = "${data.terraform_remote_state.global.audere_share_arn}"
-  creds_snapshot_id = "${data.terraform_remote_state.flu_db.api_creds_snapshot_id}"
   db_client_sg_id = "${data.terraform_remote_state.network.db_client_sg_id}"
   dev_ssh_server_sg_id = "${data.terraform_remote_state.network.dev_ssh_server_sg_id}"
-  devs = "${var.devs}"
+  ecs_cluster_id = "${module.shared.ecs_cluster_id}"
+  ecs_cluster_name = "${module.shared.ecs_cluster_name}"
+  ecs_service_linked_role_arn = "${data.terraform_remote_state.global.ecs_service_linked_role_arn}"
   elb_logs_bucket_id = "${module.shared.elb_logs_bucket_id}"
   environment = "prod"
   fluapi_client_sg_id = "${data.terraform_remote_state.network.fluapi_client_sg_id}"
   fluapi_internal_client_sg_id = "${data.terraform_remote_state.network.fluapi_internal_client_sg_id}"
   fluapi_internal_server_sg_id = "${data.terraform_remote_state.network.fluapi_internal_server_sg_id}"
   fluapi_server_sg_id = "${data.terraform_remote_state.network.fluapi_server_sg_id}"
+  infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
   internet_egress_sg_id = "${data.terraform_remote_state.network.internet_egress_sg_id}"
-  migrate = "${var.migrate}"
   public_http_sg_id = "${data.terraform_remote_state.network.public_http_sg_id}"
-  service = "${var.service}"
+  region = "${var.region}"
+  ssm_parameters_key_arn = "${data.terraform_remote_state.global.ssm_parameters_key_arn}"
   transient_subnet_id = "${data.terraform_remote_state.network.transient_subnet_id}"
+  vpc_id = "${data.terraform_remote_state.network.vpc_id}"
 }
 
 module "reporting" {

@@ -3,9 +3,21 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+variable "account" {
+  description = "Identifier for the AWS account"
+}
+
 variable "app_subnet_id" {
   description = "Subnet in which applications should be deployed"
   type = "string"
+}
+
+variable "app_b_subnet_id" {
+  description = "Backup subnet in which applications should be deployed"
+}
+
+variable "audere_share_bucket" {
+  description = "ARN for public S3 bucket"
 }
 
 variable "auderenow_certificate_arn" {
@@ -20,29 +32,12 @@ variable "auderenow_route53_zone_name" {
   description = "Name for the Route53 hosted zone"
 }
 
-variable "availability_zone" {
-  default = "us-west-2a"
-}
-
-variable "commit" {
-  description = "Git commit tag (or hash) to sync"
-  default = "master"
-}
-
 variable "cough_aspren_bucket" {
   description = "ARN for S3 bucket containing ASPREN reports"
 }
 
 variable "cough_qualtrics_bucket" {
   description = "ARN for S3 bucket containing Qualtrics surveys"
-}
-
-variable "audere_share_bucket" {
-  description = "ARN for public S3 bucket"
-}
-
-variable "creds_snapshot_id" {
-  description = "snapshot id of volume containing api credentials"
 }
 
 variable "db_client_sg_id" {
@@ -55,9 +50,16 @@ variable "dev_ssh_server_sg_id" {
   type = "string"
 }
 
-variable "devs" {
-  description = "Userids of developers who should have ssh access to frontend machines"
-  type = "list"
+variable "ecs_cluster_id" {
+  description = "Identifier for ECS cluster to run reporting applications"
+}
+
+variable "ecs_cluster_name" {
+  description = "Name for ECS cluster to run reporting applications"
+}
+
+variable "ecs_service_linked_role_arn" {
+  description = "ARN of the role linked to the ECS service on this account"
 }
 
 variable "elb_logs_bucket_id" {
@@ -88,13 +90,14 @@ variable "fluapi_server_sg_id" {
   type = "string"
 }
 
-variable "internet_egress_sg_id" {
-  description = "Security group to open internet egress"
+variable "infra_alerts_sns_topic_arn" {
+  description = "ARN of SNS topic for publishing alarms"
   type = "string"
 }
 
-variable "migrate" {
-  description = "Cycle this false -> true -> false to run a db migration"
+variable "internet_egress_sg_id" {
+  description = "Security group to open internet egress"
+  type = "string"
 }
 
 variable "public_http_sg_id" {
@@ -102,11 +105,19 @@ variable "public_http_sg_id" {
   type = "string"
 }
 
-variable "service" {
-  description = "Service mode, one of 'offline', 'single', 'elb'"
+variable "region" {
+  description = "Targeted AWS region"
+}
+
+variable "ssm_parameters_key_arn" {
+  description = "ARN of key needed to decrypt SSM parameters"
 }
 
 variable "transient_subnet_id" {
   description = "Subnet in which the transient resources, such as Lambdas and bootstrap/provisioning, should be deployed"
   type = "string"
+}
+
+variable "vpc_id" {
+  description = "Identifier for the VPC"
 }

@@ -85,7 +85,7 @@ data "template_file" "metabase" {
 resource "aws_ecs_task_definition" "metabase" {
   family = "metabase-${var.environment}"
   container_definitions = "${data.template_file.metabase.rendered}"
-  execution_role_arn = "${aws_iam_role.ecs_task_execution_role.arn}"
+  execution_role_arn = "${module.task_role.arn}"
 }
 
 resource "aws_ecs_service" "metabase" {

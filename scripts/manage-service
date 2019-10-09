@@ -10,7 +10,7 @@ SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 . "$SELF_DIR/util.sh"
 
 ACCOUNT="$(aws sts get-caller-identity --output text --query 'Account')"
-REGISTRY="$ACCOUNT.dkr.ecr.region.amazonaws.com"
+REGISTRY="$ACCOUNT.dkr.ecr.us-west-2.amazonaws.com"
 
 function fail() {
   echo2 "$*"
@@ -25,45 +25,63 @@ function ecr_login() {
 
 function ecr_publish() {
   local repo="$1"
-  local commit="$2"
+  local tag="$2"
 
   echo "=================================================="
+  echo "Ensuring the destination repo for $repo exists"
+  if [[ -z "$(aws ecr describe-repositories | jq '.repositories | .[] | select(.repositoryName == "'"${repo}"'")')" ]]; then
+    echo "Creating new repo"
+    aws ecr create-repository --repository-name "$repo"
+  fi
   echo "Tagging '$repo' for upload to ECR"
-  docker tag "$repo:$commit" "$REGISTRY/$repo:$commit"
+  docker tag "$repo:$tag" "$REGISTRY/$repo:$tag"
   echo "Pushing '$repo' to ECR"
-  docker push "$REGISTRY/$repo:$commit"
+  docker push "$REGISTRY/$repo:$tag"
 }
 
 function ecs_deploy() {
   local service="$1"
-  local current_tag="$2"
-  local new_tag="$3"
-  local repo="$(service_repo "$service")"
+  local current_tag="$3"
+  local new_tag="$4"
+
+  IFS=' ' read -a repos <<< "$2"
 
   echo "=================================================="
-  echo "Re-tagging '$repo:$current_tag' as '$repo:$new_tag'"
-  local manifest="$(aws ecr batch-get-image --repository-name "$repo" --image-ids "imageTag=$current_tag" --query 'images[].imageManifest' --output text)"
-  aws ecr put-image --repository-name "$repo" --image-tag "$new_tag" --image-manifest "$manifest"
+  for repo in "${repos[@]}"
+  do
+    local current_digest="$(aws ecr batch-get-image --repository-name "$repo" --image-ids "imageTag=$current_tag" --query 'images[].imageId.imageDigest' --output text)"
+
+    if [[ -z "$current_digest" ]]; then
+        fail "$repo:$current_tag does not have a valid manifest - it may be an invalid repo or tag and cannot be deployed"
+    fi
+
+    local existing_digest="$(aws ecr batch-get-image --repository-name "$repo" --image-ids "imageTag=$new_tag" --query 'images[].imageId.imageDigest' --output text)"
+
+    if [[ -z "$existing_digest" || "$existing_digest" != "$current_digest" ]]; then
+      echo "Tagging '$repo:$current_tag' as '$repo:$new_tag'"
+      local manifest="$(aws ecr batch-get-image --repository-name "$repo" --image-ids "imageTag=$current_tag" --query 'images[].imageManifest' --output text)"
+      aws ecr put-image --repository-name "$repo" --image-tag "$new_tag" --image-manifest "$manifest"
+    fi
+  done
 
   echo "Updating ECS service - '$service'"
-  aws ecs update-service --service "$service" --force-new-deployment
+  local cluster="$(config_get "cluster.$new_tag")"
+  aws ecs update-service --cluster "$cluster" --service "$service" --force-new-deployment
 }
 
-function ecs_promote() {
-  ecs_deploy "$prod_service" staging prod
-}
-
-function service_repo() {
+function check_service() {
   local service="$1"
 
   [[ -n "$(config_get "$service")" ]] \
     || fail "Expected a defined service, got '$service'."
-
-  config_get "$service.repo"
 }
 
 function config_get() {
-  jqraw ".$1" "$SELF_DIR/service-registry.json"
+  jqraw ".$1 // empty" "$SELF_DIR/service-registry.json"
+}
+
+function config_get_list() {
+  jqraw -c ".$1[]" "$SELF_DIR/service-registry.json"
 }
 
 function default_commit() {
@@ -75,37 +93,41 @@ subcommand="$1"
 shift
 case "$subcommand" in
   publish)
-    service="$1"
-    commit="${2:-$(default_commit)}"
+    repo="$1"
+    tag="${2:-$(default_commit)}"
 
     ecr_login
-    ecr_publish "$(service_repo "$service")" "$commit"
+    ecr_publish "$repo" "$tag"
 
     echo "=================================================="
-    echo "Published '$repo:$commit' to ECR"
+    echo "Published '$repo:$tag' to ECR"
     echo "=================================================="
     ;;
 
   deploy)
     service="$1"
-    commit="${2:-$(default_commit)}"
+    check_service $service
+    tag="${2:-$(default_commit)}"
     staging_service="$(config_get "$service.staging_service")"
+    repos="$(config_get_list "$service.repo")"
+    echo $repos
 
     ecr_login
-    ecs_deploy "$staging_service" "$commit" staging
+    ecs_deploy "$staging_service" "$repos" "$tag" staging
 
     echo "=================================================="
-    echo "Deployed '$staging_service' to '$commit'"
+    echo "Deployed '$staging_service' to '$tag'"
     echo "=================================================="
     ;;
 
   promote)
     service="$1"
-    commit="${2:-$(default_commit)}"
+    check_service $service
     prod_service="$(config_get "$service.prod_service")"
+    repos="$(config_get_list "$service.repo")"
 
     ecr_login
-    ecs_promote
+    ecs_deploy "$prod_service" "$repos" staging prod
 
     echo "=================================================="
     echo "Promoted a new version of '$prod_service' from staging"

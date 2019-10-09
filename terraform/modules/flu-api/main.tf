@@ -11,81 +11,11 @@ locals {
   api_subdomain = "${local.api_subdomains["${var.environment}"]}"
   api_full_domain = "${local.api_subdomain}.auderenow.io"
   base_name = "flu-${var.environment}-api"
-  instance_port = 3000
-  service_url = "http://localhost:${local.instance_port}"
-  assets_sha256 = "${chomp(file("${path.module}/../../../local/terraform-assets/sha256sum.txt"))}"
-
-  availability_zones = ["${var.availability_zone}"]
-
-  // TODO: archive_file can create a .zip
-  init_tar_bz2_base64_filename = "${path.module}/../../../local/flu-api-staging-init.tar.bz2.base64"
-  init_tar_bz2_base64 = "${file("${local.init_tar_bz2_base64_filename}")}"
-}
-
-module "ami" {
-  source = "../ami"
-}
-
-data "template_file" "sequelize_migrate_sh" {
-  template = "${file("${path.module}/cloud-init.sh")}"
-  vars {
-    assets_sha256 = "${local.assets_sha256}"
-    commit = "${var.commit}"
-    domain = "${local.api_full_domain}"
-    environment = "${var.environment}"
-    init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
-    mode = "migrate"
-    service_url = "${local.service_url}"
-    ssh_public_key_map = "${module.devs.ssh_key_json}"
-    subdomain = "${local.api_subdomain}"
-  }
-}
-
-data "template_file" "service_init_sh" {
-  template = "${file("${path.module}/cloud-init.sh")}"
-  vars {
-    assets_sha256 = "${local.assets_sha256}"
-    commit = "${var.commit}"
-    domain = "${local.api_full_domain}"
-    environment = "${var.environment}"
-    init_tar_bz2_base64 = "${local.init_tar_bz2_base64}"
-    mode = "service"
-    service_url = "${local.service_url}"
-    ssh_public_key_map = "${module.devs.ssh_key_json}"
-    subdomain = "${local.api_subdomain}"
-  }
-}
-
-// --------------------------------------------------------------------------------
-// Sequelize migration
-
-resource "aws_instance" "migrate_instance" {
-  ami = "${module.ami.ubuntu}"
-  instance_type = "t2.small"
-  subnet_id = "${var.transient_subnet_id}"
-  user_data = "${data.template_file.sequelize_migrate_sh.rendered}"
-
-  vpc_security_group_ids = [
-    "${var.internet_egress_sg_id}",
-    "${var.db_client_sg_id}",
-    "${var.dev_ssh_server_sg_id}",
-  ]
-
-  ebs_block_device {
-    device_name = "/dev/sdf"
-    snapshot_id = "${var.creds_snapshot_id}"
-  }
-
-  tags {
-    Name = "${local.base_name}-migrate"
-  }
-
-  count = "${var.migrate == "true" ? 1 : 0}"
 }
 
 
 // --------------------------------------------------------------------------------
-// ELB (multi-instance) mode
+// Load balancers
 
 resource "aws_route53_record" "api_record" {
   zone_id = "${var.auderenow_route53_zone_id}"
@@ -93,149 +23,107 @@ resource "aws_route53_record" "api_record" {
   type = "A"
 
   alias {
-    name = "${aws_elb.flu_api_elb.dns_name}"
-    zone_id = "${aws_elb.flu_api_elb.zone_id}"
+    name = "${aws_lb.flu_api_lb.dns_name}"
+    zone_id = "${aws_lb.flu_api_lb.zone_id}"
     evaluate_target_health = true
   }
-
-  count = "${var.service == "elb" ? 1 : 0}"
 }
 
-resource "aws_autoscaling_group" "flu_api" {
-  name = "${aws_launch_configuration.flu_api_instance.name}"
-  availability_zones = "${local.availability_zones}"
-  health_check_type = "ELB"
-  launch_configuration = "${aws_launch_configuration.flu_api_instance.id}"
-  load_balancers = [
-    "${aws_elb.flu_api_elb.name}",
-    "${aws_elb.flu_api_internal_elb.name}",
-  ]
-  max_size = 1
-  min_size = 1
-  vpc_zone_identifier = ["${var.app_subnet_id}"]
-  wait_for_elb_capacity = 1
-
-  tag {
-    key = "Name"
-    value = "${local.base_name}"
-    propagate_at_launch = true
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_elb" "flu_api_elb" {
+resource "aws_lb" "flu_api_lb" {
   name = "${local.base_name}-public"
-
-  access_logs {
-    bucket = "${var.elb_logs_bucket_id}"
-    bucket_prefix = "public"
-  }
-
-  subnets = ["${var.app_subnet_id}"]
-
+  subnets = [
+    "${var.app_subnet_id}",
+    "${var.app_b_subnet_id}",
+  ]
   security_groups = [
     "${var.public_http_sg_id}",
     "${var.fluapi_client_sg_id}",
   ]
 
-  listener {
-    lb_port = 443
-    lb_protocol = "https"
-    instance_port = 443
-    instance_protocol = "https"
-    ssl_certificate_id = "${var.auderenow_certificate_arn}"
+  access_logs {
+    bucket = "${var.elb_logs_bucket_id}"
+    prefix = "public"
+    enabled = true
   }
+}
+
+resource "aws_lb_target_group" "flu_api" {
+  name = "${local.base_name}-public"
+  port = 443
+  protocol = "HTTPS"
+  target_type = "ip"
+  vpc_id = "${var.vpc_id}"
 
   health_check {
     healthy_threshold = 2
     unhealthy_threshold = 2
     timeout = 5
     interval = 30
-    target = "HTTPS:443/api"
+    path = "/api"
+    port = "443"
+    protocol = "HTTPS"
   }
-
-  tags {
-    Name = "${local.base_name}-public"
-    LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
 }
 
-resource "aws_elb" "flu_api_internal_elb" {
-  name = "${local.base_name}-internal"
+resource "aws_lb_listener" "flu_api_listener" {
+  load_balancer_arn = "${aws_lb.flu_api_lb.id}"
+  port = 443
+  protocol = "HTTPS"
+  ssl_policy = "ELBSecurityPolicy-2016-08"
+  certificate_arn = "${var.auderenow_certificate_arn}"
 
-  access_logs {
-    bucket = "${var.elb_logs_bucket_id}"
-    bucket_prefix = "internal"
+  default_action {
+    target_group_arn = "${aws_lb_target_group.flu_api.id}"
+    type = "forward"
   }
+}
 
-  subnets = ["${var.app_subnet_id}"]
+resource "aws_lb" "flu_api_internal_lb" {
+  name = "${local.base_name}-internal"
   internal = true
-
+  subnets = [
+    "${var.app_subnet_id}",
+    "${var.app_b_subnet_id}",
+  ]
   security_groups = [
     "${var.fluapi_client_sg_id}",
     "${var.fluapi_internal_server_sg_id}",
   ]
 
-  listener {
-    lb_port = 444
-    lb_protocol = "http"
-    instance_port = 444
-    instance_protocol = "https"
+  access_logs {
+    bucket = "${var.elb_logs_bucket_id}"
+    prefix = "internal"
+    enabled = true
   }
+}
+
+resource "aws_lb_target_group" "flu_api_internal" {
+  name = "${local.base_name}-internal"
+  port = 444
+  protocol = "HTTP"
+  target_type = "ip"
+  vpc_id = "${var.vpc_id}"
 
   health_check {
     healthy_threshold = 2
     unhealthy_threshold = 2
     timeout = 5
     interval = 30
-    target = "HTTPS:444/api"
+    path = "/api"
+    port = "444"
+    protocol = "HTTP"
   }
-
-  tags {
-    Name = "${local.base_name}-internal"
-    LaunchConfig = "${aws_launch_configuration.flu_api_instance.name}"
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
 }
 
-resource "aws_launch_configuration" "flu_api_instance" {
-  name_prefix = "${local.base_name}-"
-  iam_instance_profile = "${aws_iam_instance_profile.flu_api.name}"
-  image_id = "${module.ami.ubuntu}"
-  instance_type = "t3.small"
-  user_data = "${data.template_file.service_init_sh.rendered}"
+resource "aws_lb_listener" "flu_api_internal_listener" {
+  load_balancer_arn = "${aws_lb.flu_api_internal_lb.id}"
+  port = 444
+  protocol = "HTTP"
 
-  security_groups = [
-    "${var.internet_egress_sg_id}",
-    "${var.fluapi_server_sg_id}",
-    "${var.db_client_sg_id}",
-    "${var.dev_ssh_server_sg_id}",
-  ]
-
-  ebs_block_device {
-    device_name = "/dev/sdf"
-    snapshot_id = "${var.creds_snapshot_id}"
-    volume_type = "gp2"
+  default_action {
+    target_group_arn = "${aws_lb_target_group.flu_api_internal.id}"
+    type = "forward"
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  count = "${var.service == "elb" ? 1 : 0}"
-}
-
-module "devs" {
-  source = "../devs"
-  userids = "${var.devs}"
 }
 
 // --------------------------------------------------------------------------------
@@ -264,5 +152,89 @@ resource "aws_s3_bucket" "flu_api_reports_bucket" {
         sse_algorithm = "aws:kms"
       }
     }
+  }
+}
+
+// --------------------------------------------------------------------------------
+// FluApi ECS task
+
+data "template_file" "fluapi" {
+  template = "${file("${path.module}/fluapi.json")}"
+
+  vars {
+    account = "${var.account}"
+    domain = "${local.api_full_domain}"
+    environment = "${var.environment}"
+    region = "${var.region}"
+    subdomain = "${local.api_subdomain}"
+  }
+}
+
+resource "aws_ecs_task_definition" "fluapi" {
+  family = "fluapi-${var.environment}"
+  container_definitions = "${data.template_file.fluapi.rendered}"
+  execution_role_arn = "${module.task_role.arn}"
+  network_mode = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu = 256
+  memory = 1024
+}
+
+resource "aws_ecs_service" "fluapi" {
+  name = "fluapi-${var.environment}"
+  cluster = "${var.ecs_cluster_id}"
+  task_definition = "${aws_ecs_task_definition.fluapi.arn}"
+  desired_count = 1
+  deployment_maximum_percent = 200
+  deployment_minimum_healthy_percent = 100
+  launch_type = "FARGATE"
+  network_configuration {
+    assign_public_ip = true
+    security_groups = [
+      "${var.internet_egress_sg_id}",
+      "${var.fluapi_server_sg_id}",
+      "${var.db_client_sg_id}",
+      "${var.dev_ssh_server_sg_id}",
+    ]
+    subnets = ["${var.app_subnet_id}"]
+  }
+
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.flu_api.id}"
+    container_name = "nginx-${var.environment}"
+    container_port = 443
+  }
+
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.flu_api_internal.id}"
+    container_name = "nginx-${var.environment}"
+    container_port = 444
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "fluapi-task-alarm" {
+  alarm_name = "fluapi-${var.environment}-active-tasks"
+  alarm_description = "Monitors number of running tasks for the fluapi service"
+
+  alarm_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  ok_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods = "1"
+  insufficient_data_actions = []
+  metric_name = "CPUUtilization"
+  namespace = "AWS/ECS"
+  period = "60"
+  statistic = "SampleCount"
+  threshold = "1"
+  treat_missing_data = "breaching"
+  dimensions {
+    ClusterName = "${var.ecs_cluster_name}"
+    ServiceName = "${aws_ecs_service.fluapi.name}"
   }
 }

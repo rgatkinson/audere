@@ -35,6 +35,10 @@ output "ecs_cluster_id" {
   value = "${module.ecs_cluster.id}"
 }
 
+output "ecs_cluster_name" {
+  value = "${module.ecs_cluster.name}"
+}
+
 output "elb_logs_bucket_id" {
   value = "${aws_s3_bucket.elb_logs.id}"
 }

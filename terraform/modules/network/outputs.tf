@@ -7,6 +7,10 @@ output "app_subnet_id" {
   value = "${aws_subnet.app.id}"
 }
 
+output "app_b_subnet_id" {
+  value = "${aws_subnet.app_b.id}"
+}
+
 output "bastion_ingress_sg_id" {
   value = "${aws_security_group.bastion_ingress.id}"
 }

@@ -3,10 +3,6 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-output "id" {
-  value = "${aws_ecs_cluster.cluster.id}"
-}
-
-output "name" {
-  value = "${aws_ecs_cluster.cluster.name}"
+output "arn" {
+  value = "${aws_iam_role.ecs_task_execution_role.arn}"
 }

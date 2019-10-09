@@ -58,9 +58,8 @@ data "aws_iam_policy_document" "flu_api_cloudwatch_policy" {
   }
 }
 
-resource "aws_iam_role_policy" "flu_api_s3_policy" {
+resource "aws_iam_policy" "flu_api_s3_policy" {
   name = "${local.base_name}-s3-policy"
-  role = "${aws_iam_role.flu_api_role.id}"
   policy = "${data.aws_iam_policy_document.flu_api_s3_policy.json}"
 }
 
@@ -104,4 +103,19 @@ data "aws_iam_policy_document" "ses_send_email" {
     actions = ["ses:SendEmail", "ses:SendRawEmail"]
     resources = ["*"]
   }
+}
+
+module "task_role" {
+  source = "../ecs-task-role"
+
+  account = "${var.account}"
+  environment = "${var.environment}"
+  policies = [
+    "${aws_iam_policy.flu_api_s3_policy.arn}",
+    "${aws_iam_policy.ses_send_email.arn}"
+  ]
+  policy_count = 2
+  region = "${var.region}"
+  task_alias = "fluapi"
+  ssm_parameters_key_arn = "${var.ssm_parameters_key_arn}"
 }

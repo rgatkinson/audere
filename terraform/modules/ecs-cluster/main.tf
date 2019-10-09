@@ -11,15 +11,11 @@ locals {
 
 data "aws_ami" "amazon_linux_ecs" {
   most_recent = true
+  owners = ["amazon"]
 
   filter {
     name   = "name"
     values = ["amzn2-ami-ecs-*-x86_64-ebs"]
-  }
-
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
   }
 
   filter {
