@@ -544,6 +544,13 @@ jobs:
             export PATH="$PATH:$(yarn global bin)" 
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             expo publish --non-interactive
+      - add_ssh_keys:
+          fingerprints:
+            - "14:8c:a6:8e:67:c2:59:8f:59:8b:92:f2:e6:e5:57:b6"
+      - run:
+          name: SSH config
+          command: |
+            echo $SSH_CONFIG_SUFFIX | base64 -d >> ~/.ssh/config
       - run:
           name: Fastlane
           command: |
