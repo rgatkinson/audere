@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "administrator_access" {
 }
 
 // --------------------------------------------------------------------------------
-// Policy Group: Commiters
+// Policy Group: Committers
 
 resource "aws_iam_group" "committers" {
   name = "AudereCommitters"
@@ -50,6 +50,18 @@ resource "aws_iam_group" "committers" {
 resource "aws_iam_group_policy_attachment" "committer_access" {
   group = "${aws_iam_group.committers.name}"
   policy_arn = "arn:aws:iam::aws:policy/AWSCodeCommitPowerUser"
+}
+
+// --------------------------------------------------------------------------------
+// Policy Group: CodeReaders
+
+resource "aws_iam_group" "code_readers" {
+  name = "AudereCodeReaders"
+}
+
+resource "aws_iam_group_policy_attachment" "code_reader_access" {
+  group = "${aws_iam_group.code_readers.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeCommitReadOnly"
 }
 
 // --------------------------------------------------------------------------------
@@ -766,6 +778,10 @@ data "aws_iam_user" "billy" {
   user_name = "billy"
 }
 
+data "aws_iam_user" "jay" {
+  user_name = "jay"
+}
+
 data "aws_iam_user" "jenny" {
   user_name = "jenny"
 
@@ -775,16 +791,16 @@ data "aws_iam_user" "mmarucheck" {
   user_name = "mmarucheck"
 }
 
-data "aws_iam_user" "mpomarole" {
-  user_name = "mpomarole"
-}
-
 data "aws_iam_user" "philip" {
   user_name = "philip"
 }
 
 data "aws_iam_user" "ram" {
   user_name = "ram"
+}
+
+data "aws_iam_user" "rob" {
+  user_name = "rob"
 }
 
 data "aws_iam_user" "sam" {
@@ -818,12 +834,23 @@ resource "aws_iam_group_membership" "committers" {
 
   users = [
     "billy",
+    "jay",
     "jenny",
     "mmarucheck",
     "philip",
     "ram",
+    "rob",
     "sam",
     "terri",
+  ]
+}
+
+resource "aws_iam_group_membership" "code_readers" {
+  name = "CodeReaders"
+  group = "${aws_iam_group.code_readers.name}"
+
+  users = [
+    "audere-circleci"
   ]
 }
 
@@ -846,7 +873,6 @@ resource "aws_iam_group_membership" "infrastructurers" {
     "billy",
     "mmarucheck",
     "ram",
-    "mpomarole",
     "sam",
     "terri",
   ]
@@ -857,6 +883,5 @@ resource "aws_iam_group_membership" "securers" {
   group = "${aws_iam_group.securers.name}"
 
   users = [
-    "mpomarole",
   ]
 }
