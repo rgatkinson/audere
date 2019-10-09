@@ -196,8 +196,8 @@ yargs.command({
   handler: command(cmdShowPath),
 });
 yargs.command({
-  command: "photo <csruid>",
-  builder: yargs => yargs.string("csruid"),
+  command: "photo <release> <csruid>",
+  builder: yargs => yargs.string("release").string("csruid"),
   handler: command(cmdPhoto),
 });
 yargs.command({
@@ -424,7 +424,7 @@ async function cmdPhoto(argv: PhotosArgs): Promise<void> {
   switch (argv.release) {
     case Release.Cough:
       rows = await coughModels.photo.findAll({
-        where: { csruid: { [Op.like]: `${csruid}%` } },
+        where: { docid: { [Op.like]: `${csruid}%` } },
       });
       break;
     case Release.Fever:
@@ -463,7 +463,7 @@ async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
     case Release.Cough: {
       const surveyRow = expectOne(
         await coughModels.survey.findAll({
-          where: { csruid: { [Op.like]: `${argv.row}%` } },
+          where: { docid: { [Op.like]: `${argv.row}%` } },
         })
       );
       const sample = expectOne(
@@ -473,7 +473,7 @@ async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
       );
       const photoRow = expectOne(
         await coughModels.photo.findAll({
-          where: { csruid: { [Op.eq]: sample.code } },
+          where: { docid: { [Op.eq]: sample.code } },
         })
       );
       console.log(photoRow.photo.jpegBase64);
