@@ -541,23 +541,23 @@ jobs:
             ../scripts/generate-build-info `basename "$PWD"`
             ./scripts/build-hacks
       - run: *set_firebase_config
-      #      - run:
-      #          name: flu@home Tests
-      #          command: |
-      #            yarn test
+      - run:
+          name: flu@home Tests
+          command: |
+            yarn test
       - run: *setenv
-      #      - run:
-      #          name: Setup Expo and expo publish
-      #          command: |
-      #            yarn global add expo-cli
-      #            export PATH="$PATH:$(yarn global bin)"
-      #            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-      #            expo publish --non-interactive
+      - run:
+          name: Setup Expo and expo publish
+          command: |
+            yarn global add expo-cli
+            export PATH="$PATH:$(yarn global bin)"
+            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
+            expo publish --non-interactive
       - run:
           name: Fastlane
           command: |
             cd ios
-            bundle exec fastlane beta --verbose
+            bundle exec fastlane beta
 
   build_deploy_fluathome_android: &build_deploy_fluathome_android
     environment:
