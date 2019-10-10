@@ -488,6 +488,15 @@ jobs:
     steps:
       - checkout:
           path: ~/repo
+      - add_ssh_keys:
+          fingerprints:
+            - "14:8c:a6:8e:67:c2:59:8f:59:8b:92:f2:e6:e5:57:b6"
+      - run:
+          name: SSH config
+          command: |
+            echo $SSH_CONFIG_SUFFIX | base64 --decode >> ~/.ssh/config
+            cat ~/.ssh/config
+            ssh -T -oStrictHostKeyChecking=accept-new au-aws-git true || true
       - restore_cache:
           key: athome-prod-ios-node-cache-{{ checksum "package.json" }}
       - run:
@@ -541,7 +550,7 @@ jobs:
           name: Setup Expo and expo publish
           command: |
             yarn global add expo-cli
-            export PATH="$PATH:$(yarn global bin)" 
+            export PATH="$PATH:$(yarn global bin)"
             expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
             expo publish --non-interactive
       - run:
