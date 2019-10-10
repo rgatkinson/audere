@@ -41,9 +41,6 @@ setenv: &setenv
     echo "REACT_NATIVE_API_SERVER=$REACT_NATIVE_API_SERVER" > .env
     echo "ACCESS_KEY_A=$ACCESS_KEY_A" >> .env
     echo "ACCESS_KEY_B=$ACCESS_KEY_B" >> .env
-    if [[ "$PRODUCT" == "sniffles" ]]; then
-      echo "FIREBASE_API_KEY=$SNIFFLES_FIREBASE_API_KEY" >> .env
-    fi 
 
 set_firebase_config: &set_firebase_config
   name: Set Firebase config files
