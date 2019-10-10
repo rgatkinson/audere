@@ -2,18 +2,6 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-aliases:
-  - &filter_sniffles_tag_staging
-    tags:
-      only: /v0\.1\.[0-9]+_[a-zA-Z0-9]+$/
-    branches:
-      ignore: /.*/
-  - &filter_sniffles_tag_prod
-    tags:
-      only: /v0\.1\.[0-9]+_prod_[a-zA-Z0-9]+$/
-    branches:
-      ignore: /.*/
-
 const: &const
   PROD_SERVER: "https://api.auderenow.io/api"
   STAGING_SERVER: "https://api.staging.auderenow.io/api"
@@ -39,10 +27,6 @@ setenv: &setenv
     if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
       export REACT_NATIVE_API_SERVER="$PROD_SERVER" 
       case "$PRODUCT" in
-        "sniffles")
-          export ACCESS_KEY_A="$DEFAULT_ACCESS_KEY_A"
-          export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD"
-          ;;
         "fever"|"cough"|"chills")
           export ACCESS_KEY_A="7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F"
           export ACCESS_KEY_B="$DOCUMENT_UPLOAD_KEY_PROD_FEVER"
@@ -108,8 +92,6 @@ jobs:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
       - restore_cache:
-          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
-      - restore_cache:
           key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
       - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
@@ -119,18 +101,6 @@ jobs:
           key: chills-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
       - restore_cache:
           key: cough-android-opencv-contrib-{{ checksum "scripts/build-hacks" }}
-      - run:
-          name: FluTrack Yarn Install
-          command: |
-            cd FluTrack
-            yarn install
-            ls node_modules
-            if [[ -e package-lock.json ]]; then
-              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
-              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
-              false
-            fi
-            ../scripts/generate-build-info FluTrack
       - run:
           name: Chills Yarn Install
           command: |
@@ -245,10 +215,6 @@ jobs:
             yarn build
             yarn test
       - save_cache:
-          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
-          paths:
-            - FluTrack/node_modules
-      - save_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
           paths:
             - FluStudy_au/node_modules
@@ -256,11 +222,6 @@ jobs:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
             - FluApi/node_modules
-      - persist_to_workspace:
-          root: .
-          paths:
-            - FluTrack
-            - lib
 
   snyk_scan:
     <<: *defaults
@@ -271,38 +232,11 @@ jobs:
           name: Update yarn
           command: "sudo npm install -g yarn@latest"
       - restore_cache:
-          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
-      - restore_cache:
           key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
       - restore_cache:
           key: cough-node-cache-{{ checksum "FluStudy_au/package.json" }}
       - restore_cache:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
-      - run:
-          name: FluTrack Yarn Install
-          command: |
-            cd FluTrack
-            yarn install
-            ls node_modules
-            if [[ -e package-lock.json ]]; then
-              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
-              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
-              false
-            fi
-      - run:
-          name: Snyk FluTrack Scan
-          command: |
-            cd FluTrack
-            yarn list --json > ~/current_packages
-            git show $(git merge-base HEAD origin/master):./yarn.lock > yarn.lock
-            git show $(git merge-base HEAD origin/master):./package.json > package.json
-            yarn list --json > ~/master_packages
-            if cmp --silent ~/{current,master}_packages; then
-              echo "No new packages have been added to yarn.lock."
-            else
-              sudo npm install -g snyk
-              snyk test --org=auderenow --severity-threshold=high
-            fi
       - run:
           name: Chills Yarn Install
           command: |
@@ -379,10 +313,6 @@ jobs:
               snyk test --org=auderenow --severity-threshold=high
             fi
       - save_cache:
-          key: app-node-cache-{{ checksum "FluTrack/package.json" }}
-          paths:
-            - FluTrack/node_modules
-      - save_cache:
           key: chills-node-cache-{{ checksum "FluStudy_us/package.json" }}
           paths:
             - FluStudy_us/node_modules
@@ -394,88 +324,6 @@ jobs:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
             - FluApi/node_modules
-
-  publish_sniffles: &publish_sniffles
-    <<: *defaults
-    working_directory: ~/repo/FluTrack
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run:
-          name: Update yarn
-          command: "sudo npm install -g yarn@latest"
-      - run: *setenv
-      - run:
-          name: Publish to Expo
-          command: |
-            yarn global add expo-cli
-            export PATH="$PATH:$(yarn global bin)"
-            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            expo publish --max-workers 2 --non-interactive --release-channel "$EXPO_RELEASE_CHANNEL"
-            export EXPO_APPNAME=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['name'])"`
-            export EXPO_URL="https://exp.host/@$EXPO_USERNAME/$EXPO_APPNAME?release-channel=$EXPO_RELEASE_CHANNEL"
-            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"New $EXPO_RELEASE_CHANNEL build, triggered by tag $CIRCLE_TAG, has been published to <$EXPO_URL>. \nThis updates the $EXPO_RELEASE_CHANNEL channel to commit $CIRCLE_SHA1. Build output: <$CIRCLE_BUILD_URL>\", \"icon_emoji\": \":hatching_chick:\"}" $SLACK_WEBHOOK
-
-  publish_sniffles_to_expo_staging:
-    environment:
-      EXPO_RELEASE_CHANNEL: v0-staging
-      PRODUCT: sniffles
-      <<: *const
-    <<: *publish_sniffles
-
-  publish_sniffles_to_expo_prod:
-    environment:
-      EXPO_RELEASE_CHANNEL: v0-prod
-      PRODUCT: sniffles
-      <<: *const
-    <<: *publish_sniffles
-
-  build_ios:
-    environment:
-      PRODUCT: sniffles
-      <<: *const
-    <<: *defaults
-    working_directory: ~/repo/FluTrack
-    steps:
-      - checkout:
-          path: ~/repo
-      - run:
-          name: Test env variables
-          command: |
-            if [[ -z "$EXPO_RELEASE_CHANNEL" ]]; then
-              echo "Set EXPO_RELEASE_CHANNEL"; exit 1; 
-            fi
-      - run:
-          name: Update yarn
-          command: "sudo npm install -g yarn@latest"
-      - restore_cache:
-          key: app-node-cache-{{ checksum "package.json" }}
-      - run:
-          name: App Yarn Install
-          command: |
-            yarn install
-            ../scripts/generate-build-info FluTrack
-      - run:
-          name: App Tests
-          command: |
-            yarn test
-      - save_cache:
-          key: app-node-cache-{{ checksum "package.json" }}
-          paths:
-            - node_modules
-      - run: *setenv
-      - run:
-          name: Build iOS
-          command: |
-            yarn global add expo-cli
-            export PATH="$PATH:$(yarn global bin)"
-            expo login -u "$EXPO_USERNAME" -p "$EXPO_PASSWORD"
-            export IOS_BUILD_NUM=`cat app.json | python -c "import sys, json; print(json.load(sys.stdin)['expo']['ios']['buildNumber'])"`
-            echo "About to build iOS binary $IOS_BUILD_NUM for $EXPO_RELEASE_CHANNEL"
-            expo publish --max-workers 2 --non-interactive --release-channel "$EXPO_RELEASE_CHANNEL"
-            expo build:ios --no-publish --non-interactive --release-channel "$EXPO_RELEASE_CHANNEL"
-            export IPA_URL=`expo url:ipa`
-            curl -X POST --data-urlencode "payload={\"username\": \"circlebot\", \"text\": \"Standalone iOS build $IOS_BUILD_NUM (channel $EXPO_RELEASE_CHANNEL, by user $CIRCLE_USERNAME) is ready to upload: $IPA_URL \nThis updates the $EXPO_RELEASE_CHANNEL channel to commit $CIRCLE_SHA1. \nBuild output: <$CIRCLE_BUILD_URL>\", \"icon_emoji\": \":gift:\"}" $SLACK_WEBHOOK
 
   build_deploy_fluathome: &build_deploy_fluathome
     environment:
@@ -730,14 +578,6 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - publish_sniffles_to_expo_staging:
-          requires:
-            - build
-          filters: *filter_sniffles_tag_staging
-      - publish_sniffles_to_expo_prod:
-          requires:
-            - build
-          filters: *filter_sniffles_tag_prod
   weekly:
     triggers:
       - schedule:
