@@ -45,34 +45,18 @@ setenv: &setenv
 set_firebase_config: &set_firebase_config
   name: Set Firebase config files
   command: |
-    echo "$EXPO_RELEASE_CHANNEL"
+    GOOGLE_SERVICES_JSON_VAR=`echo "${PRODUCT}_${EXPO_RELEASE_CHANNEL}_GOOGLE_SERVICES_JSON" | tr [a-z] [A-Z]`
+    GOOGLE_SERVICE_INFO_PLIST_VAR=`echo "${PRODUCT}_${EXPO_RELEASE_CHANNEL}_GOOGLE_SERVICE_INFO_PLIST" | tr [a-z] [A-Z]`
+    echo "Decoding $GOOGLE_SERVICES_JSON_VAR"
     case "$PRODUCT" in 
-      cough) 
-        if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-          echo "$COUGH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
-          echo "$COUGH_PROD_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
-        else 
-          echo "$COUGH_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
-          echo "$COUGH_STAGING_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
-        fi
+      "cough"|"chills") 
+        echo "${!GOOGLE_SERVICES_JSON_VAR}" | base64 --decode >> android/app/google-services.json
+        echo "Decoding $GOOGLE_SERVICE_INFO_PLIST_VAR"
+        echo "${!GOOGLE_SERVICE_INFO_PLIST_VAR}" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
         grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
         ;;
-      chills) 
-        if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-          echo "$CHILLS_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
-          echo "$CHILLS_PROD_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
-        else 
-          echo "$CHILLS_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
-          echo "$CHILLS_STAGING_GOOGLE_SERVICE_INFO_PLIST" | base64 --decode >> ios/fluathome/GoogleService-Info.plist
-        fi
-        grep -A 1 PROJECT ios/fluathome/GoogleService-Info.plist
-        ;;
-      rash)
-        if [[ "$EXPO_RELEASE_CHANNEL" == *prod ]]; then 
-          echo "$RASH_PROD_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
-        else 
-          echo "$RASH_STAGING_GOOGLE_SERVICES_JSON" | base64 --decode >> android/app/google-services.json
-        fi
+      "rash")
+        echo "${!GOOGLE_SERVICES_JSON_VAR}" | base64 --decode >> android/app/google-services.json
         ;;
       *) echo 1>&2 "Unsupported product '$PRODUCT' for set_firebase_config"; false;;
     esac
