@@ -127,19 +127,6 @@ resource "aws_lb_listener" "flu_api_internal_listener" {
 }
 
 // --------------------------------------------------------------------------------
-// CloudWatch log group
-
-resource "aws_cloudwatch_log_group" "flu_api_log_group" {
-  name = "${local.base_name}"
-  retention_in_days = 30
-
-  tags = {
-    environment = "${var.environment}"
-    application = "FluApi"
-  }
-}
-
-// --------------------------------------------------------------------------------
 // FluApi reporting bucket
 
 resource "aws_s3_bucket" "flu_api_reports_bucket" {
