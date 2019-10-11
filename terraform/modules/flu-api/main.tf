@@ -173,6 +173,7 @@ data "template_file" "fluapi" {
 resource "aws_ecs_task_definition" "fluapi" {
   family = "fluapi-${var.environment}"
   container_definitions = "${data.template_file.fluapi.rendered}"
+  task_role_arn = "${module.task_role.arn}"
   execution_role_arn = "${module.task_role.arn}"
   network_mode = "awsvpc"
   requires_compatibilities = ["FARGATE"]
