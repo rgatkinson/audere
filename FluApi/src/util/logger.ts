@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import winston, { createLogger, format } from "winston";
-import WinstonCloudWatch from "winston-cloudwatch";
 import { isAWS } from "./environment";
 
 const FORMAT_WITH_TIMESTAMP = format.printf(
@@ -22,29 +21,19 @@ const LOGGER_OPTIONS = isAWS()
       format: FORMAT_WITH_TIMESTAMP,
     };
 
-const logger = createLogger({
-  transports: [
-    new winston.transports.Console(LOGGER_OPTIONS),
+const transports = [];
+transports.push(new winston.transports.Console(LOGGER_OPTIONS));
+
+if (!isAWS()) {
+  transports.push(
     new winston.transports.File({
       filename: "debug.log",
       level: "debug",
       format: FORMAT_WITH_TIMESTAMP,
-    }),
-  ],
-});
-
-if (isAWS()) {
-  const env = process.env.NODE_ENV.toLowerCase();
-
-  // AWS resources such as the log group name use prod instead of production.
-  const awsEnv = env === "production" ? "prod" : env;
-  logger.add(
-    new WinstonCloudWatch({
-      logGroupName: "flu-" + awsEnv + "-api",
-      logStreamName: "flu-api-instance",
-      awsRegion: "us-west-2",
     })
   );
 }
+
+const logger = createLogger({ transports: transports });
 
 export default logger;
