@@ -13,7 +13,7 @@ const FORMAT_WITH_TIMESTAMP = format.printf(
 
 const LOGGER_OPTIONS = isAWS()
   ? {
-      level: "error",
+      level: "info",
       format: FORMAT_WITH_TIMESTAMP,
     }
   : {
