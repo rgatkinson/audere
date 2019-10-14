@@ -70,7 +70,7 @@
     "expo-camera": "~7.0.0",
     "expo-localization": "~7.0.0",
     "expo-secure-store": "~7.0.0",
-    "expokit": "35.0.1",
+    "expokit": "35.0.2",
     "i18next": "^11.10.0",
     "immutable": "^4.0.0-rc.12",
     "js-sha256": "^0.9.0",
