@@ -63,18 +63,6 @@
     "november": "November",
     "december": "December"
   },
-  "pushNotificationModal": {
-    "pushNotificationTitle": "May we send you notifications?",
-    "pushNotificationBody": "We will notify you when timers are complete so you know to return to the flu@home app"
-  },
-  "PushNotifications": {
-    "followUpSurveyBody": "Your feedback is very important to the flu@home study. Please tap here to take our follow-up survey."
-  },
-  "SurveyLinkBlock": {
-    "title": "**Take the follow-up survey!**",
-    "body": "If you haven't done so already, please tap here to be directed to our follow-up survey.",
-    "link": "**Go to survey >**"
-  },
   "relaunch": {
     "returningOrNewTitle": "Are you returning to the app or are you a new user?",
     "returningOrNewBody": "Selecting \"New User\" will reset the flu@home app to start over.",
@@ -484,16 +472,6 @@
     "desc2": "One **Priority Mail** package for pickup.\nPick up during your **regular mail delivery** so there is no additional charge.  The weight of the package is **1 lb**.",
     "desc3": "[Go to USPS site to schedule pickup](https://tools.usps.com/go/POLocatorAction!input.action?address={{zipcode}}&radius=10&locationTypeQ=po)"
   },
-  "TestFeedback": {
-    "title": "How did you do?",
-    "desc": ""
-  },
-  "FollowUpSurvey": {
-    "title": "Follow-up Survey",
-    "desc": "We'd like you to complete a follow-up survey that we will send you in the next couple days. Here's what to expect:",
-    "iosInstructions": "We'll ask for permission to enable notifications on your device (after you tap 'Continue' below).\nIt's important that you don't delete this app until you've received the notification.\nThe notification will link to a web survey.",
-    "androidInstructions": "We'll send a notification to your device in 2 days with a link to the web survey.\nIt's important that you don't delete this app until you've received the notification."
-  },
   "Thanks": {
     "title": "Test completed",
     "desc": "Thank you. Your participation in this research study could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.",
@@ -602,10 +580,6 @@
     "oneLine": "One line only",
     "twoLines": "Two lines",
     "threeLines": "Three lines",
-    "easyCorrect": "It was easy to follow and I think I completed the test correctly",
-    "confusingCorrect": "It was a little confusing but I think I did the test correctly",
-    "confusingNotCorrect": "It was very confusing and I'm not sure I completed the test correctly",
-    "incorrect": "During the test, I realized I did something incorrectly",
     "neverFlu": "I've never received an influenza vaccination",
     "indeterminate": "Indeterminate/Other",
     "unknown": "Unknown"

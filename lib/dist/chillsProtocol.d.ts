@@ -114,6 +114,10 @@ export interface RDTInfo {
 }
 export interface RDTReaderResult {
     testStripFound: boolean;
+    testStripBoundary?: {
+        x: number;
+        y: number;
+    }[];
     skippedDueToMemWarning?: boolean;
     isCentered?: boolean;
     sizeResult?: RDTReaderSizeResult;

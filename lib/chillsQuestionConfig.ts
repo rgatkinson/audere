@@ -1161,19 +1161,6 @@ export const NumLinesSeenConfig: SurveyQuestion = {
   type: SurveyQuestionType.RadioGrid,
 };
 
-export const TestFeedbackConfig: SurveyQuestion = {
-  id: "TestFeedback",
-  title: "TestFeedback",
-  description: "selectMostApplicable",
-  buttons: [
-    { key: "easyCorrect", primary: false, enabled: true },
-    { key: "confusingCorrect", primary: false, enabled: true },
-    { key: "confusingNotCorrect", primary: false, enabled: true },
-    { key: "incorrect", primary: false, enabled: true },
-  ],
-  type: SurveyQuestionType.RadioGrid,
-};
-
 export const SURVEY_QUESTIONS = [
   ConsentAnyResearchersConfig,
   WhatSymptomsConfig,
@@ -1236,5 +1223,4 @@ export const SURVEY_QUESTIONS = [
   PinkWhenBlueConfig,
   PinkLineConfig,
   NumLinesSeenConfig,
-  TestFeedbackConfig,
 ];

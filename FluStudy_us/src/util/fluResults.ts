@@ -24,7 +24,9 @@ let _previousNumLines: string | undefined;
 export async function getTestStripSurveyNextScreen() {
   const state = (await getStore()).getState();
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
-  return blueAnswer === "yes" ? "TestStripSurvey2" : "InvalidResult";
+  return blueAnswer === "yes"
+    ? "TestStripSurvey2"
+    : getPinkWhenBlueNextScreen();
 }
 
 export function getPinkWhenBlueNextScreen() {

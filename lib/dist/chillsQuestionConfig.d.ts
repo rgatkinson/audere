@@ -38,7 +38,7 @@ export interface OptionQuestion extends SurveyQuestion {
 export interface DropDownQuestion extends SurveyQuestion {
     placeholder: string;
 }
-export declare const ConsentSameResearchersConfig: SurveyQuestion;
+export declare const ConsentAnyResearchersConfig: SurveyQuestion;
 export interface MonthQuestion extends SurveyQuestion {
     monthRange: number;
 }
@@ -95,11 +95,11 @@ export declare const SmokeTobaccoConfig: SurveyQuestion;
 export declare const HouseholdTobaccoConfig: SurveyQuestion;
 export declare const InterferingConfig: SurveyQuestion;
 export declare const AntibioticsConfig: SurveyQuestion;
+export declare const AntiviralConfig: SurveyQuestion;
 export declare const AgeConfig: DropDownQuestion;
 export declare const RaceConfig: OptionQuestion;
 export declare const BlueLineConfig: SurveyQuestion;
 export declare const PinkWhenBlueConfig: SurveyQuestion;
 export declare const PinkLineConfig: SurveyQuestion;
 export declare const NumLinesSeenConfig: SurveyQuestion;
-export declare const TestFeedbackConfig: SurveyQuestion;
 export declare const SURVEY_QUESTIONS: SurveyQuestion[];

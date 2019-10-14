@@ -1,6 +1,5 @@
 import { Linking, Platform, PushNotificationIOS } from "react-native";
 import PushNotification from "react-native-push-notification";
-import { followUpSurveyUrl } from "../resources/LinkConfig";
 import { logFirebaseEvent, notificationEvent } from "./tracker";
 
 export interface NotificationData {
@@ -22,18 +21,6 @@ export interface Notification {
   dateInterval: NotificationDateInterval;
   id: number; // Numeric id used on Android
 }
-
-export const followUpSurvey = {
-  body: "followUpSurveyBody",
-  data: {
-    id: "followUpSurvey",
-    link: followUpSurveyUrl,
-  },
-  dateInterval: {
-    days: 2,
-  },
-  id: 1,
-};
 
 export const notificationLaunchHandler = () => {
   if (Platform.OS == "ios") {

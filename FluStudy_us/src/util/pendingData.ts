@@ -3,7 +3,7 @@ const PHOTO_UPLOAD_TIMEOUT = 90000;
 
 export async function pendingNavigation() {
   const hasPhotos = await hasPendingPhotos();
-  return hasPhotos ? "PendingData" : "FollowUpSurvey";
+  return hasPhotos ? "PendingData" : "Thanks";
 }
 
 export async function hasPendingData() {

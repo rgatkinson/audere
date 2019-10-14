@@ -57,7 +57,6 @@ import {
   SymptomsLast48Config,
   SymptomsSeverityConfig,
   SymptomsStartConfig,
-  TestFeedbackConfig,
   VomitingLast48Config,
   VomitingSeverityConfig,
   VomitingStartConfig,
@@ -85,11 +84,8 @@ import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
-import PatientPIIEntry from "../ui/components/flu/PatientPIIEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
-import RDTImageHC from "../ui/components/flu/RDTImageHC";
 import RDTReader from "../ui/components/flu/RDTReader";
-import SurveyLinkBlock from "../ui/components/flu/SurveyLinkBlock";
 import TestResult from "../ui/components/flu/TestResult";
 import TestResultRDT from "../ui/components/flu/TestResultRDT";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
@@ -98,8 +94,6 @@ import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import PendingButton from "../ui/components/PendingButton";
-import PushNotificationContinueButtonAndroid from "../ui/components/PushNotificationContinueButtonAndroid";
-import PushNotificationContinueButtonIOS from "../ui/components/PushNotificationContinueButtonIOS";
 import Questions from "../ui/components/Questions";
 import { ScreenConfig } from "../ui/components/Screen";
 import ScreenText from "../ui/components/ScreenText";
@@ -113,9 +107,8 @@ import {
   getTestStripSurveyNextScreen,
   logFluResult,
 } from "../util/fluResults";
-import { followUpSurvey } from "../util/notifications";
 import { openSettingsApp } from "../util/openSettingsApp";
-import { uploadPendingSuccess } from "../util/pendingData";
+import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
 import { getShippingTextVariables } from "../util/shipping";
 import { FunnelEvents } from "../util/tracker";
 
@@ -987,11 +980,7 @@ export const Screens: ScreenConfig[] = [
     footer: [{ tag: ContinueButton, props: { next: "TestResult" } }],
   },
   {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResult },
-    ],
+    body: [{ tag: Title }, { tag: TestResult }],
     footer: [
       { tag: Divider },
       {
@@ -1020,11 +1009,7 @@ export const Screens: ScreenConfig[] = [
     key: "TestResult",
   },
   {
-    body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "common:testResult:desc" } },
-      { tag: TestResultRDT },
-    ],
+    body: [{ tag: Title }, { tag: TestResultRDT }],
     footer: [
       { tag: Divider },
       {
@@ -1050,20 +1035,9 @@ export const Screens: ScreenConfig[] = [
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     key: "SelfCare",
-    footer: [{ tag: ContinueButton, props: { next: "TestFeedback" } }],
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "nicejob" } },
-      { tag: Title },
-      {
-        tag: Questions,
-        props: { questions: [TestFeedbackConfig] },
-        validate: true,
-      },
+    footer: [
+      { tag: ContinueButton, props: { surveyGetNextFn: pendingNavigation } },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "Thanks" } }],
-    key: "TestFeedback",
     automationNext: "Thanks",
   },
   {
@@ -1071,7 +1045,6 @@ export const Screens: ScreenConfig[] = [
       { tag: MainImage, props: { uri: "finalthanks" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: SurveyLinkBlock },
       {
         tag: LinkInfoBlock,
         props: {
@@ -1106,33 +1079,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "followupsurvey" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: BulletPointsComponent,
-        props: {
-          label:
-            Platform.OS === "android"
-              ? "androidInstructions"
-              : "iosInstructions",
-          customBulletUri: "listarrow",
-        },
-      },
-    ],
-    footer: [
-      {
-        tag:
-          Platform.OS === "android"
-            ? PushNotificationContinueButtonAndroid
-            : PushNotificationContinueButtonIOS,
-        props: { next: "Thanks", notification: followUpSurvey },
-      },
-    ],
-    key: "FollowUpSurvey",
-  },
-  {
-    body: [
       { tag: MainImage, props: { uri: "nointernetconnection" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
@@ -1142,7 +1088,7 @@ export const Screens: ScreenConfig[] = [
         tag: PendingButton,
         props: {
           pendingResolvedFn: uploadPendingSuccess,
-          next: "FollowUpSurvey",
+          next: "Thanks",
         },
       },
     ],
