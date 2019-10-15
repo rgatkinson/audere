@@ -133,8 +133,6 @@ async function runThroughApp(models, isDemo) {
       );
     } else if (screen_info.type == "barcode") {
       next_screen = await barcode_screen(driver, screen_info, screens_visited);
-    } else if (screen_info.type == "consent") {
-      next_screen = await consent_screen(driver, screen_info, screens_visited);
     } else if (screen_info.type == "blue_line_question") {
       next_screen = await blue_line_question_screen(
         driver,
@@ -296,57 +294,6 @@ async function barcode_screen(driver, screen_info, screens_visited) {
   }
 
   return screen_info.button.onClick;
-}
-
-//Consent screen logic: allows automation to consent or deny consent
-async function consent_screen(driver, screen_info, screens_visited) {
-  //skip looking for title if coming back from ConsentDeclined
-  if (!screens_visited.includes("ConsentDeclined")) {
-    expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
-      true
-    );
-  }
-  screens_visited.push(screen_info.key);
-
-  let next_screen_key;
-  if (
-    "ConsentDeclined" in inputs &&
-    !screens_visited.includes("ConsentDeclined")
-  ) {
-    await scroll_to_element(driver, deviceInfo, screen_info.denyButton.name);
-    await driver.elementByAccessibilityId(screen_info.denyButton.name).click();
-    next_screen_key = screen_info.denyButton.onClick;
-  } else {
-    let questionY = await scroll_to_element(
-      driver,
-      deviceInfo,
-      screen_info.input[0].name
-    );
-    if (questionY > screen_y * 0.6) {
-      await half_scroll(driver, deviceInfo);
-    }
-    platform == "iOS"
-      ? await ios_buttonGrid(
-          driver,
-          screen_info.input[0],
-          null,
-          screen_info,
-          inputs,
-          deviceInfo
-        )
-      : await android_buttonGrid(
-          driver,
-          screen_info.input[0],
-          null,
-          screen_info,
-          inputs,
-          deviceInfo
-        );
-    await scroll_to_element(driver, deviceInfo, screen_info.button.name);
-    await driver.elementByAccessibilityId(screen_info.button.name).click();
-    next_screen_key = screen_info.button.onClick;
-  }
-  return next_screen_key;
 }
 
 //Test strip survey screen logic: allows automation to not see blue line

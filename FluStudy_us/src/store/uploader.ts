@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
-  NonPIIConsentInfo,
   PatientInfoGender,
   QuestionAnswerOption,
   ResponseInfo,
@@ -18,8 +17,6 @@ import {
   CoughSneezeConfig,
   FluShotConfig,
   FluShotDateConfig,
-  FluShotNationalImmunization,
-  FluShotNationalImmunizationCondition,
   HouseholdChildrenConfig,
   InContactConfig,
   PinkLineConfig,
@@ -118,7 +115,6 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
         /*
          * Testing only writing to pouch when the user navigates between screens
          * for performance reasons.
-      case "SET_CONSENT":
       case "SET_KIT_BARCODE":
       case "SET_TEST_STRIP_IMG":
       case "SET_PUSH_STATE":
@@ -145,7 +141,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   const pouch: SurveyInfo = {
     isDemo: state.meta.isDemo,
     marketingProperties: state.meta.marketingProperties,
-    consents: [],
     samples: [],
     responses: [],
     events: state.survey.events,
@@ -154,8 +149,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   };
 
   when(getGender(questions), x => (pouch.gender = x));
-
-  maybePushConsent(survey, pouch.consents);
 
   if (!!survey.kitBarcode) {
     pouch.samples.push(survey.kitBarcode);
@@ -178,13 +171,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   // Set all surveyResponses into pouch.responses
   pushResponses("SurveyQuestions", questions, pouch.responses);
   return pouch;
-}
-
-function maybePushConsent(survey: SurveyState, consents: NonPIIConsentInfo[]) {
-  const consent = survey.consent;
-  if (consent != null) {
-    consents.push(consent);
-  }
 }
 
 function pushResponses(

@@ -14,8 +14,6 @@ import { logFirebaseEvent, AppEvents } from "../util/tracker";
 import i18n from "i18next";
 
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
-export const followUpSurveyUrl =
-  "https://uwhealth.az1.qualtrics.com/jfe/form/SV_3UEQ8IVCZwLPTP7";
 
 const testQuestionsURL = "fluathome@adelaide.edu.au";
 const appSupportURL = "flu-support-au@auderenow.org";

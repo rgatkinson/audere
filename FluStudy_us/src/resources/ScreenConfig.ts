@@ -17,7 +17,6 @@ import {
   ChillsLast48Config,
   ChillsSeverityConfig,
   ChillsStartConfig,
-  ConsentAnyResearchersConfig,
   CoughLast48Config,
   CoughSeverityConfig,
   CoughSneezeConfig,
@@ -39,7 +38,6 @@ import {
   InContactConfig,
   InterferingConfig,
   MedicalConditionConfig,
-  NumLinesSeenConfig,
   PeopleInHouseholdConfig,
   PinkWhenBlueConfig,
   PreviousSeason,
@@ -66,19 +64,16 @@ import {
 import { Platform } from "react-native";
 import DeviceInfo from "react-native-device-info";
 import {
-  setConsent,
   setHasBeenOpened,
   setOneMinuteStartTime,
   setTenMinuteStartTime,
   setTenMinuteTimerDone,
   setTotalTestStripTime,
 } from "../store";
-import BackButton from "../ui/components/BackButton";
 import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BulletPointsComponent from "../ui/components/BulletPoint";
 import Button from "../ui/components/Button";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
-import ConsentText from "../ui/components/ConsentText";
 import ContinueButton from "../ui/components/ContinueButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
@@ -151,7 +146,6 @@ export const Screens: ScreenConfig[] = [
         props: { grantedNext: "Scan", deniedNext: "CameraSettings" },
       },
     ],
-    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
     key: "ScanInstructions",
   },
   {
@@ -180,7 +174,6 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "tips" } },
     ],
     footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
-    funnelEvent: FunnelEvents.CONSENT_COMPLETED,
     key: "ManualEntry",
   },
   {
@@ -279,90 +272,6 @@ export const Screens: ScreenConfig[] = [
     ],
     footer: [{ tag: ContinueButton, props: { next: "Swab" } }],
     key: "Unpacking",
-  },
-  {
-    body: [
-      { tag: Title },
-      {
-        tag: ScreenText,
-        props: {
-          center: false,
-          label: "desc",
-
-          style: { marginHorizontal: 0 },
-        },
-      },
-      {
-        tag: ScreenText,
-        props: {
-          center: false,
-          label: "desc2",
-          style: { marginHorizontal: 0 },
-        },
-      },
-      {
-        tag: ScreenText,
-        props: {
-          center: false,
-          label: "desc3",
-          style: { marginHorizontal: 0 },
-        },
-      },
-    ],
-    key: "ParticipantInformation",
-    footer: [{ tag: ContinueButton, props: { next: "Consent" } }],
-  },
-  {
-    body: [
-      { tag: Title },
-      { tag: ConsentText },
-      {
-        tag: Questions,
-        props: { questions: [ConsentAnyResearchersConfig] },
-        validate: true,
-      },
-      {
-        tag: ScreenText,
-        props: {
-          center: false,
-          label: "consentFormText2",
-          style: {
-            marginHorizontal: 0,
-          },
-        },
-      },
-    ],
-    key: "Consent",
-    automationNext: "ManualEntry",
-    footer: [
-      {
-        tag: ContinueButton,
-        props: {
-          dispatchOnNext: () => setConsent(),
-          label: "accept",
-          next: "ManualEntry",
-        },
-      },
-      {
-        tag: ContinueButton,
-        props: {
-          label: "noThanks",
-          next: "ConsentDeclined",
-          primary: false,
-          overrideValidate: true,
-        },
-      },
-    ],
-  },
-  {
-    body: [
-      { tag: Title },
-      { tag: MainImage, props: { uri: "thanksforyourinterest" } },
-      { tag: ScreenText, props: { label: "desc" } },
-    ],
-    footer: [{ tag: BackButton, props: { label: "backToConsent" } }],
-    funnelEvent: FunnelEvents.CONSENT_DECLINED,
-    key: "ConsentDeclined",
   },
   {
     body: [

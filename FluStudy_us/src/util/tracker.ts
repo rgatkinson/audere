@@ -37,8 +37,6 @@ export const DrawerEvents = {
 
 export const FunnelEvents = {
   // Screening events
-  CONSENT_COMPLETED: "funnel_consent_completed",
-  CONSENT_DECLINED: "funnel_consent_declined",
   // Survey events
   SCAN_CONFIRMATION: "funnel_scan_confirmation",
   MANUAL_CODE_CONFIRMATION: "funnel_manual_code_confirmation",

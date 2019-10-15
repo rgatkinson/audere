@@ -57,17 +57,6 @@ export interface DropDownQuestion extends SurveyQuestion {
 //
 // ================================================================
 
-export const ConsentAnyResearchersConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  id: "researchByAnyResearchers",
-  required: true,
-  title: "researchByAnyResearchers",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
 export interface MonthQuestion extends SurveyQuestion {
   monthRange: number;
 }
@@ -1162,7 +1151,6 @@ export const NumLinesSeenConfig: SurveyQuestion = {
 };
 
 export const SURVEY_QUESTIONS = [
-  ConsentAnyResearchersConfig,
   WhatSymptomsConfig,
   SymptomsStartConfig,
   FeverStartConfig,

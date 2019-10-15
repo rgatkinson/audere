@@ -6,7 +6,6 @@
 import {
   EventInfo,
   EventInfoKind,
-  NonPIIConsentInfo,
   PushNotificationState,
   RDTInfo,
   RDTReaderResult,
@@ -20,7 +19,6 @@ import { onCSRUIDEstablished } from "../util/tracker";
 export type SurveyAction =
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
-  | { type: "SET_CONSENT"; consent: NonPIIConsentInfo }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
   | {
       type: "SET_TEST_STRIP_IMG";
@@ -54,7 +52,6 @@ export type SurveyAction =
   | { type: "RESET_TIMESTAMP" };
 
 export type SurveyState = {
-  consent?: NonPIIConsentInfo;
   csruid?: string;
   email?: string;
   events: EventInfo[];
@@ -74,7 +71,6 @@ export type SurveyState = {
   workflow: WorkflowInfo;
   [key: string]:
     | boolean
-    | NonPIIConsentInfo
     | string
     | EventInfo[]
     | SampleInfo[]
@@ -110,13 +106,6 @@ export default function reducer(state = initialState, action: SurveyAction) {
       return {
         ...state,
         invalidBarcodes: pushInvalidBarcode(state, action.barcode),
-        timestamp: new Date().getTime(),
-      };
-
-    case "SET_CONSENT":
-      return {
-        ...state,
-        consent: action.consent,
         timestamp: new Date().getTime(),
       };
 
@@ -312,23 +301,6 @@ export function appendInvalidBarcode(barcode: SampleInfo): SurveyAction {
   return {
     type: "APPEND_INVALID_BARCODE",
     barcode,
-  };
-}
-
-export function setConsent(): SurveyAction {
-  return {
-    type: "SET_CONSENT",
-    consent: {
-      terms:
-        i18n.t("Consent:consentFormHeader1") +
-        "\n" +
-        i18n.t("Consent:consentFormText") +
-        "\n" +
-        i18n.t("surveyTitle:researchByAnyResearchers") +
-        "\n" +
-        i18n.t("Consent:consentFormText2"),
-      date: format(new Date(), "YYYY-MM-DD"),
-    },
   };
 }
 

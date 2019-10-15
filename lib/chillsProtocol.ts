@@ -111,7 +111,6 @@ export interface SurveyDocument extends ProtocolDocumentBase {
 export type SurveyInfo = SurveyNonPIIInfo;
 
 export interface SurveyNonPIIInfo extends CommonInfo {
-  consents: NonPIIConsentInfo[];
   samples: SampleInfo[];
 
   invalidBarcodes?: SampleInfo[];
@@ -133,12 +132,6 @@ export interface PushRegistrationError {
   message: string;
   code: number;
   details: string;
-}
-
-export interface NonPIIConsentInfo {
-  terms: string;
-  date: string; // date only
-  localTime?: string; // FHIR:time
 }
 
 export interface WorkflowInfo {

@@ -6,7 +6,6 @@
 import strings from "../../../src/i18n/locales/en.json";
 
 export const inputs = {
-  [strings.surveyTitle.researchBySameResearchers]: strings.surveyButton.no,
   [strings.barcode.placeholder]: "00300300",
   [strings.barcode.secondPlaceholder]: "00300300",
   [strings.surveyTitle.whatSymptoms]: [

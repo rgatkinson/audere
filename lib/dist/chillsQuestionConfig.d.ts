@@ -38,7 +38,6 @@ export interface OptionQuestion extends SurveyQuestion {
 export interface DropDownQuestion extends SurveyQuestion {
     placeholder: string;
 }
-export declare const ConsentAnyResearchersConfig: SurveyQuestion;
 export interface MonthQuestion extends SurveyQuestion {
     monthRange: number;
 }
