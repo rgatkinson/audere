@@ -37,8 +37,6 @@ function menuScreen(
 
 const FAQS = [
   "whyStudy",
-  "whoEligible",
-  "howSoon",
   "howComplete",
   "howFindOut",
   "howLongTest",
@@ -139,7 +137,6 @@ export const MenuScreens: ScreenConfig[] = [
     chromeProps: { menuItem: true },
     key: "ContactSupport",
   },
-  menuScreen("Report"),
   menuScreen("Version", false, [
     {
       tag: ScreenText,

@@ -564,8 +564,6 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { center: true, label: "desc" } },
       { tag: Divider },
       { tag: ScreenText, props: { label: "expoDesc" } },
-      { tag: MainImage, props: { uri: "generalexposure" } },
-      { tag: ScreenText, props: { italic: true, label: "expoRef" } },
       {
         tag: Questions,
         props: {

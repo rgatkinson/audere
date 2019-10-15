@@ -97,9 +97,6 @@
 		59EA63EA22A03B1F009B45BD /* pinklineaboveblueline.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EA63E122A03B1E009B45BD /* pinklineaboveblueline.png */; };
 		59EA63EB22A03B1F009B45BD /* pinklineaboveblueline@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EA63E222A03B1E009B45BD /* pinklineaboveblueline@3x.png */; };
 		59EA63EC22A03B1F009B45BD /* pinklinebelowblueline.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EA63E322A03B1E009B45BD /* pinklinebelowblueline.png */; };
-		59EDB563229DBA39001B7F12 /* generalexposure@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EDB560229DBA39001B7F12 /* generalexposure@2x.png */; };
-		59EDB564229DBA39001B7F12 /* generalexposure@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EDB561229DBA39001B7F12 /* generalexposure@3x.png */; };
-		59EDB565229DBA39001B7F12 /* generalexposure.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EDB562229DBA39001B7F12 /* generalexposure.png */; };
 		59EDB810229F0891001B7F12 /* questionsthankyou@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EDB80F229F0891001B7F12 /* questionsthankyou@2x.png */; };
 		59EDB814229F08B9001B7F12 /* readytobegin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EDB811229F08B9001B7F12 /* readytobegin@2x.png */; };
 		59EDB815229F08B9001B7F12 /* readytobegin.png in Resources */ = {isa = PBXBuildFile; fileRef = 59EDB812229F08B9001B7F12 /* readytobegin.png */; };
@@ -381,9 +378,6 @@
 		59EA63E122A03B1E009B45BD /* pinklineaboveblueline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pinklineaboveblueline.png; path = ../../../assets/images/pinklineaboveblueline.png; sourceTree = "<group>"; };
 		59EA63E222A03B1E009B45BD /* pinklineaboveblueline@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "pinklineaboveblueline@3x.png"; path = "../../../assets/images/pinklineaboveblueline@3x.png"; sourceTree = "<group>"; };
 		59EA63E322A03B1E009B45BD /* pinklinebelowblueline.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pinklinebelowblueline.png; path = ../../../assets/images/pinklinebelowblueline.png; sourceTree = "<group>"; };
-		59EDB560229DBA39001B7F12 /* generalexposure@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "generalexposure@2x.png"; path = "../../../assets/images/generalexposure@2x.png"; sourceTree = "<group>"; };
-		59EDB561229DBA39001B7F12 /* generalexposure@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "generalexposure@3x.png"; path = "../../../assets/images/generalexposure@3x.png"; sourceTree = "<group>"; };
-		59EDB562229DBA39001B7F12 /* generalexposure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = generalexposure.png; path = ../../../assets/images/generalexposure.png; sourceTree = "<group>"; };
 		59EDB80F229F0891001B7F12 /* questionsthankyou@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "questionsthankyou@2x.png"; path = "../../../assets/images/questionsthankyou@2x.png"; sourceTree = "<group>"; };
 		59EDB811229F08B9001B7F12 /* readytobegin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "readytobegin@2x.png"; path = "../../../assets/images/readytobegin@2x.png"; sourceTree = "<group>"; };
 		59EDB812229F08B9001B7F12 /* readytobegin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = readytobegin.png; path = ../../../assets/images/readytobegin.png; sourceTree = "<group>"; };
@@ -742,9 +736,6 @@
 				598638CC22C6BAAD00138905 /* fluathome_whitelogo.png */,
 				598638CB22C6BAAD00138905 /* fluathome_whitelogo@2x.png */,
 				598638C422C6BAAD00138905 /* fluathome_whitelogo@3x.png */,
-				59EDB562229DBA39001B7F12 /* generalexposure.png */,
-				59EDB560229DBA39001B7F12 /* generalexposure@2x.png */,
-				59EDB561229DBA39001B7F12 /* generalexposure@3x.png */,
 				59A01E1022AEC2600030AC38 /* gradient.png */,
 				598F6C102280F61300B15B8B /* one.png */,
 				598F6C0F2280F61200B15B8B /* three.png */,
@@ -1081,10 +1072,8 @@
 				EAEBD2A422691AB7009815C6 /* finalthanks.png in Resources */,
 				EAA1BB8122A5F975005C16A9 /* defectiveteststrip@2x.png in Resources */,
 				F041BFBE22C69D6F00606E8F /* headache@2x.png in Resources */,
-				59EDB565229DBA39001B7F12 /* generalexposure.png in Resources */,
 				EAEBD32422691AB7009815C6 /* contactsupport@2x.png in Resources */,
 				EAEBD30622691AB7009815C6 /* oneminutetimer.png in Resources */,
-				59EDB563229DBA39001B7F12 /* generalexposure@2x.png in Resources */,
 				EAEBD2E422691AB7009815C6 /* opennasalswab.png in Resources */,
 				B501732B1DC01252003445D9 /* EXShell.plist in Resources */,
 				507F749622BAFC930055CE82 /* flashoff@3x.png in Resources */,
@@ -1147,7 +1136,6 @@
 				59109E7022FA4547001543C8 /* bg.png in Resources */,
 				59109E6C22FA4547001543C8 /* largesplash.png in Resources */,
 				F041BFC222C69D6F00606E8F /* washhands@3x.png in Resources */,
-				59EDB564229DBA39001B7F12 /* generalexposure@3x.png in Resources */,
 				F041BFB522C69D6F00606E8F /* drinkfluids.png in Resources */,
 				59EDB826229F0957001B7F12 /* whatsrequired@3x.png in Resources */,
 				EAEBD2B022691AB7009815C6 /* collectsamplethumb.png in Resources */,

@@ -13,26 +13,15 @@ import Constants from "expo-constants";
 import { logFirebaseEvent, AppEvents } from "../util/tracker";
 import i18n from "i18next";
 
-const ausGovUrl = "https://beta.health.gov.au/health-topics/flu-influenza";
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
-const myDrUrl =
-  "https://www.mydr.com.au/respiratory-health/influenza-treatment";
 export const followUpSurveyUrl =
   "https://uwhealth.az1.qualtrics.com/jfe/form/SV_3UEQ8IVCZwLPTP7";
 
 const testQuestionsURL = "fluathome@adelaide.edu.au";
 const appSupportURL = "flu-support-au@auderenow.org";
 
-export function ausGov() {
-  Linking.openURL(ausGovUrl);
-}
-
 export function CDC() {
   Linking.openURL(CDCUrl);
-}
-
-export function myDr() {
-  Linking.openURL(myDrUrl);
 }
 
 export function testSupport() {
@@ -70,14 +59,6 @@ export const LinkPropProvider = (LinkComponent: any) =>
 
 export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
   [
-    "changeResultAnswer",
-    {
-      action: ({ navigation }) =>
-        navigation.dispatch(StackActions.pop({ n: 1 })),
-      key: "changeResultAnswer",
-    },
-  ],
-  [
     "inputManually",
     {
       action: ({ navigation }) =>
@@ -94,24 +75,10 @@ export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
     },
   ],
   [
-    "ausGov",
-    {
-      action: () => ausGov(),
-      key: "ausGov",
-    },
-  ],
-  [
     "CDC",
     {
       action: () => CDC(),
       key: "CDC",
-    },
-  ],
-  [
-    "myDr",
-    {
-      action: () => myDr(),
-      key: "myDr",
     },
   ],
 ]);
