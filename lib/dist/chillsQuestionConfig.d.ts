@@ -84,8 +84,6 @@ export declare const PeopleInHouseholdConfig: SurveyQuestion;
 export declare const BedroomsConfig: SurveyQuestion;
 export declare const FluShotConfig: SurveyQuestion;
 export declare const FluShotDateConfig: MonthQuestion;
-export declare const FluShotNationalImmunization: SurveyQuestion;
-export declare const FluShotNationalImmunizationCondition: SurveyQuestion;
 export declare const PreviousSeason: SurveyQuestion;
 export declare const AssignedSexConfig: SurveyQuestion;
 export declare const MedicalConditionConfig: OptionQuestion;

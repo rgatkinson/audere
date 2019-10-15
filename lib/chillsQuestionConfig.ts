@@ -857,39 +857,6 @@ export const FluShotDateConfig: MonthQuestion = {
   type: SurveyQuestionType.DatePicker,
 };
 
-export const FluShotNationalImmunization: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  conditions: [
-    { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
-  ],
-  id: "FluShotNationalImmunization",
-  title: "fluShotNationalImmunization",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const FluShotNationalImmunizationCondition: SurveyQuestion = {
-  buttons: [],
-  conditions: [
-    {
-      key: "selectedButtonKey",
-      id: FluShotConfig.id,
-      answer: "yes",
-    },
-    {
-      key: "selectedButtonKey",
-      id: FluShotNationalImmunization.id,
-      answer: "yes",
-    },
-  ],
-  id: "FluShotNationalImmunizationCondition",
-  title: "fluShotNationalImmunizationCondition",
-  type: SurveyQuestionType.TextInput,
-};
-
 export const PreviousSeason: SurveyQuestion = {
   buttons: [
     { key: "yes", primary: false, enabled: true },
@@ -1194,8 +1161,6 @@ export const SURVEY_QUESTIONS = [
   BedroomsConfig,
   FluShotConfig,
   FluShotDateConfig,
-  FluShotNationalImmunization,
-  FluShotNationalImmunizationCondition,
   PreviousSeason,
   AssignedSexConfig,
   MedicalConditionConfig,

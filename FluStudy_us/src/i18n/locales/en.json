@@ -43,9 +43,6 @@
       "negativeExplanationBullet": "The swab did not collect enough virus to indicate a positive result",
       "negativeExplanationBulletAllUnder4Days": "Too much time passed between when you first felt sick and took the test",
       "negativeExplanationBulletOne4Days": "Your symptoms started 4+ days ago, in which case the test may be less accurate"
-    },
-    "validationErrors": {
-      "zipcode": "Invalid zipcode"
     }
   },
   "monthPicker": {
