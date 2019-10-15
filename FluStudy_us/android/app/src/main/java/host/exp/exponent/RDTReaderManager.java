@@ -5,8 +5,6 @@
 
 package host.exp.exponent;
 
-import android.util.Log;
-
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -16,7 +14,6 @@ import java.util.Map;
 
 public class RDTReaderManager extends SimpleViewManager<RDTReader> {
     public static final String REACT_CLASS = "RDTReader";
-    private static final String TAG = "RDTReaderManager";
 
     @Override
     public String getName() {
@@ -48,7 +45,6 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
 
     @ReactProp(name = "enabled")
     public void setEnabled(RDTReader view, boolean enabled) {
-        Log.i(TAG, "RDTReaderManager enabled: " + Boolean.toString(enabled));
         if (enabled) {
             view.enable();
         } else {
@@ -56,9 +52,9 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
         }
     }
 
-    @ReactProp(name = "showDefaultViewfinder")
-    public void setShowDefaultViewFinder(RDTReader view, boolean showDefaultViewFinder) {
-        view.setShowViewfinder(showDefaultViewFinder);
+    @ReactProp(name = "demoMode")
+    public void setDemoMode(RDTReader view, boolean demoMode) {
+        view.setDemoMode(demoMode);
     }
 
     @ReactProp(name = "flashEnabled")

@@ -11,6 +11,7 @@ import com.brentvatne.react.ReactVideoPackage;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;
+import me.listenzz.modal.TranslucentModalReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -63,6 +64,7 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
 
             // Needed for `react-native link`
             // new MainReactPackage(),
+            new TranslucentModalReactPackage(),
             new ReactNativePushNotificationPackage(),
             new FBSDKPackage(mCallbackManager),
             new RNDeviceInfo(),

@@ -80,6 +80,7 @@ import Divider from "../ui/components/Divider";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
+import AndroidRDTReader from "../ui/components/flu/AndroidRDTReader";
 import RDTReader from "../ui/components/flu/RDTReader";
 import TestResult from "../ui/components/flu/TestResult";
 import TestResultRDT from "../ui/components/flu/TestResultRDT";
@@ -105,6 +106,7 @@ import {
 import { openSettingsApp } from "../util/openSettingsApp";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
 import { getShippingTextVariables } from "../util/shipping";
+import { getRdtResult } from "../util/results";
 import { FunnelEvents } from "../util/tracker";
 
 const SECOND_MS = 1000;
@@ -684,7 +686,11 @@ export const Screens: ScreenConfig[] = [
       {
         tag: CameraPermissionContinueButton,
         props: {
-          grantedNext: CAN_USE_RDT ? "RDTReader" : "TestStripCamera",
+          grantedNext: CAN_USE_RDT
+            ? Platform.OS === "android"
+              ? "AndroidRDTReader"
+              : "RDTReader"
+            : "TestStripCamera",
           deniedNext: "CameraSettings",
         },
       },
@@ -729,6 +735,19 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       {
+        tag: AndroidRDTReader,
+        props: { next: "TestStripConfirmation", fallback: "TestStripCamera" },
+      },
+    ],
+    chromeProps: {
+      disableBounce: true,
+    },
+    backgroundColor: "black",
+    key: "AndroidRDTReader",
+  },
+  {
+    body: [
+      {
         tag: TestStripCamera,
         props: { next: "TestStripConfirmation" },
       },
@@ -744,6 +763,10 @@ export const Screens: ScreenConfig[] = [
       { tag: RDTImage },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ScreenText,
+        props: { label: "diagnosis", textVariablesFn: getRdtResult },
+      },
     ],
     footer: [
       {

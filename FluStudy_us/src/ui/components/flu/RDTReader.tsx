@@ -747,6 +747,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           onRDTInterpreting={this._onRDTInterpreting}
           enabled={isFocused}
           showDefaultViewfinder={false}
+          demoMode={isDemo}
           flashEnabled={this.state.flashEnabled}
           frameImageScale={this.state.frameImageScale}
           appState={this.state.appState}
