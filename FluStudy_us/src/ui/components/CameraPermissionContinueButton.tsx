@@ -13,14 +13,15 @@ import {
 } from "react-navigation";
 import * as Permissions from "expo-permissions";
 import { Action, StoreState, setCameraSettingsGrantedPage } from "../../store/";
-
 import Button from "./Button";
+import NavigationLink from "./NavigationLink";
 
 interface Props {
   navigation: NavigationScreenProp<any, any>;
   grantedNext: string;
   deniedNext: string;
   dispatch(action: Action): void;
+  showButtonStyle?: boolean;
 }
 
 class CameraPermissionContinueButton extends React.Component<
@@ -42,14 +43,17 @@ class CameraPermissionContinueButton extends React.Component<
   };
 
   render() {
-    const { t } = this.props;
-    return (
+    const { showButtonStyle, t } = this.props;
+    const content = t("common:button:continue");
+    return !!showButtonStyle ? (
       <Button
         enabled={true}
-        label={t("common:button:continue")}
+        label={content}
         primary={true}
         onPress={this._onNext}
       />
+    ) : (
+      <NavigationLink enabled={true} label={content} onPress={this._onNext} />
     );
   }
 }

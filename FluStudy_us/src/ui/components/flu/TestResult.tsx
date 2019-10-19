@@ -71,11 +71,11 @@ class TestResult extends React.Component<Props & WithNamespaces> {
         <View style={{ marginHorizontal: GUTTER }}>
           <BulletPoint
             content={t("common:testResult:blueLine")}
-            customBulletUri="listarrow"
+            customBulletUri="bullet"
           />
           <BulletPoint
             content={t(getExplanationRedAnswer(redAnswer))}
-            customBulletUri="listarrow"
+            customBulletUri="bullet"
           />
         </View>
         {showNegativeExplanation && (
@@ -84,7 +84,7 @@ class TestResult extends React.Component<Props & WithNamespaces> {
             <View style={{ marginHorizontal: GUTTER }}>
               <BulletPoint
                 content={t("common:testResult:negativeExplanationBullet")}
-                customBulletUri="listarrow"
+                customBulletUri="bullet"
               />
               <BulletPoint
                 content={t(
@@ -92,7 +92,7 @@ class TestResult extends React.Component<Props & WithNamespaces> {
                     ? "common:testResult:negativeExplanationBulletAllUnder4Days"
                     : "common:testResult:negativeExplanationBulletOne4Days"
                 )}
-                customBulletUri="listarrow"
+                customBulletUri="bullet"
               />
             </View>
           </Fragment>

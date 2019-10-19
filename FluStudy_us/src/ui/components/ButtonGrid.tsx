@@ -4,13 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { RefObject } from "react";
-import {
-  StyleProp,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { Action, updateAnswer, StoreState } from "../../store";
@@ -23,6 +17,7 @@ import {
   HIGHLIGHT_STYLE,
   RADIO_BUTTON_HEIGHT,
   SECONDARY_COLOR,
+  SMALL_TEXT,
   TEXT_COLOR,
 } from "../styles";
 import Text from "./Text";
@@ -139,6 +134,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: TEXT_COLOR,
+    fontSize: SMALL_TEXT,
   },
   container: {
     alignSelf: "stretch",

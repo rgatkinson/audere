@@ -4,10 +4,23 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Image, StyleSheet, StyleProp, ImageStyle } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  StyleProp,
+  ImageStyle,
+} from "react-native";
 import { connect } from "react-redux";
 import { Action, setDemo, StoreState } from "../../store";
-import { ASPECT_RATIO, IMAGE_WIDTH, IMAGE_MARGIN } from "../styles";
+import {
+  ASPECT_RATIO,
+  GUTTER,
+  IMAGE_WIDTH,
+  IMAGE_MARGIN,
+  SCREEN_MARGIN,
+  IMAGE_WIDTH_SQUARE,
+} from "../styles";
 import MultiTapContainer from "./MultiTapContainer";
 
 interface Props {
@@ -15,6 +28,7 @@ interface Props {
   isDemo: boolean;
   menuItem?: boolean;
   uri: string;
+  useForChrome?: boolean;
   dispatch(action: Action): void;
 }
 
@@ -24,11 +38,12 @@ class MainImage extends React.Component<Props> {
   };
 
   render() {
-    const { imageStyle, menuItem, uri } = this.props;
+    const { imageStyle, menuItem, uri, useForChrome } = this.props;
     const image = (
       <Image
         style={[
           styles.image,
+          useForChrome && styles.useForChrome,
           menuItem && styles.menuImage,
           imageStyle && imageStyle,
         ]}
@@ -55,6 +70,8 @@ export default connect((state: StoreState) => {
   };
 })(MainImage);
 
+const screenWidth = Dimensions.get("window").width;
+
 const styles = StyleSheet.create({
   image: {
     alignSelf: "center",
@@ -63,6 +80,14 @@ const styles = StyleSheet.create({
     marginVertical: IMAGE_MARGIN,
     resizeMode: "contain",
     width: IMAGE_WIDTH,
+  },
+  useForChrome: {
+    aspectRatio: 1,
+    marginVertical: GUTTER * 0.75,
+    width:
+      parseInt(IMAGE_WIDTH_SQUARE) *
+        (screenWidth / (screenWidth - SCREEN_MARGIN * 2)) +
+      "%",
   },
   menuImage: {
     aspectRatio: 4.23,

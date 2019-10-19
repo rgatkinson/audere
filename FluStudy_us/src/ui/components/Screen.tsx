@@ -48,6 +48,7 @@ export interface ChromeProps {
   hideBackButton?: boolean;
   menuItem?: boolean;
   splashImage?: string;
+  showBackgroundOnly?: boolean;
   disableBounce?: boolean;
 }
 
@@ -241,9 +242,7 @@ export const generateScreen = (config: ScreenConfig) => {
           <View
             style={[
               styles.scrollContainer,
-              !!config.backgroundColor && {
-                backgroundColor: config.backgroundColor,
-              },
+              { backgroundColor: config.backgroundColor || "white" },
             ]}
           >
             <CustomScrollView

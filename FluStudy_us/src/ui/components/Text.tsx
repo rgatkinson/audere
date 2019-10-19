@@ -247,7 +247,9 @@ export default class Text extends React.PureComponent<Props> {
       >
         {content
           .split("**")
-          .map((str, i) => this._circleRep(str, i % 2 == 1, i.toString()))}
+          .map((str, i) =>
+            this._circleRep(str.replace(/\/\*/g, "*"), i % 2 == 1, i.toString())
+          )}
       </SystemText>
     );
   }
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
     color: TEXT_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: REGULAR_TEXT,
-    lineHeight: 22,
+    lineHeight: 26,
   },
   extraBold: {
     fontFamily: FONT_EXTRA_BOLD,
