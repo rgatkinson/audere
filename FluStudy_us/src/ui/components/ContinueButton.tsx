@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { StyleProp, ViewStyle } from "react-native";
+import { StyleProp, TextStyle, ViewStyle } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   withNavigation,
@@ -14,6 +14,7 @@ import {
 import { connect } from "react-redux";
 import { Action } from "../../store";
 import Button from "./Button";
+import NavigationLink from "./NavigationLink";
 
 interface Props {
   label?: string;
@@ -22,11 +23,13 @@ interface Props {
   next?: string;
   primary?: boolean;
   style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   dispatch(action: Action): void;
   dispatchOnNext?: () => Action;
   surveyGetNextFn?(): Promise<string>;
   validate?(): boolean;
   overrideValidate?: boolean;
+  showButtonStyle?: boolean;
 }
 
 class ContinueButton extends React.Component<Props & WithNamespaces> {
@@ -59,19 +62,35 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { label, namespace, primary, style, t } = this.props;
-    return (
+    const {
+      label,
+      namespace,
+      primary,
+      showButtonStyle,
+      style,
+      t,
+      textStyle,
+    } = this.props;
+    const content = label
+      ? label.includes(":")
+        ? t(label)
+        : t(namespace + ":" + label)
+      : t("common:button:continue");
+    return !!showButtonStyle ? (
       <Button
         enabled={true}
-        label={
-          label
-            ? label.includes(":")
-              ? t(label)
-              : t(namespace + ":" + label)
-            : t("common:button:continue")
-        }
+        label={content}
         primary={primary === false ? primary : true}
         style={style}
+        textStyle={textStyle}
+        onPress={this._onNext}
+      />
+    ) : (
+      <NavigationLink
+        enabled={true}
+        label={content}
+        style={style}
+        textStyle={textStyle}
         onPress={this._onNext}
       />
     );

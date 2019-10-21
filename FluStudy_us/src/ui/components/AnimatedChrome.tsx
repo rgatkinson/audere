@@ -17,13 +17,15 @@ import NavigationBar from "./NavigationBar";
 import {
   ASPECT_RATIO,
   isTablet,
-  IMAGE_WIDTH,
+  IMAGE_WIDTH_SQUARE,
   SYSTEM_PADDING_BOTTOM,
   NAV_BAR_HEIGHT,
   STATUS_BAR_HEIGHT,
   BG_IMAGE,
   SPLASH_RATIO,
   BG_RATIO,
+  GUTTER,
+  PRIMARY_COLOR,
 } from "../styles";
 import { Action } from "../../store";
 import { connect } from "react-redux";
@@ -37,6 +39,7 @@ interface Props {
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
   splashImage?: string;
+  showBackgroundOnly?: boolean;
 }
 
 class AnimatedChrome extends React.PureComponent<Props> {
@@ -50,7 +53,7 @@ class AnimatedChrome extends React.PureComponent<Props> {
   };
 
   componentDidMount() {
-    const { dispatchOnFirstLoad, hasBeenOpened } = this.props;
+    const { dispatchOnFirstLoad, hasBeenOpened, splashImage } = this.props;
     const {
       logoFadeAnim,
       splashMoveAnim,
@@ -87,7 +90,7 @@ class AnimatedChrome extends React.PureComponent<Props> {
         Animated.sequence([
           Animated.timing(imageFadeAnim, {
             toValue: 1,
-            duration: 500,
+            duration: !!splashImage ? 500 : 0,
             useNativeDriver: true,
           }),
           Animated.timing(textFadeAnim, {
@@ -142,19 +145,6 @@ class AnimatedChrome extends React.PureComponent<Props> {
             source={BG_IMAGE}
             style={[styles.bgImage, { width: screenWidth }]}
           />
-          <Animated.Image
-            resizeMode={"stretch"}
-            source={{ uri: "gradient" }}
-            style={[
-              {
-                position: "absolute",
-                top: bgHeight - chromeBgHeight,
-                height: chromeBgHeight * 0.7,
-                width: screenWidth,
-                opacity: this.state.textFadeAnim,
-              },
-            ]}
-          />
         </Animated.View>
         <Animated.View
           style={{
@@ -196,19 +186,30 @@ class AnimatedChrome extends React.PureComponent<Props> {
           style={[
             styles.whiteLogo,
             {
-              top: screenHeight / 8,
+              top: screenHeight / 4,
               opacity: this.state.logoFadeAnim,
+              transform: [
+                {
+                  translateY: this.state.splashMoveAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -bgHeight + chromeBgHeight],
+                  }),
+                },
+              ],
             },
           ]}
           source={{ uri: "fluathome_whitelogo" }}
         />
-
         <Animated.View
           style={[
-            styles.children,
+            styles.alignBottom,
             {
               height:
-                screenHeight - chromeBgHeight - (isTablet ? NAV_BAR_HEIGHT : 0),
+                screenHeight -
+                (!!splashImage
+                  ? chromeBgHeight
+                  : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT) -
+                (isTablet ? NAV_BAR_HEIGHT : 0),
               opacity: this.state.textFadeAnim,
             },
           ]}
@@ -223,6 +224,10 @@ class AnimatedChrome extends React.PureComponent<Props> {
 export default connect()(AnimatedChrome);
 
 const styles = StyleSheet.create({
+  alignBottom: {
+    position: "absolute",
+    bottom: 0,
+  },
   animatedContainer: {
     position: "absolute",
     top: 0,
@@ -233,21 +238,17 @@ const styles = StyleSheet.create({
     aspectRatio: BG_RATIO,
   },
   container: {
-    backgroundColor: "white",
+    backgroundColor: PRIMARY_COLOR,
     flex: 1,
     paddingBottom: SYSTEM_PADDING_BOTTOM,
   },
-  children: {
-    position: "absolute",
-    width: "100%",
-    bottom: 0,
-  },
   image: {
-    position: "absolute",
     alignSelf: "center",
-    aspectRatio: ASPECT_RATIO,
+    aspectRatio: 1,
     height: undefined,
-    width: IMAGE_WIDTH,
+    marginTop: GUTTER,
+    position: "absolute",
+    width: IMAGE_WIDTH_SQUARE,
   },
   whiteLogo: {
     alignSelf: "center",

@@ -14,6 +14,8 @@ import {
   GUTTER,
   SECONDARY_COLOR,
   INPUT_HEIGHT,
+  BORDER_WIDTH,
+  PRIMARY_COLOR,
 } from "../styles";
 import BorderView from "./BorderView";
 import ContinueButton from "./ContinueButton";
@@ -150,7 +152,7 @@ class Timer extends React.Component<Props & WithNamespaces> {
   render() {
     const { isDemo, next } = this.props;
     return !this._getRemainingMs() ? (
-      <ContinueButton next={next} />
+      <ContinueButton next={next} showButtonStyle={true} />
     ) : (
       <MultiTapContainer
         active={isDemo}
@@ -161,10 +163,13 @@ class Timer extends React.Component<Props & WithNamespaces> {
           style={{
             alignItems: "center",
             alignSelf: "center",
+            borderColor: PRIMARY_COLOR,
             borderRadius: BORDER_RADIUS,
+            borderWidth: BORDER_WIDTH,
             height: INPUT_HEIGHT,
             justifyContent: "center",
             marginBottom: GUTTER * 2,
+            padding: 0,
             width: BUTTON_WIDTH,
           }}
         >

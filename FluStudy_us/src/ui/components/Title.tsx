@@ -19,6 +19,8 @@ import { PubSubHub, PubSubEvents } from "../../util/pubsub";
 interface Props {
   label?: string;
   namespace?: string;
+  color?: string;
+  center?: boolean;
 }
 
 class Title extends React.Component<Props & WithNamespaces> {
@@ -47,10 +49,13 @@ class Title extends React.Component<Props & WithNamespaces> {
   render() {
     return (
       <Text
-        center={true}
+        center={this.props.center !== undefined ? this.props.center : true}
         content={this._getContent()}
-        extraBold={true}
-        style={styles.title}
+        bold={true}
+        style={[
+          styles.title,
+          { color: !!this.props.color ? this.props.color : PRIMARY_COLOR },
+        ]}
         onPress={this._onPress}
       />
     );
@@ -61,7 +66,6 @@ export default withNamespaces()(Title);
 
 const styles = StyleSheet.create({
   title: {
-    color: PRIMARY_COLOR,
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
     lineHeight: EXTRA_LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,

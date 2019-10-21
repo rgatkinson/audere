@@ -74,9 +74,11 @@ import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BulletPointsComponent from "../ui/components/BulletPoint";
 import Button from "../ui/components/Button";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
+import CollapsibleText from "../ui/components/CollapsibleText";
 import ContinueButton from "../ui/components/ContinueButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
+import EmailEntry from "../ui/components/EmailEntry";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
@@ -85,7 +87,6 @@ import RDTReader from "../ui/components/flu/RDTReader";
 import TestResult from "../ui/components/flu/TestResult";
 import TestResultRDT from "../ui/components/flu/TestResultRDT";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
-import FooterNavigation from "../ui/components/FooterNavigation";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
@@ -116,38 +117,153 @@ const CAN_USE_RDT = !DeviceInfo.isEmulator();
 
 export const Screens: ScreenConfig[] = [
   {
-    automationNext: "ScanInstructions",
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    chromeProps: {
-      dispatchOnFirstLoad: [setHasBeenOpened],
-      hideBackButton: true,
-      splashImage: "welcome",
-      fadeIn: true,
-    },
-    key: "Welcome",
-    footer: [
+    backgroundColor: "transparent",
+    body: [
+      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: Title, props: { center: false, color: "white" } },
+      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
-        tag: FooterNavigation,
+        tag: BulletPointsComponent,
         props: {
-          hideBackButton: true,
-          next: "ScanInstructions", // TODO: Make name better
+          label: "desc2",
+          customBulletUri: "bullet_rev",
+          textStyle: { color: "white" },
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "HowDoesTestWork",
+          textStyle: { color: "white" },
         },
       },
     ],
+    chromeProps: {
+      dispatchOnFirstLoad: [setHasBeenOpened],
+      hideBackButton: true,
+      showBackgroundOnly: true,
+      fadeIn: true,
+    },
+    automationNext: "HowDoesTestWork",
+    key: "Welcome",
+  },
+  {
+    backgroundColor: "transparent",
+    body: [
+      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: Title, props: { center: false, color: "white" } },
+      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "HowAmIHelping",
+          textStyle: { color: "white" },
+        },
+      },
+    ],
+    chromeProps: { showBackgroundOnly: true },
+    automationNext: "HowAmIHelping",
+    key: "HowDoesTestWork",
+  },
+  {
+    backgroundColor: "transparent",
+    body: [
+      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: Title, props: { center: false, color: "white" } },
+      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          label: "desc2",
+          customBulletUri: "bullet_rev",
+          textStyle: { color: "white" },
+        },
+      },
+      { tag: ScreenText, props: { label: "desc3", style: { color: "white" } } },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          label: "desc4",
+          customBulletUri: "bullet_rev",
+          textStyle: { color: "white" },
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "WhatExpectToLearn",
+          textStyle: { color: "white" },
+        },
+      },
+    ],
+    chromeProps: { showBackgroundOnly: true },
+    automationNext: "WhatExpectToLearn",
+    key: "HowAmIHelping",
+  },
+  {
+    backgroundColor: "transparent",
+    body: [
+      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: Title, props: { center: false, color: "white" } },
+      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          label: "desc2",
+          customBulletUri: "bullet_rev",
+          textStyle: { color: "white" },
+        },
+      },
+      { tag: ScreenText, props: { label: "desc3", style: { color: "white" } } },
+      {
+        tag: CollapsibleText,
+        props: { content: "desc4", textStyle: { color: "white" } },
+      },
+      { tag: ScreenText, props: { label: "desc5", style: { color: "white" } } },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "ResearchStudy",
+          textStyle: { color: "white" },
+        },
+      },
+    ],
+    chromeProps: { showBackgroundOnly: true },
+    automationNext: "ResearchStudy",
+    key: "WhatExpectToLearn",
+  },
+  {
+    backgroundColor: "transparent",
+    body: [
+      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: Title, props: { center: false, color: "white" } },
+      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
+      {
+        tag: ContinueButton,
+        props: {
+          next: "ScanInstructions",
+          textStyle: { color: "white" },
+        },
+      },
+    ],
+    chromeProps: { showBackgroundOnly: true },
+    automationNext: "ScanInstructions",
+    key: "ResearchStudy",
   },
   {
     body: [
       { tag: MainImage, props: { uri: "scanbarcode" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-    ],
-    automationNext: "ManualEntry",
-    footer: [
       {
         tag: CameraPermissionContinueButton,
-        props: { grantedNext: "Scan", deniedNext: "CameraSettings" },
+        props: {
+          grantedNext: "Scan",
+          deniedNext: "CameraSettings",
+        },
       },
     ],
+    automationNext: "ManualEntry",
     key: "ScanInstructions",
   },
   {
@@ -174,8 +290,11 @@ export const Screens: ScreenConfig[] = [
       },
       { tag: MainImage, props: { uri: "scanbarcode" } },
       { tag: ScreenText, props: { label: "tips" } },
+      {
+        tag: ContinueButton,
+        props: { next: "ManualConfirmation" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "ManualConfirmation" } }],
     key: "ManualEntry",
   },
   {
@@ -184,8 +303,11 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: Barcode },
       { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ContinueButton,
+        props: { next: "EmailConfirmation" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "EmailConfirmation" } }],
     funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
     key: "ScanConfirmation", // TODO: Add Kit validation checks
     workflowEvent: "surveyStartedAt",
@@ -196,8 +318,11 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: Barcode },
       { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ContinueButton,
+        props: { next: "EmailConfirmation" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "EmailConfirmation" } }],
     funnelEvent: FunnelEvents.MANUAL_CODE_CONFIRMATION,
     key: "ManualConfirmation", // TODO: Add Kit validation checks
     workflowEvent: "surveyStartedAt",
@@ -212,36 +337,21 @@ export const Screens: ScreenConfig[] = [
     key: "BarcodeContactSupport",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      { tag: ScreenText, props: { label: "email" } },
+      {
+        tag: EmailEntry,
+        props: { placeholder: "placeholder", errorScreen: "EmailError" },
+        validate: true,
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "Unpacking" },
+      },
+    ],
     key: "EmailConfirmation",
-    footer: [
-      {
-        tag: ContinueButton,
-        props: {
-          label: "common:button:yes",
-          next: "HowTestWorks",
-        },
-      },
-      {
-        tag: ContinueButton,
-        props: {
-          label: "common:button:no",
-          next: "EmailError",
-        },
-      },
-    ],
-  },
-  {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "HowTestWorks",
-    footer: [
-      {
-        tag: ContinueButton,
-        props: {
-          next: "Unpacking",
-        },
-      },
-    ],
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
@@ -252,6 +362,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           label: "common:button:yes",
           next: "ScanInstructions",
+          showButtonStyle: true,
         },
       },
       {
@@ -259,6 +370,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           label: "common:button:no",
           next: "BarcodeContactSupport",
+          showButtonStyle: true,
         },
       },
     ],
@@ -269,10 +381,13 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "Swab" },
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "Swab" } }],
     key: "Unpacking",
   },
   {
@@ -281,10 +396,13 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "OpenSwab" },
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "OpenSwab" } }],
     key: "Swab",
   },
   {
@@ -293,10 +411,13 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "Mucus" },
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "Mucus" } }],
     key: "OpenSwab",
   },
   {
@@ -305,11 +426,14 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
       },
       { tag: VideoPlayer, props: { id: "collectSample" } },
+      {
+        tag: ContinueButton,
+        props: { next: "SwabInTube" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "SwabInTube" } }],
     key: "Mucus",
   },
   {
@@ -318,10 +442,8 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
       },
-    ],
-    footer: [
       {
         tag: ContinueButton,
         props: {
@@ -364,11 +486,14 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
       },
       { tag: VideoPlayer, props: { id: "removeSwabFromTube" } },
+      {
+        tag: ContinueButton,
+        props: { next: "OpenTestStrip" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "OpenTestStrip" } }],
     funnelEvent: FunnelEvents.PASSED_FIRST_TIMER,
     key: "RemoveSwabFromTube",
   },
@@ -378,10 +503,13 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "StripInTube" },
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "StripInTube" } }],
     key: "OpenTestStrip",
   },
   {
@@ -390,10 +518,8 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
       },
-    ],
-    footer: [
       {
         tag: ContinueButton,
         props: {
@@ -415,8 +541,11 @@ export const Screens: ScreenConfig[] = [
         props: { questions: [WhatSymptomsConfig] },
         validate: true,
       },
+      {
+        tag: ContinueButton,
+        props: { next: "WhenSymptoms" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "WhenSymptoms" } }],
     key: "WhatSymptoms",
   },
   {
@@ -465,8 +594,11 @@ export const Screens: ScreenConfig[] = [
         },
         validate: true,
       },
+      {
+        tag: ContinueButton,
+        props: { next: "GeneralExposure" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "GeneralExposure" } }],
     key: "WhenSymptoms",
   },
   {
@@ -490,8 +622,11 @@ export const Screens: ScreenConfig[] = [
         },
         validate: true,
       },
+      {
+        tag: ContinueButton,
+        props: { next: "InfluenzaVaccination" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "InfluenzaVaccination" } }],
     key: "GeneralExposure",
   },
   {
@@ -506,8 +641,11 @@ export const Screens: ScreenConfig[] = [
         },
         validate: true,
       },
+      {
+        tag: ContinueButton,
+        props: { next: "GeneralHealth" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "GeneralHealth" } }],
     key: "InfluenzaVaccination",
   },
   {
@@ -534,8 +672,11 @@ export const Screens: ScreenConfig[] = [
         },
         validate: true,
       },
+      {
+        tag: ContinueButton,
+        props: { next: "ThankYouSurvey" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "ThankYouSurvey" } }],
     key: "GeneralHealth",
   },
   {
@@ -581,10 +722,8 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
       },
-    ],
-    footer: [
       {
         tag: ContinueButton,
         props: {
@@ -609,14 +748,12 @@ export const Screens: ScreenConfig[] = [
         },
         validate: true,
       },
-    ],
-    automationNext: "TestResult",
-    footer: [
       {
         tag: ContinueButton,
         props: { surveyGetNextFn: getTestStripSurveyNextScreen },
       },
     ],
+    automationNext: "TestResult",
     key: "TestStripSurvey",
   },
   {
@@ -631,41 +768,13 @@ export const Screens: ScreenConfig[] = [
         },
         validate: true,
       },
-    ],
-    automationNext: "TestResult",
-    footer: [
       {
         tag: ContinueButton,
         props: { surveyGetNextFn: getPinkWhenBlueNextScreen },
       },
     ],
+    automationNext: "TestResult",
     key: "TestStripSurvey2",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "defectiveteststrip" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      { tag: Divider },
-      {
-        tag: ScreenText,
-        props: { label: ["whatToDo", "common:testResult:whatToDoCommon"] },
-      },
-    ],
-    footer: [
-      { tag: ContinueButton, props: { next: "PackUpTest" } },
-      { tag: Divider },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:disclaimer",
-          style: {
-            fontSize: SMALL_TEXT,
-          },
-        },
-      },
-    ],
-    key: "InvalidResult",
   },
   {
     body: [
@@ -674,15 +783,8 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: {
-          label: "instructions",
-          customBulletUri: "listarrow",
-        },
+        props: { label: "instructions" },
       },
-    ],
-    automationNext: "TestStripConfirmation",
-    allowedRemoteConfigValues: ["rdtTimeoutSeconds"],
-    footer: [
       {
         tag: CameraPermissionContinueButton,
         props: {
@@ -695,6 +797,8 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
+    automationNext: "TestStripConfirmation",
+    allowedRemoteConfigValues: ["rdtTimeoutSeconds"],
     key: "RDTInstructions",
   },
   {
@@ -704,11 +808,8 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "instructions", customBulletUri: "listarrow" },
+        props: { label: "instructions" },
       },
-    ],
-    automationNext: "TestStripConfirmation",
-    footer: [
       {
         tag: CameraPermissionContinueButton,
         props: {
@@ -717,6 +818,7 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
+    automationNext: "TestStripConfirmation",
     key: "NonRDTInstructions",
   },
   {
@@ -791,7 +893,6 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: {
           label: Platform.OS === "android" ? "howToAndroid" : "howToIOS",
-          customBulletUri: "listarrow",
         },
       },
     ],
@@ -809,9 +910,15 @@ export const Screens: ScreenConfig[] = [
     key: "CameraSettings",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ContinueButton,
+        props: { next: "PrepareUTM" },
+      },
+    ],
     key: "PackUpTest",
-    footer: [{ tag: ContinueButton, props: { next: "PrepareUTM" } }],
   },
   {
     body: [
@@ -819,10 +926,13 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "MucusUTM" },
       },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "MucusUTM" } }],
     key: "PrepareUTM",
   },
   {
@@ -831,11 +941,14 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
       },
       { tag: VideoPlayer, props: { id: "collectSample" } },
+      {
+        tag: ContinueButton,
+        props: { next: "SwabInTubeUTM" },
+      },
     ],
-    footer: [{ tag: ContinueButton, props: { next: "SwabInTubeUTM" } }],
     key: "MucusUTM",
   },
   {
@@ -844,40 +957,34 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc", customBulletUri: "listarrow" },
+        props: { label: "desc" },
       },
-    ],
-    footer: [
       {
         tag: ContinueButton,
-        props: {
-          next: "PackUpUTM",
-        },
+        props: { next: "PackUpUTM" },
       },
     ],
     funnelEvent: FunnelEvents.SURVIVED_SWAB,
     key: "SwabInTubeUTM",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    footer: [
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
       {
         tag: ContinueButton,
-        props: {
-          next: "PackUpBox",
-        },
+        props: { next: "PackUpBox" },
       },
     ],
     key: "PackUpUTM",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    footer: [
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
       {
         tag: ContinueButton,
-        props: {
-          next: "Shipping",
-        },
+        props: { next: "Shipping" },
       },
     ],
     key: "PackUpBox",
@@ -888,9 +995,16 @@ export const Screens: ScreenConfig[] = [
     footer: [
       {
         tag: ContinueButton,
-        props: { label: "pickup", next: "SchedulePickup" },
+        props: {
+          label: "pickup",
+          next: "SchedulePickup",
+          showButtonStyle: true,
+        },
       },
-      { tag: ContinueButton, props: { label: "dropoff", next: "TestResult" } },
+      {
+        tag: ContinueButton,
+        props: { label: "dropoff", next: "TestResult", showButtonStyle: true },
+      },
     ],
   },
   {
@@ -899,19 +1013,23 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc2", customBulletUri: "listarrow" },
+        props: { label: "desc2" },
       },
       {
         tag: ScreenText,
         props: { label: "desc3", textVariablesFn: getShippingTextVariables },
       },
+      {
+        tag: ContinueButton,
+        props: { next: "TestResult" },
+      },
     ],
     key: "SchedulePickup",
-    footer: [{ tag: ContinueButton, props: { next: "TestResult" } }],
   },
   {
-    body: [{ tag: Title }, { tag: TestResult }],
-    footer: [
+    body: [
+      { tag: Title },
+      { tag: TestResult },
       { tag: Divider },
       {
         tag: ScreenText,
@@ -930,17 +1048,16 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: ContinueButton,
-        props: {
-          next: "SelfCare",
-        },
+        props: { next: "SelfCare" },
       },
     ],
     funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResult",
   },
   {
-    body: [{ tag: Title }, { tag: TestResultRDT }],
-    footer: [
+    body: [
+      { tag: Title },
+      { tag: TestResultRDT },
       { tag: Divider },
       {
         tag: ScreenText,
@@ -957,17 +1074,24 @@ export const Screens: ScreenConfig[] = [
           },
         },
       },
-      { tag: ContinueButton, props: { next: "SelfCare" } },
+      {
+        tag: ContinueButton,
+        props: { next: "SelfCare" },
+      },
     ],
     funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResultRDT",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "SelfCare",
-    footer: [
-      { tag: ContinueButton, props: { surveyGetNextFn: pendingNavigation } },
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ContinueButton,
+        props: { surveyGetNextFn: pendingNavigation },
+      },
     ],
+    key: "SelfCare",
     automationNext: "Thanks",
   },
   {

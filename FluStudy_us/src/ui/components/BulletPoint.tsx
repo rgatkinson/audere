@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { Fragment } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleProp, StyleSheet, TextStyle, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
 import { REGULAR_TEXT, GUTTER, CUSTOM_BULLET_OFFSET } from "../styles";
@@ -12,22 +12,20 @@ import { REGULAR_TEXT, GUTTER, CUSTOM_BULLET_OFFSET } from "../styles";
 interface Props {
   content: string;
   customBulletUri?: string;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 export class BulletPoint extends React.PureComponent<Props> {
   render() {
-    const { customBulletUri, content } = this.props;
+    const { customBulletUri, content, textStyle } = this.props;
+    const bulletUri = customBulletUri || "bullet";
     return (
       <View style={styles.container}>
-        {!!customBulletUri ? (
-          <Image
-            source={{ uri: customBulletUri }}
-            style={styles.customBullet}
-          />
-        ) : (
-          <Text content={"\u2022  "} />
-        )}
-        <Text style={styles.bulletText} content={content} />
+        <Image source={{ uri: bulletUri }} style={styles.bulletImage} />
+        <Text
+          style={[styles.bulletText, textStyle && textStyle]}
+          content={content}
+        />
       </View>
     );
   }
@@ -38,6 +36,7 @@ interface BulletProps {
   label?: string;
   namespace: string;
   remoteConfigValues?: { [key: string]: string };
+  textStyle?: StyleProp<TextStyle>;
 }
 
 class BulletPointsComponent extends React.Component<
@@ -58,6 +57,7 @@ class BulletPointsComponent extends React.Component<
       namespace,
       remoteConfigValues,
       t,
+      textStyle,
     } = this.props;
 
     return (
@@ -74,6 +74,7 @@ class BulletPointsComponent extends React.Component<
                   key={`bullet-${index}`}
                   content={bullet}
                   customBulletUri={customBulletUri}
+                  textStyle={textStyle}
                 />
               );
             })}
@@ -85,17 +86,17 @@ class BulletPointsComponent extends React.Component<
 export default withNamespaces()(BulletPointsComponent);
 
 const styles = StyleSheet.create({
-  bulletText: {
-    flex: 1,
-    marginBottom: GUTTER,
-  },
   container: {
     flexDirection: "row",
   },
-  customBullet: {
+  bulletImage: {
     height: REGULAR_TEXT,
     width: REGULAR_TEXT,
     marginRight: GUTTER / 2,
     marginTop: CUSTOM_BULLET_OFFSET,
+  },
+  bulletText: {
+    flex: 1,
+    marginBottom: GUTTER,
   },
 });

@@ -168,8 +168,32 @@
     "seeExample": "Tap the \"?\" below to see examples"
   },
   "Welcome": {
-    "title": "Welcome",
-    "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick. With your help, we want to understand if people (like you) can test themselves at home for the flu."
+    "title": "Why we are doing this",
+    "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick.\n\nWith your help, we want to understand if people (like you) can test themselves at home for the flu. But first, we'll walk you through a few things:",
+    "desc2": "How does the test work and what's required?\nHow am I helping with medical research?\nWhat can I expect to learn?"
+  },
+  "HowDoesTestWork": {
+    "title": "How does the test work?",
+    "desc": "You're about to do two tests on yourself, each involving a nasal swab. Don't worry, it shouldn't be too uncomfortable. This app will guide you through each step.\n\nIt's important for our study that you complete the test as **carefully** as possible. In addition, please answer each question as **honestly** as possible. Our research and our ability to give you a result after the test both depend on accurate data, so we thank you in advance."
+  },
+  "HowAmIHelping": {
+    "title": "How am I helping with medical research?",
+    "desc": "Participating in the flu@home test can help you in two ways:",
+    "desc2": "First, you're **staying home** – which helps **reduce the chance of spreading the flu** if you do have it.\nSecond, you could find out earlier if you have the flu.",
+    "desc3": "Participating in the flu@home test helps researchers in three ways:",
+    "desc4": "Researchers can improve their models of predicting flu likelihood based on patient symptoms and health data.\nYour result may contribute to a real-time map of flu incidence.\nResearchers can understand what people will do next if they learn from a home test whether they likely have the flu."
+  },
+  "WhatExpectToLearn": {
+    "title": "What can I expect to learn?",
+    "desc": "Once you complete the test, we will indicate whether you likely have the flu. Why only 'likely?' Because multiple factors are being used to calculate your result, including:",
+    "desc2": "A nasal swab test you'll do using items from the flu@home kit\nFlu prevalence in your community\nYour answers to a health survey",
+    "desc3": "Since each of these factors in isolation can't determine 100% whether you have the flu, we use them together.",
+    "desc4": "Details\nFactors in addition to the test are helpful because quick nasal swab tests like this one aren't perfect. Sometimes people have the flu but the test won't pick it up. This could happen if there isn't enough virus collected on the nasal swab, or if there isn't enough virus present in the body when the sample is collected.",
+    "desc5": "If you follow the directions in the app as **closely** as possible and answer the questions **honestly**, you increase the chance of getting accurate results."
+  },
+  "ResearchStudy": {
+    "title": "Research Study",
+    "desc": "This app supports an investigational research study. This app and its communication of flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to replace, professional medical advice.\n\nThe interpretation of your likelihood of flu indicated at the end of this app may differ from a medical test conducted in a clinical lab environment. Under no circumstances should the results from the app or test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner."
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
@@ -205,12 +229,12 @@
     "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
   },
   "EmailConfirmation": {
-    "title": "Email Confirmation",
-    "desc": "Is this your email address?\n\n**p----p@auderenow.org**"
-  },
-  "HowTestWorks": {
-    "title": "How The Test Works",
-    "desc": "Accuracy is important"
+    "title": "Verify your email",
+    "desc": "Now that we've scanned your kit's barcode, we need to confirm it matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:",
+    "email": "**j/*/*/*/*/*/*n@gmail.com**",
+    "placeholder": "Enter your email",
+    "emailRequired": "Please enter your email to continue.",
+    "emailInvalid": "That doesn't appear to be a valid email address. Please try again."
   },
   "EmailError": {
     "title": "Email Error",
@@ -237,7 +261,7 @@
   },
   "Mucus": {
     "title": "Collect sample from nose",
-    "desc": "Gently insert the **entire** soft tip of the swab into one nostril.\nRub it around the inside wall of the nostril four times.\nNext, gently insert the same swab into the other nostril and rub it around the same way."
+    "desc": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nRub the swab with medium pressure around the inside wall of the nostril four times.\nNext, gently insert the same swab into the other nostril and rub it around the same way."
   },
   "MucusUTM": {
     "title": "Collect sample from nose",
@@ -401,11 +425,6 @@
     "title": "Self Care Tips",
     "desc": "Also refer a friend"
   },
-  "InvalidResult": {
-    "title": "Your test strip is defective",
-    "desc": "We're sorry, but something went wrong. If there is no visible blue line on the test strip then the test strip is likely defective.",
-    "whatToDo": "**What should I do if my test strip is defective?**\n\nIf your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon."
-  },
   "PackUpTest": {
     "title": "Pack Up Your Kit",
     "desc": "Put the swab and strip in the box"
@@ -416,7 +435,7 @@
   },
   "Shipping": {
     "title": "Shipping",
-    "desc": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don’t have an outgoing mail service to leave the package with, locate a nearby USPS location, blue mailbox, or schedule a pickup from your location.",
+    "desc": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don't have an outgoing mail service to leave the package with, locate a nearby USPS location, blue mailbox, or schedule a pickup from your location.",
     "pickup": "Schedule a pickup",
     "dropoff": "I will drop off"
   },
@@ -536,25 +555,25 @@
     "unknown": "Unknown"
   },
   "didYouKnow": {
-    "++tip0": "You may be able to spread flu to someone else before you know you are sick, as well as while you are sick: beginning 1 day before symptoms develop and up to 5 to 7 days after becoming sick.\n",
-    "++tip1": "The most important step in preventing flu is to get a flu vaccine each year. Everyday preventive actions (like staying away from people who are sick, covering coughs and sneezes, and frequent handwashing) also help slow the spread of germs that cause the flu.\n",
+    "++tip0": "You may be able to spread flu to someone else before you know you are sick, as well as while you are sick: beginning 1 day before symptoms develop and up to 5-7 days after becoming sick.\n",
+    "++tip1": "The most important step in preventing flu is to get a flu shot each year. CDC recommends that you get vaccinated by the end of October.\n",
     "++tip2": "There are antiviral drugs that can be used to treat the flu. You can only get them if you have a prescription from a health care provider.\n",
-    "++tip3": "Flu antiviral drugs work best for treatment when they are started within 2 days of getting sick. However, starting them later can still be beneficial, especially for those severely ill or at high risk of serious flu complications.\n",
-    "++tip4": "Antibiotics won’t help your cold or flu. Antibiotics fight infections caused by bacteria, but colds and flu are caused by viruses.\n",
-    "++tip5": "Complications of flu can include bacterial pneumonia, ear infections, sinus infections and worsening of chronic medical conditions, such as congestive heart failure, asthma, or diabetes.\n",
-    "++tip6": "CDC recommends the end of October as the best time to get your flu shot.\n",
-    "++tip7": "Seasonal flu activity often begins as early as October and November and can continue to occur as late as May. Flu activity most commonly peaks in the United States between December and February.\n",
-    "++tip8": "On average, about 8% of the U.S. population gets sick from flu each season, with a range of between 3% and 11%, depending on the season.\n",
-    "++tip9": "Most experts believe that flu viruses spread mainly by tiny droplets made when people with flu cough, sneeze or talk. These droplets can land in the mouths or noses of people who are nearby.\n",
+    "++tip3": "Antibiotics won’t help your cold or flu. Antibiotics fight infections caused by bacteria, but colds and flu are caused by viruses.\n",
+    "++tip4": "On average, about 8% of the U.S. population gets sick from flu each season.\n",
+    "++tip5": "Most experts believe that flu viruses spread mainly by tiny droplets made when people with flu cough, sneeze or talk. These droplets can land in the mouths or noses of people who are nearby.\n",
+    "++tip6": "Complications of flu can include bacterial pneumonia, ear infections, sinus infections and worsening of chronic medical conditions, such as congestive heart failure, asthma, or diabetes.\n",
+    "++tip7": "Flu antiviral drugs work best for treatment when they are started within 2 days of getting sick.\n",
+    "++tip8": "Everyday preventive actions (like staying away from people who are sick, covering coughs and sneezes, and frequent handwashing) help slow the spread of germs that cause the flu.\n",
+    "++tip9": "Seasonal flu activity often begins as early as October and November and can continue to occur as late as May. Flu activity most commonly peaks in the United States between December and February.\n",
     "++source0": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
-    "++source1": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
+    "++source1": "Source: https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm",
     "++source2": "Source: https://www.cdc.gov/flu/treatment/whatyoushould.htm",
-    "++source3": "Source: https://www.cdc.gov/flu/treatment/whatyoushould.htm",
-    "++source4": "Source: https://www.webmd.com/cold-and-flu/flu-treatment-antibiotics-or-not#1",
+    "++source3": "Source: https://www.webmd.com/cold-and-flu/flu-treatment-antibiotics-or-not#1",
+    "++source4": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
     "++source5": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
-    "++source6": "Source: https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm",
-    "++source7": "Source: https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm",
-    "++source8": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
-    "++source9": "Source: https://www.cdc.gov/flu/about/keyfacts.htm"
+    "++source6": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
+    "++source7": "Source: https://www.cdc.gov/flu/treatment/whatyoushould.htm",
+    "++source8": "Source: https://www.cdc.gov/flu/prevent/actions-prevent-flu.htm",
+    "++source9": "Source: https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
   }
 }

@@ -15,14 +15,15 @@ import {
 import { NavigationScreenProp } from "react-navigation";
 import NavigationBar from "./NavigationBar";
 import {
-  ASPECT_RATIO,
-  IMAGE_WIDTH,
+  IMAGE_WIDTH_SQUARE,
   SPLASH_IMAGE,
   SPLASH_RATIO,
   SYSTEM_PADDING_BOTTOM,
   NAV_BAR_HEIGHT,
   STATUS_BAR_HEIGHT,
   isTablet,
+  PRIMARY_COLOR,
+  GUTTER,
 } from "../styles";
 
 interface Props {
@@ -32,6 +33,7 @@ interface Props {
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
   splashImage?: string;
+  showBackgroundOnly?: boolean;
 }
 
 export default class Chrome extends React.PureComponent<Props> {
@@ -42,6 +44,7 @@ export default class Chrome extends React.PureComponent<Props> {
       menuItem,
       navigation,
       splashImage,
+      showBackgroundOnly,
     } = this.props;
 
     const screenHeight = Dimensions.get("window").height;
@@ -57,19 +60,17 @@ export default class Chrome extends React.PureComponent<Props> {
               width: screenWidth,
               height: NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
             },
-            !!this.props.splashImage && {
+            (!!this.props.splashImage || showBackgroundOnly) && {
               height: chromeBgHeight,
               aspectRatio: SPLASH_RATIO,
             },
           ]}
         >
-          <ImageBackground
-            resizeMode={"stretch"}
-            source={{ uri: "gradient" }}
+          <View
             style={[
               {
                 width: screenWidth,
-                height: splashImage
+                height: !!splashImage
                   ? chromeBgHeight * 0.8
                   : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT,
               },
@@ -89,18 +90,19 @@ export default class Chrome extends React.PureComponent<Props> {
             {!!splashImage && (
               <Image style={styles.image} source={{ uri: splashImage }} />
             )}
-          </ImageBackground>
+          </View>
         </ImageBackground>
 
         <View
           style={[
-            !!splashImage && styles.alignBottom,
+            (!!splashImage || showBackgroundOnly) && styles.alignBottom,
             {
-              height: !!splashImage
-                ? screenHeight -
-                  chromeBgHeight -
-                  (isTablet ? NAV_BAR_HEIGHT : 0)
-                : screenHeight - NAV_BAR_HEIGHT - STATUS_BAR_HEIGHT,
+              height:
+                !!splashImage && !showBackgroundOnly
+                  ? screenHeight -
+                    chromeBgHeight -
+                    (isTablet ? NAV_BAR_HEIGHT : 0)
+                  : screenHeight - NAV_BAR_HEIGHT - STATUS_BAR_HEIGHT,
             },
           ]}
         >
@@ -112,33 +114,20 @@ export default class Chrome extends React.PureComponent<Props> {
 }
 
 const styles = StyleSheet.create({
-  alignTop: {
-    position: "absolute",
-    top: 0,
-  },
   alignBottom: {
     position: "absolute",
     bottom: 0,
   },
   container: {
-    backgroundColor: "white",
+    backgroundColor: PRIMARY_COLOR,
     flex: 1,
     paddingBottom: SYSTEM_PADDING_BOTTOM,
   },
   image: {
     alignSelf: "center",
-    aspectRatio: ASPECT_RATIO,
+    aspectRatio: 1,
     height: undefined,
-    width: IMAGE_WIDTH,
-  },
-  shortImage: {
-    aspectRatio: 4.23,
-    width: "75%",
-  },
-  topContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
+    marginTop: GUTTER,
+    width: IMAGE_WIDTH_SQUARE,
   },
 });
