@@ -296,6 +296,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "ManualEntry",
+    keyboardAvoidingView: true,
   },
   {
     body: [
@@ -352,6 +353,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "EmailConfirmation",
+    keyboardAvoidingView: true,
   },
   {
     body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],

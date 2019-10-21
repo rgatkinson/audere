@@ -4,11 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Alert, KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { customRef } from "./CustomRef";
-import { GUTTER, KEYBOARD_BEHAVIOR } from "./../styles";
+import { GUTTER } from "./../styles";
 import TextInput from "./TextInput";
 
 interface Props {
@@ -42,21 +42,19 @@ class EmailEntry extends React.Component<Props & WithNamespaces, State> {
   render() {
     const { namespace, navigation, placeholder, t } = this.props;
     return (
-      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} enabled>
-        <View style={[styles.inputContainer, { marginBottom: GUTTER }]}>
-          <TextInput
-            autoCapitalize="none"
-            autoCorrect={false}
-            autoFocus={navigation.isFocused()}
-            keyboardType="email-address"
-            placeholder={t(namespace + ":" + placeholder)}
-            returnKeyType="done"
-            style={styles.textInput}
-            value={this.state.email}
-            onChangeText={this._onEmailChange}
-          />
-        </View>
-      </KeyboardAvoidingView>
+      <View style={[styles.inputContainer, { marginBottom: GUTTER }]}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoFocus={navigation.isFocused()}
+          keyboardType="email-address"
+          placeholder={t(namespace + ":" + placeholder)}
+          returnKeyType="done"
+          style={styles.textInput}
+          value={this.state.email}
+          onChangeText={this._onEmailChange}
+        />
+      </View>
     );
   }
 

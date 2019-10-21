@@ -3,14 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
-import {
-  Alert,
-  Image,
-  KeyboardAvoidingView,
-  StyleSheet,
-  View,
-} from "react-native";
+import React, { Fragment } from "react";
+import { Alert, StyleSheet, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   withNavigation,
@@ -26,8 +20,7 @@ import {
   StoreState,
 } from "../../../store";
 import { customRef } from "../CustomRef";
-import { GUTTER, KEYBOARD_BEHAVIOR } from "../../styles";
-import Text from "../Text";
+import { GUTTER } from "../../styles";
 import NumberInput from "../NumberInput";
 import {
   invalidBarcodeShapeAlert,
@@ -86,7 +79,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   render() {
     const { navigation, t } = this.props;
     return (
-      <KeyboardAvoidingView behavior={KEYBOARD_BEHAVIOR} enabled>
+      <Fragment>
         <View style={[styles.inputContainer, { marginBottom: GUTTER }]}>
           <NumberInput
             autoFocus={navigation.isFocused()}
@@ -108,7 +101,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
             onChangeText={this._onBarcodeTwoChange}
           />
         </View>
-      </KeyboardAvoidingView>
+      </Fragment>
     );
   }
 

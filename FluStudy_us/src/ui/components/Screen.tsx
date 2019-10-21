@@ -4,7 +4,12 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React, { ComponentType, RefObject } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  KeyboardAvoidingView,
+} from "react-native";
 import { NavigationScreenProp, StackActions } from "react-navigation";
 import { connect } from "react-redux";
 import i18n from "i18next";
@@ -14,7 +19,7 @@ import { Action, StoreState, setWorkflow } from "../../store";
 import { logFirebaseEvent } from "../../util/tracker";
 import Chrome from "./Chrome";
 import AnimatedChrome from "./AnimatedChrome";
-import { SCREEN_MARGIN } from "../styles";
+import { SCREEN_MARGIN, NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "../styles";
 
 import { PubSubToken, PubSubHub, PubSubEvents } from "../../util/pubsub";
 import { getRemoteConfig } from "../../util/remoteConfig";
@@ -29,6 +34,7 @@ export interface ScreenConfig {
   automationNext?: string;
   allowedRemoteConfigValues?: string[];
   backgroundColor?: string;
+  keyboardAvoidingView?: boolean;
 }
 
 interface ComponentProps {
@@ -232,6 +238,21 @@ export const generateScreen = (config: ScreenConfig) => {
 
       const disableBounce =
         !!config && !!config.chromeProps && !!config.chromeProps.disableBounce;
+      const innerContent = (
+        <CustomScrollView
+          contentContainerStyle={styles.contentContainer}
+          keyboardShouldPersistTaps="handled"
+          bounces={!disableBounce}
+        >
+          <View style={styles.innerContainer}>
+            {this._generateComponents(config.body, "body", config.key)}
+          </View>
+          <View style={styles.footerContainer}>
+            {config.footer &&
+              this._generateComponents(config.footer, "footer", config.key)}
+          </View>
+        </CustomScrollView>
+      );
 
       return this._noRendering ? null : (
         <ChromeType
@@ -239,26 +260,28 @@ export const generateScreen = (config: ScreenConfig) => {
           hasBeenOpened={this.props.hasBeenOpened}
           navigation={this.props.navigation}
         >
-          <View
-            style={[
-              styles.scrollContainer,
-              { backgroundColor: config.backgroundColor || "white" },
-            ]}
-          >
-            <CustomScrollView
-              contentContainerStyle={styles.contentContainer}
-              keyboardShouldPersistTaps="handled"
-              bounces={!disableBounce}
+          {!!config.keyboardAvoidingView ? (
+            <KeyboardAvoidingView
+              style={[
+                styles.scrollContainer,
+                { backgroundColor: config.backgroundColor || "white" },
+              ]}
+              behavior="padding"
+              enabled
+              keyboardVerticalOffset={NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT}
             >
-              <View style={styles.innerContainer}>
-                {this._generateComponents(config.body, "body", config.key)}
-              </View>
-              <View style={styles.footerContainer}>
-                {config.footer &&
-                  this._generateComponents(config.footer, "footer", config.key)}
-              </View>
-            </CustomScrollView>
-          </View>
+              <View>{innerContent}</View>
+            </KeyboardAvoidingView>
+          ) : (
+            <View
+              style={[
+                styles.scrollContainer,
+                { backgroundColor: config.backgroundColor || "white" },
+              ]}
+            >
+              {innerContent}
+            </View>
+          )}
         </ChromeType>
       );
     }
