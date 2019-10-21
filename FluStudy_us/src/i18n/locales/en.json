@@ -402,7 +402,8 @@
   },
   "TestStripConfirmation": {
     "title": "Picture captured!",
-    "desc": "Thank you! Your test strip photo was captured successfully."
+    "desc": "Thank you! Your test strip photo was captured successfully.",
+    "diagnosis": "[Debug] Your machine overload has decided your test result is {{ testResult }}."
   },
   "PostRDTTestStripSurvey": {
     "title": "How many lines?",
