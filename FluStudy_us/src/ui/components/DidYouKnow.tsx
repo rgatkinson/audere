@@ -16,7 +16,7 @@ import Text from "./Text";
 const TIP_COUNT = 10;
 // This acts as a multiplier for the source part of the text's size relative to the tip itself
 const SOURCE_SIZE = 0.8;
-const SOURCE_LINE_HEIGHT = 16;
+const SOURCE_LINE_HEIGHT = 20;
 
 interface State {
   currentText: string | null | undefined;
