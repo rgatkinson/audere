@@ -3,11 +3,21 @@
     "staging": "flu-staging-api-ecs-staging",
     "prod": "flu-prod-api-ecs-prod"
   },
+
   "fluapi": {
     "staging_service": "fluapi-staging",
     "prod_service": "fluapi-prod",
     "repo": [
       "fluapi",
+      "nginx"
+    ]
+  },
+
+  "iprd-rdt-reader": {
+    "staging_service": "iprd-rdt-reader-staging",
+    "prod_service": "iprd-rdt-reader-prod",
+    "repo": [
+      "iprd-rdt-reader",
       "nginx"
     ]
   }
