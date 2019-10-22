@@ -66,6 +66,8 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
 
     private Interpreter tfLite;
 
+    private String phase;
+
     private TFLiteObjectDetectionAPIModel() {}
 
     /** Memory-map the model file in Assets. */
@@ -93,7 +95,8 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
             final String modelFilename,
             final String labelFilename,
             final int inputSize,
-            final boolean isQuantized)
+            final boolean isQuantized,
+            final String phase)
             throws IOException {
         final TFLiteObjectDetectionAPIModel d = new TFLiteObjectDetectionAPIModel();
 
@@ -134,6 +137,7 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
         d.outputClasses = new float[1][NUM_DETECTIONS];
         d.outputScores = new float[1][NUM_DETECTIONS];
         d.numDetections = new float[1];
+        d.phase = phase;
         return d;
     }
 
@@ -181,7 +185,7 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
         Trace.endSection();
 
         // Run the inference call.
-        Trace.beginSection("run");
+        Trace.beginSection("run " + phase);
         tfLite.runForMultipleInputsOutputs(inputArray, outputMap);
         Trace.endSection();
 

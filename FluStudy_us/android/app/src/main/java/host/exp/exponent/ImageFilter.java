@@ -7,11 +7,13 @@ package host.exp.exponent;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -30,7 +32,7 @@ import static org.opencv.imgproc.Imgproc.cvtColor;
 public class ImageFilter {
     private static final String TAG = "ImageFilter";
 
-    public static double SHARPNESS_THRESHOLD = 200;
+    public static double SHARPNESS_THRESHOLD = 5;
     public static double OVER_EXP_THRESHOLD = 255;
     public static double UNDER_EXP_THRESHOLD = 120;
     public static double OVER_EXP_WHITE_COUNT = 100;
@@ -99,8 +101,9 @@ public class ImageFilter {
         }
     }
 
-    public FilterResult validateImage(byte[] nv21, int previewHeight, int previewWidth) {
-        Mat inputMat = bytesToRGBMat(nv21, previewHeight, previewWidth);
+    public FilterResult validateImage(Bitmap bitmap) {
+        Mat inputMat = new Mat();
+        Utils.bitmapToMat(bitmap, inputMat);
 
         // Convert the input to grayscale
         Mat greyMat = new Mat();
@@ -111,8 +114,6 @@ public class ImageFilter {
         Log.d(TAG, "exposure result: "  + exposureResult);
 
         // Check sharpness
-        // TODO: only check sharpness on extracted actual test strip, not whole image
-        // boolean isSharp = checkSharpness(greyMat.submat(getViewfinderRect(greyMat)));
         double sharpness = calculateSharpness(greyMat);
         Log.d(TAG, String.format("inputMat sharpness: %.2f", sharpness));
 
@@ -121,17 +122,6 @@ public class ImageFilter {
         greyMat.release();
 
         return new FilterResult(exposureResult, sharpness);
-    }
-
-    public Mat bytesToRGBMat(byte[] nv21, int previewHeight, int previewWidth) {
-        Mat yuvMat = new Mat(previewHeight + previewHeight / 2, previewWidth, CvType.CV_8UC1);
-        yuvMat.put(0, 0, nv21);
-
-        Mat rbgMat = new Mat();
-        Imgproc.cvtColor(yuvMat, rbgMat, Imgproc.COLOR_YUV2RGB_NV21, 3);
-
-        yuvMat.release();
-        return rbgMat;
     }
 
     private double calculateSharpness(Mat input) {

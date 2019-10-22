@@ -41,7 +41,9 @@ public class MultiBoxTracker extends Tracker {
         processResults(results);
     }
 
+    /*
     public synchronized void draw(final Canvas canvas, boolean demoMode) {
+        /*
         if (demoMode) {
             frameToCanvasMatrix = ImageUtils.getTransformationMatrix(previewWidth, previewHeight,
                     canvas.getWidth(), canvas.getHeight(), sensorOrientation, false);
@@ -60,6 +62,7 @@ public class MultiBoxTracker extends Tracker {
             }
         }
     }
+    */
 
     private void processResults(final List<Recognition> results) {
         trackedObjects.clear();

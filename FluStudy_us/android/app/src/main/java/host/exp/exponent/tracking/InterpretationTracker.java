@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class InterpretationTracker extends Tracker {
-    private static int FRAMES_TO_INTERPRET = 10;
+    private static int FRAMES_TO_INTERPRET = 4;
     private static final String TAG = "InterpretationTracker";
 
     private final List<List<RDTTracker.TrackedRecognition>> allTrackedObjects = new ArrayList<>();
@@ -31,9 +31,10 @@ public class InterpretationTracker extends Tracker {
 
     private boolean sentResults;
 
+    /*
     @Override
     public synchronized void draw(final Canvas canvas, boolean demoMode) {
-        if (demoMode && allTrackedObjects.size() > 0) {
+        /*if (demoMode && allTrackedObjects.size() > 0) {
             for (final RDTTracker.TrackedRecognition recognition : allTrackedObjects.get(allTrackedObjects.size() - 1)) {
                 final RectF trackedPos = new RectF(recognition.location);
 
@@ -49,6 +50,7 @@ public class InterpretationTracker extends Tracker {
             }
         }
     }
+    */
 
     @Override
     public synchronized void trackResults(final List<Classifier.Recognition> results) {

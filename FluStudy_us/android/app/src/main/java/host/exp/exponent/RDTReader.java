@@ -79,6 +79,8 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         WritableMap event = Arguments.createMap();
         if (captureResult.image != null) {
             event.putString("img", captureResult.image);
+        }
+        if (captureResult.windowImage != null) {
             event.putString("resultWindowImg", captureResult.windowImage);
         }
 
@@ -90,16 +92,19 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         dimensions.putInt("width", captureResult.viewportWidth);
         dimensions.putInt("height", captureResult.viewportHeight);
         event.putMap("viewportDimensions", dimensions);
-        event.putBoolean("passed", captureResult.testStripFound && filterResult.exposureResult == ImageFilter.ExposureResult.NORMAL && filterResult.isSharp());
+        event.putBoolean("passed", captureResult.testStripFound && filterResult != null && filterResult.exposureResult == ImageFilter.ExposureResult.NORMAL && filterResult.isSharp());
         event.putBoolean("testStripDetected", captureResult.testStripFound);
         event.putBoolean("fiducial", interpretationResult.control);
         event.putBoolean("center", captureResult.testStripFound);
         event.putInt("sizeResult", ImageFilter.SizeResult.RIGHT_SIZE.ordinal());
         event.putBoolean("shadow", false);
-        event.putBoolean("sharpness", filterResult.isSharp());
+
         event.putBoolean("orientation", captureResult.testStripFound);
         event.putDouble("angle", 0);
-        event.putInt("exposureResult", filterResult.exposureResult.ordinal());
+        if (filterResult != null) {
+            event.putBoolean("sharpness", filterResult.isSharp());
+            event.putInt("exposureResult", filterResult.exposureResult.ordinal());
+        }
         event.putBoolean("control", interpretationResult.control);
         event.putBoolean("testA", interpretationResult.testA);
         event.putBoolean("testB", interpretationResult.testB);

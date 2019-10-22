@@ -64,6 +64,7 @@ public class RDTTracker extends Tracker {
         return true;
     }
 
+    /*
     public synchronized void draw(final Canvas canvas, boolean demoMode) {
         this.canvasSize = new PointF(canvas.getWidth(), canvas.getHeight());
         frameToCanvasMatrix = ImageUtils.getTransformationMatrix(previewWidth, previewHeight,
@@ -82,8 +83,17 @@ public class RDTTracker extends Tracker {
             }
         }
     }
+    */
+
+    public synchronized void setPreviewConfiguration(final int width, final int height, final int sensorOrientation, final int screenWidth, final int screenHeight) {
+        super.setPreviewConfiguration(width, height, sensorOrientation, screenWidth, screenHeight);
+        this.canvasSize = new PointF(screenWidth, screenHeight);
+        frameToCanvasMatrix = ImageUtils.getTransformationMatrix(previewWidth, previewHeight,
+                screenWidth, screenHeight, sensorOrientation, false);
+    }
 
     public synchronized Bitmap extractRDT(final Bitmap previewBitmap) {
+
         this.rdtBitmap = null;
         this.testBitmap = null;
         this.rdtOutline = null;
@@ -139,6 +149,10 @@ public class RDTTracker extends Tracker {
             return this.testBitmap;
         }
         return null;
+    }
+
+    public Bitmap getRdtBitmap() {
+        return this.rdtBitmap;
     }
 
     public float[] getRdtOutline() {

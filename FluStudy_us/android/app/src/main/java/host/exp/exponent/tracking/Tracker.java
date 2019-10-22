@@ -47,22 +47,19 @@ public abstract class Tracker {
         textSizePx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP,
                 activity.getResources().getDisplayMetrics());
         borderedText = new BorderedText(textSizePx);
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        screenHeight = displayMetrics.heightPixels;
-        screenWidth = displayMetrics.widthPixels;
     }
 
-    public synchronized void setPreviewConfiguration(final int width, final int height, final int sensorOrientation) {
+    public synchronized void setPreviewConfiguration(final int width, final int height, final int sensorOrientation, final int screenWidth, final int screenHeight) {
         previewWidth = width;
         previewHeight = height;
         this.sensorOrientation = sensorOrientation;
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
     }
 
     public abstract void trackResults(final List<Classifier.Recognition> results);
 
-    public abstract void draw(final Canvas canvas, boolean demoMode);
+    // public abstract void draw(final Canvas canvas, boolean demoMode);
 
     protected String getLabel(RDTTracker.TrackedRecognition recognition) {
         return !TextUtils.isEmpty(recognition.title)

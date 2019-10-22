@@ -227,10 +227,9 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   _setTimer() {
     // Timeout after 30 seconds
     this._clearTimer();
-    /*
     this._timer = global.setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
-      if (!this._interpreting && isFocused) {
+      if (this.state.progress < 0.5 && !this._interpreting && isFocused) {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
@@ -252,13 +251,11 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
         dispatch(
           setRDTCaptureInfo(
             this.state.supportsTorchMode && this.state.flashEnabled,
-            this.state.supportsTorchMode &&
-              this.state.flashEnabledAutomatically
+            this.state.supportsTorchMode && this.state.flashEnabledAutomatically
           )
         );
       }
     }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
-    */
   }
 
   _clearTimer() {
@@ -464,25 +461,14 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     dispatch(setRDTCaptureTime(true));
     try {
       const photoId = await newUID();
-      const hcPhotoId = await newUID();
       dispatch(setRDTPhoto(`data:image/png;base64,${args.imgBase64}`));
       dispatch(
-        setTestStripImg(
-          {
-            sample_type: "RDTReaderPhotoGUID",
-            code: photoId,
-          },
-          {
-            sample_type: "RDTReaderHCPhotoGUID",
-            code: hcPhotoId,
-          }
-        )
+        setTestStripImg({
+          sample_type: "RDTReaderPhotoGUID",
+          code: photoId,
+        })
       );
       savePhoto(photoId, args.imgBase64);
-      savePhoto(hcPhotoId, args.resultWindowImgBase64);
-      dispatch(
-        setRDTPhotoHC(`data:image/png;base64,${args.resultWindowImgBase64}`)
-      );
       dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(

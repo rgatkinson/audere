@@ -9592,6 +9592,11 @@ react-native-loading-spinner-overlay@^1.0.1:
   dependencies:
     prop-types "^15.6.2"
 
+react-native-modal-translucent@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-modal-translucent/-/react-native-modal-translucent-3.0.1.tgz#29945ca76b25f13fcbacd77ce91364c1dda6252b"
+  integrity sha512-gBQpm0TutnPex8G243e5h3+sNs760dmwkyWhDlnz088IiHDpGzLhNzlVDcB+FISuQEA4bntxV6IlCeVWxnt4XA==
+
 react-native-modal@^7.0.0:
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-7.0.2.tgz#6048217807e03cd585204dace2e1ca1726c0b647"
