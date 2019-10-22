@@ -3,6 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { Feather } from "@expo/vector-icons";
 import React from "react";
 import {
   GestureResponderEvent,
@@ -12,8 +13,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { GUTTER, LARGE_TEXT, EXTRA_LARGE_TEXT } from "../styles";
+import { EXTRA_LARGE_TEXT, GUTTER, LARGE_TEXT } from "../styles";
 import Text from "./Text";
 
 interface Props {
@@ -58,10 +58,11 @@ const styles = StyleSheet.create({
     marginTop: GUTTER / 2,
     marginBottom: GUTTER,
     alignContent: "center",
+    alignItems: "center",
   },
   text: {
     fontSize: LARGE_TEXT,
-    marginTop: GUTTER / 8,
+    lineHeight: LARGE_TEXT,
   },
   arrow: {
     marginLeft: GUTTER / 4,
