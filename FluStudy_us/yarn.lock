@@ -9592,11 +9592,6 @@ react-native-loading-spinner-overlay@^1.0.1:
   dependencies:
     prop-types "^15.6.2"
 
-react-native-modal-translucent@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/react-native-modal-translucent/-/react-native-modal-translucent-3.0.1.tgz#29945ca76b25f13fcbacd77ce91364c1dda6252b"
-  integrity sha512-gBQpm0TutnPex8G243e5h3+sNs760dmwkyWhDlnz088IiHDpGzLhNzlVDcB+FISuQEA4bntxV6IlCeVWxnt4XA==
-
 react-native-modal@^7.0.0:
   version "7.0.2"
   resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-7.0.2.tgz#6048217807e03cd585204dace2e1ca1726c0b647"
@@ -9648,6 +9643,11 @@ react-native-scroll-into-view@^1.0.3:
   integrity sha512-WBrgzLSvmSgi+LMHOch87TKwk8vMDwlyMhXGagf3BDOTSP4aVmHQ3PUuiIIWo2wK6jexHnPasN0LeA48Qvzxkw==
   dependencies:
     prop-types ">=15.6.1"
+
+react-native-svg@9.9.2:
+  version "9.9.2"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-9.9.2.tgz#33085e2b6da7a540311f5a39acb0a1366d3ee020"
+  integrity sha512-vA1m7FjqUJd+tjrwt0qIFunfbGMUqc+l7RP4ZNGsYxrJDXJnVA/8CAwsFvxOxtNI/V4xk+Fhv+I3Gd12CWIt/A==
 
 react-native-typescript-transformer@^1.2.10:
   version "1.2.12"

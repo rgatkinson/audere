@@ -33,7 +33,7 @@ public class InterpretationTracker extends Tracker {
 
     @Override
     public synchronized void draw(final Canvas canvas, boolean demoMode) {
-        if (demoMode) {
+        if (demoMode && allTrackedObjects.size() > 0) {
             for (final RDTTracker.TrackedRecognition recognition : allTrackedObjects.get(allTrackedObjects.size() - 1)) {
                 final RectF trackedPos = new RectF(recognition.location);
 

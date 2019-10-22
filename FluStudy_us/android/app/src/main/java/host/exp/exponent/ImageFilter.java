@@ -30,7 +30,7 @@ import static org.opencv.imgproc.Imgproc.cvtColor;
 public class ImageFilter {
     private static final String TAG = "ImageFilter";
 
-    public static double SHARPNESS_THRESHOLD = 500;
+    public static double SHARPNESS_THRESHOLD = 200;
     public static double OVER_EXP_THRESHOLD = 255;
     public static double UNDER_EXP_THRESHOLD = 120;
     public static double OVER_EXP_WHITE_COUNT = 100;

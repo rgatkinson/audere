@@ -11,6 +11,9 @@ import android.widget.LinearLayout;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableNativeArray;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -78,6 +81,15 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
             event.putString("img", captureResult.image);
             event.putString("resultWindowImg", captureResult.windowImage);
         }
+
+        if (captureResult.stripLocation != null) {
+            event.putArray("boundary", getLocationArray(captureResult.stripLocation));
+        }
+
+        WritableMap dimensions = new WritableNativeMap();
+        dimensions.putInt("width", captureResult.viewportWidth);
+        dimensions.putInt("height", captureResult.viewportHeight);
+        event.putMap("viewportDimensions", dimensions);
         event.putBoolean("passed", captureResult.testStripFound && filterResult.exposureResult == ImageFilter.ExposureResult.NORMAL && filterResult.isSharp());
         event.putBoolean("testStripDetected", captureResult.testStripFound);
         event.putBoolean("fiducial", interpretationResult.control);
@@ -93,6 +105,17 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         event.putBoolean("testB", interpretationResult.testB);
         event.putInt("progress", getProgress(interpretationResult));
         callReactCallback("RDTCaptured", event);
+    }
+
+    private WritableArray getLocationArray(float[] location) {
+        WritableArray boundary = new WritableNativeArray();
+        for (int i = 0; i < location.length; i += 2) {
+            WritableMap point = new WritableNativeMap();
+            point.putDouble("x", location[i]);
+            point.putDouble("y", location[i + 1]);
+            boundary.pushMap(point);
+        }
+        return boundary;
     }
 
     private int getProgress(DetectorView.InterpretationResult result) {

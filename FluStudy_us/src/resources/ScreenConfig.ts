@@ -107,7 +107,6 @@ import {
 import { openSettingsApp } from "../util/openSettingsApp";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
 import { getShippingTextVariables } from "../util/shipping";
-import { getRdtResult } from "../util/results";
 import { FunnelEvents } from "../util/tracker";
 
 const SECOND_MS = 1000;
@@ -844,7 +843,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     chromeProps: {
-      disableBounce: true,
+      hideChrome: true,
     },
     backgroundColor: "black",
     key: "AndroidRDTReader",
@@ -867,10 +866,6 @@ export const Screens: ScreenConfig[] = [
       { tag: RDTImage },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: ScreenText,
-        props: { label: "diagnosis", textVariablesFn: getRdtResult },
-      },
     ],
     footer: [
       {

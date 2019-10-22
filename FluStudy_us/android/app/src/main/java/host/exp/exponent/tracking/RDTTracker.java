@@ -8,11 +8,8 @@ package host.exp.exponent.tracking;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
@@ -42,21 +39,16 @@ public class RDTTracker extends Tracker {
     Bitmap testBitmap = null;
     float[] desiredOutline = null;
 
+    private static final float RDT_CANVAS_MARGIN = .05f;
+    private static final float RDT_CANVAS_HEIGHT = 0.65f;
+    private static final float RDT_CANVAS_HEIGHT_PERCENT = RDT_CANVAS_HEIGHT * (1 - RDT_CANVAS_MARGIN * 2);
+
     public RDTTracker(final Activity activity) {
         super(activity);
     }
 
     public synchronized void trackResults(final List<Classifier.Recognition> results) {
         this.results = results;
-    }
-
-    private Path getPath(float[] outline) {
-        Path p = new Path();
-        p.moveTo(outline[0], outline[1]);
-        for (int i = 2; i < outline.length; i += 2) {
-            p.lineTo(outline[i], outline[i+1]);
-        }
-        return p;
     }
 
     private boolean rdtInDesiredLocation() {
@@ -77,25 +69,6 @@ public class RDTTracker extends Tracker {
         frameToCanvasMatrix = ImageUtils.getTransformationMatrix(previewWidth, previewHeight,
                 canvas.getWidth(), canvas.getHeight(), sensorOrientation, false);
 
-        boolean inDesiredLocation = rdtInDesiredLocation();
-
-        float[] desired = getDesiredOutline();
-        final Paint paint = new Paint();
-        paint.setColor(Color.parseColor(inDesiredLocation ? "#7fbc41" : "#f7f7f7"));
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(inDesiredLocation ? 10.0f : 5.0f);
-        canvas.drawLines(desired, paint);
-
-        if (this.rdtOutline != null && !inDesiredLocation) {
-            paint.setColor(Color.parseColor("#de77ae"));
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(5.0f);
-            DashPathEffect dashPathEffect =
-                    new DashPathEffect(new float[]{50.0f, 20.0f}, 0);
-            paint.setPathEffect(dashPathEffect);
-            Path path = getPath(this.rdtOutline);
-            canvas.drawPath(path, paint);
-        }
         if (demoMode) {
             if (this.rdtBitmap != null) {
                 Log.i(TAG, "Drawing rdtBitmap");
@@ -168,6 +141,10 @@ public class RDTTracker extends Tracker {
         return null;
     }
 
+    public float[] getRdtOutline() {
+        return this.rdtOutline;
+    }
+
     private float scaleToCanvasFromRdt() {
         return canvasSize.y / RDT_HEIGHT;
     }
@@ -206,13 +183,13 @@ public class RDTTracker extends Tracker {
     }
 
     private float[] getDesiredOutline() {
-        if (desiredOutline == null) {
-            float scale = canvasSize.y / RDT_HEIGHT / 1.5f;
+        if (desiredOutline == null && canvasSize != null) {
+            float scale = canvasSize.y / RDT_HEIGHT / (1 / RDT_CANVAS_HEIGHT_PERCENT);
             float height = RDT_HEIGHT * scale;
             float width = RDT_WIDTH * scale;
 
             float rdtLeft = canvasSize.x / 2 - width / 2;
-            float rdtTop = canvasSize.y / 2 - height / 2;
+            float rdtTop = canvasSize.y * .25f + canvasSize.y * RDT_CANVAS_HEIGHT * RDT_CANVAS_MARGIN;
             float rdtRight = rdtLeft + width;
             float rdtBottom = rdtTop + height;
             desiredOutline = new float[] {

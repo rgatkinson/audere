@@ -285,6 +285,9 @@ public class DetectorView extends LinearLayout implements
 
                         CaptureResult captureResult = new CaptureResult();
                         captureResult.testStripFound = interpretationModelBitmap != null;
+                        captureResult.stripLocation = rdtTracker.getRdtOutline();
+                        captureResult.viewportWidth = getWidth();
+                        captureResult.viewportHeight = getHeight();
 
                         if (filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL) && interpretationModelBitmap != null) {
                             final long interpretationStartTimeMs = SystemClock.uptimeMillis();
@@ -563,6 +566,9 @@ public class DetectorView extends LinearLayout implements
         public boolean testStripFound;
         public String image;
         public String windowImage;
+        public float[] stripLocation;
+        public int viewportWidth;
+        public int viewportHeight;
     }
 
     public static class InterpretationResult {

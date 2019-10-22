@@ -3,7 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React, { ComponentType, RefObject } from "react";
+import React, { ComponentType, Fragment, RefObject } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -51,6 +51,7 @@ export interface Component {
 export interface ChromeProps {
   dispatchOnFirstLoad?: [() => Action];
   fadeIn?: boolean;
+  hideChrome?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
   splashImage?: string;
@@ -227,7 +228,25 @@ export const generateScreen = (config: ScreenConfig) => {
       );
     };
 
+    _getContent = () => {
+      return (
+        <Fragment>
+          <View style={styles.innerContainer}>
+            {this._generateComponents(config.body, "body", config.key)}
+          </View>
+          <View style={styles.footerContainer}>
+            {config.footer &&
+              this._generateComponents(config.footer, "footer", config.key)}
+          </View>
+        </Fragment>
+      );
+    };
+
     render() {
+      if (!!config && !!config.chromeProps && !!config.chromeProps.hideChrome) {
+        return this._getContent();
+      }
+
       const ChromeType =
         !!config &&
         !!config.chromeProps &&
@@ -238,19 +257,14 @@ export const generateScreen = (config: ScreenConfig) => {
 
       const disableBounce =
         !!config && !!config.chromeProps && !!config.chromeProps.disableBounce;
+
       const innerContent = (
         <CustomScrollView
           contentContainerStyle={styles.contentContainer}
           keyboardShouldPersistTaps="handled"
           bounces={!disableBounce}
         >
-          <View style={styles.innerContainer}>
-            {this._generateComponents(config.body, "body", config.key)}
-          </View>
-          <View style={styles.footerContainer}>
-            {config.footer &&
-              this._generateComponents(config.footer, "footer", config.key)}
-          </View>
+          {this._getContent()}
         </CustomScrollView>
       );
 

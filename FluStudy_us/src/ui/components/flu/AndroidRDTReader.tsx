@@ -8,6 +8,7 @@ import {
   AppState,
   Dimensions,
   Image,
+  StatusBar,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -46,7 +47,14 @@ import {
   RDTReaderResult,
   RDTReaderExposureResult,
 } from "audere-lib/chillsProtocol";
-import { GUTTER, SCREEN_MARGIN, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
+import {
+  GUTTER,
+  SCREEN_MARGIN,
+  PRIMARY_COLOR,
+  PROGRESS_COLOR,
+  RED,
+  REGULAR_TEXT,
+} from "../../styles";
 import { savePhoto } from "../../../store";
 import {
   logFirebaseEvent,
@@ -54,6 +62,7 @@ import {
   AppHealthEvents,
 } from "../../../util/tracker";
 import { getRemoteConfig } from "../../../util/remoteConfig";
+import Svg, { Line, Rect } from "react-native-svg";
 
 interface Props {
   isDemo: boolean;
@@ -94,6 +103,8 @@ const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
 const INSTRUCTION_DURATION_OKTEXT = 1000;
+const RDT_ASPECT_RATIO = 5.0 / 87;
+const RDT_MARGIN = 20;
 
 function debug(s: string) {
   if (DEBUG_RDT_READER_UX) {
@@ -114,6 +125,9 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     supportsTorchMode: false,
     frameImageScale: 1,
     progress: 0,
+    stripFound: false,
+    boundary: null,
+    viewport: null,
   };
 
   _didFocus: any;
@@ -125,6 +139,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   _instructionLastUpdate: number = 0;
   _lastRDTReaderResult?: RDTReaderResult;
   _interpreting: boolean = false;
+  _rdtRect: any = null;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
@@ -300,7 +315,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   _cameraReady = (args: RDTCameraReadyArgs) => {
     this.setState({
       spinner: false,
-      supportsTorchMode: args.supportsTorchMode,
+      // supportsTorchMode: args.supportsTorchMode,
     });
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
@@ -428,7 +443,13 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
-    this.setState({ spinner: false, progress: args.progress });
+    this.setState({
+      spinner: false,
+      progress: args.progress,
+      stripFound: args.testStripDetected,
+      boundary: args.testStripBoundary,
+      viewport: args.viewportDimensions,
+    });
     this._updateFeedback(args);
     if (this.props.isDemo) {
       this._callbackTimestamps.push(Date.now());
@@ -589,6 +610,87 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
+  _getLines = (boundary: { x: number; y: number }[] | null, color: string) => {
+    if (boundary == null) {
+      return null;
+    }
+    const lines = [];
+
+    const shifts = [-1, -1, 1, 1, -1, -1].map(x => x * RDT_MARGIN);
+
+    let i = 0;
+    for (i = 0; i < boundary.length - 1; i += 2) {
+      lines.push(
+        <Line
+          key={"line:" + i}
+          x1={boundary[i].x + shifts[i / 2 + 1]}
+          y1={boundary[i].y + shifts[i / 2]}
+          x2={boundary[i + 1].x + shifts[i / 2 + 2]}
+          y2={boundary[i + 1].y + shifts[i / 2 + 1]}
+          stroke={color}
+          strokeDasharray="15, 15"
+          strokeWidth="10"
+        />
+      );
+    }
+    return lines;
+  };
+
+  _getDesiredRdtOutline = () => {
+    if (this._rdtRect == null) {
+      const { viewport } = this.state;
+
+      if (viewport == null) {
+        return null;
+      }
+
+      const { height, width } = viewport!;
+
+      const rdtHeight = height * 0.65 * 0.9 + 2 * RDT_MARGIN;
+      const rdtWidth = rdtHeight * RDT_ASPECT_RATIO + 2 * RDT_MARGIN;
+
+      const left = width / 2 - rdtWidth / 2;
+      const top = height * 0.25 + height * 0.65 * 0.05 - RDT_MARGIN;
+
+      this._rdtRect = (
+        <Rect
+          x={left}
+          y={top}
+          width={rdtWidth}
+          height={rdtHeight}
+          stroke={PROGRESS_COLOR}
+          strokeWidth={10}
+          fillOpacity={0}
+        />
+      );
+    }
+
+    return this._rdtRect;
+  };
+
+  _getRdtOutline = () => {
+    const { stripFound, boundary, viewport } = this.state;
+
+    if (viewport == null) {
+      return null;
+    }
+
+    const { height, width } = viewport!;
+
+    const shape = !stripFound
+      ? this._getLines(boundary, RED)
+      : this._getDesiredRdtOutline();
+
+    const viewBox = "0 0 " + " " + width + " " + height;
+    return (
+      <View style={styles.overlayContainer}>
+        <Svg height="100%" width="100%" viewBox={viewBox}>
+          {shape}
+        </Svg>
+      </View>
+    );
+  };
+
   render() {
     const { isDemo, isFocused, t } = this.props;
     if (!isFocused) {
@@ -598,6 +700,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     const isRotationValid = ALLOW_ICON_FEEDBACK;
     return (
       <View style={styles.container}>
+        <StatusBar hidden={true} />
         <Spinner visible={this.state.progress == 100 || this.state.spinner} />
         <RDTReaderComponent
           style={styles.camera}
@@ -612,38 +715,21 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
           appState={this.state.appState}
         />
         <View style={styles.overlayContainer}>
-          <View style={{ flexDirection: "column", flex: 1 }}>
-            <View
-              style={[
-                styles.backgroundOverlay,
-                {
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                },
-              ]}
-            >
-              <Text
-                content={t(this.state.instructionMsg)}
-                style={[
-                  styles.instructionText,
-                  { color: this.state.instructionIsOK ? "lime" : "yellow" },
-                ]}
-              />
-            </View>
-            <View
-              style={{
-                height: "65%",
-                flexDirection: "row",
-              }}
-            >
-              <View style={styles.backgroundOverlay}>
-                <View style={styles.feedbackContainer}>
+          <View style={{ flex: 1 }}>
+            <View style={[styles.backgroundOverlay, { flex: 25 }]}>
+              <View style={styles.instructionContainer}>
+                <View style={styles.instructionTextContainer}>
+                  <Text
+                    content={t(this.state.instructionMsg)}
+                    style={styles.instructionText}
+                  />
+                </View>
+                <View style={styles.progressCircleContainer}>
                   <ProgressCircle
                     percent={this.state.progress}
-                    radius={50}
-                    borderWidth={8}
-                    color="#7fbc41"
+                    radius={40}
+                    borderWidth={6}
+                    color={PROGRESS_COLOR}
                     shadowColor="#999"
                     bgColor="rgba(52, 52, 52, 1)"
                   >
@@ -654,43 +740,31 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
                   </ProgressCircle>
                 </View>
               </View>
-              <View style={styles.testStripContainer}>
-                <Image
-                  style={styles.testStrip}
-                  source={{ uri: "teststrip2" }}
-                  resizeMode={"contain"}
-                />
-              </View>
-              <View style={styles.backgroundOverlay}>
-                <View style={styles.feedbackContainer}>
-                  {this.state.supportsTorchMode && (
-                    <TouchableOpacity
-                      style={styles.feedbackItem}
-                      onPress={this._toggleFlash}
-                    >
-                      <Image
-                        style={styles.feedbackItemIcon}
-                        source={{
-                          uri: this.state.flashEnabled ? "flashon" : "flashoff",
-                        }}
-                      />
-                      <Text
-                        content={
-                          t("flash") +
-                          (this.state.flashEnabled ? t("on") : t("off"))
-                        }
-                        style={styles.feedbackItemText}
-                      />
-                    </TouchableOpacity>
-                  )}
-                  <View style={styles.feedbackItem} />
-                  <View style={styles.feedbackItem} />
-                </View>
-              </View>
             </View>
-            <View style={styles.backgroundOverlay} />
+            <View
+              style={{
+                flex: 65,
+                flexDirection: "row",
+              }}
+            >
+              <View style={[styles.backgroundOverlay, { flex: 1 }]} />
+              <View style={styles.testStripContainer}>
+                {this.state.stripFound ? (
+                  <View style={styles.testStripViewfinder} />
+                ) : (
+                  <Image
+                    style={styles.testStrip}
+                    source={{ uri: "teststrip2" }}
+                    resizeMode={"contain"}
+                  />
+                )}
+              </View>
+              <View style={[styles.backgroundOverlay, { flex: 1 }]} />
+            </View>
+            <View style={[styles.backgroundOverlay, { flex: 10 }]} />
           </View>
         </View>
+        {this._getRdtOutline()}
         <MultiTapContainer
           active={isDemo}
           style={styles.touchableLeft}
@@ -704,7 +778,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
           onMultiTap={this._forcePositiveResult}
         />
         {isDemo && (
-          <View style={styles.fpsCounter}>
+          <View>
             <Text content={`FPS: ${this.state.fps.toFixed(2)}`} />
           </View>
         )}
@@ -747,38 +821,31 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   backgroundOverlay: {
-    flex: 1,
-    // backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(51,51,51, 0.6)",
   },
-  instructionText: {
-    fontSize: LARGE_TEXT,
-    flex: 1,
-    marginHorizontal: GUTTER,
-    textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.99)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
-  },
-  feedbackContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  feedbackItem: {
+  instructionContainer: {
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: PRIMARY_COLOR,
+    borderRadius: 10,
+    flexDirection: "row",
+    marginHorizontal: "5%",
+    marginTop: "5%",
+  },
+  instructionTextContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 3,
+    padding: GUTTER,
+  },
+  instructionText: {
+    alignSelf: "stretch",
+    color: "white",
+    fontSize: REGULAR_TEXT,
+  },
+  progressCircleContainer: {
     flex: 1,
-  },
-  feedbackItemValid: {
-    opacity: 1.0,
-  },
-  feedbackItemInvalid: {
-    opacity: ALLOW_ICON_FEEDBACK ? 0.5 : 0,
-  },
-  feedbackItemIcon: {
-    height: 32,
-    width: 32,
+    paddingRight: GUTTER,
   },
   feedbackItemText: {
     alignItems: "center",
@@ -787,18 +854,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: GUTTER,
     textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.99)",
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
+  },
+  testStripViewfinder: {
+    aspectRatio: RDT_ASPECT_RATIO,
+    height: "90%",
   },
   testStrip: {
-    aspectRatio: 0.0548,
-    flex: 1,
+    aspectRatio: RDT_ASPECT_RATIO,
+    height: "90%",
     opacity: 0.5,
   },
   testStripContainer: {
-    marginTop: "-2%",
-    marginBottom: "2%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginHorizontal: "5%",
+    flexDirection: "column",
   },
   touchableLeft: {
     left: 0,
@@ -814,5 +884,4 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width / 3,
     position: "absolute",
   },
-  fpsCounter: {},
 });
