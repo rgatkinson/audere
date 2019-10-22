@@ -171,23 +171,24 @@
     "seeExample": "Tap the \"?\" below to see examples"
   },
   "Welcome": {
-    "title": "Why we are doing this",
+    "title": "Welcome",
     "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick.\n\nWith your help, we want to understand if people (like you) can test themselves at home for the flu. But first, we'll walk you through a few things:",
     "desc2": "How the test works\nHow you are helping researchers\nWhat you can expect to learn"
   },
   "HowDoesTestWork": {
     "title": "How the test works",
-    "desc": "You're about to do two tests, each involving a nasal swab. Don't worry, it shouldn't be too uncomfortable. This app will guide you through each step.\n\nIt's important for our study that you complete the test as **carefully** as possible. In addition, please answer each question as **honestly** as possible. Our research and our ability to give you a result after the test both depend on accurate data, so we thank you in advance."
+    "desc": "You're about to do two tests, each involving a nasal swab. Don't worry, it shouldn't be too uncomfortable. This app will guide you through each step.\n\nIt's important for our study that you complete the tests as **carefully** as possible. In addition, please answer each question as **honestly** as possible. Our research and our ability to give you a result after the test both depend on accurate data, so we thank you in advance."
   },
   "HowAmIHelping": {
     "title": "How you are helping researchers",
-    "desc": "Participating in the flu@home test helps researchers improve their flu prediction models based on the test and your survey answers.\n\nIt can also help you in two ways:",
-    "desc2": "First, you're **staying home** – which helps **reduce the chance of spreading the flu** if you do have it.\nSecond, you could find out earlier whether you have the flu."
+    "desc": "Participating in the flu@home test helps researchers:",
+    "desc2": "Determine if app-guided instructions enable people to accurately test themselves at home for the flu\nBuild models to predict whether someone like you may have the flu\nUnderstand whether an app can read a test strip more accurately than a human",
+    "desc3": "Additionally, participating in flu@home benefits you because you're **staying home** -- which helps reduce the chance of spreading the flu if you do have it."
   },
   "WhatExpectToLearn": {
     "title": "What you can expect to learn",
     "desc": "Once you complete the test, we will indicate whether you likely have the flu. Why only 'likely?' Because multiple factors are being used to calculate your result, including:",
-    "desc2": "A nasal swab test you'll do using items from the flu@home kit\nFlu prevalence in your community\nYour answers to a health survey",
+    "desc2": "A nasal swab test you'll do using items from the flu@home kit\nHow much flu is circulating in your community\nYour answers to a health survey",
     "desc3": "Since each of these factors in isolation can't determine 100% whether you have the flu, we use them together.",
     "desc4": "Details\nFactors in addition to the test are helpful because quick nasal swab tests like this one aren't perfect. Sometimes people have the flu but the test won't pick it up. This could happen if there isn't enough virus collected on the nasal swab, or if there isn't enough virus present in the body when the sample is collected.",
     "desc5": "If you follow the directions in the app as **closely** as possible and answer the questions **honestly**, you increase the chance of getting accurate results."

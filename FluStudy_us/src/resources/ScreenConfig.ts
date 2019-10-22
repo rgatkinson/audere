@@ -179,6 +179,7 @@ export const Screens: ScreenConfig[] = [
           textStyle: { color: "white" },
         },
       },
+      { tag: ScreenText, props: { label: "desc3", style: { color: "white" } } },
       {
         tag: ContinueButton,
         props: {
