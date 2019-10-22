@@ -43,6 +43,9 @@
       "negativeExplanationBullet": "The swab did not collect enough virus to indicate a positive result",
       "negativeExplanationBulletAllUnder4Days": "Too much time passed between when you first felt sick and took the test",
       "negativeExplanationBulletOne4Days": "Your symptoms started 4+ days ago, in which case the test may be less accurate"
+    },
+    "timer": {
+      "timerDone": "Finished!"
     }
   },
   "monthPicker": {
@@ -170,21 +173,19 @@
   "Welcome": {
     "title": "Why we are doing this",
     "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick.\n\nWith your help, we want to understand if people (like you) can test themselves at home for the flu. But first, we'll walk you through a few things:",
-    "desc2": "How does the test work and what's required?\nHow am I helping with medical research?\nWhat can I expect to learn?"
+    "desc2": "How the test works\nHow you are helping researchers\nWhat you can expect to learn"
   },
   "HowDoesTestWork": {
-    "title": "How does the test work?",
-    "desc": "You're about to do two tests on yourself, each involving a nasal swab. Don't worry, it shouldn't be too uncomfortable. This app will guide you through each step.\n\nIt's important for our study that you complete the test as **carefully** as possible. In addition, please answer each question as **honestly** as possible. Our research and our ability to give you a result after the test both depend on accurate data, so we thank you in advance."
+    "title": "How the test works",
+    "desc": "You're about to do two tests, each involving a nasal swab. Don't worry, it shouldn't be too uncomfortable. This app will guide you through each step.\n\nIt's important for our study that you complete the test as **carefully** as possible. In addition, please answer each question as **honestly** as possible. Our research and our ability to give you a result after the test both depend on accurate data, so we thank you in advance."
   },
   "HowAmIHelping": {
-    "title": "How am I helping with medical research?",
-    "desc": "Participating in the flu@home test can help you in two ways:",
-    "desc2": "First, you're **staying home** – which helps **reduce the chance of spreading the flu** if you do have it.\nSecond, you could find out earlier if you have the flu.",
-    "desc3": "Participating in the flu@home test helps researchers in three ways:",
-    "desc4": "Researchers can improve their models of predicting flu likelihood based on patient symptoms and health data.\nYour result may contribute to a real-time map of flu incidence.\nResearchers can understand what people will do next if they learn from a home test whether they likely have the flu."
+    "title": "How you are helping researchers",
+    "desc": "Participating in the flu@home test helps researchers improve their flu prediction models based on the test and your survey answers.\n\nIt can also help you in two ways:",
+    "desc2": "First, you're **staying home** – which helps **reduce the chance of spreading the flu** if you do have it.\nSecond, you could find out earlier whether you have the flu."
   },
   "WhatExpectToLearn": {
-    "title": "What can I expect to learn?",
+    "title": "What you can expect to learn",
     "desc": "Once you complete the test, we will indicate whether you likely have the flu. Why only 'likely?' Because multiple factors are being used to calculate your result, including:",
     "desc2": "A nasal swab test you'll do using items from the flu@home kit\nFlu prevalence in your community\nYour answers to a health survey",
     "desc3": "Since each of these factors in isolation can't determine 100% whether you have the flu, we use them together.",
@@ -326,12 +327,10 @@
     "desc": "* = Required question"
   },
   "ThankYouSurvey": {
-    "title": "Thank you!",
-    "desc": "Your answers, along with the test, help us to understand many factors related to your illness.",
-    "waiting": "Now, just wait for the timer to end and the app will direct you to the next steps.",
+    "title": "Please wait for timer",
+    "desc": "Thanks for answering all of the survey questions. You still have time remaining, so hang tight and we'll cue you when ready.",
     "titleTimerUp": "Timer finished",
-    "descTimerUp": "Thanks for hanging in there. Tap 'Continue' and we'll move on to reading your test strip.",
-    "descThanksForAnswering": "Thanks for hanging in there. Tap 'Continue' and we'll move on to the next test."
+    "descTimerUp": "Thanks for hanging in there. Tap 'Continue' and we'll move on to reading your test strip."
   },
   "PrepareUTM": {
     "title": "Prepare for UTM test",

@@ -26,7 +26,9 @@ interface Props {
 
 class NavigationLink extends React.Component<Props> {
   shouldComponentUpdate(props: Props) {
-    return props.label != this.props.label;
+    return (
+      props.enabled != this.props.enabled || props.label != this.props.label
+    );
   }
 
   render() {

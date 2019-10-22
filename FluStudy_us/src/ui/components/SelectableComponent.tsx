@@ -19,6 +19,10 @@ interface Props {
 }
 
 class SelectableComponent extends React.Component<Props> {
+  shouldComponentUpdate(props: Props) {
+    return props.componentSelector != this.props.componentSelector;
+  }
+
   render() {
     const {
       components,

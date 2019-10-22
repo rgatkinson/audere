@@ -26,6 +26,7 @@ export type SurveyAction =
       testStripHCImg?: SampleInfo;
     }
   | { type: "SET_ONE_MINUTE_START_TIME" }
+  | { type: "SET_ONE_MINUTE_TIMER_DONE" }
   | { type: "SET_TEN_MINUTE_START_TIME" }
   | { type: "SET_TEN_MINUTE_TIMER_DONE" }
   | { type: "SET_TOTAL_TEST_STRIP_TIME" }
@@ -58,6 +59,7 @@ export type SurveyState = {
   invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
   oneMinuteStartTime?: number;
+  oneMinuteTimerDone?: boolean;
   photoUri?: string;
   pushState: PushNotificationState;
   rdtPhotoUri?: string;
@@ -129,6 +131,16 @@ export default function reducer(state = initialState, action: SurveyAction) {
         return {
           ...state,
           oneMinuteStartTime: new Date().getTime(),
+          timestamp: new Date().getTime(),
+        };
+      }
+      return state;
+
+    case "SET_ONE_MINUTE_TIMER_DONE":
+      if (!state.oneMinuteTimerDone) {
+        return {
+          ...state,
+          oneMinuteTimerDone: true,
           timestamp: new Date().getTime(),
         };
       }
@@ -325,6 +337,12 @@ export function setTestStripImg(
 export function setOneMinuteStartTime(): SurveyAction {
   return {
     type: "SET_ONE_MINUTE_START_TIME",
+  };
+}
+
+export function setOneMinuteTimerDone(): SurveyAction {
+  return {
+    type: "SET_ONE_MINUTE_TIMER_DONE",
   };
 }
 

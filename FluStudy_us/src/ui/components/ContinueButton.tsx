@@ -35,7 +35,10 @@ interface Props {
 class ContinueButton extends React.Component<Props & WithNamespaces> {
   shouldComponentUpdate(props: Props & WithNamespaces) {
     return (
-      props.label != this.props.label || props.namespace != this.props.namespace
+      props.next != this.props.next ||
+      props.surveyGetNextFn != this.props.surveyGetNextFn ||
+      props.label != this.props.label ||
+      props.namespace != this.props.namespace
     );
   }
 
@@ -65,12 +68,15 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
     const {
       label,
       namespace,
+      next,
       primary,
       showButtonStyle,
       style,
+      surveyGetNextFn,
       t,
       textStyle,
     } = this.props;
+    const enabled = !!surveyGetNextFn || !!next;
     const content = label
       ? label.includes(":")
         ? t(label)
@@ -78,7 +84,7 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
       : t("common:button:continue");
     return !!showButtonStyle ? (
       <Button
-        enabled={true}
+        enabled={enabled}
         label={content}
         primary={primary === false ? primary : true}
         style={style}
@@ -87,7 +93,7 @@ class ContinueButton extends React.Component<Props & WithNamespaces> {
       />
     ) : (
       <NavigationLink
-        enabled={true}
+        enabled={enabled}
         label={content}
         style={style}
         textStyle={textStyle}

@@ -66,6 +66,7 @@ import DeviceInfo from "react-native-device-info";
 import {
   setHasBeenOpened,
   setOneMinuteStartTime,
+  setOneMinuteTimerDone,
   setTenMinuteStartTime,
   setTenMinuteTimerDone,
   setTotalTestStripTime,
@@ -95,7 +96,7 @@ import Questions from "../ui/components/Questions";
 import { ScreenConfig } from "../ui/components/Screen";
 import ScreenText from "../ui/components/ScreenText";
 import SelectableComponent from "../ui/components/SelectableComponent";
-import Timer from "../ui/components/Timer";
+import TimerRing from "../ui/components/TimerRing";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
 import { SMALL_TEXT } from "../ui/styles";
@@ -174,15 +175,6 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: {
           label: "desc2",
-          customBulletUri: "bullet_rev",
-          textStyle: { color: "white" },
-        },
-      },
-      { tag: ScreenText, props: { label: "desc3", style: { color: "white" } } },
-      {
-        tag: BulletPointsComponent,
-        props: {
-          label: "desc4",
           customBulletUri: "bullet_rev",
           textStyle: { color: "white" },
         },
@@ -445,12 +437,15 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc" },
       },
+    ],
+    footer: [
       {
         tag: ContinueButton,
         props: {
           dispatchOnNext: () => setOneMinuteStartTime(),
           label: "startTimer",
           next: "FirstTimer",
+          showButtonStyle: true,
         },
       },
     ],
@@ -459,7 +454,14 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "oneminutetimer" } },
+      {
+        tag: TimerRing,
+        props: {
+          startTimeConfig: "oneMinuteStartTime",
+          totalTimeMs: MINUTE_MS,
+          dispatchOnDone: setOneMinuteTimerDone,
+        },
+      },
       { tag: Title },
       {
         tag: DidYouKnow,
@@ -468,17 +470,19 @@ export const Screens: ScreenConfig[] = [
           msPerItem: 10 * SECOND_MS,
         },
       },
-    ],
-    footer: [
       {
-        tag: Timer,
+        tag: SelectableComponent,
         props: {
-          next: "RemoveSwabFromTube",
-          startTimeConfig: "oneMinuteStartTime",
-          totalTimeMs: MINUTE_MS,
+          components: [
+            { tag: ContinueButton },
+            { tag: ContinueButton, props: { next: "RemoveSwabFromTube" } },
+          ],
+          componentSelectorProp: "oneMinuteTimerDone",
+          keyBase: "FirstTimer",
         },
       },
     ],
+    footer: [],
     key: "FirstTimer",
   },
   {
@@ -521,12 +525,15 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc" },
       },
+    ],
+    footer: [
       {
         tag: ContinueButton,
         props: {
           dispatchOnNext: () => setTenMinuteStartTime(),
           next: "WhatSymptoms",
           label: "startTimer",
+          showButtonStyle: true,
         },
       },
     ],
@@ -682,20 +689,27 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "questionsthankyou" } },
+      {
+        tag: TimerRing,
+        props: {
+          startTimeConfig: "tenMinuteStartTime",
+          totalTimeMs: TEST_STRIP_MS,
+          dispatchOnDone: setTenMinuteTimerDone,
+        },
+      },
       {
         tag: SelectableComponent,
         props: {
           components: [
             [
-              { tag: Title },
+              { tag: Title, props: { center: false } },
               { tag: ScreenText, props: { label: "desc" } },
-              { tag: ScreenText, props: { label: "waiting" } },
+              { tag: ContinueButton },
             ],
             [
-              { tag: Title, props: { label: "titleTimerUp" } },
-              { tag: ScreenText, props: { label: "descThanksForAnswering" } },
-              undefined,
+              { tag: Title, props: { center: false, label: "titleTimerUp" } },
+              { tag: ScreenText, props: { label: "descTimerUp" } },
+              { tag: ContinueButton, props: { next: "TestStripReady" } },
             ],
           ],
           componentSelectorProp: "tenMinuteTimerDone",
@@ -703,17 +717,7 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
-    footer: [
-      {
-        tag: Timer,
-        props: {
-          next: "TestStripReady",
-          startTimeConfig: "tenMinuteStartTime",
-          totalTimeMs: TEST_STRIP_MS,
-          dispatchOnDone: setTenMinuteTimerDone,
-        },
-      },
-    ],
+    footer: [],
     funnelEvent: FunnelEvents.COMPLETED_SURVEY,
     key: "ThankYouSurvey",
   },
