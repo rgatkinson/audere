@@ -1,43 +1,25 @@
 [
   {
-    "name": "fluapi-${environment}",
-    "image": "${account}.dkr.ecr.${region}.amazonaws.com/fluapi:${environment}",
+    "name": "iprd-rdt-reader-${environment}",
+    "image": "${account}.dkr.ecr.${region}.amazonaws.com/iprd-rdt-reader:${environment}",
     "portMappings": [
       {
-        "containerPort": 3000,
-        "hostPort": 3000
-      },
-      {
-        "containerPort": 3200,
-        "hostPort": 3200
+        "containerPort": 9000,
+        "hostPort": 9000
       }
     ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "fluapi-${environment}",
+        "awslogs-group": "iprd-rdt-reader-${environment}",
         "awslogs-create-group": "true",
         "awslogs-region": "us-west-2",
-        "awslogs-stream-prefix": "fluapi"
+        "awslogs-stream-prefix": "iprd-rdt-reader"
       }
     },
     "essential": true,
-    "environment": [
-      {
-        "name": "NODE_ENV",
-        "value": "production"
-      }
-    ],
-    "secrets": [
-      {
-        "name": "PII_DATABASE_URL",
-        "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/fluapi-${environment}.pii_db"
-      },
-      {
-        "name": "NONPII_DATABASE_URL",
-        "valueFrom": "arn:aws:ssm:${region}:${account}:parameter/fluapi-${environment}.nonpii_db"
-      }
-    ]
+    "environment": [],
+    "secrets": []
   },
   {
     "name": "nginx-${environment}",
@@ -46,16 +28,12 @@
       {
         "containerPort": 443,
         "hostPort": 443
-      },
-      {
-        "containerPort": 444,
-        "hostPort": 444
       }
     ],
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "fluapi-nginx-${environment}",
+        "awslogs-group": "iprd-rdt-reader-nginx-${environment}",
         "awslogs-create-group": "true",
         "awslogs-region": "us-west-2",
         "awslogs-stream-prefix": "nginx"
@@ -72,8 +50,12 @@
         "value": "${subdomain}"
       },
       {
+        "name": "SUBPATH",
+        "value": "${subpath}"
+      },
+      {
         "name": "SERVERS",
-        "value": "https:443:3000 http:444:3200"
+        "value": "https:443:9000"
       }
     ],
     "secrets": [

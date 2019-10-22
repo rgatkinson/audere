@@ -45,8 +45,10 @@ server {
   ssl_prefer_server_ciphers on;
   ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384;
 
-  location / {
+  location ${SUBPATH:-/} {
     limit_req zone=${SUBDOMAIN} burst=10 nodelay;
+
+    ${SUBPATH:+"rewrite ${SUBPATH}(.*) /\$1 break;"}
 
     # proxy_set_header X-Real-IP \$remote_addr;
     # proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -76,8 +78,10 @@ server {
 
   listen $app_port;
 
-  location / {
+  location ${SUBPATH:-/} {
     limit_req zone=${SUBDOMAIN} burst=10 nodelay;
+
+    ${SUBPATH:+"rewrite ${SUBPATH}(.*) /\$1 break;"}
 
     # proxy_set_header X-Real-IP \$remote_addr;
     # proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -103,8 +107,16 @@ function echo_nginx_config() {
 # On 64-bit systems, nginx stores 128 bytes per entry, so 1MB supports 8k clients.
 limit_req_zone \$http_x_forwarded_for zone=${SUBDOMAIN}:10m rate=5r/s;
 EOF
-  echo_https_server "443" "http://127.0.0.1:3000"
-  echo_http_server "444" "http://127.0.0.1:3200"
+  # SERVERS should look like "proto0:from0:to0 proto1:from1:to1 ..."
+  # E.g. "https:443:3000 http:444:3200"
+  for i in ${SERVERS}; do
+    protocol="${i%%:*}"
+    ports="${i#*:}"
+    from="${ports%%:*}"
+    to="${ports##*:}"
+
+    "echo_${protocol}_server" "$from" "http://127.0.0.1:$to"
+  done
 }
 
 function init_nginx() {

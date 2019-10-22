@@ -11,6 +11,7 @@ locals {
   api_subdomain = "${local.api_subdomains["${var.environment}"]}"
   api_full_domain = "${local.api_subdomain}.auderenow.io"
   base_name = "flu-${var.environment}-api"
+  iprd_rdt_reader_subpath = "/IPRD/rdt-reader/"
 }
 
 
@@ -224,5 +225,120 @@ resource "aws_cloudwatch_metric_alarm" "fluapi-task-alarm" {
   dimensions {
     ClusterName = "${var.ecs_cluster_name}"
     ServiceName = "${aws_ecs_service.fluapi.name}"
+  }
+}
+
+// --------------------------------------------------------------------------------
+// IPRD RDT reader ECS task
+
+resource "aws_lb_listener_rule" "iprd_rdt_reader" {
+  listener_arn = "${aws_lb_listener.flu_api_listener.arn}"
+
+  action {
+    target_group_arn = "${aws_lb_target_group.iprd_rdt_reader.arn}"
+    type = "forward"
+  }
+
+  condition {
+    field = "path-pattern"
+    values = ["${local.iprd_rdt_reader_subpath}*"]
+  }
+}
+
+resource "aws_lb_target_group" "iprd_rdt_reader" {
+  name = "iprd-rdt-reader-${var.environment}-public"
+  port = 443
+  protocol = "HTTPS"
+  target_type = "ip"
+  vpc_id = "${var.vpc_id}"
+
+  # TODO once we have a working image with a health-check endpoint.
+  # health_check {
+  #   healthy_threshold = 2
+  #   unhealthy_threshold = 2
+  #   timeout = 5
+  #   interval = 30
+  #   path = "/IPRD/rdt-reader/health-check"
+  #   port = "443"
+  #   protocol = "HTTPS"
+  # }
+}
+
+data "template_file" "iprd_rdt_reader" {
+  template = "${file("${path.module}/iprd-rdt-reader.json")}"
+
+  vars {
+    account = "${var.account}"
+    domain = "${local.api_full_domain}"
+    subpath = "${local.iprd_rdt_reader_subpath}"
+    environment = "${var.environment}"
+    region = "${var.region}"
+    subdomain = "${local.api_subdomain}"
+  }
+}
+
+resource "aws_ecs_task_definition" "iprd_rdt_reader" {
+  family = "iprd-rdt-reader-${var.environment}"
+  container_definitions = "${data.template_file.iprd_rdt_reader.rendered}"
+  task_role_arn = "${module.task_role.arn}"
+  execution_role_arn = "${module.task_role.arn}"
+  network_mode = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu = 256
+  memory = 1024
+}
+
+resource "aws_ecs_service" "iprd_rdt_reader" {
+  name = "iprd-rdt-reader-${var.environment}"
+  cluster = "${var.ecs_cluster_id}"
+  task_definition = "${aws_ecs_task_definition.iprd_rdt_reader.arn}"
+  desired_count = 1
+  deployment_maximum_percent = 200
+  deployment_minimum_healthy_percent = 100
+  launch_type = "FARGATE"
+  network_configuration {
+    assign_public_ip = true
+    security_groups = [
+      "${var.internet_egress_sg_id}",
+      "${var.fluapi_server_sg_id}",
+      "${var.db_client_sg_id}",
+      "${var.dev_ssh_server_sg_id}",
+    ]
+    subnets = ["${var.app_subnet_id}"]
+  }
+
+  load_balancer {
+    target_group_arn = "${aws_lb_target_group.iprd_rdt_reader.id}"
+    container_name = "nginx-${var.environment}"
+    container_port = 443
+  }
+
+  // No internal load balancer needed for RDT reader
+}
+
+resource "aws_cloudwatch_metric_alarm" "iprd_rdt_reader_task_alarm" {
+  alarm_name = "iprd-rdt-reader-${var.environment}-active-tasks"
+  alarm_description = "Monitors number of running tasks for the iprd-rdt-reader service"
+
+  alarm_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  ok_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods = "1"
+  insufficient_data_actions = []
+  metric_name = "CPUUtilization"
+  namespace = "AWS/ECS"
+  period = "60"
+  statistic = "SampleCount"
+  threshold = "1"
+  treat_missing_data = "breaching"
+  dimensions {
+    ClusterName = "${var.ecs_cluster_name}"
+    ServiceName = "${aws_ecs_service.iprd_rdt_reader.name}"
   }
 }

@@ -6,6 +6,6 @@
 FROM nginx:1.17.4-alpine
 LABEL maintainer="dev@auderenow.org"
 
-COPY ./FluApi/docker/nginx/entrypoint.sh /
+COPY ./FluApi/docker/nginx/entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT /entrypoint.sh
+CMD /entrypoint.sh
