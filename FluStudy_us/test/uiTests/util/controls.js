@@ -223,6 +223,7 @@ export async function text_entry(driver, deviceInfo, question, inputs) {
     await driver
       .elementByAccessibilityId(question.placeholder)
       .type(inputs[question.placeholder]);
+    await driver.elementByAccessibilityId("Done").click();
   } else {
     if (deviceInfo.PLATFORM == "iOS") {
       await driver

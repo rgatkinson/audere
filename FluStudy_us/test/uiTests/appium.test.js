@@ -246,6 +246,33 @@ async function input_screen(driver, screen_info, screens_visited) {
 
 //Barcode screen logic: allows for invalid barcodes if desired
 async function barcode_screen(driver, screen_info, screens_visited) {
+  // allow camera permissions then choose manual entry
+  if (
+    platform == "Android" &&
+    (await driver.hasElement(
+      "id",
+      "com.android.packageinstaller:id/permission_allow_button"
+    ))
+  ) {
+    await driver
+      .element("id", "com.android.packageinstaller:id/permission_allow_button")
+      .click();
+  } else {
+    if (
+      await driver.hasElementByAccessibilityId(
+        strings.common.button.ok.toUpperCase()
+      )
+    ) {
+      await driver
+        .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
+        .click();
+    }
+  }
+  await driver.sleep(1000); //let camera load
+  await new wd.TouchAction(driver)
+    .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
+    .perform();
+
   expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
     true
   );
@@ -324,11 +351,7 @@ async function blue_line_question_screen(driver, screen_info, screens_visited) {
   }
 
   await driver.elementByAccessibilityId(screen_info.button.name).click();
-  if (inputs[strings.surveyTitle.blueLine] == strings.surveyButton.yes) {
-    return screen_info.button.onClick;
-  } else {
-    return "InvalidResult";
-  }
+  return screen_info.button.onClick;
 }
 
 //RDT screen logic: Answer camera permissions and click button to take a picture
@@ -339,28 +362,6 @@ async function rdt_screen(
   installationId,
   screens_visited
 ) {
-  if (
-    platform == "Android" &&
-    (await driver.hasElement(
-      "id",
-      "com.android.packageinstaller:id/permission_allow_button"
-    ))
-  ) {
-    await driver
-      .element("id", "com.android.packageinstaller:id/permission_allow_button")
-      .click();
-  } else {
-    if (
-      await driver.hasElementByAccessibilityId(
-        strings.common.button.ok.toUpperCase()
-      )
-    ) {
-      await driver
-        .elementByAccessibilityId(strings.common.button.ok.toUpperCase())
-        .click();
-    }
-  }
-
   let manual_capture_required = true;
   if (!isSimulator) {
     screens_visited.push(screen_info.key);
@@ -382,8 +383,8 @@ async function rdt_screen(
 
   if (manual_capture_required) {
     console.log("RDT Capture FAILED");
+    await driver.sleep(3000); //wait to make sure button can load
     if (platform == "Android") {
-      await driver.sleep(3000); //wait to make sure button can load
       await driver.element("id", "android:id/button1").click();
     } else {
       await driver.elementByAccessibilityId(strings.common.button.ok).click();
@@ -426,7 +427,10 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
       driver.sleep(1000);
     }
   }
-  await driver.elementByAccessibilityId(screen_info.button.name).click();
+
+  await new wd.TouchAction(driver)
+    .tap({ x: screen_x * 0.5, y: screen_y * 0.92 })
+    .perform();
   return screen_info.button.onClick;
 }
 
@@ -566,6 +570,7 @@ async function app_setup_for_automation(driver, isDemo) {
     await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.13, 3);
     expect(await driver.hasElementByAccessibilityId("Demo Mode")).toBe(true);
   }
+  await half_scroll(driver, deviceInfo);
   let installation;
   while (!installation) {
     await driver
