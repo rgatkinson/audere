@@ -274,12 +274,11 @@
   },
   "SwabInTubeUTM": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around 4 times in the tube. The swab needs to stay in the tube for one minute.\nTap the button below to start the one-minute timer.",
-    "startTimer": "Start Timer"
+    "desc": "Place the swab directly into the tube and put the red top back on the tube tightly."
   },
   "PackUpUTM": {
-    "title": "Pack Up",
-    "desc": "Now lets pack up our UTM test"
+    "title": "Pack up",
+    "desc": "Now let's pack up our UTM test"
   },
   "TimerDoneUTM": {
     "title": "",
@@ -335,7 +334,7 @@
     "descThanksForAnswering": "Thanks for hanging in there. Tap 'Continue' and we'll move on to the next test."
   },
   "PrepareUTM": {
-    "title": "Prepare for UTM Test",
+    "title": "Prepare for UTM test",
     "desc": "Open the swab"
   },
   "TestStripReady": {
@@ -422,15 +421,15 @@
     "why": "The app has interpreted your test strip and found the following:"
   },
   "SelfCare": {
-    "title": "Self Care Tips",
+    "title": "Self-care tips",
     "desc": "Also refer a friend"
   },
   "PackUpTest": {
-    "title": "Pack Up Your Kit",
+    "title": "Pack up your kit",
     "desc": "Put the swab and strip in the box"
   },
   "PackUpBox": {
-    "title": "Pack Up The Box",
+    "title": "Pack up the box",
     "desc": "Put the box in the other box"
   },
   "Shipping": {
