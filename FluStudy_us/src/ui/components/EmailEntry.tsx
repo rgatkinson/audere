@@ -9,6 +9,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { customRef } from "./CustomRef";
 import { GUTTER } from "./../styles";
+import { getStore, StoreState } from "../../store";
 import TextInput from "./TextInput";
 
 interface Props {
@@ -93,3 +94,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+export async function getEmailConfirmationTextVariables() {
+  const state: StoreState = (await getStore()).getState();
+  return { barcode: state.survey.kitBarcode && state.survey.kitBarcode.code };
+}

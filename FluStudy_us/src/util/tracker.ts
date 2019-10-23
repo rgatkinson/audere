@@ -38,8 +38,6 @@ export const DrawerEvents = {
 export const FunnelEvents = {
   // Screening events
   // Survey events
-  SCAN_CONFIRMATION: "funnel_scan_confirmation",
-  MANUAL_CODE_CONFIRMATION: "funnel_manual_code_confirmation",
   SURVIVED_SWAB: "funnel_survived_swab",
   PASSED_FIRST_TIMER: "funnel_passed_first_timer",
   COMPLETED_SURVEY: "funnel_completed_survey",

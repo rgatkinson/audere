@@ -217,22 +217,14 @@
     "instructions": "Position the barcode in the middle of the outline above.\nTry adjusting your distance or angle if the scan is taking a while.",
     "enterManually": "Enter barcode manually"
   },
-  "ScanConfirmation": {
-    "title": "Your code was scanned!",
-    "desc": "Thank you. Your barcode was successfully scanned. Next up, you'll perform the test and answer some questions about your symptoms."
-  },
   "ManualEntry": {
     "title": "Enter your barcode",
     "desc": "Enter the code found on the corner of your flu kit.",
     "tips": "**Tip:** Find the white barcode on the box. The code is directly below the barcode."
   },
-  "ManualConfirmation": {
-    "title": "Your code was accepted",
-    "desc": "Thank you. Your barcode was successfully entered. Next up, you'll perform the test and answer some questions about your symptoms."
-  },
   "EmailConfirmation": {
     "title": "Verify your email",
-    "desc": "Now that we've scanned your kit's barcode, we need to confirm it matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:",
+    "desc": "Thank you. Now let's confirm that your kit (barcode {{barcode}}) matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:",
     "email": "**j/*/*/*/*/*/*n@gmail.com**",
     "placeholder": "Enter your email",
     "emailRequired": "Please enter your email to continue.",

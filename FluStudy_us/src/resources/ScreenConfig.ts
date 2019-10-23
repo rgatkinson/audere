@@ -79,7 +79,9 @@ import CollapsibleText from "../ui/components/CollapsibleText";
 import ContinueButton from "../ui/components/ContinueButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
-import EmailEntry from "../ui/components/EmailEntry";
+import EmailEntry, {
+  getEmailConfirmationTextVariables,
+} from "../ui/components/EmailEntry";
 import Barcode from "../ui/components/flu/Barcode";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
@@ -263,7 +265,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: BarcodeScanner,
         props: {
-          next: "ScanConfirmation",
+          next: "EmailConfirmation",
           timeoutScreen: "ManualEntry",
           errorScreen: "BarcodeContactSupport",
         },
@@ -284,41 +286,11 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "tips" } },
       {
         tag: ContinueButton,
-        props: { next: "ManualConfirmation" },
+        props: { next: "EmailConfirmation" },
       },
     ],
     key: "ManualEntry",
     keyboardAvoidingView: true,
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "barcodesuccess" } },
-      { tag: Title },
-      { tag: Barcode },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: ContinueButton,
-        props: { next: "EmailConfirmation" },
-      },
-    ],
-    funnelEvent: FunnelEvents.SCAN_CONFIRMATION,
-    key: "ScanConfirmation", // TODO: Add Kit validation checks
-    workflowEvent: "surveyStartedAt",
-  },
-  {
-    body: [
-      { tag: MainImage, props: { uri: "barcodesuccess" } },
-      { tag: Title },
-      { tag: Barcode },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: ContinueButton,
-        props: { next: "EmailConfirmation" },
-      },
-    ],
-    funnelEvent: FunnelEvents.MANUAL_CODE_CONFIRMATION,
-    key: "ManualConfirmation", // TODO: Add Kit validation checks
-    workflowEvent: "surveyStartedAt",
   },
   {
     body: [
@@ -332,7 +304,13 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ScreenText,
+        props: {
+          label: "desc",
+          textVariablesFn: getEmailConfirmationTextVariables,
+        },
+      },
       { tag: ScreenText, props: { label: "email" } },
       {
         tag: EmailEntry,
@@ -383,6 +361,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "Unpacking",
+    workflowEvent: "surveyStartedAt",
   },
   {
     body: [

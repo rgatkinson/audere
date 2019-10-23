@@ -19,6 +19,12 @@ const SECONDS_MINUTE = 60;
 const MINUTE_MS = SECONDS_MINUTE * SECOND_MS;
 const FAST_FORWARD_MS = 5 * SECOND_MS;
 
+const OUTER_DIAMETER = 150;
+const INNER_DIAMETER = 140;
+const RING_DIAMETER = 100;
+const RING_THICKNESS = 4;
+const MARKER_DIAMETER = 8;
+
 interface State {
   remainingLabel: string;
 }
@@ -170,8 +176,8 @@ class TimerRing extends React.Component<Props & WithNamespaces> {
               <Fragment>
                 <ProgressCircle
                   percent={remainingPct}
-                  radius={50}
-                  borderWidth={4}
+                  radius={RING_DIAMETER / 2}
+                  borderWidth={RING_THICKNESS}
                   color={PRIMARY_COLOR}
                   shadowColor="white"
                   bgColor="#bfc3e0"
@@ -206,7 +212,7 @@ class TimerRing extends React.Component<Props & WithNamespaces> {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 150,
+    height: OUTER_DIAMETER,
     marginTop: GUTTER,
     marginBottom: GUTTER / 2,
     alignItems: "center",
@@ -214,36 +220,36 @@ const styles = StyleSheet.create({
   },
   outerCircle: {
     borderColor: "#dadff3",
-    borderWidth: 15,
-    borderRadius: 75,
-    height: 150,
-    width: 150,
+    borderWidth: OUTER_DIAMETER / 2,
+    borderRadius: OUTER_DIAMETER / 2,
+    height: OUTER_DIAMETER,
+    width: OUTER_DIAMETER,
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
   },
   innerCircle: {
     borderColor: "#bfc3e0",
-    borderWidth: 70,
-    borderRadius: 70,
-    height: 140,
-    width: 140,
+    borderWidth: INNER_DIAMETER / 2,
+    borderRadius: INNER_DIAMETER / 2,
+    height: INNER_DIAMETER,
+    width: INNER_DIAMETER,
     alignItems: "center",
     justifyContent: "center",
   },
   markerContainer: {
-    width: 104,
-    height: 104,
+    width: RING_DIAMETER + MARKER_DIAMETER / 2,
+    height: RING_DIAMETER + MARKER_DIAMETER / 2,
     position: "absolute",
   },
   marker: {
     borderColor: PRIMARY_COLOR,
-    borderWidth: 4,
-    borderRadius: 4,
-    height: 8,
-    width: 8,
+    borderWidth: MARKER_DIAMETER / 2,
+    borderRadius: MARKER_DIAMETER / 2,
+    height: MARKER_DIAMETER,
+    width: MARKER_DIAMETER,
     top: 0,
-    left: 48,
+    left: (RING_DIAMETER - MARKER_DIAMETER / 2) / 2,
     position: "absolute",
   },
   textContainer: {
