@@ -119,15 +119,16 @@ class TimerRing extends React.Component<Props & WithNamespaces> {
     return `${minutes.padStart(2, "0")}:${seconds.padStart(2, "0")}`;
   }
 
-  _getRemainingPercent = () => {
+  _getElapsedPercent = () => {
     const remainingMs = this._getRemainingMs();
     if (!remainingMs) {
       return 0;
     }
     return (
+      100 -
       ((Math.floor(remainingMs / SECOND_MS) * SECOND_MS) /
         this.props.totalTimeMs) *
-      100
+        100
     );
   };
 
@@ -161,7 +162,7 @@ class TimerRing extends React.Component<Props & WithNamespaces> {
 
   render() {
     const { isDemo, t } = this.props;
-    const remainingPct = this._getRemainingPercent();
+    const remainingPct = this._getElapsedPercent();
     const angle = (remainingPct / 100) * 360;
     return (
       <MultiTapContainer
