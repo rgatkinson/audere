@@ -183,7 +183,6 @@ resource "aws_ecs_service" "fluapi" {
       "${var.internet_egress_sg_id}",
       "${var.fluapi_server_sg_id}",
       "${var.db_client_sg_id}",
-      "${var.dev_ssh_server_sg_id}",
     ]
     subnets = ["${var.app_subnet_id}"]
   }
@@ -301,8 +300,6 @@ resource "aws_ecs_service" "iprd_rdt_reader" {
     security_groups = [
       "${var.internet_egress_sg_id}",
       "${var.fluapi_server_sg_id}",
-      "${var.db_client_sg_id}",
-      "${var.dev_ssh_server_sg_id}",
     ]
     subnets = ["${var.app_subnet_id}"]
   }
