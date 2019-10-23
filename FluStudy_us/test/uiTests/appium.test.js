@@ -411,13 +411,14 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
   );
   screens_visited.push(screen_info.key);
 
+  await half_scroll(driver, deviceInfo);
   if (isDemo) {
     //tap until timer is bypassed
-    await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.95, 3);
+    await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.93, 3);
     while (
       !(await driver.hasElementByAccessibilityId(screen_info.button.name))
     ) {
-      await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.95, 3);
+      await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.93, 3);
       driver.sleep(1000);
     }
   } else {
@@ -429,7 +430,7 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
   }
 
   await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.5, y: screen_y * 0.92 })
+    .tap({ x: screen_x * 0.5, y: screen_y * 0.9 })
     .perform();
   return screen_info.button.onClick;
 }
