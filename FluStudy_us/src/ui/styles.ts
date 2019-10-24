@@ -88,3 +88,5 @@ export const HIGHLIGHT_STYLE = { borderWidth: 1, borderColor: "red" };
 export const LINE_HEIGHT_DIFFERENCE = 8;
 export const CUSTOM_BULLET_OFFSET = isTablet ? 0 : isIPhoneSE ? 2 : 3;
 export const FEATHER_SIZE = 20;
+export const COLLECT_MUCUS_IMAGE_NAME =
+  Platform.OS === "android" ? "noseswab" : "noseswab.gif";

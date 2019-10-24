@@ -13,14 +13,6 @@ export const videoConfig: Map<string, VideoConfig> = new Map<
   VideoConfig
 >([
   [
-    "collectSample",
-    {
-      uri:
-        "https://player.vimeo.com/external/348454490.m3u8?s=f3b4015a63ea388aba01ac2217f89925319ededa",
-      thumbnail: "collectsamplethumb",
-    },
-  ],
-  [
     "removeSwabFromTube",
     {
       uri:

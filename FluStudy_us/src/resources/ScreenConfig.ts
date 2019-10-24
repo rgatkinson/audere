@@ -101,7 +101,7 @@ import SelectableComponent from "../ui/components/SelectableComponent";
 import TimerRing from "../ui/components/TimerRing";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
-import { SMALL_TEXT } from "../ui/styles";
+import { COLLECT_MUCUS_IMAGE_NAME, SMALL_TEXT } from "../ui/styles";
 import {
   getPinkWhenBlueNextScreen,
   getTestStripSurveyNextScreen,
@@ -394,13 +394,15 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "collectmucus" } },
+      {
+        tag: MainImage,
+        props: { uri: COLLECT_MUCUS_IMAGE_NAME },
+      },
       { tag: Title },
       {
         tag: BulletPointsComponent,
         props: { label: "desc" },
       },
-      { tag: VideoPlayer, props: { id: "collectSample" } },
       {
         tag: ContinueButton,
         props: { next: "SwabInTube" },
@@ -907,13 +909,15 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "collectmucus" } },
+      {
+        tag: MainImage,
+        props: { uri: COLLECT_MUCUS_IMAGE_NAME },
+      },
       { tag: Title },
       {
         tag: BulletPointsComponent,
         props: { label: "desc" },
       },
-      { tag: VideoPlayer, props: { id: "collectSample" } },
       {
         tag: ContinueButton,
         props: { next: "SwabInTubeUTM" },
