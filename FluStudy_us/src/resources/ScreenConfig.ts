@@ -110,7 +110,6 @@ import {
 import { openSettingsApp } from "../util/openSettingsApp";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
 import { getShippingTextVariables } from "../util/shipping";
-import { FunnelEvents } from "../util/tracker";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -429,7 +428,6 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
-    funnelEvent: FunnelEvents.SURVIVED_SWAB,
     key: "SwabInTube",
   },
   {
@@ -479,7 +477,6 @@ export const Screens: ScreenConfig[] = [
         props: { next: "OpenTestStrip" },
       },
     ],
-    funnelEvent: FunnelEvents.PASSED_FIRST_TIMER,
     key: "RemoveSwabFromTube",
   },
   {
@@ -698,7 +695,6 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     footer: [],
-    funnelEvent: FunnelEvents.COMPLETED_SURVEY,
     key: "ThankYouSurvey",
   },
   {
@@ -717,7 +713,6 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
-    funnelEvent: FunnelEvents.PASSED_SECOND_TIMER,
     key: "TestStripReady",
   },
   {
@@ -945,7 +940,6 @@ export const Screens: ScreenConfig[] = [
         props: { next: "PackUpUTM" },
       },
     ],
-    funnelEvent: FunnelEvents.SURVIVED_SWAB,
     key: "SwabInTubeUTM",
   },
   {
@@ -1032,7 +1026,6 @@ export const Screens: ScreenConfig[] = [
         props: { next: "SelfCare" },
       },
     ],
-    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResult",
   },
   {
@@ -1060,7 +1053,6 @@ export const Screens: ScreenConfig[] = [
         props: { next: "SelfCare" },
       },
     ],
-    funnelEvent: FunnelEvents.RECEIVED_TEST_RESULT,
     key: "TestResultRDT",
   },
   {

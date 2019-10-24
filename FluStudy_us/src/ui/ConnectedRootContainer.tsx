@@ -280,10 +280,6 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
 
   _getNavEvent(action: NavigationAction): string | undefined {
     switch (action.type) {
-      case NavigationActions.NAVIGATE:
-      case StackActions.PUSH:
-        return NavEvents.FORWARD;
-
       case NavigationActions.BACK:
       case StackActions.POP:
         return NavEvents.BACKWARD;

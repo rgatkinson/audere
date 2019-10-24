@@ -8,11 +8,7 @@ import NetInfo from "@react-native-community/netinfo";
 import { InteractionManager } from "react-native";
 import { Pump } from "./Pump";
 import { Timer } from "./Timer";
-import {
-  AppHealthEvents,
-  logFirebaseEvent,
-  TransportEvents,
-} from "../util/tracker";
+import { AppHealthEvents, logFirebaseEvent } from "../util/tracker";
 import * as FileSystem from "expo-file-system";
 import { IdleManager } from "./IdleManager";
 import { syncPhoto } from "../store/FirebaseStore";
@@ -227,10 +223,6 @@ export class PhotoUploader {
         FileSystem.deleteAsync(filePath)
       );
       await idleness();
-      logFirebaseEvent(TransportEvents.PHOTO_UPLOADED, {
-        photoId,
-        storagePath,
-      });
 
       await syncPhoto(photoId);
     } catch (err) {

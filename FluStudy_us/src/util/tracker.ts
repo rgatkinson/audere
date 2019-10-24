@@ -25,7 +25,6 @@ export const notificationEvent = "push_notification_event";
 
 // You should include { from: <screenname>, to: <screenname> } with these events
 export const NavEvents = {
-  FORWARD: "nav_forward",
   BACKWARD: "nav_backward",
 };
 
@@ -38,30 +37,15 @@ export const DrawerEvents = {
 export const FunnelEvents = {
   // Screening events
   // Survey events
-  SURVIVED_SWAB: "funnel_survived_swab",
-  PASSED_FIRST_TIMER: "funnel_passed_first_timer",
-  COMPLETED_SURVEY: "funnel_completed_survey",
-  PASSED_SECOND_TIMER: "funnel_passed_second_timer",
   BLUE_ANSWER_CHANGED: "funnel_blue_answer_changed",
   PINK_ANSWER_CHANGED: "funnel_pink_answer_changed",
-  NUM_LINES_ANSWER_CHANGED: "funnel_num_lines_answer_changed",
-  RECEIVED_TEST_RESULT: "funnel_received_test_result",
 };
 
 // You should include { video: <uri> } with these events,
 // and optionally { currentTime: <time>, totalTime: <time> }
 export const VideoEvents = {
   START_VIDEO: "video_view_started",
-  VIDEO_PROGRESS: "video_view_progress",
   COMPLETE_VIDEO: "video_view_completed",
-};
-
-export const TransportEvents = {
-  SURVEY_UPDATED: "survey_updated",
-  SURVEY_SYNCED: "survey_synced",
-  PHOTO_UPDATED: "photo_updated",
-  PHOTO_UPLOADED: "photo_uploaded",
-  PHOTO_SYNCED: "photo_synced",
 };
 
 export const AppHealthEvents = {
@@ -84,7 +68,6 @@ export const AppEvents = {
   BARCODE_TIMEOUT: "barcode_scanner_timeout",
   RDT_TIMEOUT: "RDT_reader_timeout",
   FLASH_TOGGLE: "camera_flash_toggle",
-  SHOWED_RDT_INTERPRETATION: "showed_RDT_interpretation",
   FAQ_PRESSED: "faq_pressed",
   WHAT_TO_DO_WITH_TEST_RESULT_PRESSED: "what_to_do_with_test_result_pressed",
   HELP_TOGGLED: "help_toggled",

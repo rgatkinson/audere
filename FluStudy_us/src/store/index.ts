@@ -21,11 +21,6 @@ import immutableTransform from "redux-persist-transform-immutable";
 import * as SecureStore from "expo-secure-store";
 import { uploaderMiddleware } from "./uploader";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
-import {
-  logFirebaseEvent,
-  AppHealthEvents,
-  TransportEvents,
-} from "../util/tracker";
 import { PhotoUploader } from "../transport/PhotoUploader";
 
 export * from "./types";
@@ -86,7 +81,6 @@ const photoUploader = new PhotoUploader({
 });
 
 export function savePhoto(photoId: string, jpegBase64: string) {
-  logFirebaseEvent(TransportEvents.PHOTO_UPDATED, { photoId });
   return photoUploader.savePhoto(photoId, jpegBase64);
 }
 

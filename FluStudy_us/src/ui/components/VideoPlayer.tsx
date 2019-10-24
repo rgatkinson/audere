@@ -63,12 +63,6 @@ class VideoPlayer extends React.Component<Props & WithNamespaces> {
           });
           this.setState({ loggedFirstPlay: true });
         }
-      } else {
-        logFirebaseEvent(VideoEvents.VIDEO_PROGRESS, {
-          video: this.props.id,
-          currentTime: Math.round(currentTime),
-          totalTime: Math.round(seekableDuration),
-        });
       }
     }
   };

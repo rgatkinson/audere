@@ -29,11 +29,7 @@ import {
 } from "../../../util/fluResults";
 import { GUTTER } from "../../styles";
 import { getRemoteConfig } from "../../../util/remoteConfig";
-import {
-  logFirebaseEvent,
-  AppEvents,
-  RDTInterpretationEventTypes,
-} from "../../../util/tracker";
+import { AppEvents, RDTInterpretationEventTypes } from "../../../util/tracker";
 import { RDTReaderResult } from "audere-lib/chillsProtocol";
 import CollapsibleText from "../CollapsibleText";
 
@@ -50,7 +46,6 @@ class TestResultRDT extends React.Component<Props & WithNamespaces> {
     const interpreter = getRemoteConfig("showRDTInterpretation") as
       | RDTInterpretationEventTypes
       | "";
-    logFirebaseEvent(AppEvents.SHOWED_RDT_INTERPRETATION, { interpreter });
     this.props.dispatch(setRDTInterpretationShown(interpreter));
 
     const { dispatch, redAnswer, t } = this.props;

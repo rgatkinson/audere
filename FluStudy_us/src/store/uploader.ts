@@ -25,7 +25,6 @@ import {
 } from "audere-lib/chillsQuestionConfig";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { crashlytics } from "../crashReporter";
-import { logFirebaseEvent, TransportEvents } from "../util/tracker";
 import { syncSurvey } from "./FirebaseStore";
 import { QuestionsState, StoreState, SurveyState } from "./index";
 import { Option, SurveyResponse } from "./types";
@@ -125,7 +124,6 @@ export function uploaderMiddleware({ getState }: MiddlewareAPI) {
         if (state.survey.csruid) {
           const docId = state.survey.csruid;
           const survey = redux_to_pouch(state);
-          logFirebaseEvent(TransportEvents.SURVEY_UPDATED, { docId });
           syncSurvey(docId, survey);
         }
         break;
