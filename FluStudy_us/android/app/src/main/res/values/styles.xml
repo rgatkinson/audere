@@ -6,6 +6,7 @@
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentLight</item>
     <item name="android:windowBackground">@color/white</item>
+    <item name="android:datePickerDialogTheme">@style/Theme.Dialog</item>
   </style>
 
   <style name="Theme.Exponent.Dark" parent="Theme.AppCompat.Light.NoActionBar">
@@ -14,6 +15,7 @@
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccentDark</item>
     <item name="android:windowBackground">@color/colorPrimary</item>
+    <item name="android:datePickerDialogTheme">@style/Theme.Dialog</item>
   </style>
 
   <style name="ExponentCheckBox">
@@ -44,4 +46,10 @@
       @color/white
     </item>
   </style>
+
+  <style name="Theme.Dialog" parent="Theme.AppCompat.Light.Dialog">
+    <item name="colorAccent">#352A6E</item>
+    <item name="android:textColorPrimary">#525760</item>
+  </style>
+
 </resources>

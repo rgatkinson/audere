@@ -21,11 +21,11 @@ import Modal from "./Modal";
 import Text from "./Text";
 import {
   BORDER_COLOR,
-  HIGHLIGHT_STYLE,
   GUTTER,
+  HIGHLIGHT_STYLE,
   INPUT_HEIGHT,
-  LINK_COLOR,
-  SECONDARY_COLOR,
+  PLACEHOLDER_COLOR,
+  TEXT_COLOR,
 } from "../styles";
 import { monthAsDate } from "../../util/date";
 
@@ -102,10 +102,16 @@ class MonthModal extends React.Component<
             <Picker.Item
               label={t(months[date.getMonth()]) + " " + date.getFullYear()}
               value={date.getTime()}
+              color={TEXT_COLOR}
               key={date.getTime()}
             />
           ))}
-          <Picker.Item label={selectDate} value={selectDate} key={selectDate} />
+          <Picker.Item
+            label={selectDate}
+            value={selectDate}
+            color={PLACEHOLDER_COLOR}
+            key={selectDate}
+          />
         </Picker>
       </View>
     );
@@ -211,7 +217,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
   };
 
   render() {
-    const { date, highlighted, question, t } = this.props;
+    const { date, highlighted, t } = this.props;
 
     return (
       <View
@@ -231,8 +237,7 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
                   ? t(months[date.getMonth()]) + " " + date.getFullYear()
                   : t("selectDate") + t("common:device:iosHint")
               }
-              bold={true}
-              style={{ color: !!date ? SECONDARY_COLOR : LINK_COLOR }}
+              style={{ color: !!date ? TEXT_COLOR : PLACEHOLDER_COLOR }}
             />
           </TouchableOpacity>
         )}

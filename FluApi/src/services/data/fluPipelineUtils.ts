@@ -121,6 +121,7 @@ export function answerColumns(questions: SurveyQuestion[]): string[] {
 
       // `.answer` is a string with the data we want
       case SurveyQuestionType.DatePicker:
+      case SurveyQuestionType.MonthPicker:
         return [
           `
           response_${qid}->'answer'->0->>'valueDateTime' as ${qid}
@@ -128,6 +129,7 @@ export function answerColumns(questions: SurveyQuestion[]): string[] {
         ];
 
       case SurveyQuestionType.TextInput:
+      case SurveyQuestionType.ZipCodeInput:
         return [
           `
           response_${qid}->'answer'->0->>'valueString' as ${qid}
@@ -149,6 +151,7 @@ export function answerColumns(questions: SurveyQuestion[]): string[] {
           `,
         ];
 
+      case SurveyQuestionType.MultiDropdown:
       case SurveyQuestionType.OptionQuestion: {
         const optionQuestion = question as OptionQuestion;
 

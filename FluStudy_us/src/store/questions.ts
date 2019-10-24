@@ -11,6 +11,7 @@ import {
   SurveyResponse,
 } from "./types";
 import {
+  MultiDropDownQuestion,
   OptionQuestion,
   SurveyQuestion,
 } from "audere-lib/chillsQuestionConfig";
@@ -46,7 +47,7 @@ export default function reducer(state = {}, action: QuestionsAction) {
 }
 
 function initializeResponse(
-  data: OptionQuestion | SurveyQuestion
+  data: MultiDropDownQuestion | OptionQuestion | SurveyQuestion
 ): SurveyResponse {
   const buttonLabels: ButtonLabel[] = [];
   data.buttons.forEach(button => {
@@ -57,8 +58,8 @@ function initializeResponse(
   });
 
   const optionLabels: OptionLabel[] = [];
-  if (data.type === "optionQuestion") {
-    const optionQuestion = data as OptionQuestion;
+  if (data.type === "optionQuestion" || data.type === "multiDropdown") {
+    const optionQuestion = data as OptionQuestion | MultiDropDownQuestion;
     optionQuestion.options.forEach((option: string) => {
       optionLabels.push({
         key: option,

@@ -6,7 +6,7 @@
 
 #import "RDTViewManager.h"
 #import "RDTView.h"
-#import "ImageQualityViewController.h"
+#import "RDTReader/ImageQualityViewController.h"
 
 @implementation RDTViewManager
 

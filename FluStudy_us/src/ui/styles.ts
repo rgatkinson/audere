@@ -31,6 +31,7 @@ export const isTablet = DeviceInfo.isTablet();
 export const PRIMARY_COLOR = "#352A6E";
 export const SECONDARY_COLOR = "#7065AB";
 export const TEXT_COLOR = "#525760";
+export const PLACEHOLDER_COLOR = "#BFBFBF";
 export const LIGHT_COLOR = "#25AAE1";
 export const ERROR_COLOR = "#DA1C63";
 export const RED = "#EF5253";

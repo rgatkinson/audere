@@ -6,8 +6,8 @@
 import { Alert } from "react-native";
 import i18n from "i18next";
 
-const BARCODE_RE = /^[0-9]{8}$/;
-const BARCODE_CHARS = 8;
+const BARCODE_RE = /^[0-9]{10}$/;
+const BARCODE_CHARS = 10;
 
 export function validBarcodeShape(barcode: string): boolean {
   return (

@@ -11,17 +11,24 @@ import {
   SurveyInfo,
 } from "audere-lib/chillsProtocol";
 import {
-  AssignedSexConfig,
+  AntiviralConfig,
   BlueLineConfig,
-  ChildrenWithChildrenConfig,
-  CoughSneezeConfig,
   FluShotConfig,
   FluShotDateConfig,
-  HouseholdChildrenConfig,
-  InContactConfig,
   PinkLineConfig,
   PinkWhenBlueConfig,
-  PreviousSeason,
+  WhenFirstStartedAntiviralConfig,
+  HowReceivedFluShotConfig,
+  TravelOutsideStateConfig,
+  TravelOutsideUSConfig,
+  SpentTimeCityConfig,
+  SpentTimeStateConfig,
+  SpentTimeZipCodeConfig,
+  WhichCountriesOutsideUSConfig,
+  ChildrenAgeGroupsConfig,
+  PeopleInHouseholdConfig,
+  ChildrenDaycarePreschoolConfig,
+  SomeoneDiagnosedConfig,
 } from "audere-lib/chillsQuestionConfig";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { crashlytics } from "../crashReporter";
@@ -32,11 +39,17 @@ import { Option, SurveyResponse } from "./types";
 // See comment below on cleanupResponses.
 const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
   {
-    conditionalId: CoughSneezeConfig.id,
+    conditionalId: WhenFirstStartedAntiviralConfig.id,
     conditions: [
       {
-        dependsOnId: InContactConfig.id,
-        includeWhen: isSelected("yes"),
+        dependsOnId: AntiviralConfig.id,
+        includeWhen: isSelected("no"),
+        anythingBut: true,
+      },
+      {
+        dependsOnId: AntiviralConfig.id,
+        includeWhen: isSelected("dontKnow"),
+        anythingBut: true,
       },
     ],
   },
@@ -50,21 +63,85 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
     ],
   },
   {
-    conditionalId: PreviousSeason.id,
+    conditionalId: HowReceivedFluShotConfig.id,
     conditions: [
       {
         dependsOnId: FluShotConfig.id,
-        includeWhen: isSelected("neverFlu"),
+        includeWhen: isSelected("yes"),
+      },
+    ],
+  },
+  {
+    conditionalId: TravelOutsideUSConfig.id,
+    conditions: [
+      {
+        dependsOnId: TravelOutsideStateConfig.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
+  },
+  {
+    conditionalId: SpentTimeCityConfig.id,
+    conditions: [
+      {
+        dependsOnId: TravelOutsideUSConfig.id,
+        includeWhen: isSelected("no"),
+      },
+    ],
+  },
+  {
+    conditionalId: SpentTimeStateConfig.id,
+    conditions: [
+      {
+        dependsOnId: TravelOutsideUSConfig.id,
+        includeWhen: isSelected("no"),
+      },
+    ],
+  },
+  {
+    conditionalId: SpentTimeZipCodeConfig.id,
+    conditions: [
+      {
+        dependsOnId: TravelOutsideUSConfig.id,
+        includeWhen: isSelected("no"),
+      },
+    ],
+  },
+  {
+    conditionalId: WhichCountriesOutsideUSConfig.id,
+    conditions: [
+      {
+        dependsOnId: TravelOutsideUSConfig.id,
+        includeWhen: isSelected("yes"),
+      },
+    ],
+  },
+  {
+    conditionalId: ChildrenAgeGroupsConfig.id,
+    conditions: [
+      {
+        dependsOnId: PeopleInHouseholdConfig.id,
+        includeWhen: isSelected("liveByMyself"),
         anythingBut: true,
       },
     ],
   },
   {
-    conditionalId: ChildrenWithChildrenConfig.id,
+    conditionalId: ChildrenDaycarePreschoolConfig.id,
     conditions: [
       {
-        dependsOnId: HouseholdChildrenConfig.id,
-        includeWhen: isSelected("yes"),
+        dependsOnId: ChildrenAgeGroupsConfig.id,
+        includeWhen: isSelected("zeroToFive"),
+      },
+    ],
+  },
+  {
+    conditionalId: SomeoneDiagnosedConfig.id,
+    conditions: [
+      {
+        dependsOnId: PeopleInHouseholdConfig.id,
+        includeWhen: isSelected("liveByMyself"),
+        anythingBut: true,
       },
     ],
   },
@@ -87,14 +164,6 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
     ],
   },
 ];
-
-const GENDER_MAP = new Map([
-  ["female", PatientInfoGender.Female] as GenderMapEntry,
-  ["male", PatientInfoGender.Male] as GenderMapEntry,
-  ["indeterminate", PatientInfoGender.Other] as GenderMapEntry,
-  ["preferNotToSay", PatientInfoGender.Unknown] as GenderMapEntry,
-]);
-type GenderMapEntry = [string, PatientInfoGender];
 
 // This is similar to the logger example at
 // https://redux.js.org/api/applymiddleware
@@ -145,8 +214,6 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     workflow: state.survey.workflow,
     rdtInfo: state.survey.rdtInfo,
   };
-
-  when(getGender(questions), x => (pouch.gender = x));
 
   if (!!survey.kitBarcode) {
     pouch.samples.push(survey.kitBarcode);
@@ -281,11 +348,6 @@ function createResponseItem(response: SurveyResponse): ResponseItemInfo {
     }
   }
   return item;
-}
-
-function getGender(questions: QuestionsState): Maybe<PatientInfoGender> {
-  const key = buttonKey(questions, AssignedSexConfig.id);
-  return (key && GENDER_MAP.get(key)) || undefined;
 }
 
 function buttonKey(

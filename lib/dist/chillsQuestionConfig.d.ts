@@ -15,10 +15,13 @@ export declare enum SurveyQuestionType {
     ButtonGrid = "buttonGrid",
     DatePicker = "datePicker",
     Dropdown = "dropdown",
+    MonthPicker = "monthPicker",
+    MultiDropdown = "multiDropdown",
     OptionQuestion = "optionQuestion",
     RadioGrid = "radioGrid",
     Text = "text",
-    TextInput = "textInput"
+    TextInput = "textInput",
+    ZipCodeInput = "zipCodeInput"
 }
 export interface SurveyQuestion {
     buttons: ButtonConfig[];
@@ -35,66 +38,58 @@ export interface OptionQuestion extends SurveyQuestion {
     exclusiveOptions?: string[];
     options: string[];
 }
+export interface TextQuestion extends SurveyQuestion {
+    placeholder: string;
+}
 export interface DropDownQuestion extends SurveyQuestion {
     placeholder: string;
 }
 export interface MonthQuestion extends SurveyQuestion {
     monthRange: number;
 }
+export interface MultiDropDownQuestion extends SurveyQuestion {
+    placeholder: string;
+    options: string[];
+}
+export declare const SpentTimeCityConfig: TextQuestion;
+export declare const SpentTimeStateConfig: DropDownQuestion;
+export declare const SpentTimeZipCodeConfig: TextQuestion;
 export declare const WhatSymptomsConfig: OptionQuestion;
-export declare const SymptomsStartConfig: SurveyQuestion;
-export declare const FeverStartConfig: SurveyQuestion;
-export declare const CoughStartConfig: SurveyQuestion;
-export declare const FatigueStartConfig: SurveyQuestion;
-export declare const ChillsStartConfig: SurveyQuestion;
-export declare const SoreThroatStartConfig: SurveyQuestion;
-export declare const HeadacheStartConfig: SurveyQuestion;
-export declare const AchesStartConfig: SurveyQuestion;
-export declare const RunningNoseStartConfig: SurveyQuestion;
-export declare const ShortBreathStartConfig: SurveyQuestion;
-export declare const VomitingStartConfig: SurveyQuestion;
-export declare const SymptomsLast48Config: SurveyQuestion;
-export declare const FeverLast48Config: SurveyQuestion;
-export declare const CoughLast48Config: SurveyQuestion;
-export declare const FatigueLast48Config: SurveyQuestion;
-export declare const ChillsLast48Config: SurveyQuestion;
-export declare const SoreThroatLast48Config: SurveyQuestion;
-export declare const HeadacheLast48Config: SurveyQuestion;
-export declare const AchesLast48Config: SurveyQuestion;
-export declare const RunningNoseLast48Config: SurveyQuestion;
-export declare const ShortBreathLast48Config: SurveyQuestion;
-export declare const VomitingLast48Config: SurveyQuestion;
 export declare const SymptomsSeverityConfig: SurveyQuestion;
 export declare const FeverSeverityConfig: SurveyQuestion;
-export declare const CoughSeverityConfig: SurveyQuestion;
-export declare const FatigueSeverityConfig: SurveyQuestion;
-export declare const ChillsSeverityConfig: SurveyQuestion;
-export declare const SoreThroatSeverityConfig: SurveyQuestion;
 export declare const HeadacheSeverityConfig: SurveyQuestion;
-export declare const AchesSeverityConfig: SurveyQuestion;
-export declare const RunningNoseSeverityConfig: SurveyQuestion;
-export declare const ShortBreathSeverityConfig: SurveyQuestion;
+export declare const CoughSeverityConfig: SurveyQuestion;
+export declare const ChillsSeverityConfig: SurveyQuestion;
+export declare const SweatsSeverityConfig: SurveyQuestion;
+export declare const SoreThroatSeverityConfig: SurveyQuestion;
 export declare const VomitingSeverityConfig: SurveyQuestion;
-export declare const InContactConfig: SurveyQuestion;
-export declare const CoughSneezeConfig: SurveyQuestion;
-export declare const HouseholdChildrenConfig: SurveyQuestion;
-export declare const ChildrenWithChildrenConfig: SurveyQuestion;
-export declare const YoungChildrenConfig: SurveyQuestion;
-export declare const PeopleInHouseholdConfig: SurveyQuestion;
-export declare const BedroomsConfig: SurveyQuestion;
+export declare const RunningNoseSeverityConfig: SurveyQuestion;
+export declare const SneezingSeverityConfig: SurveyQuestion;
+export declare const FatigueSeverityConfig: SurveyQuestion;
+export declare const AchesSeverityConfig: SurveyQuestion;
+export declare const TroubleBreathingSeverityConfig: SurveyQuestion;
+export declare const WhenFirstNoticedIllnessConfig: SurveyQuestion;
+export declare const HowLongToSickestConfig: SurveyQuestion;
+export declare const FluOrColdConfig: SurveyQuestion;
+export declare const WorseOrDifferentFromTypicalConfig: SurveyQuestion;
+export declare const AntiviralConfig: SurveyQuestion;
+export declare const WhenFirstStartedAntiviralConfig: SurveyQuestion;
 export declare const FluShotConfig: SurveyQuestion;
 export declare const FluShotDateConfig: MonthQuestion;
-export declare const PreviousSeason: SurveyQuestion;
-export declare const AssignedSexConfig: SurveyQuestion;
-export declare const MedicalConditionConfig: OptionQuestion;
-export declare const HealthCareWorkerConfig: SurveyQuestion;
+export declare const HowReceivedFluShotConfig: SurveyQuestion;
+export declare const AffectedRegularActivitiesConfig: SurveyQuestion;
 export declare const SmokeTobaccoConfig: SurveyQuestion;
 export declare const HouseholdTobaccoConfig: SurveyQuestion;
-export declare const InterferingConfig: SurveyQuestion;
-export declare const AntibioticsConfig: SurveyQuestion;
-export declare const AntiviralConfig: SurveyQuestion;
-export declare const AgeConfig: DropDownQuestion;
-export declare const RaceConfig: OptionQuestion;
+export declare const TravelOutsideStateConfig: SurveyQuestion;
+export declare const TravelOutsideUSConfig: SurveyQuestion;
+export declare const WhichCountriesOutsideUSConfig: MultiDropDownQuestion;
+export declare const PeopleInHouseholdConfig: SurveyQuestion;
+export declare const ChildrenAgeGroupsConfig: OptionQuestion;
+export declare const ChildrenDaycarePreschoolConfig: SurveyQuestion;
+export declare const SomeoneDiagnosedConfig: SurveyQuestion;
+export declare const InContactConfig: SurveyQuestion;
+export declare const PublicTransportationConfig: SurveyQuestion;
+export declare const AroundSickChildrenConfig: SurveyQuestion;
 export declare const BlueLineConfig: SurveyQuestion;
 export declare const PinkWhenBlueConfig: SurveyQuestion;
 export declare const PinkLineConfig: SurveyQuestion;

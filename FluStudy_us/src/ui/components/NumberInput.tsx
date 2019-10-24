@@ -15,6 +15,7 @@ interface Props {
   returnKeyType: ReturnKeyTypeOptions;
   style?: StyleProp<TextStyle>;
   value?: string | null;
+  onEndEditing?: (e: any) => void;
   onChangeText(text: string): void;
   onKeyPress?: (e: any) => void;
   onSubmitEditing?: () => void;
@@ -56,6 +57,7 @@ export default class NumberInput extends React.PureComponent<Props, State> {
         returnKeyType={this.props.returnKeyType}
         style={this.props.style}
         value={this.state.text}
+        onEndEditing={this.props.onEndEditing}
         onChangeText={this.onChangeText}
         onKeyPress={this.props.onKeyPress}
         onSubmitEditing={this.props.onSubmitEditing}

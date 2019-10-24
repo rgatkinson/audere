@@ -9,19 +9,24 @@ import { connect } from "react-redux";
 import { getAnswer, getAnswerForID } from "../../util/survey";
 import { Option, StoreState } from "../../store";
 import { customRef } from "./CustomRef";
+import DatePicker from "./DatePicker";
 import MonthPicker from "./MonthPicker";
 import OptionList from "./OptionList";
 import QuestionText from "./QuestionText";
 import RadioGrid from "./RadioGrid";
 import ButtonGrid from "./ButtonGrid";
+import NumberInputQuestion from "./NumberInputQuestion";
 import TextInputQuestion from "./TextInputQuestion";
 import DropDown from "./DropDown";
+import MultiDropDown from "./MultiDropDown";
 import {
   DropDownQuestion,
   MonthQuestion,
+  MultiDropDownQuestion,
   OptionQuestion,
   SurveyQuestion,
   SurveyQuestionType,
+  TextQuestion,
 } from "audere-lib/chillsQuestionConfig";
 
 interface Props {
@@ -29,6 +34,7 @@ interface Props {
   conditionals: Map<string, any>;
   questions: SurveyQuestion[];
   logOnSave?(): Promise<void>;
+  textVariablesFn?(): any;
 }
 
 interface State {
@@ -61,7 +67,9 @@ class Questions extends React.PureComponent<Props, State> {
       switch (condition.key) {
         case "selectedButtonKey":
           if (!!condition.anythingBut) {
-            return answer != undefined && condition.answer !== answer;
+            if (answer === undefined || condition.answer === answer) {
+              return false;
+            }
           } else if (condition.answer !== answer) return false;
           break;
         case "options":
@@ -107,6 +115,7 @@ class Questions extends React.PureComponent<Props, State> {
       case SurveyQuestionType.Text:
         return true;
       case SurveyQuestionType.OptionQuestion:
+      case SurveyQuestionType.MultiDropdown:
         const options: Option[] | undefined = this.props.answers.get(config.id);
         return options
           ? options.reduce(
@@ -114,10 +123,14 @@ class Questions extends React.PureComponent<Props, State> {
               false
             )
           : false;
+      case SurveyQuestionType.Dropdown:
+        return this.props.answers.get(config.id) != null;
       case SurveyQuestionType.RadioGrid:
       case SurveyQuestionType.ButtonGrid:
       case SurveyQuestionType.DatePicker:
+      case SurveyQuestionType.MonthPicker:
       case SurveyQuestionType.TextInput:
+      case SurveyQuestionType.ZipCodeInput:
         return this.props.answers.get(config.id) != null;
       default:
         return false;
@@ -139,22 +152,42 @@ class Questions extends React.PureComponent<Props, State> {
         return <RadioGrid highlighted={highlighted} question={config} />;
       case SurveyQuestionType.ButtonGrid:
         return <ButtonGrid highlighted={highlighted} question={config} />;
-      case SurveyQuestionType.DatePicker:
+      case SurveyQuestionType.MonthPicker:
         return (
           <MonthPicker
             highlighted={highlighted}
             question={config as MonthQuestion}
           />
         );
+      case SurveyQuestionType.DatePicker:
+        return <DatePicker highlighted={highlighted} question={config} />;
       case SurveyQuestionType.TextInput:
         return (
-          <TextInputQuestion highlighted={highlighted} question={config} />
+          <TextInputQuestion
+            highlighted={highlighted}
+            question={config as TextQuestion}
+          />
+        );
+      case SurveyQuestionType.ZipCodeInput:
+        return (
+          <NumberInputQuestion
+            highlighted={highlighted}
+            maxDigits={5}
+            question={config as TextQuestion}
+          />
         );
       case SurveyQuestionType.Dropdown:
         return (
           <DropDown
             highlighted={highlighted}
             question={config as DropDownQuestion}
+          />
+        );
+      case SurveyQuestionType.MultiDropdown:
+        return (
+          <MultiDropDown
+            highlighted={highlighted}
+            question={config as MultiDropDownQuestion}
           />
         );
       default:
@@ -168,7 +201,12 @@ class Questions extends React.PureComponent<Props, State> {
         const ref = this._requiredQuestions.get(config.id);
         return (
           <ScrollIntoView onMount={false} ref={ref} key={config.id}>
-            <QuestionText question={config} />
+            {!!config.title && (
+              <QuestionText
+                question={config}
+                textVariablesFn={this.props.textVariablesFn}
+              />
+            )}
             {this._renderQuestion(config)}
           </ScrollIntoView>
         );

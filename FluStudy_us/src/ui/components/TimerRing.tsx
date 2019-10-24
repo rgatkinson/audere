@@ -17,7 +17,7 @@ import MultiTapContainer from "./MultiTapContainer";
 const SECOND_MS = 1000;
 const SECONDS_MINUTE = 60;
 const MINUTE_MS = SECONDS_MINUTE * SECOND_MS;
-const FAST_FORWARD_MS = 5 * SECOND_MS;
+const FAST_FORWARD_MS = 5.9 * SECOND_MS;
 
 const OUTER_DIAMETER = 150;
 const INNER_DIAMETER = 140;
@@ -94,9 +94,6 @@ class TimerRing extends React.Component<Props & WithNamespaces> {
     // Just pretend we started 5 secs before the original target end time.
     this._startTimeMs =
       new Date().getTime() - this.props.totalTimeMs + FAST_FORWARD_MS;
-    this.setState({
-      remainingLabel: this._getRemainingLabel(),
-    });
     this._startClock();
   };
 

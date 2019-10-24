@@ -11,16 +11,17 @@ import { Action, updateAnswer, StoreState } from "../../store";
 import { getAnswer } from "../../util/survey";
 import { TextQuestion } from "audere-lib/chillsQuestionConfig";
 import { GUTTER, HIGHLIGHT_STYLE } from "../styles";
-import TextInput from "./TextInput";
+import NumberInput from "./NumberInput";
 
 interface Props {
+  maxDigits?: number;
   answer?: string;
   highlighted?: boolean;
   question: TextQuestion;
   dispatch(action: Action): void;
 }
 
-class TextInputQuestion extends React.Component<Props & WithNamespaces> {
+class NumberInputQuestion extends React.Component<Props & WithNamespaces> {
   state = { text: this.props.answer };
 
   _onChangeText = (text: string) => {
@@ -29,20 +30,24 @@ class TextInputQuestion extends React.Component<Props & WithNamespaces> {
 
   _onEndEditing = (e: any) => {
     this.props.dispatch(
-      updateAnswer({ textInput: this.state.text }, this.props.question)
+      updateAnswer(
+        { numberInput: +(this.state.text || 0) },
+        this.props.question
+      )
     );
   };
 
   render() {
-    const { highlighted, question, t } = this.props;
+    const { highlighted, maxDigits, question, t } = this.props;
     return (
       <View style={[styles.container, highlighted && HIGHLIGHT_STYLE]}>
-        <TextInput
+        <NumberInput
           placeholder={t("surveyPlaceholder:" + question.placeholder)}
           returnKeyType="done"
-          value={this.state.text}
+          value={(this.state.text || "").toString()}
           onChangeText={this._onChangeText}
           onEndEditing={this._onEndEditing}
+          maxDigits={maxDigits}
         />
       </View>
     );
@@ -50,7 +55,7 @@ class TextInputQuestion extends React.Component<Props & WithNamespaces> {
 }
 export default connect((state: StoreState, props: Props) => ({
   answer: getAnswer(state, props.question),
-}))(withNamespaces()(TextInputQuestion));
+}))(withNamespaces()(NumberInputQuestion));
 
 const styles = StyleSheet.create({
   container: {

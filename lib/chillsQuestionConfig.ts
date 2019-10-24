@@ -3,6 +3,11 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import {
+  COUNTRY_MULTIDROPDOWN_DATA,
+  STATE_DROPDOWN_DATA,
+} from "./chillsQuestionData";
+
 export interface ButtonConfig {
   enabled: boolean;
   expandableHelpImage?: boolean;
@@ -22,10 +27,13 @@ export enum SurveyQuestionType {
   ButtonGrid = "buttonGrid",
   DatePicker = "datePicker",
   Dropdown = "dropdown",
+  MonthPicker = "monthPicker",
+  MultiDropdown = "multiDropdown",
   OptionQuestion = "optionQuestion",
   RadioGrid = "radioGrid",
   Text = "text",
   TextInput = "textInput",
+  ZipCodeInput = "zipCodeInput",
 }
 
 export interface SurveyQuestion {
@@ -35,7 +43,7 @@ export interface SurveyQuestion {
   id: string;
   required?: boolean;
   subquestion?: boolean;
-  title: string;
+  title?: string;
   type: SurveyQuestionType;
 }
 
@@ -45,8 +53,21 @@ export interface OptionQuestion extends SurveyQuestion {
   options: string[];
 }
 
+export interface TextQuestion extends SurveyQuestion {
+  placeholder: string;
+}
+
 export interface DropDownQuestion extends SurveyQuestion {
   placeholder: string;
+}
+
+export interface MonthQuestion extends SurveyQuestion {
+  monthRange: number;
+}
+
+export interface MultiDropDownQuestion extends SurveyQuestion {
+  placeholder: string;
+  options: string[];
 }
 
 // ================================================================
@@ -57,466 +78,27 @@ export interface DropDownQuestion extends SurveyQuestion {
 //
 // ================================================================
 
-export interface MonthQuestion extends SurveyQuestion {
-  monthRange: number;
-}
-
 export const WhatSymptomsConfig: OptionQuestion = {
   buttons: [{ key: "next", primary: true, enabled: true }],
   description: "selectAll",
   id: "WhatSymptoms",
   options: [
     "feelingFeverish",
-    "cough",
-    "fatigue",
-    "chillsOrSweats",
-    "soreThroat",
     "headache",
-    "muscleOrBodyAches",
-    "runningNose",
-    "shortnessOfBreath",
+    "cough",
+    "chillsOrShivering",
+    "sweats",
+    "soreThroat",
     "vomiting",
+    "runningNose",
+    "sneezing",
+    "fatigue",
+    "muscleOrBodyAches",
+    "troubleBreathing",
   ],
   required: true,
   title: "whatSymptoms",
   type: SurveyQuestionType.OptionQuestion,
-};
-
-export const SymptomsStartConfig: SurveyQuestion = {
-  id: "SymptomsStart",
-  buttons: [],
-  title: "symptomsStart",
-  description: "symptomsStart",
-  required: true,
-  type: SurveyQuestionType.Text,
-};
-
-export const FeverStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_feelingFeverish",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "feelingFeverish",
-    },
-  ],
-  description: "feelingFeverish",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const CoughStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_cough",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "cough",
-    },
-  ],
-  description: "cough",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const FatigueStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_fatigue",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "fatigue",
-    },
-  ],
-  description: "fatigue",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const ChillsStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_chillsOrSweats",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "chillsOrSweats",
-    },
-  ],
-  description: "chillsOrSweats",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const SoreThroatStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_soreThroat",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "soreThroat",
-    },
-  ],
-  description: "soreThroat",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const HeadacheStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_headache",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "headache",
-    },
-  ],
-  description: "headache",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const AchesStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_muscleOrBodyAches",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "muscleOrBodyAches",
-    },
-  ],
-  description: "muscleOrBodyAches",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const RunningNoseStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_runningNose",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "runningNose",
-    },
-  ],
-  description: "runningNose",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const ShortBreathStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_shortnessOfBreath",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "shortnessOfBreath",
-    },
-  ],
-  description: "shortnessOfBreath",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const VomitingStartConfig: SurveyQuestion = {
-  id: "SymptomsStart_vomiting",
-  buttons: [
-    { key: "1day", primary: false, enabled: true },
-    { key: "2days", primary: false, enabled: true },
-    { key: "3days", primary: false, enabled: true },
-    { key: "4days", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "vomiting",
-    },
-  ],
-  description: "vomiting",
-  required: true,
-  subquestion: true,
-  title: "symptomsStart",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const SymptomsLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48",
-  buttons: [],
-  title: "symptomsLast48",
-  required: true,
-  type: SurveyQuestionType.Text,
-};
-
-export const FeverLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_feelingFeverish",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "feelingFeverish",
-    },
-  ],
-  description: "feelingFeverish",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const CoughLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_cough",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "cough",
-    },
-  ],
-  description: "cough",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const FatigueLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_fatigue",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "fatigue",
-    },
-  ],
-  description: "fatigue",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const ChillsLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_chillsOrSweats",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "chillsOrSweats",
-    },
-  ],
-  description: "chillsOrSweats",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const SoreThroatLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_soreThroat",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "soreThroat",
-    },
-  ],
-  description: "soreThroat",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const HeadacheLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_headache",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "headache",
-    },
-  ],
-  description: "headache",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const AchesLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_muscleOrBodyAches",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "muscleOrBodyAches",
-    },
-  ],
-  description: "muscleOrBodyAches",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const RunningNoseLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_runningNose",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "runningNose",
-    },
-  ],
-  description: "runningNose",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const ShortBreathLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_shortnessOfBreath",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "shortnessOfBreath",
-    },
-  ],
-  description: "shortnessOfBreath",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const VomitingLast48Config: SurveyQuestion = {
-  id: "SymptomsLast48_vomiting",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "vomiting",
-    },
-  ],
-  description: "vomiting",
-  required: true,
-  subquestion: true,
-  title: "symptomsLast48",
-  type: SurveyQuestionType.ButtonGrid,
 };
 
 export const SymptomsSeverityConfig: SurveyQuestion = {
@@ -549,6 +131,27 @@ export const FeverSeverityConfig: SurveyQuestion = {
   type: SurveyQuestionType.ButtonGrid,
 };
 
+export const HeadacheSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_headache",
+  buttons: [
+    { key: "mild", primary: false, enabled: true },
+    { key: "moderate", primary: false, enabled: true },
+    { key: "severe", primary: false, enabled: true },
+  ],
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "headache",
+    },
+  ],
+  description: "headache",
+  required: true,
+  subquestion: true,
+  title: "symptomsSeverity",
+  type: SurveyQuestionType.ButtonGrid,
+};
+
 export const CoughSeverityConfig: SurveyQuestion = {
   id: "SymptomsSeverity_cough",
   buttons: [
@@ -570,8 +173,8 @@ export const CoughSeverityConfig: SurveyQuestion = {
   type: SurveyQuestionType.ButtonGrid,
 };
 
-export const FatigueSeverityConfig: SurveyQuestion = {
-  id: "SymptomsSeverity_fatigue",
+export const ChillsSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_chillsOrShivering",
   buttons: [
     { key: "mild", primary: false, enabled: true },
     { key: "moderate", primary: false, enabled: true },
@@ -581,18 +184,18 @@ export const FatigueSeverityConfig: SurveyQuestion = {
     {
       key: "options",
       id: WhatSymptomsConfig.id,
-      answer: "fatigue",
+      answer: "chillsOrShivering",
     },
   ],
-  description: "fatigue",
+  description: "chillsOrShivering",
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
   type: SurveyQuestionType.ButtonGrid,
 };
 
-export const ChillsSeverityConfig: SurveyQuestion = {
-  id: "SymptomsSeverity_chillsOrSweats",
+export const SweatsSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_sweats",
   buttons: [
     { key: "mild", primary: false, enabled: true },
     { key: "moderate", primary: false, enabled: true },
@@ -602,10 +205,10 @@ export const ChillsSeverityConfig: SurveyQuestion = {
     {
       key: "options",
       id: WhatSymptomsConfig.id,
-      answer: "chillsOrSweats",
+      answer: "sweats",
     },
   ],
-  description: "chillsOrSweats",
+  description: "sweats",
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
@@ -633,8 +236,8 @@ export const SoreThroatSeverityConfig: SurveyQuestion = {
   type: SurveyQuestionType.ButtonGrid,
 };
 
-export const HeadacheSeverityConfig: SurveyQuestion = {
-  id: "SymptomsSeverity_headache",
+export const VomitingSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_vomiting",
   buttons: [
     { key: "mild", primary: false, enabled: true },
     { key: "moderate", primary: false, enabled: true },
@@ -644,31 +247,10 @@ export const HeadacheSeverityConfig: SurveyQuestion = {
     {
       key: "options",
       id: WhatSymptomsConfig.id,
-      answer: "headache",
+      answer: "vomiting",
     },
   ],
-  description: "headache",
-  required: true,
-  subquestion: true,
-  title: "symptomsSeverity",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const AchesSeverityConfig: SurveyQuestion = {
-  id: "SymptomsSeverity_muscleOrBodyAches",
-  buttons: [
-    { key: "mild", primary: false, enabled: true },
-    { key: "moderate", primary: false, enabled: true },
-    { key: "severe", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "options",
-      id: WhatSymptomsConfig.id,
-      answer: "muscleOrBodyAches",
-    },
-  ],
-  description: "muscleOrBodyAches",
+  description: "vomiting",
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
@@ -696,8 +278,8 @@ export const RunningNoseSeverityConfig: SurveyQuestion = {
   type: SurveyQuestionType.ButtonGrid,
 };
 
-export const ShortBreathSeverityConfig: SurveyQuestion = {
-  id: "SymptomsSeverity_shortnessOfBreath",
+export const SneezingSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_sneezing",
   buttons: [
     { key: "mild", primary: false, enabled: true },
     { key: "moderate", primary: false, enabled: true },
@@ -707,18 +289,18 @@ export const ShortBreathSeverityConfig: SurveyQuestion = {
     {
       key: "options",
       id: WhatSymptomsConfig.id,
-      answer: "shortnessOfBreath",
+      answer: "sneezing",
     },
   ],
-  description: "shortnessOfBreath",
+  description: "sneezing",
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
   type: SurveyQuestionType.ButtonGrid,
 };
 
-export const VomitingSeverityConfig: SurveyQuestion = {
-  id: "SymptomsSeverity_vomiting",
+export const FatigueSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_fatigue",
   buttons: [
     { key: "mild", primary: false, enabled: true },
     { key: "moderate", primary: false, enabled: true },
@@ -728,14 +310,367 @@ export const VomitingSeverityConfig: SurveyQuestion = {
     {
       key: "options",
       id: WhatSymptomsConfig.id,
-      answer: "vomiting",
+      answer: "fatigue",
     },
   ],
-  description: "vomiting",
+  description: "fatigue",
   required: true,
   subquestion: true,
   title: "symptomsSeverity",
   type: SurveyQuestionType.ButtonGrid,
+};
+
+export const AchesSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_muscleOrBodyAches",
+  buttons: [
+    { key: "mild", primary: false, enabled: true },
+    { key: "moderate", primary: false, enabled: true },
+    { key: "severe", primary: false, enabled: true },
+  ],
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "muscleOrBodyAches",
+    },
+  ],
+  description: "muscleOrBodyAches",
+  required: true,
+  subquestion: true,
+  title: "symptomsSeverity",
+  type: SurveyQuestionType.ButtonGrid,
+};
+
+export const TroubleBreathingSeverityConfig: SurveyQuestion = {
+  id: "SymptomsSeverity_troubleBreathing",
+  buttons: [
+    { key: "mild", primary: false, enabled: true },
+    { key: "moderate", primary: false, enabled: true },
+    { key: "severe", primary: false, enabled: true },
+  ],
+  conditions: [
+    {
+      key: "options",
+      id: WhatSymptomsConfig.id,
+      answer: "troubleBreathing",
+    },
+  ],
+  description: "troubleBreathing",
+  required: true,
+  subquestion: true,
+  title: "symptomsSeverity",
+  type: SurveyQuestionType.ButtonGrid,
+};
+
+export const WhenFirstNoticedIllnessConfig: SurveyQuestion = {
+  buttons: [],
+  id: "WhenFirstNoticedIllness",
+  required: true,
+  title: "whenFirstNoticedIllness",
+  type: SurveyQuestionType.DatePicker,
+};
+
+export const HowLongToSickestConfig: SurveyQuestion = {
+  buttons: [
+    { key: "halfDay", primary: false, enabled: true },
+    { key: "half-1Day", primary: false, enabled: true },
+    { key: "1-1HalfDays", primary: false, enabled: true },
+    { key: "1Half-2Days", primary: false, enabled: true },
+    { key: "3Days", primary: false, enabled: true },
+    { key: "4Days", primary: false, enabled: true },
+    { key: "5+Days", primary: false, enabled: true },
+  ],
+  id: "HowLongToSickest",
+  required: true,
+  title: "howLongToSickest",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const FluOrColdConfig: SurveyQuestion = {
+  buttons: [
+    { key: "flu", primary: false, enabled: true },
+    { key: "commonCold", primary: false, enabled: true },
+    { key: "anotherIllness", primary: false, enabled: true },
+  ],
+  id: "FluOrCold",
+  title: "fluOrCold",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const WorseOrDifferentFromTypicalConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  id: "WorseOrDifferentFromTypical",
+  title: "worseOrDifferentFromTypical",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const AntiviralConfig: SurveyQuestion = {
+  buttons: [
+    { key: "no", primary: false, enabled: true },
+    { key: "oseltamivir", primary: false, enabled: true },
+    { key: "zanamivir", primary: false, enabled: true },
+    { key: "peramivir", primary: false, enabled: true },
+    { key: "baloxavir", primary: false, enabled: true },
+    { key: "yesButDontKnowWhich", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  id: "MedicationAntiviral",
+  required: true,
+  title: "antiviral",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const WhenFirstStartedAntiviralConfig: SurveyQuestion = {
+  buttons: [],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: AntiviralConfig.id,
+      answer: "no",
+      anythingBut: true,
+    },
+    {
+      key: "selectedButtonKey",
+      id: AntiviralConfig.id,
+      answer: "dontKnow",
+      anythingBut: true,
+    },
+  ],
+  id: "WhenFirstStartedAntiviral",
+  required: true,
+  title: "whenFirstStartedAntiviral",
+  type: SurveyQuestionType.DatePicker,
+};
+
+export const FluShotConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  id: "FluShot",
+  required: true,
+  title: "fluShot",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const FluShotDateConfig: SurveyQuestion = {
+  buttons: [],
+  conditions: [
+    { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
+  ],
+  id: "FluShotDate",
+  required: true,
+  title: "fluShotDate",
+  type: SurveyQuestionType.DatePicker,
+};
+
+export const HowReceivedFluShotConfig: SurveyQuestion = {
+  buttons: [
+    { key: "injection", primary: false, enabled: true },
+    { key: "nasalSpray", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  conditions: [
+    { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
+  ],
+  id: "HowReceivedFluShot",
+  required: true,
+  title: "howReceivedFluShot",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const AffectedRegularActivitiesConfig: SurveyQuestion = {
+  buttons: [
+    { key: "notAtAll", primary: false, enabled: true },
+    { key: "aLittleBit", primary: false, enabled: true },
+    { key: "somewhat", primary: false, enabled: true },
+    { key: "quiteABit", primary: false, enabled: true },
+    { key: "veryMuch", primary: false, enabled: true },
+  ],
+  id: "AffectedRegularActivities",
+  title: "affectedRegularActivities",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const SmokeTobaccoConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  id: "SmokeTobacco",
+  title: "smokeTobacco",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const HouseholdTobaccoConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  id: "HouseholdTobacco",
+  title: "householdTobacco",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const TravelOutsideStateConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  id: "TravelOutsideState",
+  title: "travelOutsideState",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const TravelOutsideUSConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: TravelOutsideStateConfig.id,
+      answer: "yes",
+    },
+  ],
+  id: "TravelOutsideUS",
+  required: true,
+  title: "travelOutsideUS",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const SpentTimeCityConfig: TextQuestion = {
+  buttons: [],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: TravelOutsideUSConfig.id,
+      answer: "no",
+    },
+  ],
+  id: "SpentTimeCity",
+  placeholder: "enterCity",
+  required: true,
+  title: "spentTimeCity",
+  type: SurveyQuestionType.TextInput,
+};
+
+export const SpentTimeStateConfig: DropDownQuestion = {
+  buttons: STATE_DROPDOWN_DATA,
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: TravelOutsideUSConfig.id,
+      answer: "no",
+    },
+  ],
+  id: "SpentTimeState",
+  placeholder: "selectState",
+  required: true,
+  type: SurveyQuestionType.Dropdown,
+};
+
+export const SpentTimeZipCodeConfig: TextQuestion = {
+  buttons: [],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: TravelOutsideUSConfig.id,
+      answer: "no",
+    },
+  ],
+  id: "SpentTimeZipCode",
+  placeholder: "enterZip",
+  required: true,
+  type: SurveyQuestionType.ZipCodeInput,
+};
+
+export const WhichCountriesOutsideUSConfig: MultiDropDownQuestion = {
+  buttons: [],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: TravelOutsideUSConfig.id,
+      answer: "yes",
+    },
+  ],
+  id: "WhichCountriesOutsideUS",
+  options: COUNTRY_MULTIDROPDOWN_DATA,
+  placeholder: "selectCountries",
+  title: "whichCountriesOutsideUS",
+  type: SurveyQuestionType.MultiDropdown,
+};
+
+export const PeopleInHouseholdConfig: SurveyQuestion = {
+  buttons: [
+    { key: "liveByMyself", primary: false, enabled: true },
+    { key: "two", primary: false, enabled: true },
+    { key: "three", primary: false, enabled: true },
+    { key: "four", primary: false, enabled: true },
+    { key: "five", primary: false, enabled: true },
+    { key: "sixOrMore", primary: false, enabled: true },
+  ],
+  id: "PeopleInHousehold",
+  title: "peopleInHousehold",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const ChildrenAgeGroupsConfig: OptionQuestion = {
+  buttons: [{ key: "next", primary: true, enabled: true }],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: PeopleInHouseholdConfig.id,
+      answer: "liveByMyself",
+      anythingBut: true,
+    },
+  ],
+  description: "selectAll",
+  id: "ChildrenAgeGroups",
+  options: ["noChildren", "zeroToFive", "sixToTwelve", "olderThanTwelve"],
+  title: "childrenAgeGroups",
+  type: SurveyQuestionType.OptionQuestion,
+};
+
+export const ChildrenDaycarePreschoolConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  conditions: [
+    {
+      key: "options",
+      id: ChildrenAgeGroupsConfig.id,
+      answer: "zeroToFive",
+    },
+  ],
+  id: "ChildrenDaycarePreschool",
+  title: "childrenDaycarePreschool",
+  type: SurveyQuestionType.RadioGrid,
+};
+
+export const SomeoneDiagnosedConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+    { key: "dontKnow", primary: false, enabled: true },
+  ],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: PeopleInHouseholdConfig.id,
+      answer: "liveByMyself",
+      anythingBut: true,
+    },
+  ],
+  id: "SomeoneDiagnosed",
+  title: "someoneDiagnosed",
+  type: SurveyQuestionType.RadioGrid,
 };
 
 export const InContactConfig: SurveyQuestion = {
@@ -746,269 +681,27 @@ export const InContactConfig: SurveyQuestion = {
   ],
   id: "InContact",
   title: "inContact",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const CoughSneezeConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "selectedButtonKey",
-      id: InContactConfig.id,
-      answer: "yes",
-    },
-  ],
-  id: "CoughSneeze",
-  title: "coughSneeze",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const HouseholdChildrenConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  id: "HouseholdChildren",
-  title: "householdChildren",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const ChildrenWithChildrenConfig: SurveyQuestion = {
-  id: "ChildrenWithChildren",
-  title: "childrenWithChildren",
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  conditions: [
-    {
-      key: "selectedButtonKey",
-      id: HouseholdChildrenConfig.id,
-      answer: "yes",
-    },
-  ],
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const YoungChildrenConfig: SurveyQuestion = {
-  buttons: [
-    { key: "noContactUnderFive", primary: false, enabled: true },
-    { key: "oneChild", primary: false, enabled: true },
-    { key: "twoToFiveChildren", primary: false, enabled: true },
-    { key: "moreThanFiveChildren", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  id: "YoungChildren",
-  title: "youngChildren",
   type: SurveyQuestionType.RadioGrid,
 };
 
-export const PeopleInHouseholdConfig: SurveyQuestion = {
-  buttons: [
-    { key: "1to2", primary: false, enabled: true },
-    { key: "3to4", primary: false, enabled: true },
-    { key: "5to7", primary: false, enabled: true },
-    { key: "8plus", primary: false, enabled: true },
-  ],
-  id: "PeopleInHousehold",
-  title: "peopleInHousehold",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const BedroomsConfig: SurveyQuestion = {
-  buttons: [
-    { key: "0-1", primary: false, enabled: true },
-    { key: "2", primary: false, enabled: true },
-    { key: "3", primary: false, enabled: true },
-    { key: "4", primary: false, enabled: true },
-    { key: "5+", primary: false, enabled: true },
-  ],
-  id: "Bedrooms",
-  title: "bedrooms",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const FluShotConfig: SurveyQuestion = {
+export const PublicTransportationConfig: SurveyQuestion = {
   buttons: [
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-    { key: "neverFlu", primary: false, enabled: true },
   ],
-  id: "FluShot",
-  title: "fluShot",
+  id: "PublicTransportation",
+  title: "publicTransportation",
   type: SurveyQuestionType.RadioGrid,
 };
 
-export const FluShotDateConfig: MonthQuestion = {
-  buttons: [],
-  conditions: [
-    { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
-  ],
-  id: "FluShotDate",
-  monthRange: new Date().getMonth(),
-  title: "fluShotDate",
-  type: SurveyQuestionType.DatePicker,
-};
-
-export const PreviousSeason: SurveyQuestion = {
+export const AroundSickChildrenConfig: SurveyQuestion = {
   buttons: [
     { key: "yes", primary: false, enabled: true },
     { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
   ],
-  conditions: [
-    {
-      key: "selectedButtonKey",
-      id: FluShotConfig.id,
-      answer: "neverFlu",
-      anythingBut: true,
-    },
-  ],
-  id: "PreviousSeason",
-  title: "previousSeason",
+  id: "AroundSickChildren",
+  title: "aroundSickChildren",
   type: SurveyQuestionType.RadioGrid,
-};
-
-export const AssignedSexConfig: SurveyQuestion = {
-  buttons: [
-    { key: "male", primary: false, enabled: true },
-    { key: "female", primary: false, enabled: true },
-    { key: "indeterminate", primary: false, enabled: true },
-    { key: "preferNotToSay", primary: false, enabled: true },
-  ],
-  id: "AssignedSex",
-  title: "assignedSex",
-  type: SurveyQuestionType.RadioGrid,
-};
-
-export const MedicalConditionConfig: OptionQuestion = {
-  buttons: [],
-  description: "selectAll",
-  id: "MedicalCondition",
-  options: [
-    "asthma",
-    "copd",
-    "diabetes",
-    "heartDisease",
-    "noneOfThese",
-    "dontKnow",
-  ],
-  exclusiveOptions: ["noneOfThese", "dontKnow"],
-  title: "medicalCondition",
-  type: SurveyQuestionType.OptionQuestion,
-};
-
-export const HealthCareWorkerConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  id: "HealthcareWorker",
-  title: "healthcareWorker",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const SmokeTobaccoConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  id: "SmokeTobacco",
-  title: "smokeTobacco",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const HouseholdTobaccoConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  id: "HouseholdTobacco",
-  title: "householdTobacco",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const InterferingConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-  ],
-  id: "Interfering",
-  title: "interfering",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const AntibioticsConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  id: "Antibiotics",
-  required: true,
-  title: "antibiotics",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const AntiviralConfig: SurveyQuestion = {
-  buttons: [
-    { key: "yes", primary: false, enabled: true },
-    { key: "no", primary: false, enabled: true },
-    { key: "dontKnow", primary: false, enabled: true },
-  ],
-  id: "MedicationAntiviral",
-  required: true,
-  title: "antiviral",
-  type: SurveyQuestionType.ButtonGrid,
-};
-
-export const AgeConfig: DropDownQuestion = {
-  buttons: [
-    { key: "18to19", primary: false, enabled: true },
-    { key: "20to24", primary: false, enabled: true },
-    { key: "25to29", primary: false, enabled: true },
-    { key: "30to34", primary: false, enabled: true },
-    { key: "35to39", primary: false, enabled: true },
-    { key: "40to44", primary: false, enabled: true },
-    { key: "45to49", primary: false, enabled: true },
-    { key: "50to54", primary: false, enabled: true },
-    { key: "55to59", primary: false, enabled: true },
-    { key: "60to64", primary: false, enabled: true },
-    { key: "65to69", primary: false, enabled: true },
-    { key: "70to74", primary: false, enabled: true },
-    { key: "75to79", primary: false, enabled: true },
-    { key: "80to84", primary: false, enabled: true },
-    { key: "85to89", primary: false, enabled: true },
-    { key: "90+", primary: false, enabled: true },
-  ],
-  id: "Age",
-  placeholder: "selectAge",
-  title: "age",
-  type: SurveyQuestionType.Dropdown,
-};
-
-export const RaceConfig: OptionQuestion = {
-  buttons: [],
-  description: "selectAll",
-  options: [
-    "americanIndianOrAlaskanNative",
-    "asian",
-    "blackOrAfricanAmerican",
-    "nativeHawaiian",
-    "white",
-    "other",
-  ],
-  id: "Race",
-  title: "race",
-  type: SurveyQuestionType.OptionQuestion,
 };
 
 export const BlueLineConfig: SurveyQuestion = {
@@ -1119,59 +812,44 @@ export const NumLinesSeenConfig: SurveyQuestion = {
 
 export const SURVEY_QUESTIONS = [
   WhatSymptomsConfig,
-  SymptomsStartConfig,
-  FeverStartConfig,
-  CoughStartConfig,
-  FatigueStartConfig,
-  ChillsStartConfig,
-  SoreThroatStartConfig,
-  HeadacheStartConfig,
-  AchesStartConfig,
-  RunningNoseStartConfig,
-  ShortBreathStartConfig,
-  VomitingStartConfig,
-  SymptomsLast48Config,
-  FeverLast48Config,
-  CoughLast48Config,
-  FatigueLast48Config,
-  ChillsLast48Config,
-  SoreThroatLast48Config,
-  HeadacheLast48Config,
-  AchesLast48Config,
-  RunningNoseLast48Config,
-  ShortBreathLast48Config,
-  VomitingLast48Config,
   SymptomsSeverityConfig,
   FeverSeverityConfig,
-  CoughSeverityConfig,
-  FatigueSeverityConfig,
-  ChillsSeverityConfig,
-  SoreThroatSeverityConfig,
   HeadacheSeverityConfig,
-  AchesSeverityConfig,
-  RunningNoseSeverityConfig,
-  ShortBreathSeverityConfig,
+  CoughSeverityConfig,
+  ChillsSeverityConfig,
+  SweatsSeverityConfig,
+  SoreThroatSeverityConfig,
   VomitingSeverityConfig,
-  InContactConfig,
-  CoughSneezeConfig,
-  HouseholdChildrenConfig,
-  ChildrenWithChildrenConfig,
-  YoungChildrenConfig,
-  PeopleInHouseholdConfig,
-  BedroomsConfig,
+  RunningNoseSeverityConfig,
+  SneezingSeverityConfig,
+  FatigueSeverityConfig,
+  AchesSeverityConfig,
+  TroubleBreathingSeverityConfig,
+  WhenFirstNoticedIllnessConfig,
+  HowLongToSickestConfig,
+  FluOrColdConfig,
+  WorseOrDifferentFromTypicalConfig,
+  AntiviralConfig,
+  WhenFirstStartedAntiviralConfig,
   FluShotConfig,
   FluShotDateConfig,
-  PreviousSeason,
-  AssignedSexConfig,
-  MedicalConditionConfig,
-  HealthCareWorkerConfig,
+  HowReceivedFluShotConfig,
+  AffectedRegularActivitiesConfig,
   SmokeTobaccoConfig,
   HouseholdTobaccoConfig,
-  InterferingConfig,
-  AntibioticsConfig,
-  AntiviralConfig,
-  AgeConfig,
-  RaceConfig,
+  TravelOutsideStateConfig,
+  TravelOutsideUSConfig,
+  SpentTimeCityConfig,
+  SpentTimeStateConfig,
+  SpentTimeZipCodeConfig,
+  WhichCountriesOutsideUSConfig,
+  PeopleInHouseholdConfig,
+  ChildrenAgeGroupsConfig,
+  ChildrenDaycarePreschoolConfig,
+  SomeoneDiagnosedConfig,
+  InContactConfig,
+  PublicTransportationConfig,
+  AroundSickChildrenConfig,
   BlueLineConfig,
   PinkWhenBlueConfig,
   PinkLineConfig,

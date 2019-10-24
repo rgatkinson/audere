@@ -12,19 +12,45 @@ import { SurveyQuestion } from "audere-lib/chillsQuestionConfig";
 
 interface Props {
   question: SurveyQuestion;
+  textVariablesFn?(): any;
 }
 
-class QuestionText extends React.Component<Props & WithNamespaces> {
-  shouldComponentUpdate(props: Props & WithNamespaces) {
-    return props.question != this.props.question;
+interface State {
+  textVariables: any;
+}
+
+class QuestionText extends React.Component<Props & WithNamespaces, State> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = { textVariables: null };
+  }
+
+  shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
+    return (
+      props.question != this.props.question ||
+      state.textVariables != this.state.textVariables
+    );
+  }
+
+  async componentDidMount() {
+    const { textVariablesFn } = this.props;
+    let textVariables;
+
+    if (!!textVariablesFn) {
+      textVariables = await textVariablesFn();
+      this.setState({ textVariables });
+    }
   }
 
   render() {
     const { question, t } = this.props;
-    const description = t("surveyDescription:" + question.description);
+    const description = t(
+      "surveyDescription:" + question.description,
+      this.state.textVariables
+    );
     const content = !!question.subquestion
       ? description
-      : t("surveyTitle:" + question.title);
+      : t("surveyTitle:" + question.title, this.state.textVariables);
 
     return (
       <View style={styles.container}>

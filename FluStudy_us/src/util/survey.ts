@@ -8,9 +8,13 @@ export function getAnswerType(questionType: string) {
     case "dropdown":
       return "selectedButtonKey";
     case "optionQuestion":
+    case "multiDropdown":
       return "options";
     case "datePicker":
+    case "monthPicker":
       return "dateInput";
+    case "zipCodeInput":
+      return "numberInput";
     case "textInput":
       return "textInput";
     case "text":

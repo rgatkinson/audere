@@ -24,8 +24,8 @@ import {
   GUTTER,
   HIGHLIGHT_STYLE,
   INPUT_HEIGHT,
-  LINK_COLOR,
-  SECONDARY_COLOR,
+  TEXT_COLOR,
+  PLACEHOLDER_COLOR,
 } from "../styles";
 
 interface DropDownModalProps {
@@ -78,7 +78,14 @@ class DropDownModal extends React.Component<
   _renderPicker() {
     const { placeholder, t } = this.props;
     return (
-      <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          borderBottomColor: BORDER_COLOR,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+        }}
+      >
         <Picker
           selectedValue={
             this.state.selected ? this.state.selected : placeholder
@@ -87,10 +94,16 @@ class DropDownModal extends React.Component<
           onValueChange={this._onValueChange}
         >
           {this.props.options.map(option => (
-            <Picker.Item label={t(option)} value={option} key={option} />
+            <Picker.Item
+              label={t(option)}
+              color={TEXT_COLOR}
+              value={option}
+              key={option}
+            />
           ))}
           <Picker.Item
             label={t(placeholder)}
+            color={PLACEHOLDER_COLOR}
             value={placeholder}
             key={placeholder}
           />
@@ -167,18 +180,6 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
 
   render() {
     const { highlighted, question, selected, t } = this.props;
-    const text = (
-      <Text
-        content={
-          !!selected
-            ? t(selected)
-            : t(question.placeholder) + t("common:device:iosHint")
-        }
-        bold={true}
-        style={{ color: !!selected ? SECONDARY_COLOR : LINK_COLOR }}
-      />
-    );
-
     return (
       <View style={[styles.container, highlighted && HIGHLIGHT_STYLE]}>
         {Platform.OS === "ios" && (
@@ -186,7 +187,14 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
             style={styles.pickerContainer}
             onPress={this._openPicker}
           >
-            {text}
+            <Text
+              content={
+                !!selected
+                  ? t(selected)
+                  : t(question.placeholder) + t("common:device:iosHint")
+              }
+              style={{ color: !!selected ? TEXT_COLOR : PLACEHOLDER_COLOR }}
+            />
           </TouchableOpacity>
         )}
         <TranslatedModal

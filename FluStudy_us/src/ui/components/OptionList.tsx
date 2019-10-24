@@ -16,10 +16,7 @@ import { WithNamespaces, withNamespaces } from "react-i18next";
 import { connect } from "react-redux";
 import { getAnswer } from "../../util/survey";
 import { Action, updateAnswer, StoreState } from "../../store";
-import {
-  OptionQuestion,
-  SurveyQuestion,
-} from "audere-lib/chillsQuestionConfig";
+import { OptionQuestion } from "audere-lib/chillsQuestionConfig";
 import { Option } from "../../store/types";
 import Text from "./Text";
 import {
