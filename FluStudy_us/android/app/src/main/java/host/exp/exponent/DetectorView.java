@@ -38,9 +38,11 @@ import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import bolts.Capture;
 import host.exp.exponent.customview.AutoFitTextureView;
 import host.exp.exponent.env.ImageUtils;
 import host.exp.exponent.tflite.Classifier;
@@ -98,6 +100,7 @@ public class DetectorView extends LinearLayout implements
 
     private boolean computingDetection = false;
     private boolean isProcessingFrame = false;
+    private boolean isInterpreting = false;
     private boolean demoMode;
 
     private Matrix previewToModelTransform;
@@ -113,6 +116,9 @@ public class DetectorView extends LinearLayout implements
     protected int previewHeight = 0;
     private int screenHeight;
     private int screenWidth;
+
+    private List<Bitmap> phase2Bitmaps;
+    private InterpretationResult intermediateResult;
 
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -130,6 +136,9 @@ public class DetectorView extends LinearLayout implements
         } else {
             requestPermission();
         }
+        phase2Bitmaps = new ArrayList<Bitmap>();
+        intermediateResult = new InterpretationResult();
+        intermediateResult.requiredSamples = 4;
     }
 
     public void setDetectorListener(DetectorListener listener) {
@@ -242,15 +251,16 @@ public class DetectorView extends LinearLayout implements
             readyForNextImage();
             return;
         }
+        Log.d(TAG, "Process image");
         computingDetection = true;
 
         Trace.beginSection("processImage");
         previewBitmap.setPixels(getRgbBytes(), 0, previewWidth, 0, 0, previewWidth, previewHeight);
 
-        readyForNextImage();
-
         final Canvas canvas = new Canvas(boxModelBitmap);
         canvas.drawBitmap(previewBitmap, previewToModelTransform, null);
+
+        readyForNextImage();
 
         runInBackground(
                 new Runnable() {
@@ -276,53 +286,65 @@ public class DetectorView extends LinearLayout implements
 
                         ImageFilter.FilterResult filterResult = null;
 
-                        detectorListener.onRDTDetected(captureResult, interpretationTracker.getInterpretationResult(), filterResult);
+                        detectorListener.onRDTDetected(captureResult, intermediateResult, filterResult);
 
                         if (interpretationModelBitmap != null) {
                             filterResult = imageFilter.validateImage(rdtTracker.getRdtBitmap());
                             if (filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
-                                final long interpretationStartTimeMs = SystemClock.uptimeMillis();
-                                final List<Classifier.Recognition> phase2Results = interpretationDetector.recognizeImage(interpretationModelBitmap);
+                                intermediateResult.samples = intermediateResult.samples + 1;
+                                detectorListener.onRDTDetected(captureResult, intermediateResult, filterResult);
+                                phase2Bitmaps.add(Bitmap.createBitmap(interpretationModelBitmap));
 
-                                final List<Classifier.Recognition> phase2MappedRecognitions = filterResults(INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API, phase2Results, false);
-                                interpretationTracker.trackResults(phase2MappedRecognitions);
-                                Log.i(TAG, "Phase 2 processing time: " +  (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
-                                detectorListener.onRDTDetected(captureResult, interpretationTracker.getInterpretationResult(), filterResult);
+                                if (intermediateResult.samples == intermediateResult.requiredSamples) {
+                                    interpretBitmaps(previewBitmap, captureResult, filterResult);
+                                }
                             }
-
-                        }
-
-                        if (interpretationTracker.shouldSendResults()) {
-                            // This is expensive, only do base64 encoding once
-                            captureResult.image = getBase64Encoding(previewBitmap);
-                            detectorListener.onRDTDetected(
-                                    captureResult,
-                                    interpretationTracker.getInterpretationResult(),
-                                    filterResult);
                         }
 
                         computingDetection = false;
                         Trace.endSection();
                     }
-
-                    private List<Classifier.Recognition> filterResults(
-                            float minimumConfidence, List<Classifier.Recognition> results, boolean toPreviewTransform) {
-                        final List<Classifier.Recognition> mappedRecognitions = new LinkedList<Classifier.Recognition>();
-                        for (final Classifier.Recognition result : results) {
-                            final RectF location = result.getLocation();
-                            if (location != null && result.getConfidence() >= minimumConfidence) {
-
-                                if (toPreviewTransform) {
-                                    modelToPreviewTransform.mapRect(location);
-                                    result.setLocation(location);
-                                }
-                                mappedRecognitions.add(result);
-                            }
-                        }
-                        return mappedRecognitions;
-                    }
                 });
         Trace.endSection();
+    }
+
+    private List<Classifier.Recognition> filterResults(
+            float minimumConfidence, List<Classifier.Recognition> results, boolean toPreviewTransform) {
+        final List<Classifier.Recognition> mappedRecognitions = new LinkedList<Classifier.Recognition>();
+        for (final Classifier.Recognition result : results) {
+            final RectF location = result.getLocation();
+            if (location != null && result.getConfidence() >= minimumConfidence) {
+
+                if (toPreviewTransform) {
+                    modelToPreviewTransform.mapRect(location);
+                    result.setLocation(location);
+                }
+                mappedRecognitions.add(result);
+            }
+        }
+        return mappedRecognitions;
+    }
+
+    private void interpretBitmaps(Bitmap previewBitmap, CaptureResult captureResult, ImageFilter.FilterResult filterResult) {
+        isInterpreting = true;
+        final long interpretationStartTimeMs = SystemClock.uptimeMillis();
+
+        detectorListener.onRDTInterpreting();
+        cameraController.onPause();
+
+        for (Bitmap bitmap : phase2Bitmaps) {
+            final List<Classifier.Recognition> phase2Results = interpretationDetector.recognizeImage(bitmap);
+
+            final List<Classifier.Recognition> phase2MappedRecognitions = filterResults(INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API, phase2Results, false);
+            interpretationTracker.trackResults(phase2MappedRecognitions);
+        }
+
+        captureResult.image = getBase64Encoding(previewBitmap);
+        InterpretationResult interpretationResult = interpretationTracker.getInterpretationResult();
+
+        Log.i(TAG, "Phase 2 processing time: " +  (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
+        detectorListener.onRDTDetected(captureResult, interpretationResult, filterResult);
+
     }
 
     private String getBase64Encoding(Bitmap bitmap) {
@@ -366,11 +388,10 @@ public class DetectorView extends LinearLayout implements
                 return;
             }
 
-            if (isProcessingFrame) {
+            if (isProcessingFrame || isInterpreting) {
                 image.close();
                 return;
             }
-
             isProcessingFrame = true;
 
             Trace.beginSection("imageAvailable");
@@ -566,5 +587,6 @@ public class DetectorView extends LinearLayout implements
                 InterpretationResult interpretationResult,
                 ImageFilter.FilterResult filterResult
         );
+        void onRDTInterpreting();
     }
 }

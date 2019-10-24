@@ -112,6 +112,14 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         callReactCallback("RDTCaptured", event);
     }
 
+    @Override
+    public void onRDTInterpreting() {
+        WritableMap args = Arguments.createMap();
+        args.putInt("timeTaken", 0); // TODO
+        callReactCallback("RDTInterpreting", args);
+    }
+
+
     private WritableArray getLocationArray(float[] location) {
         WritableArray boundary = new WritableNativeArray();
         for (int i = 0; i < location.length; i += 2) {

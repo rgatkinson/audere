@@ -332,6 +332,7 @@ public class CameraController {
         try {
             cameraOpenCloseLock.acquire();
             if (null != captureSession) {
+                captureSession.stopRepeating();
                 captureSession.close();
                 captureSession = null;
             }
@@ -343,6 +344,8 @@ public class CameraController {
                 previewReader.close();
                 previewReader = null;
             }
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
         } catch (final InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
@@ -359,13 +362,15 @@ public class CameraController {
 
     /** Stops the background thread and its {@link Handler}. */
     private void stopBackgroundThread() {
-        backgroundThread.quitSafely();
-        try {
-            backgroundThread.join();
-            backgroundThread = null;
-            backgroundHandler = null;
-        } catch (final InterruptedException e) {
-            Log.e(TAG, e.toString());
+        if (backgroundThread != null) {
+            backgroundThread.quitSafely();
+            try {
+                backgroundThread.join();
+                backgroundThread = null;
+                backgroundHandler = null;
+            } catch (final InterruptedException e) {
+                Log.e(TAG, e.toString());
+            }
         }
     }
 
