@@ -294,8 +294,7 @@
   },
   "StripInTube": {
     "title": "Put test strip in tube",
-    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\nIn the meantime, please answer some questions so we can better understand how this illness has affected you.",
-    "startTimer": "Start Timer"
+    "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\nIn the meantime, please answer some questions so we can better understand how this illness has affected you."
   },
   "WhatSymptoms": {
     "title": "Symptom Survey",

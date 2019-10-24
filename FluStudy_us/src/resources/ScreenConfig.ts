@@ -460,7 +460,6 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
-    footer: [],
     key: "FirstTimer",
   },
   {
@@ -502,15 +501,11 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc" },
       },
-    ],
-    footer: [
       {
         tag: ContinueButton,
         props: {
           dispatchOnNext: () => setTenMinuteStartTime(),
           next: "WhatSymptoms",
-          label: "startTimer",
-          showButtonStyle: true,
         },
       },
     ],
@@ -694,7 +689,6 @@ export const Screens: ScreenConfig[] = [
         },
       },
     ],
-    footer: [],
     key: "ThankYouSurvey",
   },
   {
