@@ -454,7 +454,7 @@ export const Screens: ScreenConfig[] = [
         tag: SelectableComponent,
         props: {
           components: [
-            { tag: ContinueButton },
+            null,
             { tag: ContinueButton, props: { next: "RemoveSwabFromTube" } },
           ],
           componentSelectorProp: "oneMinuteTimerDone",
@@ -678,7 +678,7 @@ export const Screens: ScreenConfig[] = [
             [
               { tag: Title, props: { center: false } },
               { tag: ScreenText, props: { label: "desc" } },
-              { tag: ContinueButton },
+              null,
             ],
             [
               { tag: Title, props: { center: false, label: "titleTimerUp" } },
