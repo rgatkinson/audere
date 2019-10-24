@@ -106,6 +106,7 @@ const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
 const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
 const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
+const PREDICATE_DURATION_LONG = 3000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
 const INSTRUCTION_DURATION_OKTEXT = 1000;
 const RDT_ASPECT_RATIO = 5.0 / 87;
@@ -126,7 +127,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     flashEnabledAutomatically: false,
     fps: 0,
     instructionMsg: "centerStrip",
-    instructionIsOK: false,
     appState: "",
     supportsTorchMode: false,
     frameImageScale: 1,
@@ -150,9 +150,9 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
     exposureFlash: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripFound &&
+        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.UNDER_EXPOSED,
-      duration: 3000,
+      duration: PREDICATE_DURATION_LONG,
       action: () =>
         this.setState({
           flashEnabled: true,
@@ -162,6 +162,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     },
     underExposed: {
       predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.UNDER_EXPOSED,
       duration: PREDICATE_DURATION_NORMAL,
       action: () =>
@@ -172,11 +173,22 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     },
     overExposed: {
       predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
       duration: PREDICATE_DURATION_NORMAL,
       action: () =>
         this._addInstructionRequest("exposure", "overExposed", "overExposed"),
       inaction: () => this._removeInstructionRequest("exposure", "overExposed"),
+      cooldown: 0,
+    },
+    holdSteady: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.testStripDetected,
+      duration: 0,
+      action: () =>
+        this._addInstructionRequest("holdSteady", "holdSteady", "holdSteady"),
+      inaction: () =>
+        this._removeInstructionRequest("holdSteady", "holdSteady"),
       cooldown: 0,
     },
   };
@@ -367,15 +379,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
       let instruction = this._feedbackInstructionRequests[category];
       delete this._feedbackInstructionRequests[category];
 
-      // If the current instruction is being removed, set it to "green" state
-      if (instruction.msg === this.state.instructionMsg) {
-        this.setState({ instructionIsOK: true });
-        this._instructionLastUpdate =
-          Date.now() -
-          INSTRUCTION_DURATION_NORMAL +
-          INSTRUCTION_DURATION_OKTEXT;
-      }
-
       this._updateInstructionIfNeeded();
     }
   }
@@ -420,7 +423,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     // Choose the instruction that:
     // - is primary, OR
     // - is the most recently requested, OR
-    // - isn't "no fidicual found" (since that's quite common and can create noise)
+    // - isn't "holdSteady" (since that's lower priority than any other eligible messages)
     for (let key in this._feedbackInstructionRequests) {
       const instructionRequest = this._feedbackInstructionRequests[key];
       if (
@@ -428,7 +431,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
         instructionRequest.lastRequested &&
         (instructionRequest.primary ||
           !instruction.lastRequested ||
-          instructionRequest.lastRequested > instruction.lastRequested)
+          instructionRequest.lastRequested > instruction.lastRequested ||
+          (instruction.issue && instruction.issue === "holdSteady"))
       ) {
         instruction = instructionRequest;
       }
@@ -442,7 +446,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     debug("Setting instruction text: " + instructionToShow.msg);
     this.setState({
       instructionMsg: instructionToShow.msg,
-      instructionIsOK: false,
     });
     this._instructionLastUpdate = instructionLastUpdate;
   }
@@ -496,35 +499,16 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _updateFeedback = (args: RDTCapturedArgs) => {
-    const { exposureResult } = args;
-
-    this.setState({
-      exposureResult,
-    });
-
     for (let key in this._feedbackChecks) {
       const check = this._feedbackChecks[key];
-      const state = this._feedbackCheckState[key] || {
-        active: false,
-        avgCorrectness:
-          check.numCorrect && check.numSamples
-            ? check.numCorrect / check.numSamples
-            : undefined,
-      };
+      const state = this._feedbackCheckState[key] || { active: false };
 
       const success = check.predicate(args);
-      let succeeded = success;
-      if (check.numCorrect && check.numSamples && state.avgCorrectness) {
-        state.avgCorrectness =
-          (state.avgCorrectness * (check.numSamples - 1)) / check.numSamples +
-          (success ? 1 / check.numSamples : 0);
-        succeeded = state.avgCorrectness >= check.numCorrect / check.numSamples;
-      }
-
-      if (!succeeded) {
+      if (!success) {
         if (state.lastRan && check.inaction) {
           check.inaction();
         }
+
         this._feedbackCheckState[key] = {
           ...state,
           active: false,
@@ -533,6 +517,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
         };
         continue;
       }
+
       const now = Date.now();
       if (!state.active || state.started === undefined) {
         this._feedbackCheckState[key] = {
@@ -893,8 +878,8 @@ const styles = StyleSheet.create({
     backgroundColor: PRIMARY_COLOR,
     borderRadius: 10,
     flexDirection: "row",
-    marginHorizontal: "5%",
-    marginTop: "5%",
+    margin: GUTTER,
+    flex: 1,
   },
   instructionTextContainer: {
     alignItems: "center",
