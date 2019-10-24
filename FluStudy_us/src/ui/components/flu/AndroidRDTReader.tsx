@@ -19,6 +19,7 @@ import {
   NavigationScreenProp,
   StackActions,
 } from "react-navigation";
+import { Feather } from "@expo/vector-icons";
 import ProgressCircle from "react-native-progress-circle";
 import Spinner from "react-native-loading-spinner-overlay";
 import { WithNamespaces, withNamespaces } from "react-i18next";
@@ -48,12 +49,16 @@ import {
   RDTReaderExposureResult,
 } from "audere-lib/chillsProtocol";
 import {
+  BUTTON_BORDER_RADIUS,
   GUTTER,
   SCREEN_MARGIN,
   PRIMARY_COLOR,
   PROGRESS_COLOR,
   RED,
   REGULAR_TEXT,
+  SECONDARY_COLOR,
+  SMALL_TEXT,
+  THICK_BORDER_WIDTH,
 } from "../../styles";
 import { savePhoto } from "../../../store";
 import {
@@ -114,6 +119,7 @@ function debug(s: string) {
 
 class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   state = {
+    showInstructions: true,
     spinner: true,
     exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
     flashEnabled: false,
@@ -225,37 +231,44 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   };
 
   _setTimer() {
-    // Timeout after 30 seconds
     this._clearTimer();
-    this._timer = global.setTimeout(() => {
-      const { dispatch, fallback, isFocused, navigation } = this.props;
-      if (this.state.progress < 0.5 && !this._interpreting && isFocused) {
-        logFirebaseEvent(AppEvents.RDT_TIMEOUT);
-        dispatch(setRDTCaptureTime(false));
-        dispatch(setShownRDTFailWarning(false));
-        navigation.dispatch(
-          StackActions.push({
-            routeName: fallback,
-            params: {
-              supportsTorchMode: this.state.supportsTorchMode,
-            },
-          })
-        );
-        dispatch(setRDTPhoto(""));
-        dispatch(setRDTPhotoHC(""));
-        dispatch(
-          setRDTReaderResult(
-            this._lastRDTReaderResult || { testStripFound: false }
-          )
-        );
-        dispatch(
-          setRDTCaptureInfo(
-            this.state.supportsTorchMode && this.state.flashEnabled,
-            this.state.supportsTorchMode && this.state.flashEnabledAutomatically
-          )
-        );
-      }
-    }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
+    if (this.state.showInstructions) {
+      this._timer = global.setTimeout(() => {
+        this._closeInstructions();
+      }, 8000);
+    } else {
+      // Timeout after 30 seconds
+      this._timer = global.setTimeout(() => {
+        const { dispatch, fallback, isFocused, navigation } = this.props;
+        if (this.state.progress < 0.5 && !this._interpreting && isFocused) {
+          logFirebaseEvent(AppEvents.RDT_TIMEOUT);
+          dispatch(setRDTCaptureTime(false));
+          dispatch(setShownRDTFailWarning(false));
+          navigation.dispatch(
+            StackActions.push({
+              routeName: fallback,
+              params: {
+                supportsTorchMode: this.state.supportsTorchMode,
+              },
+            })
+          );
+          dispatch(setRDTPhoto(""));
+          dispatch(setRDTPhotoHC(""));
+          dispatch(
+            setRDTReaderResult(
+              this._lastRDTReaderResult || { testStripFound: false }
+            )
+          );
+          dispatch(
+            setRDTCaptureInfo(
+              this.state.supportsTorchMode && this.state.flashEnabled,
+              this.state.supportsTorchMode &&
+                this.state.flashEnabledAutomatically
+            )
+          );
+        }
+      }, getRemoteConfig("rdtTimeoutSeconds") * 1000);
+    }
   }
 
   _clearTimer() {
@@ -677,6 +690,50 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     );
   };
 
+  _closeInstructions = () => {
+    this.setState({ showInstructions: false });
+    this._setTimer();
+  };
+
+  _getInstructionOverlay = () => {
+    if (!this.state.showInstructions) {
+      return null;
+    }
+
+    const { t } = this.props;
+    return (
+      <View
+        style={[
+          styles.overlayContainer,
+          { alignItems: "flex-start", paddingTop: "5%" },
+        ]}
+      >
+        <View style={styles.instructionOverlayContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={this._closeInstructions}
+          >
+            <Feather
+              color={SECONDARY_COLOR}
+              name="x"
+              size={40}
+              style={{ margin: GUTTER / 4 }}
+            />
+          </TouchableOpacity>
+          <View style={styles.instructionOverlay}>
+            <Text content={t("instructions")} bold={true} center={true} />
+            <Text
+              content={t("instructionsSubText")}
+              center={true}
+              style={{ fontSize: SMALL_TEXT, paddingVertical: GUTTER }}
+            />
+            <Image source={{ uri: "holdphone" }} style={styles.overlayImage} />
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   render() {
     const { isDemo, isFocused, t } = this.props;
     if (!isFocused) {
@@ -751,6 +808,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
           </View>
         </View>
         {this._getRdtOutline()}
+        {this._getInstructionOverlay()}
         <MultiTapContainer
           active={isDemo}
           style={styles.touchableLeft}
@@ -795,6 +853,26 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     flex: 1,
     marginHorizontal: -SCREEN_MARGIN,
+  },
+  overlayImage: {
+    aspectRatio: 1,
+    width: "85%",
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+  },
+  instructionOverlayContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    borderColor: SECONDARY_COLOR,
+    borderRadius: BUTTON_BORDER_RADIUS,
+    borderWidth: THICK_BORDER_WIDTH,
+    width: "90%",
+  },
+  instructionOverlay: {
+    alignItems: "center",
+    paddingHorizontal: GUTTER,
+    paddingBottom: GUTTER,
   },
   overlayContainer: {
     alignItems: "center",

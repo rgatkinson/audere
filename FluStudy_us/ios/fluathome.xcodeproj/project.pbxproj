@@ -116,6 +116,9 @@
 		EA487AF123620A3F00A3079F /* scanthestrip@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AE823620A3E00A3079F /* scanthestrip@2x.png */; };
 		EA487AF223620A3F00A3079F /* scanthestrip@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AEF23620A3E00A3079F /* scanthestrip@3x.png */; };
 		EA487AF323620A3F00A3079F /* scanthestrip.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AF023620A3F00A3079F /* scanthestrip.png */; };
+		EA487B0023620CD800A3079F /* holdphone@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AF723620CD800A3079F /* holdphone@2x.png */; };
+		EA487B0123620CD800A3079F /* holdphone@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AFE23620CD800A3079F /* holdphone@3x.png */; };
+		EA487B0223620CD800A3079F /* holdphone.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AFF23620CD800A3079F /* holdphone.png */; };
 		EA88CC3E22FB51DB00F198BD /* blueonly@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA88CC3522FB51DB00F198BD /* blueonly@2x.png */; };
 		EA88CC3F22FB51DB00F198BD /* blueonly.png in Resources */ = {isa = PBXBuildFile; fileRef = EA88CC3C22FB51DB00F198BD /* blueonly.png */; };
 		EA88CC4022FB51DB00F198BD /* blueonly@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA88CC3D22FB51DB00F198BD /* blueonly@3x.png */; };
@@ -389,6 +392,9 @@
 		EA487AE823620A3E00A3079F /* scanthestrip@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scanthestrip@2x.png"; path = "../../../assets/images/scanthestrip@2x.png"; sourceTree = "<group>"; };
 		EA487AEF23620A3E00A3079F /* scanthestrip@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scanthestrip@3x.png"; path = "../../../assets/images/scanthestrip@3x.png"; sourceTree = "<group>"; };
 		EA487AF023620A3F00A3079F /* scanthestrip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = scanthestrip.png; path = ../../../assets/images/scanthestrip.png; sourceTree = "<group>"; };
+		EA487AF723620CD800A3079F /* holdphone@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "holdphone@2x.png"; path = "../../../assets/images/holdphone@2x.png"; sourceTree = "<group>"; };
+		EA487AFE23620CD800A3079F /* holdphone@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "holdphone@3x.png"; path = "../../../assets/images/holdphone@3x.png"; sourceTree = "<group>"; };
+		EA487AFF23620CD800A3079F /* holdphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = holdphone.png; path = ../../../assets/images/holdphone.png; sourceTree = "<group>"; };
 		EA88CC3522FB51DB00F198BD /* blueonly@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blueonly@2x.png"; path = "../../../assets/images/blueonly@2x.png"; sourceTree = "<group>"; };
 		EA88CC3C22FB51DB00F198BD /* blueonly.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blueonly.png; path = ../../../assets/images/blueonly.png; sourceTree = "<group>"; };
 		EA88CC3D22FB51DB00F198BD /* blueonly@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blueonly@3x.png"; path = "../../../assets/images/blueonly@3x.png"; sourceTree = "<group>"; };
@@ -577,6 +583,9 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				EA487AFF23620CD800A3079F /* holdphone.png */,
+				EA487AF723620CD800A3079F /* holdphone@2x.png */,
+				EA487AFE23620CD800A3079F /* holdphone@3x.png */,
 				EA487AF023620A3F00A3079F /* scanthestrip.png */,
 				EA487AE823620A3E00A3079F /* scanthestrip@2x.png */,
 				EA487AEF23620A3E00A3079F /* scanthestrip@3x.png */,
@@ -964,6 +973,7 @@
 			files = (
 				EAEBD31C22691AB7009815C6 /* welcome.png in Resources */,
 				EA487AF223620A3F00A3079F /* scanthestrip@3x.png in Resources */,
+				EA487B0023620CD800A3079F /* holdphone@2x.png in Resources */,
 				EAE02FA8229719A0000C88F6 /* yellowtriangle.png in Resources */,
 				EAEBD27322691AB7009815C6 /* welcome@3x.png in Resources */,
 				598F6C142280F61300B15B8B /* two.png in Resources */,
@@ -1010,6 +1020,7 @@
 				59109E6E22FA4547001543C8 /* splash.png in Resources */,
 				EAE02F9F22971991000C88F6 /* greentriangle.png in Resources */,
 				59EDB822229F0925001B7F12 /* setupkitbox@3x.png in Resources */,
+				EA487B0223620CD800A3079F /* holdphone.png in Resources */,
 				EAEBD2F722691AB7009815C6 /* finalthanks@2x.png in Resources */,
 				EAEBD30C22691AB7009815C6 /* takepictureteststrip@3x.png in Resources */,
 				59EA63EB22A03B1F009B45BD /* pinklineaboveblueline@3x.png in Resources */,
@@ -1037,6 +1048,7 @@
 				505A59842358F23A00A8505F /* bullet_rev@2x.png in Resources */,
 				59EDB81C229F0901001B7F12 /* scanbarcode.png in Resources */,
 				EAEBD2FC22691AB7009815C6 /* collectmucus@2x.png in Resources */,
+				EA487B0123620CD800A3079F /* holdphone@3x.png in Resources */,
 				EAEBD30322691AB7009815C6 /* removeteststrip.png in Resources */,
 				EAEBD32122691AB7009815C6 /* putswabintube.png in Resources */,
 				B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */,

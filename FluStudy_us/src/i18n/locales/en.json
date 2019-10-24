@@ -369,7 +369,9 @@
     "badOrientationPos": "Turn device to the right (clockwise)",
     "badOrientationNeg": "Turn device to the left (anti-clockwise)",
     "underExposed": "Turn on the flash or move to better lighting",
-    "overExposed": "Ensure test strip is on kit box or turn off the flash"
+    "overExposed": "Ensure test strip is on kit box or turn off the flash",
+    "instructions": "Hold your device directly over the test strip to scan",
+    "instructionsSubText": "Hold the device flat and steady"
   },
   "CameraSettings": {
     "title": "Camera access required",
