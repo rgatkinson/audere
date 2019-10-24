@@ -113,6 +113,9 @@
 		EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA054781220D289A00AC77FF /* libRCTPushNotification.a */; };
 		EA1DC5BC22833B9F002DA2A9 /* updatesettings.png in Resources */ = {isa = PBXBuildFile; fileRef = EA1DC5B222833B9E002DA2A9 /* updatesettings.png */; };
 		EA1DC5BD22833B9F002DA2A9 /* updatesettings@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA1DC5BA22833B9E002DA2A9 /* updatesettings@3x.png */; };
+		EA487AF123620A3F00A3079F /* scanthestrip@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AE823620A3E00A3079F /* scanthestrip@2x.png */; };
+		EA487AF223620A3F00A3079F /* scanthestrip@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AEF23620A3E00A3079F /* scanthestrip@3x.png */; };
+		EA487AF323620A3F00A3079F /* scanthestrip.png in Resources */ = {isa = PBXBuildFile; fileRef = EA487AF023620A3F00A3079F /* scanthestrip.png */; };
 		EA88CC3E22FB51DB00F198BD /* blueonly@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA88CC3522FB51DB00F198BD /* blueonly@2x.png */; };
 		EA88CC3F22FB51DB00F198BD /* blueonly.png in Resources */ = {isa = PBXBuildFile; fileRef = EA88CC3C22FB51DB00F198BD /* blueonly.png */; };
 		EA88CC4022FB51DB00F198BD /* blueonly@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA88CC3D22FB51DB00F198BD /* blueonly@3x.png */; };
@@ -383,6 +386,9 @@
 		EA1DC5B222833B9E002DA2A9 /* updatesettings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = updatesettings.png; path = ../../../assets/images/updatesettings.png; sourceTree = "<group>"; };
 		EA1DC5BA22833B9E002DA2A9 /* updatesettings@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "updatesettings@3x.png"; path = "../../../assets/images/updatesettings@3x.png"; sourceTree = "<group>"; };
 		EA1DC5BB22833B9F002DA2A9 /* updatesettings@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "updatesettings@2x.png"; path = "../../../assets/images/updatesettings@2x.png"; sourceTree = "<group>"; };
+		EA487AE823620A3E00A3079F /* scanthestrip@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scanthestrip@2x.png"; path = "../../../assets/images/scanthestrip@2x.png"; sourceTree = "<group>"; };
+		EA487AEF23620A3E00A3079F /* scanthestrip@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scanthestrip@3x.png"; path = "../../../assets/images/scanthestrip@3x.png"; sourceTree = "<group>"; };
+		EA487AF023620A3F00A3079F /* scanthestrip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = scanthestrip.png; path = ../../../assets/images/scanthestrip.png; sourceTree = "<group>"; };
 		EA88CC3522FB51DB00F198BD /* blueonly@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blueonly@2x.png"; path = "../../../assets/images/blueonly@2x.png"; sourceTree = "<group>"; };
 		EA88CC3C22FB51DB00F198BD /* blueonly.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blueonly.png; path = ../../../assets/images/blueonly.png; sourceTree = "<group>"; };
 		EA88CC3D22FB51DB00F198BD /* blueonly@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blueonly@3x.png"; path = "../../../assets/images/blueonly@3x.png"; sourceTree = "<group>"; };
@@ -571,6 +577,9 @@
 		B563865B1DB96A5E00A0598C /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
+				EA487AF023620A3F00A3079F /* scanthestrip.png */,
+				EA487AE823620A3E00A3079F /* scanthestrip@2x.png */,
+				EA487AEF23620A3E00A3079F /* scanthestrip@3x.png */,
 				EA88CC3C22FB51DB00F198BD /* blueonly.png */,
 				EA88CC3522FB51DB00F198BD /* blueonly@2x.png */,
 				EA88CC3D22FB51DB00F198BD /* blueonly@3x.png */,
@@ -954,6 +963,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EAEBD31C22691AB7009815C6 /* welcome.png in Resources */,
+				EA487AF223620A3F00A3079F /* scanthestrip@3x.png in Resources */,
 				EAE02FA8229719A0000C88F6 /* yellowtriangle.png in Resources */,
 				EAEBD27322691AB7009815C6 /* welcome@3x.png in Resources */,
 				598F6C142280F61300B15B8B /* two.png in Resources */,
@@ -970,6 +980,7 @@
 				502CB2C022C13E6500A86E23 /* threelines@3x.png in Resources */,
 				EAEBD32E22691AB7009815C6 /* welcome@2x.png in Resources */,
 				EA88CC4022FB51DB00F198BD /* blueonly@3x.png in Resources */,
+				EA487AF123620A3F00A3079F /* scanthestrip@2x.png in Resources */,
 				EAE02FA9229719A0000C88F6 /* yellowsquare.png in Resources */,
 				502CB2FA22C3F00700A86E23 /* rotationwhite@3x.png in Resources */,
 				598F6C132280F61300B15B8B /* one.png in Resources */,
@@ -1039,6 +1050,7 @@
 				EAEBD2C222691AB7009815C6 /* removeteststrip@3x.png in Resources */,
 				502CB2C522C13E6500A86E23 /* oneline@3x.png in Resources */,
 				507F74CB22BC5D8F0055CE82 /* distanceyellow.png in Resources */,
+				EA487AF323620A3F00A3079F /* scanthestrip.png in Resources */,
 				598638CF22C6BAAD00138905 /* fluathome_whitelogo.png in Resources */,
 				EAEBD31822691AB7009815C6 /* teststripdetail@2x.png in Resources */,
 				EAEBD2F322691AB7009815C6 /* preparetube.png in Resources */,
