@@ -9,6 +9,7 @@ const today = new Date();
 export const inputs = {
   [strings.barcode.placeholder]: "00100100",
   [strings.barcode.secondPlaceholder]: "00100100",
+  [strings.EmailConfirmation.placeholder]: "juan@auderenow.org",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.feelingFeverish,
     strings.surveyOption.headache,
@@ -43,13 +44,13 @@ export const inputs = {
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.yes,
   [strings.surveyTitle.interfering]: strings.surveyButton.yes,
   [strings.surveyTitle.antibiotics]: strings.surveyButton.yes,
+  [strings.surveyTitle.antiviral]: strings.surveyButton.yes,
   [strings.surveyTitle.age]: strings.surveyButton["18to19"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.male,
   [strings.surveyTitle.race]: [
     strings.surveyOption.americanIndianOrAlaskaNative,
-    strings.surveyOption.asian,
+    strings.surveyOption.other,
   ],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
-  [strings.surveyTitle.TestFeedback]: strings.surveyButton.easyCorrect,
 };

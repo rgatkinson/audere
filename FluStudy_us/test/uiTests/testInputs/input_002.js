@@ -8,6 +8,7 @@ import strings from "../../../src/i18n/locales/en.json";
 export const inputs = {
   [strings.barcode.placeholder]: "00200200",
   [strings.barcode.secondPlaceholder]: "00200200",
+  [strings.EmailConfirmation.placeholder]: "jean@auderenow.org",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.cough,
     strings.surveyOption.muscleOrBodyAches,
@@ -37,13 +38,10 @@ export const inputs = {
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.no,
   [strings.surveyTitle.interfering]: strings.surveyButton.no,
   [strings.surveyTitle.antibiotics]: strings.surveyButton.no,
+  [strings.surveyTitle.antiviral]: strings.surveyButton.no,
   [strings.surveyTitle.age]: strings.surveyButton["20to24"],
   [strings.surveyTitle.assignedSex]: strings.surveyButton.female,
-  [strings.surveyTitle.race]: [
-    strings.surveyOption.white,
-    strings.surveyOption.asian,
-  ],
+  [strings.surveyTitle.race]: [strings.surveyOption.asian],
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.yesAboveBlue,
-  [strings.surveyTitle.TestFeedback]: strings.surveyButton.confusingCorrect,
 };

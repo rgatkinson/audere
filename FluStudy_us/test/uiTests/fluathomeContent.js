@@ -65,7 +65,7 @@ export const content = [
     title: strings.ManualEntry.title,
     button: {
       name: strings.common.button.continue + " ",
-      onClick: "ManualConfirmation",
+      onClick: "EmailConfirmation",
     },
     key: "ManualEntry",
     input: [
@@ -81,15 +81,6 @@ export const content = [
         type: "text",
       },
     ],
-  },
-  {
-    type: "basic",
-    title: strings.ManualConfirmation.title,
-    button: {
-      name: strings.common.button.continue + " ",
-      onClick: "EmailConfirmation",
-    },
-    key: "ManualConfirmation",
   },
   {
     type: "input",
