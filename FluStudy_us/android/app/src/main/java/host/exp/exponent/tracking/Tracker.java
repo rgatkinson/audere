@@ -66,6 +66,7 @@ public abstract class Tracker {
                 ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
                 : String.format("%.2f", (100 * recognition.detectionConfidence));
     }
+
     protected static class TrackedRecognition {
         RectF location;
         float detectionConfidence;

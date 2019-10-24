@@ -98,10 +98,8 @@ public class DetectorView extends LinearLayout implements
     private Bitmap boxModelBitmap = null;
     private Bitmap interpretationModelBitmap = null;
 
-    private boolean computingDetection = false;
+    private volatile boolean computingDetection = false;
     private boolean isProcessingFrame = false;
-    private boolean isInterpreting = false;
-    private boolean demoMode;
 
     private Matrix previewToModelTransform;
     private Matrix modelToPreviewTransform;
@@ -143,10 +141,6 @@ public class DetectorView extends LinearLayout implements
 
     public void setDetectorListener(DetectorListener listener) {
         this.detectorListener = listener;
-    }
-
-    public void setDemoMode(boolean demoMode) {
-        this.demoMode = demoMode;
     }
 
     public void onPreviewSizeChosen(final Size size, final int rotation, boolean supportsTorchMode) {
@@ -255,7 +249,10 @@ public class DetectorView extends LinearLayout implements
         computingDetection = true;
 
         Trace.beginSection("processImage");
+
+        Trace.beginSection("copy pixels");
         previewBitmap.setPixels(getRgbBytes(), 0, previewWidth, 0, 0, previewWidth, previewHeight);
+        Trace.endSection();
 
         final Canvas canvas = new Canvas(boxModelBitmap);
         canvas.drawBitmap(previewBitmap, previewToModelTransform, null);
@@ -326,7 +323,6 @@ public class DetectorView extends LinearLayout implements
     }
 
     private void interpretBitmaps(Bitmap previewBitmap, CaptureResult captureResult, ImageFilter.FilterResult filterResult) {
-        isInterpreting = true;
         final long interpretationStartTimeMs = SystemClock.uptimeMillis();
 
         detectorListener.onRDTInterpreting();
@@ -339,7 +335,7 @@ public class DetectorView extends LinearLayout implements
             interpretationTracker.trackResults(phase2MappedRecognitions);
         }
 
-        captureResult.image = getBase64Encoding(previewBitmap);
+        captureResult.image = getBase64Encoding(previewBitmap); // This is expensive
         InterpretationResult interpretationResult = interpretationTracker.getInterpretationResult();
 
         Log.i(TAG, "Phase 2 processing time: " +  (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
@@ -381,6 +377,10 @@ public class DetectorView extends LinearLayout implements
             rgbBytes = new int[previewWidth * previewHeight];
         }
 
+        if (isProcessingFrame) {
+            return;
+        }
+
         try {
             final Image image = reader.acquireLatestImage();
 
@@ -388,10 +388,6 @@ public class DetectorView extends LinearLayout implements
                 return;
             }
 
-            if (isProcessingFrame || isInterpreting) {
-                image.close();
-                return;
-            }
             isProcessingFrame = true;
 
             Trace.beginSection("imageAvailable");
@@ -427,7 +423,6 @@ public class DetectorView extends LinearLayout implements
                             isProcessingFrame = false;
                         }
                     };
-
             processImage();
         } catch (final Exception e) {
             Log.e(TAG, "Exception in onImageAvailable: " + e.toString());

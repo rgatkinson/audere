@@ -22,7 +22,6 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
 
     private Activity mActivity;
     private DetectorView detectorView;
-    private boolean demoMode = false;
 
     public RDTReader(Context context, Activity activity) {
         super(context);
@@ -38,7 +37,6 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
 
                 detectorView = findViewById(R.id.detector_view);
                 detectorView.setDetectorListener(self);
-                detectorView.setDemoMode(demoMode);
                 requestLayout();
             }
         });
@@ -166,13 +164,6 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
     public void setFlashEnabled(boolean flashEnabled) {
         if (detectorView != null) {
             detectorView.setFlashEnabled(flashEnabled);
-        }
-    }
-
-    public void setDemoMode(boolean demoMode) {
-        this.demoMode = demoMode;
-        if (detectorView != null) {
-            detectorView.setDemoMode(demoMode);
         }
     }
 }
