@@ -52,11 +52,6 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
         }
     }
 
-    @ReactProp(name = "demoMode")
-    public void setDemoMode(RDTReader view, boolean demoMode) {
-        view.setDemoMode(demoMode);
-    }
-
     @ReactProp(name = "flashEnabled")
     public void setFlashEnabled(RDTReader view, boolean flashEnabled) {
         view.setFlashEnabled(flashEnabled);
