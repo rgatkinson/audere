@@ -201,7 +201,7 @@ export async function android_select(driver, question, inputs, deviceInfo) {
 
 //Pick answer for select menu question (ios)
 export async function ios_select(driver, question, inputs) {
-  await driver.elementByAccessibilityId(question.link).click();
+  await driver.elementByAccessibilityId(question.link + " >").click();
   const pickerWheel = await driver.elementByClassName(
     "XCUIElementTypePickerWheel"
   );

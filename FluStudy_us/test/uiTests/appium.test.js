@@ -168,6 +168,14 @@ async function basic_screen(driver, screen_info, screens_visited) {
   if ("button" in screen_info) {
     await scroll_to_element(driver, deviceInfo, screen_info.button.name);
     await driver.elementByAccessibilityId(screen_info.button.name).click();
+    if (
+      //hack for START TIMER button click that isn't working
+      screen_info.button.name === strings.SwabInTube.startTimer.toUpperCase()
+    ) {
+      await new wd.TouchAction(driver)
+        .tap({ x: screen_x * 0.5, y: screen_y * 0.92 })
+        .perform();
+    }
 
     if (
       "iosPopupOnContinue" in screen_info &&
@@ -411,14 +419,15 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
   );
   screens_visited.push(screen_info.key);
 
-  await half_scroll(driver, deviceInfo);
   if (isDemo) {
     //tap until timer is bypassed
-    await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.93, 3);
+    await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.24, 3);
     while (
-      !(await driver.hasElementByAccessibilityId(screen_info.button.name))
+      !(await driver.hasElementByAccessibilityId(
+        strings.common.timer.timerDone
+      ))
     ) {
-      await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.93, 3);
+      await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.24, 3);
       driver.sleep(1000);
     }
   } else {
@@ -428,10 +437,7 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
       driver.sleep(1000);
     }
   }
-
-  await new wd.TouchAction(driver)
-    .tap({ x: screen_x * 0.5, y: screen_y * 0.9 })
-    .perform();
+  await driver.elementByAccessibilityId(screen_info.button.name).click();
   return screen_info.button.onClick;
 }
 

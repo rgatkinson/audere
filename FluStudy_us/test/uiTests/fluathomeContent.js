@@ -139,7 +139,7 @@ export const content = [
     type: "basic",
     title: strings.SwabInTube.title,
     button: {
-      name: strings.SwabInTube.startTimer + " ",
+      name: strings.SwabInTube.startTimer.toUpperCase(),
       onClick: "FirstTimer",
     },
     key: "SwabInTube",
@@ -148,7 +148,7 @@ export const content = [
     type: "timer",
     title: strings.FirstTimer.title,
     button: {
-      name: strings.common.button.continue.toUpperCase(),
+      name: strings.common.button.continue + " ",
       onClick: "RemoveSwabFromTube",
     },
     key: "FirstTimer",
@@ -175,7 +175,7 @@ export const content = [
     type: "basic",
     title: strings.StripInTube.title,
     button: {
-      name: strings.StripInTube.startTimer + " ",
+      name: strings.common.button.continue + " ",
       onClick: "WhatSymptoms",
     },
     key: "StripInTube",
@@ -490,7 +490,7 @@ export const content = [
     type: "timer",
     title: strings.ThankYouSurvey.title,
     button: {
-      name: strings.common.button.continue.toUpperCase(),
+      name: strings.common.button.continue + " ",
       onClick: "TestStripReady",
     },
     key: "ThankYouSurvey",
