@@ -9,7 +9,9 @@ import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import { getS3Config } from "../util/s3Config";
-import { DataPipelineService } from "../services/dataPipelineService";
+import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
+import { DataPipeline } from "../services/data/dataPipeline";
+import { DataPipelineService } from "../services/data/dataPipelineService";
 import AWS from "aws-sdk";
 import logger from "../util/logger";
 
@@ -18,7 +20,8 @@ import logger from "../util/logger";
  */
 export class CoughAsprenEndpoint {
   private readonly service: LazyAsync<AsprenImport>;
-  private pipeline: DataPipelineService;
+  private pipeline: DataPipeline;
+  private pipelineSvc: DataPipelineService;
 
   constructor(sql: SplitSql) {
     const secrets = new SecretConfig(sql);
@@ -28,7 +31,9 @@ export class CoughAsprenEndpoint {
       const client = new AsprenClient(s3, s3Config);
       return new AsprenImport(sql, client);
     });
-    this.pipeline = new DataPipelineService(sql);
+
+    this.pipeline = new CoughDataPipeline(sql.nonPii);
+    this.pipelineSvc = new DataPipelineService();
   }
 
   public importAsprenReports = async (req, res, next) => {
@@ -36,7 +41,7 @@ export class CoughAsprenEndpoint {
     await svc.importAsprenReports();
 
     logger.info("Refreshing derived schema");
-    await this.pipeline.refresh();
+    await this.pipelineSvc.refresh(this.pipeline);
     logger.info("Refresh complete");
 
     res.json({});

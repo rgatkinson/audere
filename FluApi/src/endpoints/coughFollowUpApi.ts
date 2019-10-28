@@ -5,7 +5,9 @@
 
 import * as AWS from "aws-sdk";
 import { CoughFollowUpClient } from "../external/coughFollowUpClient";
-import { DataPipelineService } from "../services/dataPipelineService";
+import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
+import { DataPipeline } from "../services/data/dataPipeline";
+import { DataPipelineService } from "../services/data/dataPipelineService";
 import { defineCoughModels } from "../models/db/cough";
 import { getS3Config } from "../util/s3Config";
 import { LazyAsync } from "../util/lazyAsync";
@@ -16,7 +18,8 @@ import logger from "../util/logger";
 
 export class CoughFollowUpEndpoint {
   private qualtricsImport: LazyAsync<QualtricsImport>;
-  private pipeline: DataPipelineService;
+  private pipeline: DataPipeline;
+  private pipelineSvc: DataPipelineService;
 
   constructor(sql: SplitSql) {
     const secrets = new SecretConfig(sql);
@@ -27,7 +30,8 @@ export class CoughFollowUpEndpoint {
       const client = new CoughFollowUpClient(s3, s3Config);
       return new QualtricsImport(models, client, sql);
     });
-    this.pipeline = new DataPipelineService(sql);
+    this.pipeline = new CoughDataPipeline(sql.nonPii);
+    this.pipelineSvc = new DataPipelineService();
   }
 
   public importFollowUps = async (req, res, next) => {
@@ -36,7 +40,7 @@ export class CoughFollowUpEndpoint {
     await svc.importFollowUpSurveys();
 
     logger.info("Refreshing derived schema");
-    await this.pipeline.refresh();
+    await this.pipelineSvc.refresh(this.pipeline);
     logger.info("Refreshing complete");
 
     res.json({});

@@ -23,7 +23,8 @@ import {
   SurveyNonPIIInfo,
   PhotoDocument,
 } from "audere-lib/dist/coughProtocol";
-import { DataPipelineService } from "../services/dataPipelineService";
+import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
+import { DataPipelineService } from "../services/data/dataPipelineService";
 import { SecretConfig } from "../util/secretsConfig";
 import { getS3Config } from "../util/s3Config";
 import { S3Uploader } from "../external/s3Uploader";
@@ -334,10 +335,11 @@ export class CoughEndpoint {
   };
 
   private async updateDerived(progress: () => void, reqId: string) {
-    const service = new DataPipelineService(this.sql, progress);
+    const pipeline = new CoughDataPipeline(this.sql.nonPii);
+    const service = new DataPipelineService(progress);
     logger.info(`${reqId}: enter updateDerivedTables`);
     try {
-      await service.refresh();
+      await service.refresh(pipeline);
     } catch (err) {
       logger.error(`${reqId} CoughEndpoint update views error: ${err.message}`);
     }

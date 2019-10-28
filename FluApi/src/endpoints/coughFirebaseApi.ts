@@ -10,12 +10,15 @@ import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import { defineCoughModels } from "../models/db/cough";
 import { getBigqueryConfig } from "../util/bigqueryConfig";
-import { DataPipelineService } from "../services/dataPipelineService";
+import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
+import { DataPipeline } from "../services/data/dataPipeline";
+import { DataPipelineService } from "../services/data/dataPipelineService";
 import logger from "../util/logger";
 
 export class CoughFirebaseEndpoint {
   private firebaseImport: LazyAsync<FirebaseImport>;
-  private pipeline: DataPipelineService;
+  private pipeline: DataPipeline;
+  private pipelineSvc: DataPipelineService;
 
   constructor(sql: SplitSql) {
     const secrets = new SecretConfig(sql);
@@ -25,7 +28,8 @@ export class CoughFirebaseEndpoint {
       const models = defineCoughModels(sql);
       return new FirebaseImport(sql, models, client);
     });
-    this.pipeline = new DataPipelineService(sql);
+    this.pipeline = new CoughDataPipeline(sql.nonPii);
+    this.pipelineSvc = new DataPipelineService();
   }
 
   public importAnalytics = async (req, res, next) => {
@@ -41,7 +45,7 @@ export class CoughFirebaseEndpoint {
     }
 
     logger.info("Refreshing derived schema");
-    await this.pipeline.refresh();
+    await this.pipelineSvc.refresh(this.pipeline);
     logger.info("Refreshing complete");
 
     res.json({});

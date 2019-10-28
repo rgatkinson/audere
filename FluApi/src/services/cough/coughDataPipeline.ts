@@ -3,225 +3,36 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { Sequelize, Transaction } from "sequelize";
-import { SplitSql } from "../util/sql";
-import { Hash } from "../util/crypto";
+import {
+  DataPipeline,
+  ManagedMaterializedView,
+  ManagedSqlNode,
+  ManagedSqlType,
+  ManagedView,
+} from "../data/dataPipeline";
 import {
   OptionQuestion,
   SurveyQuestion,
   SurveyQuestionType,
   SURVEY_QUESTIONS,
 } from "audere-lib/coughQuestionConfig";
-import { defineDataNode } from "../models/db/dataPipeline";
-import { tuple2 } from "../util/tuple";
-import logger from "../util/logger";
+import logger from "../../util/logger";
+import { getFirebaseDataNodes } from "../data/firebasePipelineNodes";
+import { Sequelize } from "sequelize";
 
-export class DataPipelineService {
-  private readonly MILLION = BigInt("1000000");
-  private readonly sql: SplitSql;
-  private readonly progress: () => void;
+export class CoughDataPipeline implements DataPipeline {
+  public readonly name: string;
+  public readonly db: Sequelize;
+  public readonly nodes: ManagedSqlNode[];
 
-  constructor(sql: SplitSql, progress?: () => void) {
-    this.sql = sql;
-    this.progress = progress || (() => {});
+  constructor(sql: Sequelize) {
+    this.name = "cough_pipeline";
+    this.db = sql;
+    let nodes = [];
+    nodes = nodes.concat(getNonPiiDataNodes());
+    nodes = nodes.concat(getFirebaseDataNodes("cough", "cough_derived"));
+    this.nodes = nodes;
   }
-
-  async refresh(): Promise<void> {
-    await this.refreshPipelineNodes(this.sql.pii, getPiiDataNodes());
-
-    let nonPiiNodes = [];
-    nonPiiNodes = nonPiiNodes.concat(getNonPiiDataNodes());
-    nonPiiNodes = nonPiiNodes.concat(getFirebaseDataNodes());
-
-    await this.refreshPipelineNodes(this.sql.nonPii, nonPiiNodes);
-  }
-
-  private async refreshPipelineNodes(
-    sql: Sequelize,
-    nodes: ManagedSqlNode[]
-  ): Promise<void> {
-    const nodeState = defineDataNode(sql);
-    const states = await nodeState.findAll({});
-    const statesByName = new Map(states.map(x => tuple2(x.name, x)));
-    const nodesByName = new Map(nodes.map(x => tuple2(x.meta.name, x)));
-    const hashes = buildHashes(nodesByName);
-    this.progress();
-
-    for (let state of states) {
-      const name = state.name;
-      if (!nodesByName.has(name)) {
-        await runQuery(sql, state.cleanup);
-        this.progress();
-        await nodeState.destroy({ where: { name } });
-        this.progress();
-      }
-    }
-
-    for (let node of nodes) {
-      const start = process.hrtime.bigint();
-      const name = node.meta.name;
-      const state = statesByName.get(name);
-      const hash = hashes.get(name);
-      if (state != null && state.hash === hash) {
-        const refresh = node.getRefresh();
-        if (refresh != null) {
-          await sql.transaction(async t => {
-            for (let i = 0; i < refresh.length; i++) {
-              await runQuery(sql, refresh[i], t);
-            }
-          });
-          const end = process.hrtime.bigint();
-          logger.info(
-            `Refreshed ${name} in ${(end - start) / this.MILLION} ms`
-          );
-          this.progress();
-        }
-      } else {
-        const drop = node.getDelete();
-        await runQuery(sql, drop);
-        this.progress();
-        const create = node.getCreate();
-        await sql.transaction(async t => {
-          for (let i = 0; i < create.length; i++) {
-            await runQuery(sql, create[i], t);
-            this.progress();
-          }
-        });
-        await nodeState.upsert({ name, hash, cleanup: drop });
-        const end = process.hrtime.bigint();
-        logger.info(`Recreated ${name} in ${(end - start) / this.MILLION} ms`);
-        this.progress();
-      }
-    }
-  }
-}
-
-// Metadata for how to create some SQL node, e.g. type or view.
-interface SqlNodeMetadata {
-  name: string;
-  deps: string[];
-  spec: string; // Specification for how to create.
-}
-
-interface SequelizeTableReference {
-  tableName: string;
-  id: string;
-  timestamp: string;
-}
-
-interface ManagedSqlNode {
-  readonly meta: SqlNodeMetadata;
-
-  getCreate(): string[];
-  getRefresh(): string[] | null;
-  getDelete(): string;
-}
-
-class ManagedSqlType implements ManagedSqlNode {
-  readonly meta: SqlNodeMetadata;
-  constructor(meta: SqlNodeMetadata) {
-    this.meta = meta;
-  }
-
-  getCreate = () => [`create type ${this.meta.name} as ${this.meta.spec};`];
-  getRefresh = () => null;
-  getDelete = () => `drop type if exists ${this.meta.name} cascade;`;
-}
-
-class ManagedView implements ManagedSqlNode {
-  readonly meta: SqlNodeMetadata;
-  constructor(meta: SqlNodeMetadata) {
-    this.meta = meta;
-  }
-
-  getCreate = () => [`create view ${this.meta.name} as ${this.meta.spec};`];
-  getRefresh = () => null;
-  getDelete = () => dropTableLike(this.meta.name);
-}
-
-class ManagedMaterializedView implements ManagedSqlNode {
-  readonly meta: SqlNodeMetadata;
-  constructor(meta: SqlNodeMetadata) {
-    this.meta = meta;
-  }
-
-  getCreate = () => [
-    `create materialized view ${this.meta.name} as ${this.meta.spec};`,
-  ];
-  getRefresh = () => [`refresh materialized view ${this.meta.name};`];
-  getDelete = () => dropTableLike(this.meta.name);
-}
-
-class ManagedTable implements ManagedSqlNode {
-  readonly meta: SqlNodeMetadata;
-  readonly deleteStaleRows: string;
-  readonly insertNewRows: string;
-
-  constructor(
-    meta: SqlNodeMetadata,
-    deleteStaleRows: string,
-    insertNewRows: string
-  ) {
-    this.meta = meta;
-    this.deleteStaleRows = deleteStaleRows;
-    this.insertNewRows = insertNewRows;
-  }
-
-  getCreate = () => [
-    `create table ${this.meta.name} as ${this.meta.spec};`,
-    `alter table ${this.meta.name} add column id serial primary key;`,
-    `alter table ${this.meta.name} add column "createdAt" timestamp default now();`,
-  ];
-  getRefresh = () => [this.deleteStaleRows, this.insertNewRows];
-  getDelete = () => dropTableLike(this.meta.name);
-}
-
-class SequelizeSourceTable extends ManagedTable {
-  constructor(meta: SqlNodeMetadata, ref: SequelizeTableReference) {
-    super(
-      meta,
-      `
-      delete from ${meta.name}
-      where id in (
-        select
-          tbl.id
-        from
-          ${meta.name} as tbl
-          left join ${ref.tableName} as source on source.id = tbl."${ref.id}"
-        where
-          source."updatedAt" is null
-          or tbl."${ref.timestamp}" < source."updatedAt"
-      )
-      `,
-      `
-      insert into ${meta.name}
-      select
-        spec.*
-      from
-        (${meta.spec}) as spec
-        left join ${meta.name} as tbl on tbl."${ref.id}" = spec."${ref.id}"
-      where
-        tbl.id is null
-      `
-    );
-  }
-}
-
-async function runQuery(
-  sql: Sequelize,
-  query: string,
-  transaction?: Transaction
-): Promise<void> {
-  logger.debug(`Running SQL: ${query}`);
-  if (transaction != null) {
-    await sql.query(query, { transaction: transaction });
-  } else {
-    await sql.query(query);
-  }
-}
-
-function getPiiDataNodes(): ManagedSqlNode[] {
-  return [];
 }
 
 function getNonPiiDataNodes(): ManagedSqlNode[] {
@@ -434,111 +245,6 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           value
         from config
         where project = 'cough'
-      `,
-    }),
-  ];
-}
-
-function getFirebaseDataNodes(): ManagedSqlNode[] {
-  return [
-    new SequelizeSourceTable(
-      {
-        name: "cough_derived.analytics",
-        deps: [],
-        spec: `
-          select
-            id as source_id,
-            "createdAt" as source_created,
-            "updatedAt" as source_updated,
-
-            event->>'event_date' as event_date,
-            event->>'event_timestamp' as event_timestamp,
-            event->>'event_name' as event_name,
-            event->>'event_previous_timestamp' as event_previous_timestamp,
-            event->>'event_value_in_usd' as event_value_usd,
-            event->>'event_bundle_sequence_id' as event_bundle_sequence_id,
-            event->>'event_server_timestamp_offset' as event_server_timestamp_offset,
-            event->>'user_id' as user_id,
-            event->>'user_pseudo_id' as user_pseudo_id,
-            event->>'user_first_touch_timestamp' as user_first_touch_timestamp,
-            event->'user_ltv'->>'revenue' as ltv_revenue,
-            event->'user_ltv'->>'currency' as ltv_currency,
-            event->'device'->>'category' as device_category,
-            event->'device'->>'mobile_brand_name' as mobile_brand_name,
-            event->'device'->>'mobile_model_name' as mobile_model_name,
-            event->'device'->>'mobile_marketing_name' as mobile_marketing_name,
-            event->'device'->>'mobile_os_hardware_model' as mobile_os_hardware_model,
-            event->'device'->>'operating_system' as device_operating_system,
-            event->'device'->>'operating_system_version' as device_operating_system_version,
-            event->'device'->>'vendor_id' as device_vendor_id,
-            event->'device'->>'advertising_id' as device_advertising_id,
-            event->'device'->>'language' as device_language,
-            event->'device'->>'is_limited_ad_tracking' as is_limited_ad_tracking,
-            event->'device'->>'time_zone_offset_seconds' as device_time_zone_offset_seconds,
-            event->'device'->>'browser' as device_browser,
-            event->'device'->>'browser_version' as device_browser_version,
-            event->'device'->'web_info'->>'browser' as web_info_browser,
-            event->'device'->'web_info'->>'browser_version' as web_info_browser_version,
-            event->'device'->'web_info'->>'hostname' as web_info_hostname,
-            event->'geo'->>'continent' as continent,
-            event->'geo'->>'country' as country,
-            event->'geo'->>'region' as region,
-            event->'geo'->>'city' as city,
-            event->'geo'->>'sub_continent' as sub_continent,
-            event->'geo'->>'metro' as metro,
-            event->'app_info'->>'id' as app_info_id,
-            event->'app_info'->>'version' as app_info_version,
-            event->'app_info'->>'install_store' as install_store,
-            event->'app_info'->>'firebase_app_id' as firebase_app_id,
-            event->'app_info'->>'install_source' as install_source,
-            event->'traffic_source'->>'name' as traffic_source_name,
-            event->'traffic_source'->>'medium' as traffic_source_medium,
-            event->'traffic_source'->>'source' as traffic_source,
-            event->>'stream_id' as stream_id,
-            event->>'platform' as platform,
-            event->'event_dimensions'->>'hostname' as hostname
-          from cough.firebase_analytics
-        `,
-      },
-      {
-        tableName: "cough.firebase_analytics",
-        id: "source_id",
-        timestamp: "source_updated",
-      }
-    ),
-
-    new ManagedMaterializedView({
-      name: "cough_derived.analytics_event_params",
-      deps: ["cough_derived.analytics"],
-      spec: `
-        select
-          a.id,
-          a."createdAt",
-          a."updatedAt",
-
-          e->>'key' as key,
-          coalesce(e->'value'->>'string_value', e->'value'->>'int_value', e->'value'->>'float_value', e->'value'->>'double_value') as value
-        from
-          cough.firebase_analytics a,
-          jsonb_array_elements(a.event->'event_params') e
-      `,
-    }),
-
-    new ManagedMaterializedView({
-      name: "cough_derived.analytics_user_properties",
-      deps: ["cough_derived.analytics"],
-      spec: `
-        select
-          a.id,
-          a."createdAt",
-          a."updatedAt",
-
-          u->>'key' as key,
-          coalesce(u->'value'->>'string_value', u->'value'->>'int_value', u->'value'->>'float_value', u->'value'->>'double_value') as value,
-          u->'value'->>'set_timestamp_micros' as set_timestamp
-        from
-          cough.firebase_analytics a,
-          jsonb_array_elements(a.event->'user_properties') u
       `,
     }),
   ];
@@ -820,51 +526,6 @@ function selectIndexOfKeyValue(
   }
 
   `;
-}
-
-// We drop table, view, or materialized view to handle cases where
-// we change the type.
-function dropTableLike(fullName: string) {
-  const dotIndex = fullName.indexOf(".");
-  const name = fullName.substring(dotIndex + 1);
-  const schema = dotIndex < 0 ? "public" : fullName.substring(0, dotIndex);
-
-  return `
-    do $$ begin
-      ${drop(name, schema, "table", "table")};
-      ${drop(name, schema, "view", "view")};
-      ${drop(name, schema, "matview", "materialized view")};
-    end $$
-  `;
-
-  function drop(name: string, schema: string, pgShort: string, pgFull: string) {
-    return `
-      if exists (
-        select * from pg_${pgShort}s
-        where schemaname='${schema}' and ${pgShort}name='${name}'
-      ) then
-        drop ${pgFull} if exists ${schema}.${name} cascade;
-      end if
-    `;
-  }
-}
-
-// Assumes Map.values() returns nodes in insertion order
-function buildHashes(nodesByName: Map<string, ManagedSqlNode>) {
-  const hashes = new Map();
-  for (let node of nodesByName.values()) {
-    const hash = new Hash();
-    const create = node.getCreate();
-    create.forEach(s => hash.update(s));
-    const refresh = node.getRefresh();
-    if (Array.isArray(refresh)) {
-      refresh.forEach(s => hash.update(s));
-    }
-    hash.update(node.getDelete());
-    node.meta.deps.forEach(name => hash.update(hashes.get(name)));
-    hashes.set(node.meta.name, hash.toString());
-  }
-  return hashes;
 }
 
 function flatMap<I, O>(f: (input: I) => O[], inputs: I[]): O[] {
