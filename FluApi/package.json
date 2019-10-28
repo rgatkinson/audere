@@ -54,7 +54,7 @@
     "consolidate": "^0.15.1",
     "cookie-parser": "^1.4.4",
     "csurf": "^1.9.0",
-    "csv-parse": "^4.3.3",
+    "csv-parse": "^4.4.6",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "express-formidable": "^1.2.0",
