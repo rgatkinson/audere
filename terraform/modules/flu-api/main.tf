@@ -251,16 +251,15 @@ resource "aws_lb_target_group" "iprd_rdt_reader" {
   target_type = "ip"
   vpc_id = "${var.vpc_id}"
 
-  # TODO once we have a working image with a health-check endpoint.
-  # health_check {
-  #   healthy_threshold = 2
-  #   unhealthy_threshold = 2
-  #   timeout = 5
-  #   interval = 30
-  #   path = "/IPRD/rdt-reader/health-check"
-  #   port = "443"
-  #   protocol = "HTTPS"
-  # }
+  health_check {
+    healthy_threshold = 2
+    unhealthy_threshold = 2
+    timeout = 5
+    interval = 30
+    path = "/IPRD/rdt-reader/health-check"
+    port = "443"
+    protocol = "HTTPS"
+  }
 }
 
 data "template_file" "iprd_rdt_reader" {
