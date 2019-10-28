@@ -23,7 +23,6 @@ export async function multi_tap(
     taps.wait(500);
     for (let i = 0; i < num_taps; i++) {
       taps.tap({ x: x_coord, y: y_coord });
-      taps.wait(5);
     }
   }
   await taps.perform();

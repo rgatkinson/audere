@@ -101,6 +101,17 @@ async function runThroughApp(models, isDemo) {
 
   screen_info = content.find(screen => screen.key === "Welcome");
   while (screen_info) {
+    if (
+      platform == "Android" &&
+      "button" in screen_info &&
+      screen_info.button.name.includes("")
+    ) {
+      screen_info.button.name = screen_info.button.name.substring(
+        0,
+        screen_info.button.name.length - 2
+      );
+    }
+
     if (!isDemo) {
       await driver.sleep(1200); //let screen finish loading
       let screenshot = await driver.takeScreenshot();
@@ -276,7 +287,7 @@ async function barcode_screen(driver, screen_info, screens_visited) {
         .click();
     }
   }
-  await driver.sleep(1000); //let camera load
+  await driver.sleep(2000); //let camera load
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
     .perform();
@@ -318,6 +329,8 @@ async function barcode_screen(driver, screen_info, screens_visited) {
         await driver.hideDeviceKeyboard();
       }
     }
+
+    await scroll_to_element(driver, deviceInfo, screen_info.button.name);
     await driver.elementByAccessibilityId(screen_info.button.name).click();
     if (num_bad_barcodes == 4) {
       return "BarcodeContactSupport";
@@ -358,6 +371,7 @@ async function blue_line_question_screen(driver, screen_info, screens_visited) {
     );
   }
 
+  await scroll_to_element(driver, deviceInfo, screen_info.button.name);
   await driver.elementByAccessibilityId(screen_info.button.name).click();
   return screen_info.button.onClick;
 }
@@ -421,13 +435,13 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
 
   if (isDemo) {
     //tap until timer is bypassed
-    await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.24, 3);
+    await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.27, 3);
     while (
       !(await driver.hasElementByAccessibilityId(
         strings.common.timer.timerDone
       ))
     ) {
-      await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.24, 3);
+      await multi_tap(driver, deviceInfo, screen_x * 0.5, screen_y * 0.27, 3);
       driver.sleep(1000);
     }
   } else {
