@@ -69,7 +69,7 @@
     "@types/expo__vector-icons": "^6.2.3",
     "@types/i18next": "^11.9.3",
     "audere-lib": "link:../lib",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-plugin-inline-dotenv": "^1.2.0",
     "base64url": "^3.0.1",
     "buffer-xor": "^2.0.2",
