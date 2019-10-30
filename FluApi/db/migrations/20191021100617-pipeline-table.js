@@ -38,7 +38,7 @@ module.exports = {
 
     await queryInterface.addConstraint(
       "data_pipeline_nodes",
-      ["id"],
+      ["pipeline"],
       {
         type: "FOREIGN KEY",
         name: "FK_dataPipelineNode_dataPipeline",
