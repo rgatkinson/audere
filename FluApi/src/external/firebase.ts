@@ -175,12 +175,15 @@ export class FirebaseReceiver {
 
 let theOneApp: firebase.app.App | null = null;
 
-export function connectorFromSqlSecrets(sql: SplitSql): Connector {
+export function connectorFromSqlSecrets(
+  sql: SplitSql,
+  credentials: string
+): Connector {
   return async () =>
     theOneApp ||
     getOrCreateApp(
       await logIfError("connectorFromSecrets", "getMaybeEnvFile", () =>
-        new SecretConfig(sql).getMaybeEnvFile("FIREBASE_TRANSPORT_CREDENTIALS")
+        new SecretConfig(sql).getMaybeEnvFile(credentials)
       )
     );
 }

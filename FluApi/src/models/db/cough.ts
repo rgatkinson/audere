@@ -161,7 +161,7 @@ export function definePhoto(sql: SplitSql): Model<PhotoAttributes> {
 
 export interface PhotoUploadLogAttributes {
   id?: string;
-  coughSurveyId: string;
+  surveyId: string;
 }
 export function definePhotoUploadLog(
   sql: SplitSql
@@ -170,7 +170,7 @@ export function definePhotoUploadLog(
     sql.nonPii,
     "photo_upload_log",
     {
-      coughSurveyId: unique(stringColumn("cough_survey_id")),
+      surveyId: unique(stringColumn("cough_survey_id")),
     },
     { schema }
   );

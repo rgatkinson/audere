@@ -34,7 +34,8 @@ import {
   getFeverExcelReport,
 } from "./metrics";
 import logger from "../../util/logger";
-import { RDTPhotos } from "./rdtPhotos";
+import { CoughRDTPhotos } from "./coughRdtPhotos";
+import { ChillsRDTPhotos } from "./chillsRdtPhotos";
 import { S3DirectoryServer } from "./s3server";
 import { ManageAccount } from "./manageAccount";
 
@@ -184,27 +185,61 @@ function addHandlers(
     wrap(s3DirectoryServer.performRequest)
   );
 
-  const rdtPhotosServer = new RDTPhotos(config.sql, getStatic, authManager);
+  const coughRdtPhotosServer = new CoughRDTPhotos(
+    config.sql,
+    getStatic,
+    authManager
+  );
   app.get(
     "/coughPhotos",
     authorizationMiddleware(authManager, Permission.COUGH_RDT_PHOTOS_ACCESS),
-    wrap(rdtPhotosServer.listBarcodes)
+    wrap(coughRdtPhotosServer.listBarcodes)
   );
   app.get(
     "/coughPhoto",
     authorizationMiddleware(authManager, Permission.COUGH_RDT_PHOTOS_ACCESS),
-    wrap(rdtPhotosServer.showPhotos)
+    wrap(coughRdtPhotosServer.showPhotos)
   );
   app.post(
     "/setExpertRead",
     authorizationMiddleware(authManager, Permission.COUGH_INTERPRETATION_WRITE),
-    wrap(rdtPhotosServer.setExpertRead)
+    wrap(coughRdtPhotosServer.setExpertRead)
   );
   app.post(
     "/replacePhoto",
     authorizationMiddleware(authManager, Permission.COUGH_RDT_PHOTOS_WRITE),
     formidable(),
-    wrap(rdtPhotosServer.replacePhoto)
+    wrap(coughRdtPhotosServer.replacePhoto)
+  );
+
+  const chillsRdtPhotosServer = new ChillsRDTPhotos(
+    config.sql,
+    getStatic,
+    authManager
+  );
+  app.get(
+    "/chillsPhotos",
+    authorizationMiddleware(authManager, Permission.CHILLS_RDT_PHOTOS_ACCESS),
+    wrap(chillsRdtPhotosServer.listBarcodes)
+  );
+  app.get(
+    "/chillsPhoto",
+    authorizationMiddleware(authManager, Permission.CHILLS_RDT_PHOTOS_ACCESS),
+    wrap(chillsRdtPhotosServer.showPhotos)
+  );
+  app.post(
+    "/chillsSetExpertRead",
+    authorizationMiddleware(
+      authManager,
+      Permission.CHILLS_INTERPRETATION_WRITE
+    ),
+    wrap(chillsRdtPhotosServer.setExpertRead)
+  );
+  app.post(
+    "/chillsReplacePhoto",
+    authorizationMiddleware(authManager, Permission.CHILLS_RDT_PHOTOS_WRITE),
+    formidable(),
+    wrap(chillsRdtPhotosServer.replacePhoto)
   );
 
   const coughGiftcardServer = new CoughGiftcardEndpoint(config.sql, getStatic);

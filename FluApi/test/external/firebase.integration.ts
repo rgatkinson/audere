@@ -125,7 +125,10 @@ function checkDoc(expected: any, actual: DocumentSnapshot): DocumentSnapshot {
 
 async function appOrNull(sql: SplitSql): Promise<App | null> {
   try {
-    return await connectorFromSqlSecrets(sql)();
+    return await connectorFromSqlSecrets(
+      sql,
+      "FIREBASE_TRANSPORT_CREDENTIALS"
+    )();
   } catch (err) {
     console.log(`Skipping Firebase integration test: ${err.message}`);
     return null;

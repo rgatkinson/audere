@@ -6,16 +6,16 @@
 import { Op } from "sequelize";
 import { SplitSql } from "../util/sql";
 import {
-  CoughModels,
-  defineCoughModels,
+  ChillsModels,
+  defineChillsModels,
   ImportProblemAttributes,
-} from "../models/db/cough";
+} from "../models/db/chills";
 import { FirebaseReceiver } from "../external/firebase";
 import {
   DocumentType,
   SurveyDocument,
   PhotoDocument,
-} from "audere-lib/dist/coughProtocol";
+} from "audere-lib/dist/chillsProtocol";
 import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
 import { DataPipelineService } from "../services/data/dataPipelineService";
 import {
@@ -29,15 +29,15 @@ import {
 import { FluDocumentImport } from "./fluDocumentImport";
 import logger from "../util/logger";
 
-export class CoughEndpoint extends FluDocumentImport {
-  private readonly models: CoughModels;
+export class ChillsEndpoint extends FluDocumentImport {
+  private readonly models: ChillsModels;
 
   constructor(sql: SplitSql) {
-    super(sql, "FIREBASE_TRANSPORT_CREDENTIALS");
-    this.models = defineCoughModels(sql);
+    super(sql, "CHILLS_FIREBASE_TRANSPORT_CREDENTIALS");
+    this.models = defineChillsModels(sql);
   }
 
-  protected photosSecret = "RDT_PHOTOS_S3_SECRET";
+  protected photosSecret = "CHILLS_RDT_PHOTOS_S3_SECRET";
 
   protected writeSurvey = async (snapshot: DocumentSnapshot) => {
     const doc = snapshot.data() as SurveyDocument;
@@ -77,7 +77,7 @@ export class CoughEndpoint extends FluDocumentImport {
     result: ImportResult
   ): Promise<number> {
     logger.error(
-      `${reqId} CoughEndpoint import failed for '${spec.id}' in '${spec.collection}': ${err.message}`
+      `${reqId} ChillsEndpoint import failed for '${spec.id}' in '${spec.collection}': ${err.message}`
     );
 
     const firebaseCollection = spec.collection;
@@ -108,7 +108,7 @@ export class CoughEndpoint extends FluDocumentImport {
             },
           },
         },
-        "$photo_upload_log.cough_survey_id$": null,
+        "$photo_upload_log.chills_survey_id$": null,
       },
       include: [
         {
@@ -184,7 +184,9 @@ export class CoughEndpoint extends FluDocumentImport {
     try {
       await service.refresh(pipeline);
     } catch (err) {
-      logger.error(`${reqId} CoughEndpoint update views error: ${err.message}`);
+      logger.error(
+        `${reqId} ChillsEndpoint update views error: ${err.message}`
+      );
     }
     logger.info(`${reqId}: leave updateDerivedTables`);
   }

@@ -9,9 +9,8 @@ import {
   connectorFromSqlSecrets,
   FirebaseReceiver,
 } from "../external/firebase";
-import { getPhotoCollection } from "./coughApi";
+import { getPhotoCollection } from "../services/firebaseDocumentService";
 import logger from "../util/logger";
-import { SecretsManager } from "../../node_modules/aws-sdk";
 
 export class ServerHealth {
   private sql: SplitSql;
@@ -56,7 +55,10 @@ export class ServerHealth {
       if (missing.length > 0) {
         throw new Error("Missing secrets: " + missing.join(", "));
       }
-      const connector = connectorFromSqlSecrets(this.sql);
+      const connector = connectorFromSqlSecrets(
+        this.sql,
+        "FIREBASE_TRANSPORT_CREDENTIALS"
+      );
       const collection = getPhotoCollection();
       const receiver = new FirebaseReceiver(connector, { collection });
       await receiver.healthCheck();

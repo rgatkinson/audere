@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { promises as fs } from "fs";
-import { Op, cast, json, where, col, fn } from "sequelize";
+import { Op, json } from "sequelize";
 import querystring from "querystring";
 import { sha256 } from "../../util/crypto";
 import { SplitSql } from "../../util/sql";
@@ -36,7 +36,7 @@ const INTERPRETATIONS = {
   yesAboveBelowBlue: "Pink lines above and below the blue line",
 };
 
-export class RDTPhotos {
+export class CoughRDTPhotos {
   constructor(
     sql: SplitSql,
     getStatic: () => string,
@@ -232,7 +232,7 @@ export class RDTPhotos {
       },
     ];
 
-    res.render("rdtPhotos.html", {
+    res.render("coughRdtPhotos.html", {
       photos,
       static: this.getStatic(),
       surveyId: id,
@@ -311,7 +311,7 @@ export class RDTPhotos {
     // Replace the photo in S3 as well
     await this.models.photoUploadLog.destroy({
       where: {
-        coughSurveyId: surveyId,
+        surveyId,
       },
     });
 

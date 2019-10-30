@@ -179,6 +179,9 @@ export enum Permission {
   COUGH_RDT_PHOTOS_ACCESS = "coughRdtPhotosAccess",
   COUGH_RDT_PHOTOS_WRITE = "coughRdtPhotosWrite",
   COUGH_INTERPRETATION_WRITE = "coughInterpretationWrite",
+  CHILLS_RDT_PHOTOS_ACCESS = "chillsRdtPhotosAccess",
+  CHILLS_RDT_PHOTOS_WRITE = "chillsRdtPhotosWrite",
+  CHILLS_INTERPRETATION_WRITE = "chillsInterpretationWrite",
   SNIFFLES_METRICS_ACCESS = "snifflesMetricsAccess",
   FEVER_METRICS_ACCESS = "feverMetricsAccess",
 }

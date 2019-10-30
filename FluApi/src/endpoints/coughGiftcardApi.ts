@@ -304,7 +304,10 @@ export class CoughGiftcardEndpoint {
   }
 
   private async validateDocId(docId: string) {
-    const firebase = await connectorFromSqlSecrets(this.sql)();
+    const firebase = await connectorFromSqlSecrets(
+      this.sql,
+      "FIREBASE_TRANSPORT_CREDENTIALS"
+    )();
     const survey = await firebase
       .firestore()
       .collection("surveys")

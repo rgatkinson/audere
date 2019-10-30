@@ -89,3 +89,44 @@ export function jsonApi<Req, Res>(
     res.json(response);
   };
 }
+
+export function booleanQueryParameter(
+  req,
+  name: string,
+  dflt: boolean
+): boolean {
+  switch (req.query[name]) {
+    case "true":
+      return true;
+    case "false":
+      return false;
+    default:
+      return dflt;
+  }
+}
+
+export function jsonKeepAlive(res): KeepAliveJson {
+  // Set Content-Type now since headers have to go before body and we start
+  // streaming whitespace to keep alive.
+  res.type("json");
+  // Prevent nginx from buffering the stream so the keep-alive whitespace
+  // makes it to the ELB as well.
+  res.set("X-Accel-Buffering", "no");
+
+  // Send whitespace regularly during import so ExpressJS, nginx, and ELB
+  // don't time out.
+  const progress = () => res.write(" ");
+
+  const replyJson = (result: object) => {
+    res.write("\n");
+    res.write(JSON.stringify(result));
+    res.end();
+  };
+
+  return { progress, replyJson };
+}
+
+export interface KeepAliveJson {
+  progress: () => void;
+  replyJson: (result: object) => void;
+}

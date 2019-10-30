@@ -37,6 +37,7 @@ import { ServerHealth } from "./endpoints/healthCheck";
 import { CoughFirebaseEndpoint } from "./endpoints/coughFirebaseApi";
 import { CoughFollowUpEndpoint } from "./endpoints/coughFollowUpApi";
 import { CoughGiftcardEndpoint } from "./endpoints/coughGiftcardApi";
+import { ChillsEndpoint } from "./endpoints/chillsApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -297,7 +298,7 @@ export function createInternalApp(config: AppConfig) {
     wrap(
       sqlLock.runIfFree(
         "/api/import/coughDocuments",
-        cough.importCoughDocuments,
+        cough.importDocuments,
         jsonNoOp
       )
     )
@@ -305,7 +306,7 @@ export function createInternalApp(config: AppConfig) {
   internalApp.get(
     "/api/cough/uploadPhotos",
     stats("coughUploadPhotos"),
-    wrap(cough.uploadCoughPhotos)
+    wrap(cough.uploadPhotos)
   );
 
   const coughAspren = new CoughAsprenEndpoint(sql);
@@ -345,6 +346,29 @@ export function createInternalApp(config: AppConfig) {
         jsonNoOp
       )
     )
+  );
+
+  const chills = new ChillsEndpoint(sql);
+  internalApp.get(
+    "/api/chills/updateDerivedTables",
+    stats("chillsUpdateDerivedTables"),
+    wrap(chills.updateDerivedTables)
+  );
+  internalApp.get(
+    "/api/import/chillsDocuments",
+    stats("importChillsDocuments"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/chillsDocuments",
+        chills.importDocuments,
+        jsonNoOp
+      )
+    )
+  );
+  internalApp.get(
+    "/api/chills/uploadPhotos",
+    stats("chillsUploadPhotos"),
+    wrap(chills.uploadPhotos)
   );
 
   return useOuch(internalApp);
