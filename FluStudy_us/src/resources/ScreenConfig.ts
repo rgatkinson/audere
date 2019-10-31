@@ -779,7 +779,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "takepictureteststrip" } },
+      { tag: MainImage, props: { uri: "scanthestrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       {

@@ -89,7 +89,6 @@ interface FeedbackInstructionRequest {
 }
 
 const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
-const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
 const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
@@ -732,11 +731,6 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     if (!isFocused) {
       return null;
     }
-    const isPositionValid = ALLOW_ICON_FEEDBACK;
-    const isDistanceValid =
-      ALLOW_ICON_FEEDBACK &&
-      this.state.sizeResult !== RDTReaderSizeResult.INVALID;
-    const isRotationValid = ALLOW_ICON_FEEDBACK;
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.spinner && isFocused} />
@@ -779,78 +773,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
               }}
             >
               <View style={styles.backgroundOverlay}>
-                <View style={styles.feedbackContainer}>
-                  <View
-                    style={[
-                      styles.feedbackItem,
-                      isPositionValid
-                        ? styles.feedbackItemValid
-                        : styles.feedbackItemInvalid,
-                    ]}
-                  >
-                    <Image
-                      style={styles.feedbackItemIcon}
-                      source={{
-                        uri: isPositionValid
-                          ? this.state.isCentered
-                            ? "positiongreen"
-                            : "positionyellow"
-                          : "positionwhite",
-                      }}
-                    />
-                    <Text
-                      content={t("position")}
-                      style={styles.feedbackItemText}
-                    />
-                  </View>
-                  <View
-                    style={[
-                      styles.feedbackItem,
-                      isDistanceValid
-                        ? styles.feedbackItemValid
-                        : styles.feedbackItemInvalid,
-                    ]}
-                  >
-                    <Image
-                      style={styles.feedbackItemIcon}
-                      source={{
-                        uri: isDistanceValid
-                          ? this.state.sizeResult ===
-                            RDTReaderSizeResult.RIGHT_SIZE
-                            ? "distancegreen"
-                            : "distanceyellow"
-                          : "distancewhite",
-                      }}
-                    />
-                    <Text
-                      content={t("distance")}
-                      style={styles.feedbackItemText}
-                    />
-                  </View>
-                  <View
-                    style={[
-                      styles.feedbackItem,
-                      isRotationValid
-                        ? styles.feedbackItemValid
-                        : styles.feedbackItemInvalid,
-                    ]}
-                  >
-                    <Image
-                      style={styles.feedbackItemIcon}
-                      source={{
-                        uri: isRotationValid
-                          ? this.state.isRightOrientation
-                            ? "rotationgreen"
-                            : "rotationyellow"
-                          : "rotationwhite",
-                      }}
-                    />
-                    <Text
-                      content={t("rotation")}
-                      style={styles.feedbackItemText}
-                    />
-                  </View>
-                </View>
+                <View style={styles.feedbackContainer}></View>
               </View>
               <View style={styles.testStripContainer}>
                 <Image
@@ -973,12 +896,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-  },
-  feedbackItemValid: {
-    opacity: 1.0,
-  },
-  feedbackItemInvalid: {
-    opacity: ALLOW_ICON_FEEDBACK ? 0.5 : 0,
   },
   feedbackItemIcon: {
     height: 32,
