@@ -468,7 +468,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
       this._callbackTimestamps.push(Date.now());
     }
 
-    if (!args.testStripFound) {
+    if (!args.imgBase64) {
       this._lastRDTReaderResult = rdtCapturedArgsToResult(args);
       return;
     }
@@ -477,7 +477,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     dispatch(setRDTCaptureTime(true));
     try {
       const photoId = await newUID();
-      dispatch(setRDTPhoto(`data:image/png;base64,${args.imgBase64}`));
+      dispatch(setRDTPhoto(`file://${args.imgBase64}`));
       dispatch(
         setTestStripImg({
           sample_type: "RDTReaderPhotoGUID",

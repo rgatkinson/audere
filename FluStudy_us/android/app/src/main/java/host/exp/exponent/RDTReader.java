@@ -78,9 +78,6 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         if (captureResult.image != null) {
             event.putString("img", captureResult.image);
         }
-        if (captureResult.windowImage != null) {
-            event.putString("resultWindowImg", captureResult.windowImage);
-        }
 
         if (captureResult.stripLocation != null) {
             event.putArray("boundary", getLocationArray(captureResult.stripLocation));
@@ -90,15 +87,8 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         dimensions.putInt("width", captureResult.viewportWidth);
         dimensions.putInt("height", captureResult.viewportHeight);
         event.putMap("viewportDimensions", dimensions);
-        event.putBoolean("passed", captureResult.testStripFound && filterResult != null && filterResult.exposureResult == ImageFilter.ExposureResult.NORMAL && filterResult.isSharp());
         event.putBoolean("testStripDetected", captureResult.testStripFound);
-        event.putBoolean("fiducial", interpretationResult.control);
-        event.putBoolean("center", captureResult.testStripFound);
-        event.putInt("sizeResult", ImageFilter.SizeResult.RIGHT_SIZE.ordinal());
-        event.putBoolean("shadow", false);
 
-        event.putBoolean("orientation", captureResult.testStripFound);
-        event.putDouble("angle", 0);
         if (filterResult != null) {
             event.putBoolean("sharpness", filterResult.isSharp());
             event.putInt("exposureResult", filterResult.exposureResult.ordinal());
@@ -106,7 +96,7 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         event.putBoolean("control", interpretationResult.control);
         event.putBoolean("testA", interpretationResult.testA);
         event.putBoolean("testB", interpretationResult.testB);
-        event.putInt("progress", getProgress(interpretationResult));
+        event.putInt("progress", 0);
         callReactCallback("RDTCaptured", event);
     }
 
@@ -127,10 +117,6 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
             boundary.pushMap(point);
         }
         return boundary;
-    }
-
-    private int getProgress(DetectorView.InterpretationResult result) {
-        return Math.min(100, (int) (100.0 * result.samples / result.requiredSamples));
     }
 
     @Override

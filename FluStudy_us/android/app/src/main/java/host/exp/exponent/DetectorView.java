@@ -27,7 +27,6 @@ import android.os.SystemClock;
 import android.os.Trace;
 import android.support.v4.app.ActivityCompat;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
@@ -35,14 +34,14 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import bolts.Capture;
 import host.exp.exponent.customview.AutoFitTextureView;
 import host.exp.exponent.env.ImageUtils;
 import host.exp.exponent.tflite.Classifier;
@@ -51,7 +50,6 @@ import host.exp.exponent.tracking.InterpretationTracker;
 import host.exp.exponent.tracking.RDTTracker;
 
 public class DetectorView extends LinearLayout implements
-        ImageReader.OnImageAvailableListener,
         ActivityCompat.OnRequestPermissionsResultCallback,
         CameraController.ConnectionCallback {
 
@@ -69,10 +67,12 @@ public class DetectorView extends LinearLayout implements
     private static final float BOX_MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
     private static final float INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API = 0.2f;
     private static final boolean MAINTAIN_ASPECT = false;
-    private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
+    private static final Size DESIRED_PREVIEW_SIZE = new Size(480, 640);
 
     private static final int PERMISSIONS_REQUEST = 1;
     private static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
+
+    private static final String RDT_PHOTO_FILE_NAME = "rdt_photo.jpg";
 
     private Activity activity;
     private DetectorListener detectorListener;
@@ -83,40 +83,16 @@ public class DetectorView extends LinearLayout implements
     private Handler handler;
     private HandlerThread handlerThread;
 
-
     private Classifier boxDetector;
     private Classifier interpretationDetector;
 
-    private RDTTracker rdtTracker;
-    private InterpretationTracker interpretationTracker;
-    private Runnable imageConverter;
-    private Runnable postInferenceCallback;
-
+    protected Size previewSize;
+    protected Size stillSize;
     private Integer sensorOrientation;
-
-    private Bitmap previewBitmap = null;
-    private Bitmap boxModelBitmap = null;
-    private Bitmap interpretationModelBitmap = null;
-
-    private volatile boolean computingDetection = false;
-    private boolean isProcessingFrame = false;
-
-    private Matrix previewToModelTransform;
-    private Matrix modelToPreviewTransform;
-
-    private byte[] yBytes;
-    private byte[] uBytes;
-    private byte[] vBytes;
-    private int[] rgbBytes = null;
-    private int yRowStride;
-
-    protected int previewWidth = 0;
-    protected int previewHeight = 0;
     private int screenHeight;
     private int screenWidth;
 
-    private List<Bitmap> phase2Bitmaps;
-    private InterpretationResult intermediateResult;
+    private volatile boolean stillCaptureInProgress = false;
 
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -129,28 +105,7 @@ public class DetectorView extends LinearLayout implements
         textureView = findViewById(R.id.texture);
         imageFilter = new ImageFilter(activity);
 
-        if (hasPermission()) {
-            initCameraController();
-        } else {
-            requestPermission();
-        }
-        phase2Bitmaps = new ArrayList<Bitmap>();
-        intermediateResult = new InterpretationResult();
-        intermediateResult.requiredSamples = 4;
-    }
-
-    public void setDetectorListener(DetectorListener listener) {
-        this.detectorListener = listener;
-    }
-
-    public void onPreviewSizeChosen(final Size size, final int rotation, boolean supportsTorchMode) {
-        previewHeight = size.getHeight();
-        previewWidth = size.getWidth();
-
-        rdtTracker = new RDTTracker(activity);
-        interpretationTracker = new InterpretationTracker(activity);
-
-        int modelSize = TF_OD_API_INPUT_SIZE;
+        // TODO: move this to background thread and check that it's ready where needed
         try {
             boxDetector =
                     TFLiteObjectDetectionAPIModel.create(
@@ -187,30 +142,29 @@ public class DetectorView extends LinearLayout implements
             toast.show();
         }
 
-        previewWidth = size.getWidth();
-        previewHeight = size.getHeight();
+        if (hasPermission()) {
+            initCameraController();
+        } else {
+            requestPermission();
+        }
+    }
+
+    public void setDetectorListener(DetectorListener listener) {
+        this.detectorListener = listener;
+    }
+
+    public void onPreviewSizeChosen(final Size previewSize, final Size stillSize, final int rotation, boolean supportsTorchMode) {
+        this.previewSize = previewSize;
+        this.stillSize = stillSize;
 
         sensorOrientation = rotation - getScreenOrientation();
-        Log.i(TAG, "Camera orientation relative to screen canvas: " + sensorOrientation);
-
-        Log.i(TAG, "Initializing at size " + previewWidth + ", " + previewHeight);
-        previewBitmap = Bitmap.createBitmap(previewWidth, previewHeight, Config.ARGB_8888);
-        boxModelBitmap = Bitmap.createBitmap(modelSize, modelSize, Config.ARGB_8888);
-
-        previewToModelTransform =
-                ImageUtils.getTransformationMatrix(
-                        previewWidth, previewHeight,
-                        modelSize, modelSize,
-                        sensorOrientation, MAINTAIN_ASPECT);
-
-        modelToPreviewTransform = new Matrix();
-        previewToModelTransform.invert(modelToPreviewTransform);
-
         screenHeight = getHeight();
         screenWidth = getWidth();
 
-        rdtTracker.setPreviewConfiguration(previewWidth, previewHeight, sensorOrientation, screenWidth, screenHeight);
-        interpretationTracker.setPreviewConfiguration(previewWidth, previewHeight, sensorOrientation, screenWidth, screenHeight);
+        Log.i(TAG, "Camera orientation relative to screen canvas: " + sensorOrientation);
+        Log.i(TAG, "Initializing at preview size " + previewSize.getWidth() + ", " + previewSize.getHeight());
+        Log.i(TAG, "Initializing at still size " + stillSize.getWidth() + ", " + stillSize.getHeight());
+
         detectorListener.onRDTCameraReady(supportsTorchMode);
     }
 
@@ -227,228 +181,310 @@ public class DetectorView extends LinearLayout implements
         }
     }
 
-    protected void readyForNextImage() {
-        if (postInferenceCallback != null) {
-            postInferenceCallback.run();
-        }
-    }
-
     protected synchronized void runInBackground(final Runnable r) {
         if (handler != null) {
             handler.post(r);
         }
     }
 
-    protected void processImage() {
-        // No mutex needed as this method is not reentrant.
-        if (computingDetection) {
-            readyForNextImage();
-            return;
-        }
-        Log.d(TAG, "Process image");
-        computingDetection = true;
-
-        Trace.beginSection("processImage");
-
-        Trace.beginSection("copy pixels");
-        previewBitmap.setPixels(getRgbBytes(), 0, previewWidth, 0, 0, previewWidth, previewHeight);
-        Trace.endSection();
-
-        final Canvas canvas = new Canvas(boxModelBitmap);
-        canvas.drawBitmap(previewBitmap, previewToModelTransform, null);
-
-        readyForNextImage();
-
-        runInBackground(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        Trace.beginSection("Running Process Image");
-                        final long boxStartTimeMs = SystemClock.uptimeMillis();
-
-                        final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
-                        Log.i(TAG, "Phase 1 processing time: " +  (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
-
-                        final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
-
-                        rdtTracker.trackResults(mappedRecognitions);
-
-                        interpretationModelBitmap = rdtTracker.extractRDT(previewBitmap);
-
-                        CaptureResult captureResult = new CaptureResult();
-                        captureResult.testStripFound = interpretationModelBitmap != null;
-                        captureResult.stripLocation = rdtTracker.getRdtOutline();
-                        captureResult.viewportWidth = screenWidth;
-                        captureResult.viewportHeight = screenHeight;
-
-                        ImageFilter.FilterResult filterResult = null;
-
-                        detectorListener.onRDTDetected(captureResult, intermediateResult, filterResult);
-
-                        if (interpretationModelBitmap != null) {
-                            filterResult = imageFilter.validateImage(rdtTracker.getRdtBitmap());
-                            if (filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
-                                intermediateResult.samples = intermediateResult.samples + 1;
-                                detectorListener.onRDTDetected(captureResult, intermediateResult, filterResult);
-                                phase2Bitmaps.add(Bitmap.createBitmap(interpretationModelBitmap));
-
-                                if (intermediateResult.samples == intermediateResult.requiredSamples) {
-                                    interpretBitmaps(previewBitmap, captureResult, filterResult);
-                                }
-                            }
-                        }
-
-                        computingDetection = false;
-                        Trace.endSection();
-                    }
-                });
-        Trace.endSection();
-    }
-
-    private List<Classifier.Recognition> filterResults(
-            float minimumConfidence, List<Classifier.Recognition> results, boolean toPreviewTransform) {
-        final List<Classifier.Recognition> mappedRecognitions = new LinkedList<Classifier.Recognition>();
-        for (final Classifier.Recognition result : results) {
-            final RectF location = result.getLocation();
-            if (location != null && result.getConfidence() >= minimumConfidence) {
-
-                if (toPreviewTransform) {
-                    modelToPreviewTransform.mapRect(location);
-                    result.setLocation(location);
-                }
-                mappedRecognitions.add(result);
-            }
-        }
-        return mappedRecognitions;
-    }
-
-    private void interpretBitmaps(Bitmap previewBitmap, CaptureResult captureResult, ImageFilter.FilterResult filterResult) {
-        final long interpretationStartTimeMs = SystemClock.uptimeMillis();
-
-        detectorListener.onRDTInterpreting();
-        cameraController.onPause();
-
-        for (Bitmap bitmap : phase2Bitmaps) {
-            final List<Classifier.Recognition> phase2Results = interpretationDetector.recognizeImage(bitmap);
-
-            final List<Classifier.Recognition> phase2MappedRecognitions = filterResults(INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API, phase2Results, false);
-            interpretationTracker.trackResults(phase2MappedRecognitions);
-        }
-
-        captureResult.image = getBase64Encoding(previewBitmap); // This is expensive
-        InterpretationResult interpretationResult = interpretationTracker.getInterpretationResult();
-
-        Log.i(TAG, "Phase 2 processing time: " +  (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
-        detectorListener.onRDTDetected(captureResult, interpretationResult, filterResult);
-
-    }
-
-    private String getBase64Encoding(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-        byte[] byteArray = byteArrayOutputStream .toByteArray();
-        return Base64.encodeToString(byteArray, Base64.DEFAULT);
-    }
-
     public Size getDesiredPreviewFrameSize() {
         return DESIRED_PREVIEW_SIZE;
     }
 
-    protected int[] getRgbBytes() {
-        imageConverter.run();
-        return rgbBytes;
-    }
+    private abstract class ImageListener implements ImageReader.OnImageAvailableListener {
+        private Runnable imageConverter;
+        private Runnable postInferenceCallback;
+        private RDTTracker rdtTracker;
 
-    /**
-     * Callback for Camera2 API
-     */
-    @Override
-    public void onImageAvailable(final ImageReader reader) {
-        // We need to wait until we have some size from onPreviewSizeChosen
-        if (previewWidth == 0 || previewHeight == 0) {
-            return;
+        private boolean isProcessingFrame = false;
+        private volatile boolean analyzingFrame = false;
+
+        private byte[] yBytes;
+        private byte[] uBytes;
+        private byte[] vBytes;
+
+        private int[] rgbBytes = null;
+
+        private Bitmap boxModelBitmap = null;
+        private Matrix imageToModelTransform;
+        private Matrix modelToImageTransform;
+
+        protected Bitmap imageBitmap = null;
+        protected int imageWidth;
+        protected int imageHeight;
+
+        private boolean initialized = false;
+
+        private int[] getRgbBytes() {
+            imageConverter.run();
+            return rgbBytes;
         }
 
-        if (!imageFilter.ready()) {
-            return;
+        private void readyForNextImage() {
+            if (postInferenceCallback != null) {
+                postInferenceCallback.run();
+            }
         }
 
-        if (rgbBytes == null) {
-            rgbBytes = new int[previewWidth * previewHeight];
+        private void fillBytes(final Image.Plane[] planes) {
+            ByteBuffer yBuffer = planes[0].getBuffer();
+            ByteBuffer uBuffer = planes[1].getBuffer();
+            ByteBuffer vBuffer = planes[2].getBuffer();
+
+            if (yBytes == null) {
+                yBytes = new byte[yBuffer.capacity()];
+            }
+            if (uBytes == null) {
+                uBytes = new byte[uBuffer.capacity()];
+            }
+            if (vBytes == null) {
+                vBytes = new byte[vBuffer.capacity()];
+            }
+            yBuffer.get(yBytes);
+            uBuffer.get(uBytes);
+            vBuffer.get(vBytes);
         }
 
-        if (isProcessingFrame) {
-            return;
+
+        private void updateBitmaps() {
+            imageBitmap.setPixels(getRgbBytes(), 0, imageWidth, 0, 0, imageWidth, imageHeight);
+            final Canvas canvas = new Canvas(boxModelBitmap);
+            canvas.drawBitmap(imageBitmap, imageToModelTransform, null);
+            readyForNextImage();
         }
 
-        try {
-            final Image image = reader.acquireLatestImage();
+        protected void initialize() {
+            imageBitmap = Bitmap.createBitmap(imageWidth, imageHeight, Config.ARGB_8888);
+            boxModelBitmap = Bitmap.createBitmap(TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, Config.ARGB_8888);
 
-            if (image == null) {
+            imageToModelTransform =
+                    ImageUtils.getTransformationMatrix(
+                            imageWidth, imageHeight,
+                            TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE,
+                            sensorOrientation, MAINTAIN_ASPECT);
+
+            modelToImageTransform = new Matrix();
+            imageToModelTransform.invert(modelToImageTransform);
+            rdtTracker = new RDTTracker(activity, imageWidth, imageHeight, sensorOrientation, screenWidth, screenHeight);
+            if (rgbBytes == null) {
+                rgbBytes = new int[imageWidth * imageHeight];
+            }
+            initialized = true;
+        }
+
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+            // We need to wait until we have some size from onPreviewSizeChosen
+            if (previewSize == null || stillSize == null) {
                 return;
             }
 
-            isProcessingFrame = true;
+            if (!initialized) {
+                initialize();
+            }
 
-            Trace.beginSection("imageAvailable");
+            if (!imageFilter.ready()) {
+                return;
+            }
 
-            final Image.Plane[] planes = image.getPlanes();
-            fillBytes(planes);
-            yRowStride = planes[0].getRowStride();
-            final int uvRowStride = planes[1].getRowStride();
-            final int uvPixelStride = planes[1].getPixelStride();
+            if (isProcessingFrame) {
+                return;
+            }
 
-            imageConverter =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            ImageUtils.convertYUV420ToARGB8888(
-                                    yBytes,
-                                    uBytes,
-                                    vBytes,
-                                    previewWidth,
-                                    previewHeight,
-                                    yRowStride,
-                                    uvRowStride,
-                                    uvPixelStride,
-                                    rgbBytes);
-                        }
-                    };
+            try {
+                final Image image = reader.acquireLatestImage();
 
-            postInferenceCallback =
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            image.close();
-                            isProcessingFrame = false;
-                        }
-                    };
-            processImage();
-        } catch (final Exception e) {
-            Log.e(TAG, "Exception in onImageAvailable: " + e.toString());
-            Trace.endSection();
-            return;
+                if (image == null) {
+                    return;
+                }
+
+                isProcessingFrame = true;
+
+                Trace.beginSection("ImageAvailable");
+
+                final Image.Plane[] planes = image.getPlanes();
+                fillBytes(planes);
+
+                imageConverter =
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                ImageUtils.convertYUV420ToARGB8888(
+                                        yBytes,
+                                        uBytes,
+                                        vBytes,
+                                        imageWidth,
+                                        imageHeight,
+                                        planes[0].getRowStride(),
+                                        planes[1].getRowStride(),
+                                        planes[1].getPixelStride(),
+                                        rgbBytes);
+                            }
+                        };
+
+                postInferenceCallback =
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                image.close();
+                                isProcessingFrame = false;
+                            }
+                        };
+                processImage();
+            } catch (final Exception e) {
+                Log.e(TAG, "Exception in preview onImageAvailable: " + e.toString());
+            } finally {
+                Trace.endSection(); // ImageAvailable
+            }
         }
-        Trace.endSection();
+
+        private void processImage() {
+            // No mutex needed as this method is not reentrant.
+            if (analyzingFrame) {
+                readyForNextImage();
+                return;
+            }
+            Log.d(TAG, "Process preview image");
+            analyzingFrame = true;
+
+            Trace.beginSection("processImage");
+
+            updateBitmaps();
+
+            runInBackground(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            Trace.beginSection("Running Process Image");
+                            final long boxStartTimeMs = SystemClock.uptimeMillis();
+
+                            final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
+                            Log.i(TAG, "Phase 1 processing time: " +  (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
+
+                            final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
+
+                            RDTTracker.RDTResult rdtResult = rdtTracker.extractRDT(mappedRecognitions, imageBitmap);
+
+                            CaptureResult captureResult = new CaptureResult(rdtResult.testArea != null, rdtResult.rdtOutline);
+
+                            processResult(captureResult, rdtResult);
+
+                            analyzingFrame = false;
+                            Trace.endSection(); // Running Process Image
+                        }
+                    });
+            Trace.endSection(); // processPreviewImage
+        }
+
+        protected abstract void processResult(CaptureResult captureResult, RDTTracker.RDTResult rdtResult);
+
+        protected List<Classifier.Recognition> filterResults(
+                float minimumConfidence, List<Classifier.Recognition> results, boolean toPreviewTransform) {
+            final List<Classifier.Recognition> mappedRecognitions = new LinkedList<Classifier.Recognition>();
+            for (final Classifier.Recognition result : results) {
+                final RectF location = result.getLocation();
+                if (location != null && result.getConfidence() >= minimumConfidence) {
+
+                    if (toPreviewTransform) {
+                        modelToImageTransform.mapRect(location);
+                        result.setLocation(location);
+                    }
+                    mappedRecognitions.add(result);
+                }
+            }
+            return mappedRecognitions;
+        }
+
+        protected String saveImage() {
+            File photo = new File(activity.getFilesDir(), RDT_PHOTO_FILE_NAME);
+
+            if (photo.exists()) {
+                photo.delete();
+            }
+
+            try {
+                FileOutputStream fos = new FileOutputStream(photo.getPath());
+                BufferedOutputStream bos = new BufferedOutputStream(fos);
+                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                fos.flush();
+                fos.close();
+                return photo.getPath();
+            } catch (java.io.IOException e) {
+                Log.e(TAG, "Exception in saveImage", e);
+                return null;
+            }
+        }
     }
 
-    protected void fillBytes(final Image.Plane[] planes) {
-        ByteBuffer yBuffer = planes[0].getBuffer();
-        ByteBuffer uBuffer = planes[1].getBuffer();
-        ByteBuffer vBuffer = planes[2].getBuffer();
+    private class PreviewImageListener extends ImageListener {
 
-        if (yBytes == null) {
-            yBytes = new byte[yBuffer.capacity()];
+        protected void initialize() {
+            imageWidth = previewSize.getWidth();
+            imageHeight = previewSize.getHeight();
+            super.initialize();
         }
-        if (uBytes == null) {
-            uBytes = new byte[uBuffer.capacity()];
+
+        protected void processResult(CaptureResult captureResult, RDTTracker.RDTResult rdtResult) {
+            ImageFilter.FilterResult filterResult = null;
+
+            if (rdtResult.testArea != null) {
+                filterResult = imageFilter.validateImage(rdtResult.rdtStrip);
+                if (!stillCaptureInProgress && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
+                    Log.d(TAG, "Have good preview frame, making single request");
+                    stillCaptureInProgress = true;
+                    cameraController.captureStill();
+                }
+            }
+
+            detectorListener.onRDTDetected(captureResult, null, filterResult);
         }
-        if (vBytes == null) {
-            vBytes = new byte[vBuffer.capacity()];
+    }
+
+    private class StillImageListener extends ImageListener {
+        protected void initialize() {
+            imageWidth = stillSize.getWidth();
+            imageHeight = stillSize.getHeight();
+            super.initialize();
         }
-        yBuffer.get(yBytes);
-        uBuffer.get(uBytes);
-        vBuffer.get(vBytes);
+
+        @Override
+        protected void processResult(CaptureResult captureResult, RDTTracker.RDTResult rdtResult) {
+            if (rdtResult.testArea != null) {
+
+                ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip);
+
+                if (filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
+
+                    Log.d(TAG, "Have good still frame, running inference");
+
+                    detectorListener.onRDTInterpreting();
+                    final long interpretationStartTimeMs = SystemClock.uptimeMillis();
+
+                    InterpretationResult interpretationResult = InterpretationTracker.interpretResults(filterResults(
+                            INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API,
+                            interpretationDetector.recognizeImage(rdtResult.testArea),
+                            false));
+
+                    Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
+
+                    captureResult.image = saveImage();
+
+                    if (captureResult.image != null) {
+                        cameraController.onPause();
+                        // TODO: upload image to firestore: https://firebase.google.com/docs/storage/android/upload-files
+                        detectorListener.onRDTDetected(captureResult, interpretationResult, filterResult);
+
+                    } else {
+                        Log.d(TAG, "Error saving image, will try again");
+                    }
+                } else {
+                    Log.d(TAG, "Still frame didn't pass filter");
+                }
+            } else {
+                Log.d(TAG, "Still frame didn't have rdt test area");
+            }
+            stillCaptureInProgress = false;
+        }
     }
 
     private String chooseCamera() {
@@ -506,7 +542,8 @@ public class DetectorView extends LinearLayout implements
                 activity,
                 textureView,
                 this,
-                this,
+                new PreviewImageListener(),
+                new StillImageListener(),
                 getDesiredPreviewFrameSize());
 
         cameraController.setCamera(cameraId);
@@ -559,20 +596,25 @@ public class DetectorView extends LinearLayout implements
     }
 
     public class CaptureResult {
-        public boolean testStripFound;
+        public final boolean testStripFound;
+        public final float[] stripLocation;
+        public final int viewportWidth;
+        public final int viewportHeight;
+
         public String image;
-        public String windowImage;
-        public float[] stripLocation;
-        public int viewportWidth;
-        public int viewportHeight;
+
+        public CaptureResult(boolean testStripFound, float[] stripLocation) {
+            this.testStripFound = testStripFound;
+            this.stripLocation = stripLocation;
+            this.viewportWidth = screenWidth;
+            this.viewportHeight = screenHeight;
+        }
     }
 
     public static class InterpretationResult {
         public boolean control;
         public boolean testA;
         public boolean testB;
-        public int samples;
-        public int requiredSamples;
     }
 
     public interface DetectorListener {
