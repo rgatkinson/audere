@@ -6,8 +6,10 @@
 import React from "react";
 import { StyleProp, TextStyle } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import { connect } from "react-redux";
 import Text from "./Text";
 import { GUTTER } from "../styles";
+import { StoreState } from "../../store";
 
 interface Props {
   bold?: boolean;
@@ -17,6 +19,8 @@ interface Props {
   namespace: string;
   style?: StyleProp<TextStyle>;
   conditionalTextFn?(): string | null;
+  isDemo: boolean;
+  demoOnly?: boolean;
   textVariablesFn?(): any;
 }
 
@@ -59,12 +63,18 @@ class ScreenText extends React.Component<Props & WithNamespaces, State> {
       bold,
       center,
       conditionalTextFn,
+      demoOnly,
+      isDemo,
       italic,
       namespace,
       label,
       style,
       t,
     } = this.props;
+
+    if (demoOnly && !isDemo) {
+      return null;
+    }
 
     const allTheLabels = label instanceof Array ? label : [label];
     const allTheLabelText = allTheLabels.map(l =>
@@ -93,4 +103,6 @@ class ScreenText extends React.Component<Props & WithNamespaces, State> {
   }
 }
 
-export default withNamespaces()(ScreenText);
+export default connect((state: StoreState) => ({
+  isDemo: state.meta.isDemo,
+}))(withNamespaces()(ScreenText));

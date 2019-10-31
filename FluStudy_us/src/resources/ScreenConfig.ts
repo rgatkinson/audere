@@ -109,6 +109,7 @@ import {
 } from "../util/fluResults";
 import { openSettingsApp } from "../util/openSettingsApp";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
+import { getRdtResult } from "../util/results";
 import { getShippingTextVariables } from "../util/shipping";
 
 const SECOND_MS = 1000;
@@ -841,6 +842,14 @@ export const Screens: ScreenConfig[] = [
       { tag: RDTImage },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ScreenText,
+        props: {
+          demoOnly: true,
+          label: "diagnosis",
+          textVariablesFn: getRdtResult,
+        },
+      },
     ],
     footer: [
       {
