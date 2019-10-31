@@ -45,13 +45,11 @@ export function defineDataNode(sql: Sequelize): Model<DataNodeAttributes> {
 export interface DataPipelineAttributes {
   id?: string;
   name: string;
-  schema: string;
 }
 export function defineDataPipeline(
   sql: Sequelize
 ): Model<DataPipelineAttributes> {
   return defineModel<DataPipelineAttributes>(sql, "data_pipelines", {
     name: unique(stringColumn()),
-    schema: stringColumn(),
   });
 }
