@@ -1,24 +1,36 @@
 import React from "react";
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+import { SampleInfo } from "audere-lib/chillsProtocol";
+import { Dimensions, Image, Platform, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
 import { StoreState } from "../../../store";
 import { GUTTER } from "../../styles";
 
 interface Props {
   rdt: boolean;
+  testStripImg?: SampleInfo;
   uri: string;
 }
 
 class RDTImage extends React.PureComponent<Props> {
   render() {
-    const { rdt, uri } = this.props;
+    const { rdt, testStripImg, uri } = this.props;
     if (uri == null) {
       return null;
     }
 
+    let imageUri = uri;
+    if (rdt && Platform.OS === "android" && !!testStripImg) {
+      // Append photo id so that we don't pull an old cached version
+      // if user re-took the picture
+      imageUri = imageUri + "?" + testStripImg.code;
+    }
+
     return (
       <View style={styles.container}>
-        <Image style={rdt ? styles.rdt : styles.photo} source={{ uri }} />
+        <Image
+          style={rdt ? styles.rdt : styles.photo}
+          source={{ uri: imageUri }}
+        />
       </View>
     );
   }
@@ -54,4 +66,5 @@ export default connect((state: StoreState) => ({
   uri: !!state.survey.rdtPhotoUri
     ? state.survey.rdtPhotoUri
     : state.survey.photoUri,
+  testStripImg: state.survey.testStripImg,
 }))(RDTImage);
