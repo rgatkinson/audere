@@ -95,7 +95,6 @@ export const content = [
         name: strings.EmailConfirmation.placeholder,
         placeholder: strings.EmailConfirmation.placeholder,
         type: "text",
-        dbLocation: "responses",
       },
     ],
   },

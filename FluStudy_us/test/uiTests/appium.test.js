@@ -7,7 +7,7 @@ import wd from "wd";
 import strings from "../../src/i18n/locales/en.json";
 import { content } from "./fluathomeContent.js";
 import { createSplitSql } from "../../../FluApi/src/util/sql";
-import { defineCoughModels } from "../../../FluApi/src/models/db/cough";
+import { defineChillsModels } from "../../../FluApi/src/models/db/chills";
 import { Op } from "sequelize";
 import axios from "axios";
 import {
@@ -52,7 +52,7 @@ describe("Happy Path", () => {
 
   beforeAll(async done => {
     sql = createSplitSql();
-    models = defineCoughModels(sql);
+    models = defineChillsModels(sql);
     done();
   });
 
@@ -166,7 +166,7 @@ async function runThroughApp(models, isDemo) {
   if (!isDemo) {
     printScreenshots(files_to_write);
   }
-  // await verify_db_contents(driver, models, installationId, screens_visited);
+  await verify_db_contents(driver, models, installationId, screens_visited);
 }
 
 //check for screen title and click button for next page
@@ -287,6 +287,7 @@ async function barcode_screen(driver, screen_info, screens_visited) {
         .click();
     }
   }
+  screens_visited.push("Scan");
   await driver.sleep(2000); //let camera load
   await new wd.TouchAction(driver)
     .tap({ x: screen_x * 0.5, y: screen_y * 0.98 })
@@ -464,7 +465,7 @@ async function verify_db_contents(
 ) {
   await driver.sleep(5000); // Let firestore sync
   const response = await axios.get(
-    "http://localhost:3200/api/import/coughDocuments"
+    "http://localhost:3200/api/import/chillsDocuments"
   );
   if (response.status !== 200) {
     throw new Error(`Expected 200, got ${response.status}`);
@@ -552,7 +553,7 @@ async function verify_db_contents(
 async function display_rdt_stats(driver, models, installationId) {
   await driver.sleep(5000); // Let firestore sync
   const response = await axios.get(
-    "http://localhost:3200/api/import/coughDocuments"
+    "http://localhost:3200/api/import/chillsDocuments"
   );
   if (response.status !== 200) {
     throw new Error(`Expected 200, got ${response.status}`);
