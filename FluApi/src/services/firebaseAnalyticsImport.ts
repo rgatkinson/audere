@@ -3,27 +3,33 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import { BigQueryTableImporter } from "../../external/bigQuery";
-import { CoughModels } from "../../models/db/cough";
-import { SplitSql } from "../../util/sql";
 import moment = require("moment");
-import logger from "../../util/logger";
+import { BigQueryTableImporter } from "../external/bigQuery";
+import { Model, SplitSql } from "../util/sql";
+import {
+  FirebaseAnalyticsAttributes,
+  FirebaseAnalyticsTableAttributes,
+} from "../models/db/firebaseAnalytics";
+import logger from "../util/logger";
 
 /**
  * Imports Firebase data from BigQuery to Postgres for Cough.
  */
-export class FirebaseImport {
+export class FirebaseAnalyticsImport {
   private readonly sql: SplitSql;
-  private readonly models: CoughModels;
+  private readonly analytics: Model<FirebaseAnalyticsAttributes>;
+  private readonly tables: Model<FirebaseAnalyticsTableAttributes>;
   private readonly bigQuery: BigQueryTableImporter;
 
   constructor(
     sql: SplitSql,
-    models: CoughModels,
+    analytics: Model<FirebaseAnalyticsAttributes>,
+    tables: Model<FirebaseAnalyticsTableAttributes>,
     bigQuery: BigQueryTableImporter
   ) {
     this.sql = sql;
-    this.models = models;
+    this.analytics = analytics;
+    this.tables = tables;
     this.bigQuery = bigQuery;
   }
 
@@ -61,7 +67,7 @@ export class FirebaseImport {
       `Checking last modified time for tables ${candidateKeys.join(", ")}`
     );
 
-    const existingVersions = await this.models.firebaseAnalyticsTable.findAll({
+    const existingVersions = await this.tables.findAll({
       where: {
         name: Array.from(candidateVersions.keys()),
       },
@@ -101,7 +107,7 @@ export class FirebaseImport {
       // not desirable
       await this.sql.nonPii.transaction(async t => {
         logger.info(`Destroying existing rows with event date ${eventDate}`);
-        await this.models.firebaseAnalytics.destroy({
+        await this.analytics.destroy({
           where: {
             event_date: eventDate,
           },
@@ -123,14 +129,14 @@ export class FirebaseImport {
           }));
 
           logger.info(`Creating ${rows.length} analytic events`);
-          await this.models.firebaseAnalytics.bulkCreate(rows, {
+          await this.analytics.bulkCreate(rows, {
             transaction: t,
           });
         } while (token != null);
 
         // Mark the modified time so we know when the table has been updated
         logger.info(`Setting modified time for ${name} to ${lastModified}`);
-        await this.models.firebaseAnalyticsTable.upsert(
+        await this.tables.upsert(
           {
             name: name,
             modified: lastModified,

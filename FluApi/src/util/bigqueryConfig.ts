@@ -10,6 +10,10 @@ export interface BigqueryConfig {
   coughDataset: string;
   coughEmail: string;
   coughKey: string;
+  chillsProject: string;
+  chillsDataset: string;
+  chillsEmail: string;
+  chillsKey: string;
 }
 
 let lazy: Promise<BigqueryConfig> | null = null;
@@ -25,11 +29,33 @@ export function getBigqueryConfig(
 }
 
 async function createConfig(secrets: SecretConfig): Promise<BigqueryConfig> {
-  const [coughProject, coughDataset, coughEmail, coughKey] = await Promise.all([
+  const [
+    coughProject,
+    coughDataset,
+    coughEmail,
+    coughKey,
+    chillsProject,
+    chillsDataset,
+    chillsEmail,
+    chillsKey,
+  ] = await Promise.all([
     secrets.get("GCP_PROJECT_COUGH"),
     secrets.get("GCP_FIREBASE_ANALYTICS_DATASET_COUGH"),
     secrets.get("GCP_BQ_CREDENTIALS_EMAIL_COUGH"),
     secrets.get("GCP_BQ_CREDENTIALS_KEY_COUGH"),
+    secrets.get("GCP_PROJECT_CHILLS"),
+    secrets.get("GCP_FIREBASE_ANALYTICS_DATASET_CHILLS"),
+    secrets.get("GCP_BQ_CREDENTIALS_EMAIL_CHILLS"),
+    secrets.get("GCP_BQ_CREDENTIALS_KEY_CHILLS"),
   ]);
-  return { coughProject, coughDataset, coughEmail, coughKey };
+  return {
+    coughProject,
+    coughDataset,
+    coughEmail,
+    coughKey,
+    chillsProject,
+    chillsDataset,
+    chillsEmail,
+    chillsKey,
+  };
 }

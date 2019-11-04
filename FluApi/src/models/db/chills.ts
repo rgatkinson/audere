@@ -8,11 +8,13 @@ import {
   Inst,
   Model,
   SplitSql,
+  bigIntColumn,
   booleanColumn,
   dateColumn,
   defineModel,
   integerColumn,
   jsonColumn,
+  jsonbColumn,
   stringColumn,
   unique,
 } from "../../util/sql";
@@ -21,6 +23,10 @@ import {
   PhotoDbInfo,
   SurveyNonPIIInfo,
 } from "audere-lib/dist/chillsProtocol";
+import {
+  FirebaseAnalyticsAttributes,
+  FirebaseAnalyticsTableAttributes,
+} from "./firebaseAnalytics";
 
 const schema = "chills";
 
@@ -28,6 +34,8 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
   const models: ChillsModels = {
     accessKey: defineAccessKey(sql),
     expertRead: defineExpertRead(sql),
+    firebaseAnalytics: defineFirebaseAnalytics(sql),
+    firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
@@ -50,6 +58,8 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
 export interface ChillsModels {
   accessKey: Model<AccessKeyAttributes>;
   expertRead: Model<ExpertReadAttributes>;
+  firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
+  firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
@@ -223,6 +233,36 @@ export function definePhotoReplacementLog(
       oldPhotoHash: stringColumn("oldPhotoHash"),
       newPhotoHash: stringColumn("newPhotoHash"),
       replacerId: unique(integerColumn("replacerId")),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export function defineFirebaseAnalytics(
+  sql: SplitSql
+): Model<FirebaseAnalyticsAttributes> {
+  return defineModel<FirebaseAnalyticsAttributes>(
+    sql.nonPii,
+    "firebase_analytics",
+    {
+      event_date: stringColumn(),
+      event: jsonbColumn(),
+    },
+    { schema }
+  );
+}
+
+export function defineFirebaseAnalayticsTable(
+  sql: SplitSql
+): Model<FirebaseAnalyticsTableAttributes> {
+  return defineModel<FirebaseAnalyticsTableAttributes>(
+    sql.nonPii,
+    "firebase_analytics_table",
+    {
+      name: unique(stringColumn()),
+      modified: bigIntColumn(),
     },
     { schema }
   );

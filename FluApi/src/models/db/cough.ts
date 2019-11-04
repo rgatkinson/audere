@@ -13,7 +13,6 @@ import {
   dateColumn,
   decimalColumn,
   defineModel,
-  enumColumn,
   integerColumn,
   jsonColumn,
   jsonbColumn,
@@ -26,6 +25,10 @@ import {
   PhotoDbInfo,
   SurveyNonPIIInfo,
 } from "audere-lib/dist/coughProtocol";
+import {
+  FirebaseAnalyticsAttributes,
+  FirebaseAnalyticsTableAttributes,
+} from "./firebaseAnalytics";
 
 const schema = "cough";
 
@@ -332,10 +335,6 @@ export function defineAsprenData(sql: SplitSql): Model<AsprenDataAttributes> {
 
 // ---------------------------------------------------------------
 
-export interface FirebaseAnalyticsAttributes {
-  event_date: string;
-  event: any;
-}
 export function defineFirebaseAnalytics(
   sql: SplitSql
 ): Model<FirebaseAnalyticsAttributes> {
@@ -350,10 +349,6 @@ export function defineFirebaseAnalytics(
   );
 }
 
-export interface FirebaseAnalyticsTableAttributes {
-  name: string;
-  modified: number;
-}
 export function defineFirebaseAnalayticsTable(
   sql: SplitSql
 ): Model<FirebaseAnalyticsTableAttributes> {

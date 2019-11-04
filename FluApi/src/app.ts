@@ -34,10 +34,11 @@ import { CoughEndpoint } from "./endpoints/coughApi";
 import { SqlLock } from "./util/sqlLock";
 import { CoughAsprenEndpoint } from "./endpoints/coughAsprenApi";
 import { ServerHealth } from "./endpoints/healthCheck";
-import { CoughFirebaseEndpoint } from "./endpoints/coughFirebaseApi";
+import { CoughFirebaseAnalyticsEndpoint } from "./endpoints/coughFirebaseAnalyticsApi";
 import { CoughFollowUpEndpoint } from "./endpoints/coughFollowUpApi";
 import { CoughGiftcardEndpoint } from "./endpoints/coughGiftcardApi";
 import { ChillsEndpoint } from "./endpoints/chillsApi";
+import { ChillsFirebaseAnalyticsEndpoint } from "./endpoints/chillsFirebaseAnalyticsApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -322,7 +323,7 @@ export function createInternalApp(config: AppConfig) {
     )
   );
 
-  const coughFirebase = new CoughFirebaseEndpoint(sql);
+  const coughFirebase = new CoughFirebaseAnalyticsEndpoint(sql);
   internalApp.get(
     "/api/import/coughAnalytics",
     stats("importCoughAnalytics"),
@@ -369,6 +370,19 @@ export function createInternalApp(config: AppConfig) {
     "/api/chills/uploadPhotos",
     stats("chillsUploadPhotos"),
     wrap(chills.uploadPhotos)
+  );
+
+  const chillsFirebase = new ChillsFirebaseAnalyticsEndpoint(sql);
+  internalApp.get(
+    "/api/import/chillsAnalytics",
+    stats("importChillsAnalytics"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/chillsAnalytics",
+        chillsFirebase.importAnalytics,
+        jsonNoOp
+      )
+    )
   );
 
   return useOuch(internalApp);

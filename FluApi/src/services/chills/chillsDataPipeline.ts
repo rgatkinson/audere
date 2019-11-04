@@ -17,6 +17,7 @@ import {
   sampleColumns,
 } from "../data/fluPipelineUtils";
 import { SURVEY_QUESTIONS } from "audere-lib/chillsQuestionConfig";
+import { getFirebaseDataNodes } from "../data/firebasePipelineNodes";
 import { Sequelize } from "sequelize";
 
 export class ChillsDataPipeline implements DataPipeline {
@@ -29,7 +30,7 @@ export class ChillsDataPipeline implements DataPipeline {
     this.db = sql;
     let nodes = [];
     nodes = nodes.concat(getNonPiiDataNodes());
-    //nodes = nodes.concat(getFirebaseDataNodes("chills", "chills_derived"));
+    nodes = nodes.concat(getFirebaseDataNodes("chills", "chills_derived"));
     this.nodes = nodes;
   }
 }

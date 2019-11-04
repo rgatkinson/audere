@@ -73,7 +73,7 @@ export class BigQueryTableImporter {
     pageToken?: string
   ): Promise<PagedQueryResult<any>> {
     let options = {
-      // If autoPaginate is not set all results are recursively fetched
+      // If autoPaginate is not set all results are eagerly fetched
       autoPaginate: false,
 
       // Currently hardcoding 10k max per request

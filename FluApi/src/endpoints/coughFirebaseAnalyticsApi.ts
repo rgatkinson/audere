@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { BigQueryTableImporter } from "../external/bigQuery";
-import { FirebaseImport } from "../services/cough/firebaseImport";
+import { FirebaseAnalyticsImport } from "../services/firebaseAnalyticsImport";
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
@@ -15,8 +15,8 @@ import { DataPipeline } from "../services/data/dataPipeline";
 import { DataPipelineService } from "../services/data/dataPipelineService";
 import logger from "../util/logger";
 
-export class CoughFirebaseEndpoint {
-  private firebaseImport: LazyAsync<FirebaseImport>;
+export class CoughFirebaseAnalyticsEndpoint {
+  private firebaseImport: LazyAsync<FirebaseAnalyticsImport>;
   private pipeline: DataPipeline;
   private pipelineSvc: DataPipelineService;
 
@@ -26,7 +26,13 @@ export class CoughFirebaseEndpoint {
       const config = await getBigqueryConfig(secrets);
       const client = new BigQueryTableImporter(config);
       const models = defineCoughModels(sql);
-      return new FirebaseImport(sql, models, client);
+      const importer = new FirebaseAnalyticsImport(
+        sql,
+        models.firebaseAnalytics,
+        models.firebaseAnalyticsTable,
+        client
+      );
+      return importer;
     });
     this.pipeline = new CoughDataPipeline(sql.nonPii);
     this.pipelineSvc = new DataPipelineService();
