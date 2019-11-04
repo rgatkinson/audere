@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class DetectorView extends LinearLayout implements
     private static final String BOX_TF_OD_API_LABELS_FILE = "file:///android_asset/labelmap.txt";
     private static final String INTERPRETATION_TF_OD_API_MODEL_FILE = "phase2-detect.tflite";
     private static final String INTERPRETATION_TF_OD_API_LABELS_FILE = "file:///android_asset/phase2-labelmap.txt";
+    private static final String IPRD_MODEL_FILE = "iprd.tflite";
 
     // Minimum detection confidence to track a detection.
     private static final float BOX_MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
@@ -94,6 +96,8 @@ public class DetectorView extends LinearLayout implements
 
     private volatile boolean stillCaptureInProgress = false;
 
+    private IprdAdapter.RdtApi iprdApi;
+
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (context instanceof Activity) {
@@ -106,6 +110,26 @@ public class DetectorView extends LinearLayout implements
         imageFilter = new ImageFilter(activity);
 
         // TODO: move this to background thread and check that it's ready where needed
+
+        // TODO: uncomment once licensing issues are resolved
+//        try {
+//            MappedByteBuffer iprdModel = TFLiteObjectDetectionAPIModel.loadModelFile(
+//                activity.getAssets(),
+//                IPRD_MODEL_FILE
+//            );
+            this.iprdApi = IprdAdapter.RdtApi.builder()
+//                .setModel(iprdModel)
+                .build();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            Log.e(TAG, "Exception initializing filter: " + e.toString());
+//            Toast.makeText(
+//                activity.getApplicationContext(),
+//                "IPRD filter could not be initialized",
+//                Toast.LENGTH_SHORT
+//            ).show();
+//        }
+
         try {
             boxDetector =
                     TFLiteObjectDetectionAPIModel.create(
@@ -355,28 +379,43 @@ public class DetectorView extends LinearLayout implements
                     new Runnable() {
                         @Override
                         public void run() {
-                            Trace.beginSection("Running Process Image");
-                            final long boxStartTimeMs = SystemClock.uptimeMillis();
+                            try {
+                                // IPRD Filter
+                                final long iprdStartTimeMs = SystemClock.uptimeMillis();
+                                Trace.beginSection("IPRD Filter");
+                                IprdAdapter.FrameResult iprdResult = iprdApi.checkFrame(boxModelBitmap);
+                                Trace.endSection();
+                                Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
 
-                            final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
-                            Log.i(TAG, "Phase 1 processing time: " +  (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
+                                // Local interpretation prototype
+                                Trace.beginSection("Running Process Image");
+                                final long boxStartTimeMs = SystemClock.uptimeMillis();
 
-                            final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
+                                final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
+                                Log.i(TAG, "Phase 1 processing time: " + (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
 
-                            RDTTracker.RDTResult rdtResult = rdtTracker.extractRDT(mappedRecognitions, imageBitmap);
+                                final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
 
-                            CaptureResult captureResult = new CaptureResult(rdtResult.testArea != null, rdtResult.rdtOutline);
+                                RDTTracker.RDTResult rdtResult = rdtTracker.extractRDT(mappedRecognitions, imageBitmap);
 
-                            processResult(captureResult, rdtResult);
+                                CaptureResult captureResult = new CaptureResult(rdtResult.testArea != null, rdtResult.rdtOutline);
 
-                            analyzingFrame = false;
-                            Trace.endSection(); // Running Process Image
+                                processResult(iprdResult, captureResult, rdtResult);
+
+                                Trace.endSection(); // Running Process Image
+                            } finally {
+                                analyzingFrame = false;
+                            }
                         }
                     });
             Trace.endSection(); // processPreviewImage
         }
 
-        protected abstract void processResult(CaptureResult captureResult, RDTTracker.RDTResult rdtResult);
+        protected abstract void processResult(
+            IprdAdapter.FrameResult iprdResult,
+            CaptureResult captureResult,
+            RDTTracker.RDTResult rdtResult
+        );
 
         protected List<Classifier.Recognition> filterResults(
                 float minimumConfidence, List<Classifier.Recognition> results, boolean toPreviewTransform) {
@@ -424,10 +463,14 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
-        protected void processResult(CaptureResult captureResult, RDTTracker.RDTResult rdtResult) {
+        protected void processResult(
+            IprdAdapter.FrameResult iprdResult,
+            CaptureResult captureResult,
+            RDTTracker.RDTResult rdtResult
+        ) {
             ImageFilter.FilterResult filterResult = null;
 
-            if (rdtResult.testArea != null) {
+            if (iprdResult.isAccepted() && rdtResult.testArea != null) {
                 filterResult = imageFilter.validateImage(rdtResult.rdtStrip);
                 if (!stillCaptureInProgress && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
                     Log.d(TAG, "Have good preview frame, making single request");
@@ -436,7 +479,7 @@ public class DetectorView extends LinearLayout implements
                 }
             }
 
-            detectorListener.onRDTDetected(captureResult, null, filterResult);
+            detectorListener.onRDTDetected(iprdResult, captureResult, null, filterResult);
         }
     }
 
@@ -448,8 +491,12 @@ public class DetectorView extends LinearLayout implements
         }
 
         @Override
-        protected void processResult(CaptureResult captureResult, RDTTracker.RDTResult rdtResult) {
-            if (rdtResult.testArea != null) {
+        protected void processResult(
+            IprdAdapter.FrameResult iprdResult,
+            CaptureResult captureResult,
+            RDTTracker.RDTResult rdtResult
+        ) {
+            if (iprdResult.isAccepted() && rdtResult.testArea != null) {
 
                 ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip);
 
@@ -472,7 +519,7 @@ public class DetectorView extends LinearLayout implements
                     if (captureResult.image != null) {
                         cameraController.onPause();
                         // TODO: upload image to firestore: https://firebase.google.com/docs/storage/android/upload-files
-                        detectorListener.onRDTDetected(captureResult, interpretationResult, filterResult);
+                        detectorListener.onRDTDetected(iprdResult, captureResult, interpretationResult, filterResult);
 
                     } else {
                         Log.d(TAG, "Error saving image, will try again");
@@ -624,9 +671,10 @@ public class DetectorView extends LinearLayout implements
     public interface DetectorListener {
         void onRDTCameraReady(boolean supportsTorchMode);
         void onRDTDetected(
-                CaptureResult captureResult,
-                InterpretationResult interpretationResult,
-                ImageFilter.FilterResult filterResult
+            IprdAdapter.FrameResult iprdResult,
+            CaptureResult captureResult,
+            InterpretationResult interpretationResult,
+            ImageFilter.FilterResult filterResult
         );
         void onRDTInterpreting();
     }

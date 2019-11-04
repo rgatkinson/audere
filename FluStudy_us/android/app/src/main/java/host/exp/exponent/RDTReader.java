@@ -68,6 +68,7 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
 
     @Override
     public void onRDTDetected(
+            IprdAdapter.FrameResult iprdFrameResult,
             DetectorView.CaptureResult captureResult,
             DetectorView.InterpretationResult interpretationResult,
             ImageFilter.FilterResult filterResult) {
@@ -75,6 +76,31 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
             interpretationResult = new DetectorView.InterpretationResult();
         }
         WritableMap event = Arguments.createMap();
+
+        if (iprdFrameResult != null) {
+            WritableMap iprdResult = Arguments.createMap();
+
+            iprdResult.putInt("sharpness", iprdFrameResult.sharpness);
+            iprdResult.putInt("scale", iprdFrameResult.scale);
+            iprdResult.putInt("brightness", iprdFrameResult.brightness);
+            iprdResult.putInt("perspectiveDistortion", iprdFrameResult.perspectiveDistortion);
+            iprdResult.putInt("xOffset", iprdFrameResult.xOffset);
+            iprdResult.putInt("yOffset", iprdFrameResult.yOffset);
+            iprdResult.putInt("left", iprdFrameResult.left);
+            iprdResult.putInt("top", iprdFrameResult.top);
+            iprdResult.putInt("right", iprdFrameResult.right);
+            iprdResult.putInt("bottom", iprdFrameResult.bottom);
+            iprdResult.putBoolean("foundRDT", iprdFrameResult.foundRDT);
+
+            // Forward constants so we don't have to hard code these outside IPRD code.
+            iprdResult.putInt("NOT_COMPUTED", IprdAdapter.FrameResult.NOT_COMPUTED);
+            iprdResult.putInt("TOO_HIGH", IprdAdapter.FrameResult.TOO_HIGH);
+            iprdResult.putInt("TOO_LOW", IprdAdapter.FrameResult.TOO_LOW);
+            iprdResult.putInt("GOOD", IprdAdapter.FrameResult.GOOD);
+
+            event.putMap("iprdResult", iprdResult);
+        }
+
         if (captureResult.image != null) {
             event.putString("img", captureResult.image);
         }
