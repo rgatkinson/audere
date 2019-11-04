@@ -16,7 +16,7 @@ import {
   SurveyDocument,
   PhotoDocument,
 } from "audere-lib/dist/chillsProtocol";
-import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
+import { ChillsDataPipeline } from "../services/chills/chillsDataPipeline";
 import { DataPipelineService } from "../services/data/dataPipelineService";
 import {
   Base64Sample,
@@ -178,7 +178,7 @@ export class ChillsEndpoint extends FluDocumentImport {
   }
 
   protected async updateDerived(progress: () => void, reqId: string) {
-    const pipeline = new CoughDataPipeline(this.sql.nonPii);
+    const pipeline = new ChillsDataPipeline(this.sql.nonPii);
     const service = new DataPipelineService(progress);
     logger.info(`${reqId}: enter updateDerivedTables`);
     try {
