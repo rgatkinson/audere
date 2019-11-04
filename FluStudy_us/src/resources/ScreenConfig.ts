@@ -841,8 +841,6 @@ export const Screens: ScreenConfig[] = [
       { tag: RDTImage },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-    ],
-    footer: [
       {
         tag: ContinueButton,
         props: {
