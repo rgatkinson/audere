@@ -9,7 +9,7 @@ import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import { defineCoughModels } from "../models/db/cough";
-import { getBigqueryConfig } from "../util/bigqueryConfig";
+import { getBigqueryConfig } from "../util/bigQueryConfig";
 import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
 import { DataPipeline } from "../services/data/dataPipeline";
 import { DataPipelineService } from "../services/data/dataPipelineService";
@@ -24,7 +24,7 @@ export class CoughFirebaseAnalyticsEndpoint {
     const secrets = new SecretConfig(sql);
     this.firebaseImport = new LazyAsync(async () => {
       const config = await getBigqueryConfig(secrets);
-      const client = new BigQueryTableImporter(config);
+      const client = new BigQueryTableImporter(config.cough);
       const models = defineCoughModels(sql);
       const importer = new FirebaseAnalyticsImport(
         sql,

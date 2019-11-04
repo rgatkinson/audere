@@ -6,7 +6,7 @@
 import { BigQuery } from "@google-cloud/bigquery";
 import { TableMetadata } from "@google-cloud/bigquery/build/src/table";
 import bigquery from "@google-cloud/bigquery/build/src/types";
-import { BigqueryConfig } from "../util/bigqueryConfig";
+import { BigQueryConfig } from "../util/bigQueryConfig";
 import logger from "../util/logger";
 
 export class PagedQueryResult<T> {
@@ -18,16 +18,16 @@ export class PagedQueryResult<T> {
  * Wraps the BigQuery client API
  */
 export class BigQueryTableImporter {
-  private readonly config: BigqueryConfig;
+  private readonly config: BigQueryConfig;
   private readonly client: BigQuery;
 
-  constructor(config: BigqueryConfig) {
+  constructor(config: BigQueryConfig) {
     this.config = config;
     this.client = new BigQuery({
-      projectId: this.config.coughProject,
+      projectId: this.config.project,
       credentials: {
-        client_email: this.config.coughEmail,
-        private_key: this.config.coughKey.replace(/\\n/g, "\n"),
+        client_email: this.config.email,
+        private_key: this.config.key.replace(/\\n/g, "\n"),
       },
     });
   }
@@ -36,14 +36,10 @@ export class BigQueryTableImporter {
    * List tables within the configured dataset
    */
   public async listTables(): Promise<string[]> {
-    const response = await this.client
-      .dataset(this.config.coughDataset)
-      .getTables();
+    const response = await this.client.dataset(this.config.dataset).getTables();
 
     const tables = response[0];
-    logger.info(
-      `Listed ${tables.length} tables within ${this.config.coughDataset}`
-    );
+    logger.info(`Listed ${tables.length} tables within ${this.config.dataset}`);
     return tables.map(t => (<TableMetadata>t.metadata).tableReference.tableId);
   }
 
@@ -54,7 +50,7 @@ export class BigQueryTableImporter {
    */
   public async getTableMetadata(table: string): Promise<TableMetadata> {
     const [metadata] = await this.client
-      .dataset(this.config.coughDataset)
+      .dataset(this.config.dataset)
       .table(table)
       .getMetadata();
 
@@ -85,7 +81,7 @@ export class BigQueryTableImporter {
     }
 
     const result = await this.client
-      .dataset(this.config.coughDataset)
+      .dataset(this.config.dataset)
       .table(table)
       .getRows(options);
 

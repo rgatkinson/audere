@@ -9,7 +9,7 @@ import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import { defineChillsModels } from "../models/db/chills";
-import { getBigqueryConfig } from "../util/bigqueryConfig";
+import { getBigqueryConfig } from "../util/bigQueryConfig";
 import { ChillsDataPipeline } from "../services/chills/chillsDataPipeline";
 import { DataPipeline } from "../services/data/dataPipeline";
 import { DataPipelineService } from "../services/data/dataPipelineService";
@@ -24,7 +24,7 @@ export class ChillsFirebaseAnalyticsEndpoint {
     const secrets = new SecretConfig(sql);
     this.firebaseImport = new LazyAsync(async () => {
       const config = await getBigqueryConfig(secrets);
-      const client = new BigQueryTableImporter(config);
+      const client = new BigQueryTableImporter(config.chills);
       const models = defineChillsModels(sql);
       const importer = new FirebaseAnalyticsImport(
         sql,

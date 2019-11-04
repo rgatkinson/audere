@@ -5,22 +5,23 @@
 
 import { SecretConfig } from "./secretsConfig";
 
-export interface BigqueryConfig {
-  coughProject: string;
-  coughDataset: string;
-  coughEmail: string;
-  coughKey: string;
-  chillsProject: string;
-  chillsDataset: string;
-  chillsEmail: string;
-  chillsKey: string;
+export interface BigQueryConfig {
+  project: string;
+  dataset: string;
+  email: string;
+  key: string;
 }
 
-let lazy: Promise<BigqueryConfig> | null = null;
+export interface BQProjectConfig {
+  chills: BigQueryConfig;
+  cough: BigQueryConfig;
+}
+
+let lazy: Promise<BQProjectConfig> | null = null;
 
 export function getBigqueryConfig(
   secrets: SecretConfig
-): Promise<BigqueryConfig> {
+): Promise<BQProjectConfig> {
   if (lazy != null) {
     return lazy;
   }
@@ -28,7 +29,7 @@ export function getBigqueryConfig(
   return lazy;
 }
 
-async function createConfig(secrets: SecretConfig): Promise<BigqueryConfig> {
+async function createConfig(secrets: SecretConfig): Promise<BQProjectConfig> {
   const [
     coughProject,
     coughDataset,
@@ -49,13 +50,17 @@ async function createConfig(secrets: SecretConfig): Promise<BigqueryConfig> {
     secrets.get("GCP_BQ_CREDENTIALS_KEY_CHILLS"),
   ]);
   return {
-    coughProject,
-    coughDataset,
-    coughEmail,
-    coughKey,
-    chillsProject,
-    chillsDataset,
-    chillsEmail,
-    chillsKey,
+    chills: {
+      project: chillsProject,
+      dataset: chillsDataset,
+      email: chillsEmail,
+      key: chillsKey,
+    },
+    cough: {
+      project: coughProject,
+      dataset: coughDataset,
+      email: coughEmail,
+      key: coughKey,
+    },
   };
 }
