@@ -251,3 +251,16 @@ resource "aws_s3_bucket_notification" "cough_follow_ups_reports_notification" {
     events = ["s3:ObjectCreated:*"]
   }
 }
+
+module "chills_firebase_import" {
+  source = "../lambda-cron"
+
+  frequency = "rate(1 hour)"
+  name = "${local.base_name}-chills-firebase-import"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  subnet_id = "${var.lambda_subnet_id}"
+  timeout = 300
+  url = "http://${var.fluapi_fqdn}:444/api/import/chillsDocuments"
+}
