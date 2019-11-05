@@ -755,25 +755,6 @@ export const PinkWhenBlueConfig: SurveyQuestion = {
   type: SurveyQuestionType.RadioGrid,
 };
 
-export const PinkLineConfig: SurveyQuestion = {
-  id: "PinkLine",
-  conditions: [
-    {
-      key: "selectedButtonKey",
-      id: BlueLineConfig.id,
-      answer: "no",
-    },
-  ],
-  title: "pinkLine",
-  description: "seeExample",
-  buttons: [
-    { key: "noPink", primary: false, enabled: true },
-    { key: "yesOnePink", primary: false, enabled: true },
-    { key: "yesTwoPink", primary: false, enabled: true },
-  ],
-  type: SurveyQuestionType.RadioGrid,
-};
-
 export const NumLinesSeenConfig: SurveyQuestion = {
   id: "NumLinesSeen",
   title: "numLinesSeen",
@@ -852,6 +833,5 @@ export const SURVEY_QUESTIONS = [
   AroundSickChildrenConfig,
   BlueLineConfig,
   PinkWhenBlueConfig,
-  PinkLineConfig,
   NumLinesSeenConfig,
 ];

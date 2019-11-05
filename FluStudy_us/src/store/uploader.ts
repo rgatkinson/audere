@@ -15,7 +15,6 @@ import {
   BlueLineConfig,
   FluShotConfig,
   FluShotDateConfig,
-  PinkLineConfig,
   PinkWhenBlueConfig,
   WhenFirstStartedAntiviralConfig,
   HowReceivedFluShotConfig,
@@ -151,15 +150,6 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
       {
         dependsOnId: BlueLineConfig.id,
         includeWhen: isSelected("yes"),
-      },
-    ],
-  },
-  {
-    conditionalId: PinkLineConfig.id,
-    conditions: [
-      {
-        dependsOnId: BlueLineConfig.id,
-        includeWhen: isSelected("no"),
       },
     ],
   },

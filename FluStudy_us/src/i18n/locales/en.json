@@ -154,8 +154,7 @@
     "publicTransportation": "In the past week, did you take public transportation?",
     "aroundSickChildren": "In the past week, were you around sick children?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
-    "pinkLine": "Which image below most closely matches your test strip?",
-    "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?"
+    "pinkLine": "Which image below most closely matches your test strip?"
   },
   "surveyDescription": {
     "selectAll": "Select all that apply",
