@@ -65,6 +65,11 @@ const INDEX_PAGE_LINKS = [
     url: "./coughGiftcards",
     permissionsRequired: [Permission.COUGH_GIFTCARD_UPLOAD],
   },
+  {
+    label: "RDT Photos from flu@home U.S.",
+    url: "./chillsPhotos",
+    permissionsRequired: [Permission.CHILLS_RDT_PHOTOS_ACCESS],
+  },
 ];
 
 const SequelizeSessionStore = require("connect-session-sequelize")(
