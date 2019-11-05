@@ -11,18 +11,36 @@ module.exports = {
     await queryInterface.sequelize.query(`
       grant usage
         on schema cough_derived
-        to metabase;
+        to metabase_cough;
 
       grant select
         on all tables
         in schema cough_derived
-        to metabase;
+        to metabase_cough;
 
       alter default privileges
         in schema cough_derived
         grant select
           on tables
-          to metabase;
+          to metabase_cough;
+    `);
+
+    // Make everything chills_derived readable for metabase
+    await queryInterface.sequelize.query(`
+      grant usage
+        on schema chills_derived
+        to metabase_chills;
+
+      grant select
+        on all tables
+        in schema chills_derived
+        to metabase_chills;
+
+      alter default privileges
+        in schema chills_derived
+        grant select
+          on tables
+          to metabase_chills;
     `);
   },
 
