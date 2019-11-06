@@ -34,7 +34,7 @@ can be found in the LICENSE file distributed with this file.
           {{#if ../canReplace}}
           <div class="replaceSection">
             <div>Replace Photo:</div>
-            <form action="./replacePhoto?_csrf={{../csrf}}" method="post" enctype="multipart/form-data">
+            <form action="./chillsReplacePhoto?_csrf={{../csrf}}" method="post" enctype="multipart/form-data">
                 <input type="hidden" name="photoId" value="{{id}}"/>
                 <input type="hidden" name="surveyId" value="{{../surveyId}}"/>
                 <div><input type="file" name="photoReplacement" accept="image/png, image/jpeg"/></div>
@@ -46,7 +46,7 @@ can be found in the LICENSE file distributed with this file.
         </div>
       {{/each}}
       {{#if canInterpret}}
-        <form action="./setExpertRead" method="post">
+        <form action="./chillsSetExpertRead" method="post">
           <input type="hidden" name="_csrf" value="{{csrf}}"/>
           <input type="hidden" name="surveyId" value="{{surveyId}}"/>
           <h4>What result does this test strip indicated?</h4>
