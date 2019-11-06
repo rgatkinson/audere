@@ -1,4 +1,7 @@
 ???
-flu-a
 control
-flu-b
+a-pos
+a-neg
+b-pos
+b-neg
+notvalid

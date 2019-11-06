@@ -5,72 +5,78 @@
 
 package host.exp.exponent.tracking;
 
-import android.graphics.Color;
-import android.graphics.RectF;
+import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 
 import host.exp.exponent.DetectorView;
 import host.exp.exponent.tflite.Classifier;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InterpretationTracker {
     private static final String TAG = "InterpretationTracker";
 
-    public static synchronized DetectorView.InterpretationResult interpretResults(final List<Classifier.Recognition> results) {
+    public static synchronized DetectorView.InterpretationResult interpretResults(
+            final List<Classifier.Recognition> results) {
         Log.i(TAG, "tracking interpretation result");
-        final List<Pair<Float, Classifier.Recognition>> rectsToTrack = new LinkedList<Pair<Float, Classifier.Recognition>>();
+
+        Map<String, Double> bestResults = new HashMap();
+
+        StringBuilder allResults = new StringBuilder("\nResults:\n");
 
         for (final Classifier.Recognition result : results) {
             if (result.getLocation() == null) {
                 continue;
             }
+            allResults.append("   " + getLabel(result) + "\n");
 
-            rectsToTrack.add(new Pair(result.getConfidence(), result));
-        }
-        List<RDTTracker.TrackedRecognition> trackedObjects = new LinkedList<>();
-        if (rectsToTrack.isEmpty()) {
-            Log.i(TAG, "Nothing to track.");
-        } else {
-            for (final Pair<Float, Classifier.Recognition> potential : rectsToTrack) {
-                final RDTTracker.TrackedRecognition trackedRecognition = new RDTTracker.TrackedRecognition();
-                trackedRecognition.detectionConfidence = potential.first;
-                trackedRecognition.location = new RectF(potential.second.getLocation());
-                trackedRecognition.title = potential.second.getTitle();
-                trackedRecognition.color = trackedRecognition.title.equals("control") ? Color.BLUE : Color.RED;
-                trackedObjects.add(trackedRecognition);
+            String label = result.getTitle();
+            double score = result.getConfidence();
+            if (!bestResults.containsKey(label) || bestResults.get(label) < score) {
+                bestResults.put(label, score);
             }
         }
 
         Log.d(TAG, "All results");
-        Log.d(TAG, "\n" + getAllResultsForDisplay(trackedObjects));
+        Log.d(TAG, "\n" + allResults.toString());
 
-        return getInterpretationResult(trackedObjects);
-    }
+        DetectorView.InterpretationResult interpretationResult =
+                new DetectorView.InterpretationResult();
 
-    private static String getAllResultsForDisplay(List<RDTTracker.TrackedRecognition> trackedObjects) {
-        StringBuilder allResults = new StringBuilder("\nResults:\n");
-        for (RDTTracker.TrackedRecognition recognition : trackedObjects) {
-            allResults.append("   " + Tracker.getLabel(recognition) + "\n");
-        }
-        return allResults.toString();
-    }
-
-    public static DetectorView.InterpretationResult getInterpretationResult(List<RDTTracker.TrackedRecognition> trackedObjects) {
-        DetectorView.InterpretationResult interpretationResult = new DetectorView.InterpretationResult();
-
-        for (RDTTracker.TrackedRecognition recognition : trackedObjects) {
-            if (recognition.title.equals("control")) {
-                interpretationResult.control = true;
-            } else if (recognition.title.equals("flu-a")) {
+        if (hasLine("control", "notvalid", bestResults)) {
+            interpretationResult.control = true;
+            if (hasLine("a-pos", "a-neg", bestResults)) {
                 interpretationResult.testA = true;
-            } else if (recognition.title.equals("flu-b")) {
+            }
+            if (hasLine("b-pos", "b-neg", bestResults)) {
                 interpretationResult.testB = true;
             }
         }
 
+        Log.d(TAG, "Interpretation results\n");
+        Log.d(TAG, interpretationResult.toString());
+
         return interpretationResult;
     }
+
+    public static String getLabel(Classifier.Recognition rec) {
+        return !TextUtils.isEmpty(rec.getTitle())
+                ? String.format("%s %.2f", rec.getTitle(), (100 * rec.getConfidence()))
+                : String.format("%.2f", (100 * rec.getConfidence()));
+    }
+
+    private static boolean hasLine(String line, String notLine, Map<String, Double> bestResults) {
+        if (!bestResults.containsKey(line)) {
+            return false;
+        }
+
+        if (bestResults.containsKey(notLine) && bestResults.get(notLine) > bestResults.get(line)) {
+            return false;
+        }
+
+        return true;
+    }
+
 }

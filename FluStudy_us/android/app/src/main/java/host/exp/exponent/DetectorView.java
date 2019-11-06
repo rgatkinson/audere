@@ -615,6 +615,10 @@ public class DetectorView extends LinearLayout implements
         public boolean control;
         public boolean testA;
         public boolean testB;
+
+        public String toString() {
+            return "control: " + control + ", testA: " + testA + ", testB: " + testB;
+        }
     }
 
     public interface DetectorListener {
