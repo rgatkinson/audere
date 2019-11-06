@@ -349,41 +349,41 @@ export function createInternalApp(config: AppConfig) {
     )
   );
 
-  const chills = new ChillsEndpoint(sql);
-  internalApp.get(
-    "/api/chills/updateDerivedTables",
-    stats("chillsUpdateDerivedTables"),
-    wrap(chills.updateDerivedTables)
-  );
-  internalApp.get(
-    "/api/import/chillsDocuments",
-    stats("importChillsDocuments"),
-    wrap(
-      sqlLock.runIfFree(
-        "/api/import/chillsDocuments",
-        chills.importDocuments,
-        jsonNoOp
-      )
-    )
-  );
-  internalApp.get(
-    "/api/chills/uploadPhotos",
-    stats("chillsUploadPhotos"),
-    wrap(chills.uploadPhotos)
-  );
+  //const chills = new ChillsEndpoint(sql);
+  //internalApp.get(
+  //  "/api/chills/updateDerivedTables",
+  //  stats("chillsUpdateDerivedTables"),
+  //  wrap(chills.updateDerivedTables)
+  //);
+  //internalApp.get(
+  //  "/api/import/chillsDocuments",
+  //  stats("importChillsDocuments"),
+  //  wrap(
+  //    sqlLock.runIfFree(
+  //      "/api/import/chillsDocuments",
+  //      chills.importDocuments,
+  //      jsonNoOp
+  //    )
+  //  )
+  //);
+  //internalApp.get(
+  //  "/api/chills/uploadPhotos",
+  //  stats("chillsUploadPhotos"),
+  //  wrap(chills.uploadPhotos)
+  //);
 
-  const chillsFirebase = new ChillsFirebaseAnalyticsEndpoint(sql);
-  internalApp.get(
-    "/api/import/chillsAnalytics",
-    stats("importChillsAnalytics"),
-    wrap(
-      sqlLock.runIfFree(
-        "/api/import/chillsAnalytics",
-        chillsFirebase.importAnalytics,
-        jsonNoOp
-      )
-    )
-  );
+  //const chillsFirebase = new ChillsFirebaseAnalyticsEndpoint(sql);
+  //internalApp.get(
+  //  "/api/import/chillsAnalytics",
+  //  stats("importChillsAnalytics"),
+  //  wrap(
+  //    sqlLock.runIfFree(
+  //      "/api/import/chillsAnalytics",
+  //      chillsFirebase.importAnalytics,
+  //      jsonNoOp
+  //    )
+  //  )
+  //);
 
   return useOuch(internalApp);
 }
