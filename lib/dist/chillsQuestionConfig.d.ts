@@ -25,12 +25,12 @@ export declare enum SurveyQuestionType {
 }
 export interface SurveyQuestion {
     buttons: ButtonConfig[];
-    conditions?: ConditionalQuestionConfig[];
+    conditions?: ConditionalQuestionConfig[] | ConditionalQuestionConfig[][];
     description?: string;
     id: string;
     required?: boolean;
     subquestion?: boolean;
-    title: string;
+    title?: string;
     type: SurveyQuestionType;
 }
 export interface OptionQuestion extends SurveyQuestion {
@@ -51,9 +51,6 @@ export interface MultiDropDownQuestion extends SurveyQuestion {
     placeholder: string;
     options: string[];
 }
-export declare const SpentTimeCityConfig: TextQuestion;
-export declare const SpentTimeStateConfig: DropDownQuestion;
-export declare const SpentTimeZipCodeConfig: TextQuestion;
 export declare const WhatSymptomsConfig: OptionQuestion;
 export declare const SymptomsSeverityConfig: SurveyQuestion;
 export declare const FeverSeverityConfig: SurveyQuestion;
@@ -75,13 +72,16 @@ export declare const WorseOrDifferentFromTypicalConfig: SurveyQuestion;
 export declare const AntiviralConfig: SurveyQuestion;
 export declare const WhenFirstStartedAntiviralConfig: SurveyQuestion;
 export declare const FluShotConfig: SurveyQuestion;
-export declare const FluShotDateConfig: MonthQuestion;
+export declare const FluShotDateConfig: SurveyQuestion;
 export declare const HowReceivedFluShotConfig: SurveyQuestion;
 export declare const AffectedRegularActivitiesConfig: SurveyQuestion;
 export declare const SmokeTobaccoConfig: SurveyQuestion;
 export declare const HouseholdTobaccoConfig: SurveyQuestion;
 export declare const TravelOutsideStateConfig: SurveyQuestion;
 export declare const TravelOutsideUSConfig: SurveyQuestion;
+export declare const SpentTimeCityConfig: TextQuestion;
+export declare const SpentTimeStateConfig: DropDownQuestion;
+export declare const SpentTimeZipCodeConfig: TextQuestion;
 export declare const WhichCountriesOutsideUSConfig: MultiDropDownQuestion;
 export declare const PeopleInHouseholdConfig: SurveyQuestion;
 export declare const ChildrenAgeGroupsConfig: OptionQuestion;
@@ -92,6 +92,5 @@ export declare const PublicTransportationConfig: SurveyQuestion;
 export declare const AroundSickChildrenConfig: SurveyQuestion;
 export declare const BlueLineConfig: SurveyQuestion;
 export declare const PinkWhenBlueConfig: SurveyQuestion;
-export declare const PinkLineConfig: SurveyQuestion;
 export declare const NumLinesSeenConfig: SurveyQuestion;
 export declare const SURVEY_QUESTIONS: SurveyQuestion[];
