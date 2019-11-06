@@ -173,54 +173,34 @@ export class FirebaseReceiver {
   }
 }
 
-let theOneApp: firebase.app.App | null = null;
+const appCache: { [key: string]: firebase.app.App } = {};
 
 export function connectorFromSqlSecrets(
   sql: SplitSql,
-  credentials: string
+  credentialsKey: string
 ): Connector {
   return async () =>
-    theOneApp ||
+    appCache[credentialsKey] ||
     getOrCreateApp(
       await logIfError("connectorFromSecrets", "getMaybeEnvFile", () =>
-        new SecretConfig(sql).getMaybeEnvFile(credentials)
-      )
-    );
-}
-
-export function connectorFromFilename(path: string): Connector {
-  return async () =>
-    theOneApp ||
-    getOrCreateApp(
-      await logIfError("connectorFromFilename", "readFile", () =>
-        fsPromise.readFile(path, { encoding: "utf8" })
-      )
-    );
-}
-
-export function connectorFromCredentials(
-  credentials: Promise<string>
-): Connector {
-  return async () =>
-    theOneApp ||
-    getOrCreateApp(
-      await logIfError(
-        "connectorFromCredentials",
-        "credentials",
-        () => credentials
-      )
+        new SecretConfig(sql).getMaybeEnvFile(credentialsKey)
+      ),
+      credentialsKey
     );
 }
 
 // Firebase gets offended if you try to initialize it more than once,
 // or if you access the app before initializing it.
-function getOrCreateApp(credentials: string): firebase.app.App {
-  if (theOneApp == null) {
-    theOneApp = firebase.initializeApp({
+function getOrCreateApp(
+  credentials: string,
+  appCacheKey: string
+): firebase.app.App {
+  if (appCache[appCacheKey] === undefined) {
+    appCache[appCacheKey] = firebase.initializeApp({
       credential: firebase.credential.cert(JSON.parse(credentials)),
     });
   }
-  return theOneApp;
+  return appCache[appCacheKey];
 }
 
 async function logIfError<T>(
