@@ -8,6 +8,7 @@ import {
   withNavigation,
   NavigationScreenProp,
   StackActions,
+  NavigationActions,
 } from "react-navigation";
 import Constants from "expo-constants";
 import { logFirebaseEvent, AppEvents } from "../util/tracker";
@@ -16,7 +17,7 @@ import i18n from "i18next";
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
 
 const testQuestionsURL = "fluathome@adelaide.edu.au";
-const appSupportURL = "flu-support-au@auderenow.org";
+const appSupportURL = "flu-support@auderenow.org";
 
 export function CDC() {
   Linking.openURL(CDCUrl);
@@ -43,6 +44,22 @@ export function callNumber(phoneNumber: string) {
   Linking.openURL(`tel:${cleanedPhoneNumber}`);
 }
 
+export function contactSupport(
+  title: string,
+  navigation: NavigationScreenProp<any, any>
+) {
+  navigation.dispatch(
+    NavigationActions.navigate({ routeName: "ContactSupport" })
+  );
+}
+
+export function barcodeScan(
+  title: string,
+  navigation: NavigationScreenProp<any, any>
+) {
+  navigation.dispatch(StackActions.push({ routeName: "ScanInstructions" }));
+}
+
 export interface LinkConfigProps {
   navigation: NavigationScreenProp<any, any>;
 }
@@ -56,6 +73,16 @@ export const LinkPropProvider = (LinkComponent: any) =>
   withNavigation(LinkComponent);
 
 export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
+  [
+    "notEnrolledInStudy",
+    {
+      action: ({ navigation }) =>
+        navigation.dispatch(
+          StackActions.push({ routeName: "NotEnrolledInStudy" })
+        ),
+      key: "notEnrolledInStudy",
+    },
+  ],
   [
     "inputManually",
     {

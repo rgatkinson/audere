@@ -813,42 +813,6 @@ export const PinkWhenBlueConfig: SurveyQuestion = {
   type: SurveyQuestionType.RadioGrid,
 };
 
-export const NumLinesSeenConfig: SurveyQuestion = {
-  id: "NumLinesSeen",
-  title: "numLinesSeen",
-  description: "seeExample",
-  buttons: [
-    {
-      key: "oneLine",
-      primary: false,
-      enabled: true,
-      expandableHelpImage: true,
-      helpImageUri: "oneline",
-    },
-    {
-      key: "twoLines",
-      primary: false,
-      enabled: true,
-      expandableHelpImage: true,
-      helpImageUri: "twolines",
-    },
-    {
-      key: "threeLines",
-      primary: false,
-      enabled: true,
-      expandableHelpImage: true,
-      helpImageUri: "threelines",
-    },
-    {
-      key: "noneOfTheAbove",
-      primary: false,
-      enabled: true,
-    },
-  ],
-  required: true,
-  type: SurveyQuestionType.RadioGrid,
-};
-
 export const SURVEY_QUESTIONS = [
   WhatSymptomsConfig,
   SymptomsSeverityConfig,
@@ -891,5 +855,4 @@ export const SURVEY_QUESTIONS = [
   AroundSickChildrenConfig,
   BlueLineConfig,
   PinkWhenBlueConfig,
-  NumLinesSeenConfig,
 ];

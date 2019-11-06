@@ -60,7 +60,6 @@ import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BulletPointsComponent from "../ui/components/BulletPoint";
 import Button from "../ui/components/Button";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
-import CollapsibleText from "../ui/components/CollapsibleText";
 import ContinueButton from "../ui/components/ContinueButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
@@ -72,7 +71,6 @@ import RDTImage from "../ui/components/flu/RDTImage";
 import AndroidRDTReader from "../ui/components/flu/AndroidRDTReader";
 import RDTReader from "../ui/components/flu/RDTReader";
 import TestResult from "../ui/components/flu/TestResult";
-import TestResultRDT from "../ui/components/flu/TestResultRDT";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import Links from "../ui/components/Links";
@@ -84,8 +82,12 @@ import ScreenText from "../ui/components/ScreenText";
 import SelectableComponent from "../ui/components/SelectableComponent";
 import TimerRing from "../ui/components/TimerRing";
 import Title from "../ui/components/Title";
-import VideoPlayer from "../ui/components/VideoPlayer";
-import { COLLECT_MUCUS_IMAGE_NAME, SMALL_TEXT } from "../ui/styles";
+import {
+  COLLECT_MUCUS_IMAGE_NAME,
+  FONT_NORMAL,
+  LINK_COLOR,
+  SMALL_TEXT,
+} from "../ui/styles";
 import { getSymptomsNextScreen } from "../util/symptomsResults";
 import {
   getPinkWhenBlueNextScreen,
@@ -111,20 +113,20 @@ export const Screens: ScreenConfig[] = [
       { tag: Title, props: { center: false, color: "white" } },
       { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
-        tag: BulletPointsComponent,
-        props: {
-          label: "desc2",
-          customBulletUri: "bullet_rev",
-          textStyle: { color: "white" },
-        },
-      },
-      {
         tag: ContinueButton,
         props: {
           next: "HowDoesTestWork",
           textStyle: { color: "white" },
         },
       },
+      {
+        tag: ScreenText,
+        props: {
+          label: "desc2",
+          style: { color: "white", fontSize: SMALL_TEXT },
+        },
+      },
+      { tag: Links, props: { links: ["notEnrolledInStudy"] } },
     ],
     chromeProps: {
       dispatchOnFirstLoad: [setHasBeenOpened],
@@ -134,6 +136,23 @@ export const Screens: ScreenConfig[] = [
     },
     automationNext: "HowDoesTestWork",
     key: "Welcome",
+  },
+  {
+    backgroundColor: "transparent",
+    body: [
+      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: Title, props: { center: false, color: "white" } },
+      {
+        tag: ScreenText,
+        props: {
+          label: "desc",
+          linkStyle: { color: LINK_COLOR, fontFamily: FONT_NORMAL },
+          style: { color: "white" },
+        },
+      },
+    ],
+    chromeProps: { showBackgroundOnly: true },
+    key: "NotEnrolledInStudy",
   },
   {
     backgroundColor: "transparent",
@@ -167,39 +186,6 @@ export const Screens: ScreenConfig[] = [
           textStyle: { color: "white" },
         },
       },
-      { tag: ScreenText, props: { label: "desc3", style: { color: "white" } } },
-      {
-        tag: ContinueButton,
-        props: {
-          next: "WhatExpectToLearn",
-          textStyle: { color: "white" },
-        },
-      },
-    ],
-    chromeProps: { showBackgroundOnly: true },
-    automationNext: "WhatExpectToLearn",
-    key: "HowAmIHelping",
-  },
-  {
-    backgroundColor: "transparent",
-    body: [
-      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
-      { tag: Title, props: { center: false, color: "white" } },
-      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
-      {
-        tag: BulletPointsComponent,
-        props: {
-          label: "desc2",
-          customBulletUri: "bullet_rev",
-          textStyle: { color: "white" },
-        },
-      },
-      { tag: ScreenText, props: { label: "desc3", style: { color: "white" } } },
-      {
-        tag: CollapsibleText,
-        props: { content: "desc4", textStyle: { color: "white" } },
-      },
-      { tag: ScreenText, props: { label: "desc5", style: { color: "white" } } },
       {
         tag: ContinueButton,
         props: {
@@ -210,7 +196,7 @@ export const Screens: ScreenConfig[] = [
     ],
     chromeProps: { showBackgroundOnly: true },
     automationNext: "ResearchStudy",
-    key: "WhatExpectToLearn",
+    key: "HowAmIHelping",
   },
   {
     backgroundColor: "transparent",
@@ -297,10 +283,12 @@ export const Screens: ScreenConfig[] = [
           textVariablesFn: getEmailConfirmationTextVariables,
         },
       },
-      { tag: ScreenText, props: { label: "email" } },
       {
         tag: EmailEntry,
-        props: { placeholder: "placeholder", errorScreen: "EmailError" },
+        props: {
+          placeholder: "common:emailEntry:placeholder",
+          errorScreen: "EmailError",
+        },
         validate: true,
       },
       {
@@ -312,26 +300,30 @@ export const Screens: ScreenConfig[] = [
     keyboardAvoidingView: true,
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "EmailError",
-    footer: [
+    body: [
+      { tag: Title },
       {
-        tag: ContinueButton,
+        tag: ScreenText,
         props: {
-          label: "common:button:yes",
-          next: "ScanInstructions",
-          showButtonStyle: true,
+          label: "desc",
+          textVariablesFn: getEmailConfirmationTextVariables,
         },
       },
       {
-        tag: ContinueButton,
+        tag: EmailEntry,
         props: {
-          label: "common:button:no",
-          next: "BarcodeContactSupport",
-          showButtonStyle: true,
+          placeholder: "common:emailEntry:placeholder",
+          errorScreen: "EmailError",
         },
+        validate: true,
+      },
+      { tag: ScreenText, props: { label: "desc2" } },
+      {
+        tag: ContinueButton,
+        props: { next: "Unpacking" },
       },
     ],
+    key: "EmailError",
   },
   {
     body: [
@@ -459,7 +451,6 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc" },
       },
-      { tag: VideoPlayer, props: { id: "removeSwabFromTube" } },
       {
         tag: ContinueButton,
         props: { next: "OpenTestStrip" },
@@ -1038,33 +1029,6 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     key: "TestResult",
-  },
-  {
-    body: [
-      { tag: Title },
-      { tag: TestResultRDT },
-      { tag: Divider },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:urgeToContinue",
-        },
-      },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:disclaimer",
-          style: {
-            fontSize: SMALL_TEXT,
-          },
-        },
-      },
-      {
-        tag: ContinueButton,
-        props: { next: "SelfCare" },
-      },
-    ],
-    key: "TestResultRDT",
   },
   {
     body: [

@@ -92,5 +92,4 @@ export declare const PublicTransportationConfig: SurveyQuestion;
 export declare const AroundSickChildrenConfig: SurveyQuestion;
 export declare const BlueLineConfig: SurveyQuestion;
 export declare const PinkWhenBlueConfig: SurveyQuestion;
-export declare const NumLinesSeenConfig: SurveyQuestion;
 export declare const SURVEY_QUESTIONS: SurveyQuestion[];

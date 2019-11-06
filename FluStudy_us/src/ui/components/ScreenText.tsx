@@ -16,6 +16,7 @@ interface Props {
   center?: boolean;
   italic?: boolean;
   label: string | string[];
+  linkStyle?: StyleProp<TextStyle>;
   namespace: string;
   style?: StyleProp<TextStyle>;
   conditionalTextFn?(): string | null;
@@ -40,6 +41,7 @@ class ScreenText extends React.Component<Props & WithNamespaces, State> {
 
   shouldComponentUpdate(props: Props & WithNamespaces, state: State) {
     return (
+      props.bold != this.props.bold ||
       props.center != this.props.center ||
       props.label != this.props.label ||
       props.namespace != this.props.namespace ||
@@ -66,6 +68,7 @@ class ScreenText extends React.Component<Props & WithNamespaces, State> {
       demoOnly,
       isDemo,
       italic,
+      linkStyle,
       namespace,
       label,
       style,
@@ -91,6 +94,7 @@ class ScreenText extends React.Component<Props & WithNamespaces, State> {
             : allTheLabelText.join(" ")
         }
         italic={italic}
+        linkStyle={linkStyle}
         style={[
           {
             alignSelf: "stretch",

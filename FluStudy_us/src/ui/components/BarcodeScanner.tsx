@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     marginHorizontal: -SCREEN_MARGIN,
   },
   helpBox: {
-    height: 150,
+    height: 200,
   },
   instructionsText: {
     paddingHorizontal: GUTTER,

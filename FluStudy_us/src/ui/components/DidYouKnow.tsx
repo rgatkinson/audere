@@ -70,8 +70,10 @@ class DidYouKnow extends React.Component<Props & WithNamespaces> {
     if (this.props.navigation.isFocused()) {
       const { t } = this.props;
       const currentTextNum = this._getCurrentTextNum();
-      const currentText = t("++tip" + currentTextNum);
-      const currentSource = t("++source" + currentTextNum);
+      const currentText =
+        t("didYouKnow:++tip" + currentTextNum + ":description") + "\n";
+      const currentSource =
+        t("source") + t("didYouKnow:++tip" + currentTextNum + ":source");
       this.setState({ currentText, currentSource });
     }
   };

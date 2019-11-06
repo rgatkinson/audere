@@ -13,7 +13,6 @@ import { getSelectedButton } from "./survey";
 import {
   BlueLineConfig,
   PinkWhenBlueConfig,
-  NumLinesSeenConfig,
 } from "audere-lib/chillsQuestionConfig";
 import { getRemoteConfig } from "../util/remoteConfig";
 
@@ -32,25 +31,6 @@ export function getPinkWhenBlueNextScreen() {
   return getRemoteConfig("rdtTimeoutSeconds") > 0
     ? "RDTInstructions"
     : "NonRDTInstructions";
-}
-
-export async function getTestStripConfirmationNextScreen() {
-  const state = (await getStore()).getState();
-  return !!state.survey.rdtInfo &&
-    !!state.survey.rdtInfo.rdtReaderResult &&
-    state.survey.rdtInfo.rdtReaderResult.testStripFound
-    ? "PostRDTTestStripSurvey"
-    : "TestResult";
-}
-
-export async function getPostRDTTestStripSurveyNextScreen() {
-  if (isShowRDTInterpretationOfType(RDTInterpretationEventTypes.None)) {
-    return "TestResult";
-  } else {
-    const state = (await getStore()).getState();
-    const numLinesAnswer = getSelectedButton(state, NumLinesSeenConfig);
-    return numLinesAnswer === "noneOfTheAbove" ? "TestResult" : "TestResultRDT";
-  }
 }
 
 export async function logFluResult() {

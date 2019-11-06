@@ -14,6 +14,7 @@ import {
   Image,
   GestureResponderEvent,
 } from "react-native";
+import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { Svg } from "expo";
 import { textActions } from "../../resources/TextConfig";
 import {
@@ -28,6 +29,7 @@ import {
 import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 
 interface Props {
+  navigation: NavigationScreenProp<any, any>;
   bold?: boolean;
   center?: boolean;
   content: string;
@@ -73,11 +75,15 @@ function findMarkdownLinks(text: string): LinkData[] {
   return links;
 }
 
-const textActionLink = (link: LinkData, style?: StyleProp<TextStyle>) => {
+const textActionLink = (
+  link: LinkData,
+  navigation: NavigationScreenProp<any, any>,
+  style?: StyleProp<TextStyle>
+) => {
   const onPress = () => {
     logFirebaseEvent(AppEvents.LINK_PRESSED, { link: link.title });
     if (textActions.hasOwnProperty(link.url)) {
-      (textActions as any)[link.url](link.title);
+      (textActions as any)[link.url](link.title, navigation);
     } else {
       Linking.openURL(link.url);
     }
@@ -92,6 +98,7 @@ const textActionLink = (link: LinkData, style?: StyleProp<TextStyle>) => {
 
 function linkify(
   text: string,
+  navigation: NavigationScreenProp<any, any>,
   style?: StyleProp<TextStyle>
 ): (JSX.Element | string)[] {
   const links = findMarkdownLinks(text);
@@ -110,7 +117,7 @@ function linkify(
     }
 
     // Now the link itself
-    elements.push(textActionLink(link, style));
+    elements.push(textActionLink(link, navigation, style));
 
     toProcess = toProcess.substr(link.startIndex + link.length);
   });
@@ -156,7 +163,7 @@ const circleConfigs: Map<string, CircleConfig> = new Map<string, CircleConfig>([
   ],
 ]);
 
-export default class Text extends React.PureComponent<Props> {
+class Text extends React.PureComponent<Props> {
   _makeCircle(character: string) {
     const config = circleConfigs.get(character);
     if (config == null) {
@@ -217,16 +224,16 @@ export default class Text extends React.PureComponent<Props> {
   }
 
   _makeBold(content: string, bold: boolean, contentKey: string) {
-    const { extraBold, linkStyle } = this.props;
+    const { extraBold, linkStyle, navigation } = this.props;
     return bold ? (
       <SystemText
         key={contentKey + content}
         style={extraBold ? styles.extraBold : styles.bold}
       >
-        {linkify(content, linkStyle || styles.linkStyle)}
+        {linkify(content, navigation, linkStyle || styles.linkStyle)}
       </SystemText>
     ) : (
-      linkify(content, linkStyle || styles.linkStyle)
+      linkify(content, navigation, linkStyle || styles.linkStyle)
     );
   }
 
@@ -254,6 +261,8 @@ export default class Text extends React.PureComponent<Props> {
     );
   }
 }
+
+export default withNavigation(Text);
 
 const styles = StyleSheet.create({
   bold: {

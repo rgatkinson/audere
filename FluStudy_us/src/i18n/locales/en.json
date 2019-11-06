@@ -46,6 +46,11 @@
     },
     "timer": {
       "timerDone": "Finished!"
+    },
+    "emailEntry": {
+      "placeholder": "Enter your email",
+      "emailRequired": "Please enter your email to continue.",
+      "emailInvalid": "That doesn't appear to be a valid email address. Please try again."
     }
   },
   "datePicker": {
@@ -550,10 +555,7 @@
     "yesBelowBlue": "Pink line below the blue line",
     "yesAboveBelowBlue": "Pink line above and below the blue line",
     "yesOnePink": "Yes, there is one pink line",
-    "yesTwoPink": "Yes, there are two pink lines",
-    "oneLine": "One line only",
-    "twoLines": "Two lines",
-    "threeLines": "Three lines"
+    "yesTwoPink": "Yes, there are two pink lines"
   },
   "surveyPlaceholder": {
     "enterCity": "Enter city",
@@ -561,34 +563,30 @@
   },
   "Welcome": {
     "title": "Welcome",
-    "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick.\n\nWith your help, we want to understand if people (like you) can test themselves at home for the flu. But first, we'll walk you through a few things:",
-    "desc2": "How the test works\nHow you are helping researchers\nWhat you can expect to learn"
+    "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick.*\n\nWith your help, we want to understand if people (like you) can test themselves at home for the flu. But first, we'll walk you through a few things.",
+    "desc2": "* You must be enrolled in the Achievement Home Testing of Respiratory Illness study to participate.",
+    "notEnrolled": "Tap here if you are not enrolled."
+  },
+  "NotEnrolledInStudy": {
+    "title": "Not enrolled in study",
+    "desc": "The flu@home app is intended to be used only by individuals enrolled in the Home Testing of Respiratory Illness study operated through the Achievement Studies platform.\n\nOnly participants in the Achievement study who are **invited** to use the app should move forward in the process.\n\n[Get involved with Achievement Studies](https://www.myachievement.com)"
   },
   "HowDoesTestWork": {
     "title": "How the test works",
-    "desc": "You're about to do two tests, each involving a nasal swab. Don't worry, it shouldn't be too uncomfortable. This app will guide you through each step.\n\nIt's important for our study that you complete the tests as **carefully** as possible. In addition, please answer each question as **honestly** as possible. Our research and our ability to give you a result after the test both depend on accurate data, so we thank you in advance."
+    "desc": "You're about to do two tests, each involving a nasal swab. Don't worry, it shouldn't be too uncomfortable. This app will guide you through each step.\n\nIt's important for our study that you complete the tests as **carefully** as possible. In addition, please answer each question as **thoughtfully** as possible."
   },
   "HowAmIHelping": {
     "title": "How you are helping researchers",
     "desc": "Participating in the flu@home test helps researchers:",
-    "desc2": "Determine if app-guided instructions enable people to accurately test themselves at home for the flu\nBuild models to predict whether someone like you may have the flu\nUnderstand whether an app can read a test strip more accurately than a human",
-    "desc3": "Additionally, participating in flu@home benefits you because you're **staying home** -- which helps reduce the chance of spreading the flu if you do have it."
-  },
-  "WhatExpectToLearn": {
-    "title": "What you can expect to learn",
-    "desc": "Once you complete the test, we will indicate whether you likely have the flu. Why only 'likely?' Because multiple factors are being used to calculate your result, including:",
-    "desc2": "A nasal swab test you'll do using items from the flu@home kit\nHow much flu is circulating in your community\nYour answers to a health survey",
-    "desc3": "Since each of these factors in isolation can't determine 100% whether you have the flu, we use them together.",
-    "desc4": "Details\nFactors in addition to the test are helpful because quick nasal swab tests like this one aren't perfect. Sometimes people have the flu but the test won't pick it up. This could happen if there isn't enough virus collected on the nasal swab, or if there isn't enough virus present in the body when the sample is collected.",
-    "desc5": "If you follow the directions in the app as **closely** as possible and answer the questions **honestly**, you increase the chance of getting accurate results."
+    "desc2": "Determine if app-guided instructions enable people to accurately test themselves at home for the flu\nBuild models to predict whether someone like you may have the flu\nUnderstand whether an app can read a test strip more accurately than a human can"
   },
   "ResearchStudy": {
-    "title": "Research Study",
-    "desc": "This app supports an investigational research study. This app and its communication of flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to replace, professional medical advice.\n\nThe interpretation of your likelihood of flu indicated at the end of this app may differ from a medical test conducted in a clinical lab environment. Under no circumstances should the results from the app or test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner."
+    "title": "Research study",
+    "desc": "This app supports a research study using the flu@home test kit, an investigational device. This app and test kit do not constitute professional medical or healthcare advice, diagnosis, assessment, or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication, or preparation by any person whether in connection with this app and test kit, or not. Under no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary, or other damages arising therefrom."
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "Locate the barcode on the kit in the bottom right corner and tap \"Continue.\"\n\nThe app will indicate where to place the barcode and will scan it automatically when it's positioned correctly.\n\n**Please note: If you deny camera access you won't be able to continue using the app.**"
+    "desc": "Locate the barcode on the outside of the flu@home test kit in the top right corner and tap \"Continue.\"\n\nThe app will indicate where to place the barcode on the screen and will scan it automatically when it's positioned correctly.\n\nThe next screen will ask for access to your camera. **Please note: If you deny camera access you will be unable to continue using the app**. [Contact support](CONTACTSUPPORT) with questions."
   },
   "barcode": {
     "yourCode": "**Your code**: {{barcode}}",
@@ -608,43 +606,40 @@
   },
   "ManualEntry": {
     "title": "Enter your barcode",
-    "desc": "Enter the code found on the corner of your flu kit.",
-    "tips": "**Tip:** Find the white barcode on the box. The code is directly below the barcode."
+    "desc": "Enter the code found below the barcode symbol on the top right corner of your flu@home test kit.",
+    "tips": "**Tips:**\nFind the white barcode on the outside cover of your box in the top right corner. The code is directly below the barcode.\n\nIf your kit doesn’t have a barcode, [contact support](CONTACTSUPPORT)."
+  },
+  "BarcodeContactSupport": {
+    "title": "Invalid barcode",
+    "desc": "We’re sorry, but the barcode you entered did not match our records. Please [contact support](CONTACTSUPPORT).\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
   },
   "EmailConfirmation": {
     "title": "Verify your email",
-    "desc": "Thank you. Now let's confirm that your kit (barcode {{barcode}}) matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:",
-    "email": "**j/*/*/*/*/*/*n@gmail.com**",
-    "placeholder": "Enter your email",
-    "emailRequired": "Please enter your email to continue.",
-    "emailInvalid": "That doesn't appear to be a valid email address. Please try again."
+    "desc": "Now let's confirm that your kit (barcode {{barcode}}) matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:\n\n{{emailHint}}"
   },
   "EmailError": {
-    "title": "Email Error",
-    "desc": "You indicated that the email address that's associated with the barcode you scanned is unexpected. Do you happen to have another kit to try the barcode of instead?"
+    "title": "Email could not be verified",
+    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievment account on record.\n\nPlease try entering the email address you use for Achievement again. Here is a hint:\n\n{{emailHint}}",
+    "desc2": "Do you have more than one flu@home test kit in your home? If yes, find the other one and let’s try again.\n\n[Try scanning a different barcode](BARCODESCAN)\n\nIf your email cannot be verified, [contact support](CONTACTSUPPORT)."
   },
   "VideoPlayer": {
     "offline": "Video is not available while device is offline."
   },
   "Unpacking": {
     "title": "Set up your kit box",
-    "desc": "Open the box and remove all the items.\nTake out the tube, remove the stopper, and stand up the tube in the small perforated hole on the box."
-  },
-  "BarcodeContactSupport": {
-    "title": "Please contact your clinic",
-    "desc": "We're sorry, but the barcode you entered did not match our records. Please contact the clinic where you received your kit for a replacement.\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
+    "desc": "Open the kit box.\nPick up the small bag from the Test 1 side of the box.\nRemove the saline vial and tube.\nRemove the stopper from the tube.\nStand up the tube in the small hole."
   },
   "Swab": {
-    "title": "Prepare the tube",
-    "desc": "Carefully twist open the saline (salt water) vial and squeeze the liquid into the sample tube.\nDo so slowly and carefully so all the liquid gets into the tube."
+    "title": "Prepare the Test 1 tube",
+    "desc": "Carefully twist open the saline (salt water) vial.\nSqueeze the liquid into the tube.\nSqueeze slowly and carefully so all the liquid gets into the tube."
   },
   "OpenSwab": {
     "title": "Open nasal swab",
-    "desc": "Remove the nasal swab from its paper wrapper by pulling the two ends of the wrapper apart (like you would do to open a band-aid).\nBe careful to only touch the handle, not the tip."
+    "desc": "Remove the nasal swab from the paper wrapper by pulling the two ends of the wrapper apart (like you would to open a band-aid).\nBe careful to only touch the handle, not the tip."
   },
   "Mucus": {
     "title": "Collect sample from nose",
-    "desc": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nRub the swab with medium pressure around the inside wall of the nostril four times.\nNext, gently insert the same swab into the other nostril and rub it around the same way."
+    "desc": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
   },
   "MucusUTM": {
     "title": "Collect sample from nose",
@@ -652,26 +647,69 @@
   },
   "SwabInTube": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around 4 times in the tube. The swab needs to stay in the tube for one minute.\nTap the button below to start the one-minute timer.",
+    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around **4 times** in the tube.\nTap \"Start timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
   "SwabInTubeUTM": {
     "title": "Put swab in tube",
     "desc": "Place the swab directly into the tube and put the red top back on the tube tightly."
   },
-  "PackUpUTM": {
-    "title": "Pack up",
-    "desc": "Now let's pack up our UTM test"
-  },
-  "TimerDoneUTM": {
-    "title": "",
-    "titleTimerUp": "Timer finished",
-    "desc": "",
-    "descThanksForAnswering": "Thank you"
-  },
   "FirstTimer": {
     "title": "Did you know?",
     "desc": "If you are sick with flu symptoms, CDC recommends that you stay home for at least 24 hours after your fever is gone except to get medical care or for other necessities."
+  },
+  "didYouKnow": {
+    "source": "Source: ",
+    "++tip0": {
+      "description": "You may be able to spread flu to someone else even before you know you are sick. You may be contagious 1 day before symptoms develop and up to 5-7 days after becoming sick.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
+    },
+    "++tip1": {
+      "description": "Avoid touching your eyes, nose, or mouth. Germs are often spread when a person touches something that is contaminated with germs and then touches his or her eyes, nose, or mouth.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/prevent/actions-prevent-flu.htm"
+    },
+    "++tip2": {
+      "description": "CDC estimates that many antibiotic prescriptions for acute respiratory infections (including the flu) are unnecessary because most are caused by viruses. Viruses do not respond to antibiotics.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/antibiotic-use/stewardship-report/outpatient.html"
+    },
+    "++tip3": {
+      "description": "The most important step in preventing flu is to get a flu vaccination each year. The CDC recommends that you get vaccinated by the end of October each year.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
+    },
+    "++tip4": {
+      "description": "There are antiviral drugs that can be used to treat the flu in the first couple days of your illness. You can get them if you have a prescription from a health care provider.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/treatment/whatyoushould.htm"
+    },
+    "++tip5": {
+      "description": "On average, about 8% of the U.S. population gets sick from flu each season.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
+    },
+    "++tip6": {
+      "description": "Most experts believe that flu viruses spread mainly by tiny droplets made when people with flu cough, sneeze, or talk. These droplets can land in the mouths or noses of people who are nearby.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
+    },
+    "++tip7": {
+      "description": "Complications of flu can include bacterial pneumonia, ear infections, sinus infections and worsening of chronic medical conditions, such as congestive heart failure, asthma, or diabetes.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
+    },
+    "++tip8": {
+      "description": "Everyday preventive actions (like staying away from people who are sick, covering coughs and sneezes, and frequent handwashing) help slow the spread of germs that cause the flu.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
+    },
+    "++tip9": {
+      "description": "Seasonal flu activity often begins as early as October and November and can continue to occur as late as May. Flu activity most commonly peaks in the United States between December and February.",
+      "source": "CDC website",
+      "url": "https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
+    }
   },
   "RemoveSwabFromTube": {
     "title": "Remove swab from tube",
@@ -679,7 +717,7 @@
   },
   "OpenTestStrip": {
     "title": "Open test strip",
-    "desc": "In the white pouch with purple printing there is a test strip.\nOpen this package by tearing from the top where there is already a small cut."
+    "desc": "Locate the test strip in the white pouch with purple printing.\nOpen the package by tearing across the top where there is already a small cut."
   },
   "StripInTube": {
     "title": "Put test strip in tube",
@@ -732,11 +770,11 @@
   },
   "TestStripSurvey": {
     "title": "What do you see?",
-    "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
+    "desc": "Look at the test strip with the arrows pointing down towards you to answer the following questions."
   },
   "TestStripSurvey2": {
     "title": "What do you see?",
-    "desc": "Look at the test strip with the arrows pointing down to answer the following questions."
+    "desc": "Look at the test strip with the arrows pointing down towards you to answer the following questions."
   },
   "RDTInstructions": {
     "title": "Scan the test strip",
@@ -801,11 +839,15 @@
     "onePinkAndBlue": "A pink line above or below the blue line",
     "noPink": "No pink line"
   },
-  "TestResultRDT": {
-    "title": "Your test result",
-    "onePinkAndBlue": "Another line above or below the blue line",
-    "noPink": "No other lines above or below the blue line",
-    "why": "The app has interpreted your test strip and found the following:"
+  "PackUpUTM": {
+    "title": "Pack up",
+    "desc": "Now let's pack up our UTM test"
+  },
+  "TimerDoneUTM": {
+    "title": "",
+    "titleTimerUp": "Timer finished",
+    "desc": "",
+    "descThanksForAnswering": "Thank you"
   },
   "SelfCare": {
     "title": "Self-care tips",
@@ -846,31 +888,11 @@
     "desc": "We could not connect to upload your data. Once you are connected please come back to the app and tap \"Try Again.\"\n\nIt may take a minute to sync your data."
   },
   "links": {
+    "notEnrolledInStudy": "Tap here if you are not enrolled",
+    "contactSupport": "Contact support with questions",
     "CDC": "Centers for Disease Control and Prevention: Antiviral drugs may be an option",
-    "inputManually": "Enter barcode",
+    "inputManually": "Enter barcode manually",
     "skipTestStripPhoto": "Unable to take a picture? Skip this step",
     "supportBody": "\n\n\n\n[Please describe your issue above this line and include the Installation ID below for a quicker response.] Installation ID: "
-  },
-  "didYouKnow": {
-    "++tip0": "You may be able to spread flu to someone else before you know you are sick, as well as while you are sick: beginning 1 day before symptoms develop and up to 5-7 days after becoming sick.\n",
-    "++tip1": "The most important step in preventing flu is to get a flu shot each year. CDC recommends that you get vaccinated by the end of October.\n",
-    "++tip2": "There are antiviral drugs that can be used to treat the flu. You can only get them if you have a prescription from a health care provider.\n",
-    "++tip3": "Antibiotics won’t help your cold or flu. Antibiotics fight infections caused by bacteria, but colds and flu are caused by viruses.\n",
-    "++tip4": "On average, about 8% of the U.S. population gets sick from flu each season.\n",
-    "++tip5": "Most experts believe that flu viruses spread mainly by tiny droplets made when people with flu cough, sneeze or talk. These droplets can land in the mouths or noses of people who are nearby.\n",
-    "++tip6": "Complications of flu can include bacterial pneumonia, ear infections, sinus infections and worsening of chronic medical conditions, such as congestive heart failure, asthma, or diabetes.\n",
-    "++tip7": "Flu antiviral drugs work best for treatment when they are started within 2 days of getting sick.\n",
-    "++tip8": "Everyday preventive actions (like staying away from people who are sick, covering coughs and sneezes, and frequent handwashing) help slow the spread of germs that cause the flu.\n",
-    "++tip9": "Seasonal flu activity often begins as early as October and November and can continue to occur as late as May. Flu activity most commonly peaks in the United States between December and February.\n",
-    "++source0": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
-    "++source1": "Source: https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm",
-    "++source2": "Source: https://www.cdc.gov/flu/treatment/whatyoushould.htm",
-    "++source3": "Source: https://www.webmd.com/cold-and-flu/flu-treatment-antibiotics-or-not#1",
-    "++source4": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
-    "++source5": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
-    "++source6": "Source: https://www.cdc.gov/flu/about/keyfacts.htm",
-    "++source7": "Source: https://www.cdc.gov/flu/treatment/whatyoushould.htm",
-    "++source8": "Source: https://www.cdc.gov/flu/prevent/actions-prevent-flu.htm",
-    "++source9": "Source: https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
   }
 }
