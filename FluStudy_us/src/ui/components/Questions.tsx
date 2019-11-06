@@ -68,18 +68,17 @@ class Questions extends React.PureComponent<Props, State> {
       conditionGroups.push(config.conditions as ConditionalQuestionConfig[]);
     }
     return conditionGroups.some(conditionGroup => {
-      let result = true;
-      for (let i = 0; i < conditionGroup.length && result; i++) {
+      for (let i = 0; i < conditionGroup.length; i++) {
         const condition = conditionGroup[i];
         const answer = this.props.conditionals.get(condition.id);
         switch (condition.key) {
           case "selectedButtonKey":
             if (!!condition.anythingBut) {
               if (answer === undefined || condition.answer === answer) {
-                result = false;
+                return false;
               }
             } else if (condition.answer !== answer) {
-              result = false;
+              return false;
             }
             break;
           case "options":
@@ -92,11 +91,11 @@ class Questions extends React.PureComponent<Props, State> {
                   false
                 )
               : null;
-            if (!reduced) result = false;
+            if (!reduced) return false;
             break;
         }
       }
-      return result;
+      return true;
     });
   };
 

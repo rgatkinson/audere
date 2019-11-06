@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
-  PatientInfoGender,
   QuestionAnswerOption,
   ResponseInfo,
   ResponseItemInfo,
@@ -32,7 +31,7 @@ import {
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { crashlytics } from "../crashReporter";
 import { syncSurvey } from "./FirebaseStore";
-import { QuestionsState, StoreState, SurveyState } from "./index";
+import { QuestionsState, StoreState } from "./index";
 import { Option, SurveyResponse } from "./types";
 
 // See comment below on cleanupResponses.
@@ -82,33 +81,73 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
   {
     conditionalId: SpentTimeCityConfig.id,
     conditions: [
-      {
-        dependsOnId: TravelOutsideUSConfig.id,
-        includeWhen: isSelected("no"),
-      },
+      [
+        {
+          dependsOnId: TravelOutsideStateConfig.id,
+          includeWhen: isSelected("no"),
+        },
+      ],
+      [
+        {
+          dependsOnId: TravelOutsideStateConfig.id,
+          includeWhen: isSelected("yes"),
+        },
+        {
+          dependsOnId: TravelOutsideUSConfig.id,
+          includeWhen: isSelected("no"),
+        },
+      ],
     ],
   },
   {
     conditionalId: SpentTimeStateConfig.id,
     conditions: [
-      {
-        dependsOnId: TravelOutsideUSConfig.id,
-        includeWhen: isSelected("no"),
-      },
+      [
+        {
+          dependsOnId: TravelOutsideStateConfig.id,
+          includeWhen: isSelected("no"),
+        },
+      ],
+      [
+        {
+          dependsOnId: TravelOutsideStateConfig.id,
+          includeWhen: isSelected("yes"),
+        },
+        {
+          dependsOnId: TravelOutsideUSConfig.id,
+          includeWhen: isSelected("no"),
+        },
+      ],
     ],
   },
   {
     conditionalId: SpentTimeZipCodeConfig.id,
     conditions: [
-      {
-        dependsOnId: TravelOutsideUSConfig.id,
-        includeWhen: isSelected("no"),
-      },
+      [
+        {
+          dependsOnId: TravelOutsideStateConfig.id,
+          includeWhen: isSelected("no"),
+        },
+      ],
+      [
+        {
+          dependsOnId: TravelOutsideStateConfig.id,
+          includeWhen: isSelected("yes"),
+        },
+        {
+          dependsOnId: TravelOutsideUSConfig.id,
+          includeWhen: isSelected("no"),
+        },
+      ],
     ],
   },
   {
     conditionalId: WhichCountriesOutsideUSConfig.id,
     conditions: [
+      {
+        dependsOnId: TravelOutsideStateConfig.id,
+        includeWhen: isSelected("yes"),
+      },
       {
         dependsOnId: TravelOutsideUSConfig.id,
         includeWhen: isSelected("yes"),
@@ -405,27 +444,35 @@ function shouldIncludeResponse(
     return true;
   }
 
-  for (let i = 0; i < conditional.conditions.length; i++) {
-    const dependency = questions[conditional.conditions[i].dependsOnId];
-    const condition = conditional.conditions[i];
-
-    if (
-      dependency != null &&
-      !!condition.anythingBut &&
-      condition.includeWhen(dependency)
-    ) {
-      return false;
-    }
-
-    if (
-      dependency != null &&
-      !condition.anythingBut &&
-      !condition.includeWhen(dependency)
-    ) {
-      return false;
-    }
+  let conditionGroups: Condition[][] = [];
+  if (Array.isArray(conditional.conditions![0])) {
+    conditionGroups = conditional.conditions as Condition[][];
+  } else {
+    conditionGroups.push(conditional.conditions as Condition[]);
   }
-  return true;
+  return conditionGroups.some(conditionGroup => {
+    for (let i = 0; i < conditionGroup.length; i++) {
+      const dependency = questions[conditionGroup[i].dependsOnId];
+      const condition = conditionGroup[i];
+
+      if (
+        dependency != null &&
+        !!condition.anythingBut &&
+        condition.includeWhen(dependency)
+      ) {
+        return false;
+      }
+
+      if (
+        dependency != null &&
+        !condition.anythingBut &&
+        !condition.includeWhen(dependency)
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
 }
 
 function isSelected(...keys: string[]): ResponsePredicate {
@@ -441,7 +488,7 @@ type ById<T> = [string, T];
 
 interface ConditionalQuestion {
   conditionalId: string;
-  conditions: Condition[];
+  conditions: Condition[] | Condition[][];
 }
 
 interface Condition {
