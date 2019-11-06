@@ -15,6 +15,7 @@ import NumberInput from "./NumberInput";
 
 interface Props {
   maxDigits?: number;
+  minDigits?: number;
   answer?: string;
   highlighted?: boolean;
   question: TextQuestion;
@@ -31,7 +32,14 @@ class NumberInputQuestion extends React.Component<Props & WithNamespaces> {
   _onEndEditing = (e: any) => {
     this.props.dispatch(
       updateAnswer(
-        { numberInput: +(this.state.text || 0) },
+        {
+          numberInput:
+            !!this.state.text &&
+            (!this.props.minDigits ||
+              this.state.text.length >= this.props.minDigits)
+              ? +this.state.text
+              : undefined,
+        },
         this.props.question
       )
     );

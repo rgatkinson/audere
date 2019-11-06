@@ -38,7 +38,7 @@ export enum SurveyQuestionType {
 
 export interface SurveyQuestion {
   buttons: ButtonConfig[];
-  conditions?: ConditionalQuestionConfig[];
+  conditions?: ConditionalQuestionConfig[] | ConditionalQuestionConfig[][];
   description?: string;
   id: string;
   required?: boolean;
@@ -547,11 +547,25 @@ export const TravelOutsideUSConfig: SurveyQuestion = {
 export const SpentTimeCityConfig: TextQuestion = {
   buttons: [],
   conditions: [
-    {
-      key: "selectedButtonKey",
-      id: TravelOutsideUSConfig.id,
-      answer: "no",
-    },
+    [
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideStateConfig.id,
+        answer: "no",
+      },
+    ],
+    [
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideStateConfig.id,
+        answer: "yes",
+      },
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideUSConfig.id,
+        answer: "no",
+      },
+    ],
   ],
   id: "SpentTimeCity",
   placeholder: "enterCity",
@@ -563,11 +577,25 @@ export const SpentTimeCityConfig: TextQuestion = {
 export const SpentTimeStateConfig: DropDownQuestion = {
   buttons: STATE_DROPDOWN_DATA,
   conditions: [
-    {
-      key: "selectedButtonKey",
-      id: TravelOutsideUSConfig.id,
-      answer: "no",
-    },
+    [
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideStateConfig.id,
+        answer: "no",
+      },
+    ],
+    [
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideStateConfig.id,
+        answer: "yes",
+      },
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideUSConfig.id,
+        answer: "no",
+      },
+    ],
   ],
   id: "SpentTimeState",
   placeholder: "selectState",
@@ -578,11 +606,25 @@ export const SpentTimeStateConfig: DropDownQuestion = {
 export const SpentTimeZipCodeConfig: TextQuestion = {
   buttons: [],
   conditions: [
-    {
-      key: "selectedButtonKey",
-      id: TravelOutsideUSConfig.id,
-      answer: "no",
-    },
+    [
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideStateConfig.id,
+        answer: "no",
+      },
+    ],
+    [
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideStateConfig.id,
+        answer: "yes",
+      },
+      {
+        key: "selectedButtonKey",
+        id: TravelOutsideUSConfig.id,
+        answer: "no",
+      },
+    ],
   ],
   id: "SpentTimeZipCode",
   placeholder: "enterZip",
@@ -593,6 +635,11 @@ export const SpentTimeZipCodeConfig: TextQuestion = {
 export const WhichCountriesOutsideUSConfig: MultiDropDownQuestion = {
   buttons: [],
   conditions: [
+    {
+      key: "selectedButtonKey",
+      id: TravelOutsideStateConfig.id,
+      answer: "yes",
+    },
     {
       key: "selectedButtonKey",
       id: TravelOutsideUSConfig.id,

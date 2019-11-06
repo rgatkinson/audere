@@ -27,6 +27,7 @@ import {
   SurveyQuestion,
   SurveyQuestionType,
   TextQuestion,
+  ConditionalQuestionConfig,
 } from "audere-lib/chillsQuestionConfig";
 
 interface Props {
@@ -56,37 +57,47 @@ class Questions extends React.PureComponent<Props, State> {
   }
 
   _evaluateConditional = (config: SurveyQuestion) => {
-    const conditions = config.conditions;
-
-    if (conditions == null) {
+    if (config.conditions == null) {
       return true;
     }
-    for (let i = 0; i < conditions.length; i++) {
-      const condition = conditions[i];
-      const answer = this.props.conditionals.get(condition.id);
-      switch (condition.key) {
-        case "selectedButtonKey":
-          if (!!condition.anythingBut) {
-            if (answer === undefined || condition.answer === answer) {
-              return false;
-            }
-          } else if (condition.answer !== answer) return false;
-          break;
-        case "options":
-          const options: Option[] = answer;
-          const reduced = options
-            ? options.reduce(
-                (result: boolean, option: Option) =>
-                  result ||
-                  (option.selected && option.key === condition.answer),
-                false
-              )
-            : null;
-          if (!reduced) return reduced;
-          break;
-      }
+
+    let conditionGroups: ConditionalQuestionConfig[][] = [];
+    if (Array.isArray(config.conditions![0])) {
+      conditionGroups = config.conditions as ConditionalQuestionConfig[][];
+    } else {
+      conditionGroups.push(config.conditions as ConditionalQuestionConfig[]);
     }
-    return true;
+    return conditionGroups.some(conditionGroup => {
+      let result = true;
+      for (let i = 0; i < conditionGroup.length && result; i++) {
+        const condition = conditionGroup[i];
+        const answer = this.props.conditionals.get(condition.id);
+        switch (condition.key) {
+          case "selectedButtonKey":
+            if (!!condition.anythingBut) {
+              if (answer === undefined || condition.answer === answer) {
+                result = false;
+              }
+            } else if (condition.answer !== answer) {
+              result = false;
+            }
+            break;
+          case "options":
+            const options: Option[] = answer;
+            const reduced = options
+              ? options.reduce(
+                  (result: boolean, option: Option) =>
+                    result ||
+                    (option.selected && option.key === condition.answer),
+                  false
+                )
+              : null;
+            if (!reduced) result = false;
+            break;
+        }
+      }
+      return result;
+    });
   };
 
   validate = () => {
@@ -173,6 +184,7 @@ class Questions extends React.PureComponent<Props, State> {
           <NumberInputQuestion
             highlighted={highlighted}
             maxDigits={5}
+            minDigits={5}
             question={config as TextQuestion}
           />
         );
@@ -228,10 +240,25 @@ export default connect((state: StoreState, props: Props) => ({
   conditionals: props.questions
     .map(question => {
       if (!!question.conditions) {
-        return question.conditions!.map(condition => ({
-          id: condition.id,
-          answer: getAnswerForID(state, condition!.id, condition!.key),
-        }));
+        let conditionGroups: ConditionalQuestionConfig[][] = [];
+        if (Array.isArray(question.conditions![0])) {
+          conditionGroups = question.conditions as ConditionalQuestionConfig[][];
+        } else {
+          conditionGroups.push(
+            question.conditions as ConditionalQuestionConfig[]
+          );
+        }
+
+        let answers: { id: string; answer: any }[] = [];
+        conditionGroups.forEach(conditionGroup => {
+          answers = answers.concat(
+            conditionGroup.map(condition => ({
+              id: condition.id,
+              answer: getAnswerForID(state, condition!.id, condition!.key),
+            }))
+          );
+        });
+        return answers;
       } else {
         return {
           id: question.id,
