@@ -196,9 +196,11 @@ function getOrCreateApp(
   appCacheKey: string
 ): firebase.app.App {
   if (appCache[appCacheKey] === undefined) {
-    appCache[appCacheKey] = firebase.initializeApp({
-      credential: firebase.credential.cert(JSON.parse(credentials)),
-    });
+    // The app cache key is used to give each app instance a unique name
+    appCache[appCacheKey] = firebase.initializeApp(
+      { credential: firebase.credential.cert(JSON.parse(credentials)) },
+      appCacheKey
+    );
   }
   return appCache[appCacheKey];
 }
