@@ -95,8 +95,10 @@ export const WhatSymptomsConfig: OptionQuestion = {
     "fatigue",
     "muscleOrBodyAches",
     "troubleBreathing",
+    "noneOfTheAbove",
   ],
   required: true,
+  exclusiveOptions: ["noneOfTheAbove"],
   title: "whatSymptoms",
   type: SurveyQuestionType.OptionQuestion,
 };

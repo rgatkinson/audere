@@ -171,6 +171,7 @@
     "fatigue": "Feeling more tired than usual",
     "muscleOrBodyAches": "Muscle or body aches",
     "troubleBreathing": "Increased trouble with breathing",
+    "noneOfTheAbove": "None of the above",
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
     "seeExample": "Tap the \"?\" below to see examples"
   },
