@@ -682,6 +682,7 @@ export const ChildrenAgeGroupsConfig: OptionQuestion = {
   description: "selectAll",
   id: "ChildrenAgeGroups",
   options: ["noChildren", "zeroToFive", "sixToTwelve", "olderThanTwelve"],
+  exclusiveOptions: ["noChildren"],
   title: "childrenAgeGroups",
   type: SurveyQuestionType.OptionQuestion,
 };
