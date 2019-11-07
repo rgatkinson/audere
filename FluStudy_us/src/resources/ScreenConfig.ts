@@ -86,6 +86,7 @@ import TimerRing from "../ui/components/TimerRing";
 import Title from "../ui/components/Title";
 import VideoPlayer from "../ui/components/VideoPlayer";
 import { COLLECT_MUCUS_IMAGE_NAME, SMALL_TEXT } from "../ui/styles";
+import { getSymptomsNextScreen } from "../util/symptomsResults";
 import {
   getPinkWhenBlueNextScreen,
   getTestStripSurveyNextScreen,
@@ -511,7 +512,7 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: ContinueButton,
-        props: { next: "SymptomsInfo" },
+        props: { surveyGetNextFn: getSymptomsNextScreen },
       },
     ],
     key: "WhatSymptoms",

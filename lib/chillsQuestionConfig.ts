@@ -106,6 +106,14 @@ export const WhatSymptomsConfig: OptionQuestion = {
 export const SymptomsSeverityConfig: SurveyQuestion = {
   id: "SymptomsSeverity",
   buttons: [],
+  conditions: [
+    {
+      key: "selectedButtonKey",
+      id: WhatSymptomsConfig.id,
+      answer: "noneOfTheAbove",
+      anythingBut: true,
+    },
+  ],
   title: "symptomsSeverity",
   description: "symptomsSeverity",
   required: true,
