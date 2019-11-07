@@ -855,8 +855,6 @@ export const Screens: ScreenConfig[] = [
           textVariablesFn: getRdtResult,
         },
       },
-    ],
-    footer: [
       {
         tag: ContinueButton,
         props: {
