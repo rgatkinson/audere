@@ -553,9 +553,7 @@
     "noPink": "Blue line only",
     "yesAboveBlue": "Pink line above the blue line",
     "yesBelowBlue": "Pink line below the blue line",
-    "yesAboveBelowBlue": "Pink line above and below the blue line",
-    "yesOnePink": "Yes, there is one pink line",
-    "yesTwoPink": "Yes, there are two pink lines"
+    "yesAboveBelowBlue": "Pink line above and below the blue line"
   },
   "surveyPlaceholder": {
     "enterCity": "Enter city",
@@ -607,11 +605,11 @@
   "ManualEntry": {
     "title": "Enter your barcode",
     "desc": "Enter the code found below the barcode symbol on the top right corner of your flu@home test kit.",
-    "tips": "**Tips:**\nFind the white barcode on the outside cover of your box in the top right corner. The code is directly below the barcode.\n\nIf your kit doesn’t have a barcode, [contact support](CONTACTSUPPORT)."
+    "tips": "**Tips:**\nFind the white barcode on the outside cover of your box in the top right corner. The code is directly below the barcode.\n\nIf your kit doesn't have a barcode, [contact support](CONTACTSUPPORT)."
   },
   "BarcodeContactSupport": {
     "title": "Invalid barcode",
-    "desc": "We’re sorry, but the barcode you entered did not match our records. Please [contact support](CONTACTSUPPORT).\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
+    "desc": "We're sorry, but the barcode you entered did not match our records. Please [contact support](CONTACTSUPPORT).\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
   },
   "EmailConfirmation": {
     "title": "Verify your email",
@@ -620,7 +618,7 @@
   "EmailError": {
     "title": "Email could not be verified",
     "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievment account on record.\n\nPlease try entering the email address you use for Achievement again. Here is a hint:\n\n{{emailHint}}",
-    "desc2": "Do you have more than one flu@home test kit in your home? If yes, find the other one and let’s try again.\n\n[Try scanning a different barcode](BARCODESCAN)\n\nIf your email cannot be verified, [contact support](CONTACTSUPPORT)."
+    "desc2": "Do you have more than one flu@home test kit in your home? If yes, find the other one and let's try again.\n\n[Try scanning a different barcode](BARCODESCAN)\n\nIf your email cannot be verified, [contact support](CONTACTSUPPORT)."
   },
   "VideoPlayer": {
     "offline": "Video is not available while device is offline."
@@ -752,9 +750,9 @@
   },
   "ThankYouSurvey": {
     "title": "Please wait for timer",
-    "desc": "Thanks for answering all of the survey questions. You still have time remaining, so hang tight and we'll cue you when ready.",
+    "desc": "Thank you for answering all the survey questions.\n\nYour test strip is still processing. Just wait for the timer to end and the app will direct you to the next steps.",
     "titleTimerUp": "Timer finished",
-    "descTimerUp": "Thanks for hanging in there. Tap 'Continue' and we'll move on to reading your test strip."
+    "descTimerUp": "Tap **Continue** and we'll remove your test strip from the test tube."
   },
   "PrepareUTM": {
     "title": "Prepare for UTM test",
