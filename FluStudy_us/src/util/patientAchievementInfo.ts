@@ -34,14 +34,12 @@ export async function getEmailConfirmationTextVariables() {
   let emailHint;
   const { actualEmail } = state.meta.patientAchievementInfo;
   const atIndex = actualEmail.indexOf("@");
-  if (atIndex >= 0) {
+  if (atIndex > 0) {
     const start = atIndex > 1 ? actualEmail[0] : FILLER_CHAR;
     const middle = atIndex > 2 ? FILLER_CHAR.repeat(atIndex - 2) : "";
     const end =
       atIndex > 3 ? actualEmail[atIndex - 1] : atIndex > 1 ? FILLER_CHAR : "";
     emailHint = start + middle + end + actualEmail.substring(atIndex);
-  } else {
-    // Error??
   }
   return {
     barcode: state.survey.kitBarcode && state.survey.kitBarcode.code,
