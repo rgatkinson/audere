@@ -79,7 +79,7 @@ class CollapsibleText extends React.Component<Props & WithNamespaces> {
     const { textStyle } = this.props;
     const { title, body } = this._getTitleAndBody();
     const { expanded } = this.state;
-    const marker = expanded ? "[-]" : "[+]";
+    const marker = expanded ? "**\u25be** " : "**\u25b8** ";
     const expansion = expanded ? (
       <Text content={body} style={[styles.bodyText, textStyle && textStyle]} />
     ) : (

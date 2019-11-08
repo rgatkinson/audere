@@ -64,30 +64,34 @@
   },
   "Funding": {
     "title": "Study Funding & Partners",
-    "description": "This app is developed, operated, and owned by [Audere](https://auderenow.org).\n\nThe study is conducted in association with Evidation Health and the University of Washington. For more information, visit [www.fluathome.org](http://fluathome.org).\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps as described in the app."
+    "description": "This app is developed, operated, and owned by [Audere](https://auderenow.org), a digital health non-profit organization in the United States.\n\nThe study is sponsored by Audere and Biomedical Advanced Research and Development Authority (BARDA), a U.S. Department of Health and Human Services office.\n\nThe study is conducted in collaboration with Evidation Health and the University of Washington. Evidation Health is running the study on their Achievement Studies platform."
   },
   "GeneralQuestions": {
     "title": "FAQ",
     "whyStudy": "**Why are you conducting this study?**",
-    "whyStudy++Answer": "The goal of this study is to understand if people who are sick should test themselves at home for the flu. As one of the first to try it, you'll play an important role in helping us find ways to manage flu symptoms in the future.",
+    "whyStudy++Answer": "The goal of this study is to understand if people who are sick should test themselves at home for the flu. As one of the first to try it, you'll play an important role in helping us find ways to manage flu symptoms in the future.\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps.",
+    "howHelps": "**How does the flu@home test help researchers?**",
+    "howHelps++Answer": "Participating in the flu@home test helps researchers:\n\u279e Determine if app-guided instructions enable people to accurately test themselves at home for the flu\n\u279e Build models to predict whether someone like you may have the flu\n\u279e Understand whether an app can read a test strip more accurately than a human",
+    "howSoon": "**How soon should I perform the test after being asked to open the test kit?**",
+    "howSoon++Answer": "You should download the flu@home app on your device and complete the test as soon as possible after being asked to open the test kit.",
     "howComplete": "**How do I complete the test?**",
     "howComplete++Answer": "The flu@home app will guide you through all the steps involved in taking the test.",
-    "howFindOut": "**How can I find out if the test says I have the flu?**",
-    "howFindOut++Answer": "The flu@home app will guide you through reading your test strip results and will indicate whether you likely have the flu. However, regardless of what this test indicates, please consult with your GP and take any prescribed medication as directed.",
+    "howFindOut": "**Will I find out whether I have the flu?**",
+    "howFindOut++Answer": "Unfortunately, we aren't able to provide that information as part of this study. Neither you nor your healthcare provider will receive the results of the flu test kit done as part of this research. The results are being used for research purposes only. We suggest you contact your healthcare provider for any medical advice.",
     "howLongTest": "**How long will the test take me?**",
-    "howLongTest++Answer": "It should take about 20 minutes from start to finish.",
+    "howLongTest++Answer": "It should take about 15-20 minutes from start to finish.",
     "swabDirty": "**My completed test swab accidentally dropped or came into contact with something else. Should I still complete the test?**",
     "swabDirty++Answer": "Yes. Even if you dropped the swab or it touched another surface, please continue with the test steps.",
-    "swabTubeLonger": "**Is it ok if I left the nasal swab in the tube longer than the designated time?**",
+    "swabTubeLonger": "**Is it ok if I left the nasal swab in the Test 1 tube longer than the designated time?**",
     "swabTubeLonger++Answer": "Yes. If you left the swab in for a little longer than the timer, please continue with the test steps.",
-    "stripLonger": "**Is it ok if I left the test strip in the tube longer than the designated time?**",
+    "stripLonger": "**Is it ok if I left the test strip in the Test 1 tube longer than the designated time?**",
     "stripLonger++Answer": "Yes. If you left the test strip in for a little longer than the timer, please continue with the test steps.",
     "whyPersonal": "**Why does the app ask me personal questions?**",
-    "whyPersonal++Answer": "Understanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information. (Many of the questions are optional, and can be skipped if you are not comfortable answering.)",
+    "whyPersonal++Answer": "Understanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information. Some of the questions are optional, and may be skipped if you are not comfortable answering.",
     "willConfidential": "**Will my information be kept confidential?**",
-    "willConfidential++Answer": "You will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information.\n\nWe will not share your data with any third party or for purposes other than this study as described in the Consent Form.\n\nGovernment or university staff sometimes review studies such as this one to make sure they are being done safely and legally. If a review of this study takes place, the Institutional Review Board that approved this study, and other accrediting agencies may inspect and copy your de-identified records. They would only do this to ensure you were treated fairly and safely during the study.",
-    "appDelete": "**After I finish the tests, can I delete the app?**",
-    "appDelete++Answer": "Yes. Once you have finished the tests and mailed the test swabs back to us, you may delete the app."
+    "willConfidential++Answer": "Your privacy is very important to us and the study team will make every effort to protect the privacy of your data.\n\nYou will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information.\n\nFor more details, please refer to the flu@home [Privacy Policy](https://fluathome.org/privacy) and the study consent document you signed, available through your Achievement account.",
+    "appDelete": "**After I finish the tests, may I delete the app?**",
+    "appDelete++Answer": "Yes. Once you have completed the tests and shipped back your test kit you may delete the flu@home app from your device."
   },
   "buildInfo": {
     "version": "**Version:** ",
@@ -104,13 +108,13 @@
     "description": "Copyright © 2019 Audere.\nAll rights reserved."
   },
   "ContactSupport": {
-    "title": "Contact Support",
-    "testStudy": "Test & study support",
-    "testStudyDesc": "Use this link for problems with test procedure, kit contents, or questions about the study.",
-    "emailTestSupport": "EMAIL TEST SUPPORT",
-    "appSupport": "flu@home app support",
-    "appSupportDesc": "Use this link for technical problems with the flu@home app.",
-    "emailAppSupport": "EMAIL APP SUPPORT"
+    "title": "Test & study support",
+    "description": "Contact us with study questions or problems with the test procedure, kit contents, or the flu@home app.",
+    "emailSupport": "EMAIL SUPPORT"
+  },
+  "ReportComplaint": {
+    "title": "Report a complaint",
+    "description": "**What if I have a question, complaint, or any concerns?**\n\nFor any questions about the study, your Fitbit, or the flu@home app and test kit, contact the Achievement Studies Team at [study+homekit2020@myachievement.com](EMAIL) or [(415) 417-1905](PHONE). The email address and phone number will be monitored for 6 months after study completion.\n\nFor questions about your rights as a research participant or for questions, concerns, complaints about the research, please contact Western Institutional Review Board® (WIRB®). WIRB is a group of people who independently review research.\n\n**Address:**\n1019 39th Avenue SE Suite 120,\nPuyallup, Washington 98374-2115\n\n**Phone number:**\n[(800) 562-4789](PHONE) or\n[(360) 252-2500](PHONE)\n\n**Email address:**\n[help@wirb.com](EMAIL)"
   },
   "surveyTitle": {
     "spentTimeCity": "Where did you spend the majority of your time this past week?",
@@ -542,8 +546,7 @@
   "Welcome": {
     "title": "Welcome",
     "desc": "We know you aren't feeling well right now. Thank you for participating even when you're sick.*\n\nWith your help, we want to understand if people (like you) can test themselves at home for the flu. But first, we'll walk you through a few things.",
-    "desc2": "* You must be enrolled in the Achievement Home Testing of Respiratory Illness study to participate.",
-    "notEnrolled": "Tap here if you are not enrolled."
+    "desc2": "* You must be enrolled in the Achievement --Home Testing of Respiratory Illness-- study to participate. [Tap here if you are not enrolled.](PUSHNAVIGATE:NotEnrolledInStudy)"
   },
   "NotEnrolledInStudy": {
     "title": "Not enrolled in study",
@@ -564,7 +567,7 @@
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "Locate the barcode on the outside of the flu@home test kit in the top right corner and tap \"Continue.\"\n\nThe app will indicate where to place the barcode on the screen and will scan it automatically when it's positioned correctly.\n\nThe next screen will ask for access to your camera. **Please note: If you deny camera access you will be unable to continue using the app**. [Contact support](CONTACTSUPPORT) with questions."
+    "desc": "Locate the barcode on the outside of the flu@home test kit in the top right corner.\n\nThe app will indicate where to place the barcode on the screen and will scan it automatically when it's positioned correctly.\n\nThe next screen will ask for access to your camera. **Please note: If you deny camera access you will be unable to continue using the app**. [Contact support](CONTACTSUPPORT) with questions."
   },
   "barcode": {
     "yourCode": "**Your code**: {{barcode}}",
@@ -601,11 +604,7 @@
   },
   "EmailError": {
     "title": "Email could not be verified",
-    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievement account on record.\n\nPlease try entering the email address you use for Achievement again. Here is a hint:\n\n**{{emailHint}}**",
-    "desc2": "Do you have more than one flu@home test kit in your home? If yes, find the other one and let's try again.\n\n[Try scanning a different barcode](BARCODESCAN)\n\nIf your email cannot be verified, [contact support](CONTACTSUPPORT)."
-  },
-  "VideoPlayer": {
-    "offline": "Video is not available while device is offline."
+    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievement account on record.\n\nYou can try to re-enter your email, or if you think you've grabbed the wrong kit, you can scan a different kit barcode. Select an option below to try again.\n\n[Re-enter your email](PUSHNAVIGATE:EmailConfirmation)\n\n[Scan a different kit barcode](BARCODESCAN)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
   },
   "Unpacking": {
     "title": "Set up your kit box",
@@ -722,7 +721,7 @@
   "ThankYouSurvey": {
     "title": "Please wait for timer",
     "desc": "Thank you for completing the survey.\n\nYour test strip is still processing. Just wait for the timer to end and the app will direct you to the next steps.",
-    "titleTimerUp": "Timer finished",
+    "titleTimerUp": "Timer finished!",
     "descTimerUp": "Tap **Continue** and we'll remove your test strip from the test tube."
   },
   "TestStripReady": {
@@ -852,7 +851,7 @@
   },
   "PendingData": {
     "title": "Connect to upload data",
-    "desc": "We could not connect to upload your data. Once you are connected please come back to the app and tap \"Try Again.\"\n\nIt may take a minute to sync your data."
+    "desc": "We could not connect to upload your data. Once you are connected, please come back to the app and try again.\n\nIt may take a minute to sync your data."
   },
   "links": {
     "notEnrolledInStudy": "Tap here if you are not enrolled",

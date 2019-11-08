@@ -99,7 +99,7 @@ const textActionLink = (
   };
 
   return (
-    <SystemText key={link.url} style={style} onPress={onPress}>
+    <SystemText key={link.url + link.title} style={style} onPress={onPress}>
       {link.title}
     </SystemText>
   );
@@ -217,27 +217,35 @@ class Text extends React.PureComponent<Props> {
     );
   }
 
-  _circleRep(str: string, bold: boolean, contentKey: string) {
+  _circleRep(str: string, bold: boolean, italic: boolean, contentKey: string) {
     return str.split(/(?=①|②|③#?)/g).map((subStr, j) => {
       if (j == 0) {
-        return this._makeBold(subStr, bold, contentKey);
+        return this._makeFormatted(subStr, bold, italic, contentKey);
       } else {
         return (
           <SystemText key={subStr}>
             {this._makeCircle(subStr.substring(0, 1))}
-            {this._makeBold(subStr.substring(1), bold, contentKey)}
+            {this._makeFormatted(subStr.substring(1), bold, italic, contentKey)}
           </SystemText>
         );
       }
     });
   }
 
-  _makeBold(content: string, bold: boolean, contentKey: string) {
+  _makeFormatted(
+    content: string,
+    bold: boolean,
+    italic: boolean,
+    contentKey: string
+  ) {
     const { extraBold, linkStyle, navigation } = this.props;
-    return bold ? (
+    return bold || italic ? (
       <SystemText
         key={contentKey + content}
-        style={extraBold ? styles.extraBold : styles.bold}
+        style={[
+          bold ? (extraBold ? styles.extraBold : styles.bold) : undefined,
+          italic ? styles.italic : undefined,
+        ]}
       >
         {linkify(content, navigation, linkStyle || styles.linkStyle)}
       </SystemText>
@@ -248,6 +256,21 @@ class Text extends React.PureComponent<Props> {
 
   render() {
     const { bold, center, content, italic, style, onPress } = this.props;
+    let makeBold = false,
+      makeItalic = false,
+      keyId = 0;
+    const inlineComponents = content.split("--").map((str, m) => {
+      if (m > 0) makeItalic = !makeItalic;
+      return str.split("**").map((str, n) => {
+        if (n > 0) makeBold = !makeBold;
+        return this._circleRep(
+          str.replace(/\/\*/g, "*"),
+          makeBold,
+          makeItalic,
+          (keyId++).toString()
+        );
+      });
+    });
     return (
       <SystemText
         selectable={true}
@@ -261,11 +284,7 @@ class Text extends React.PureComponent<Props> {
         accessibilityLabel={content}
         onPress={onPress}
       >
-        {content
-          .split("**")
-          .map((str, i) =>
-            this._circleRep(str.replace(/\/\*/g, "*"), i % 2 == 1, i.toString())
-          )}
+        {inlineComponents}
       </SystemText>
     );
   }

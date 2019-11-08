@@ -14,6 +14,12 @@
 		21F42D69228A3FFB0082B8DA /* ImageQualityViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D63228A3FFB0082B8DA /* ImageQualityViewController.mm */; };
 		21F42D6E228A404F0082B8DA /* RDTView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D6A228A404F0082B8DA /* RDTView.mm */; };
 		21F42D6F228A404F0082B8DA /* RDTViewManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21F42D6B228A404F0082B8DA /* RDTViewManager.mm */; };
+		502B9DFB237B91460041C7D5 /* howtestworks.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9DF2237B91450041C7D5 /* howtestworks.png */; };
+		502B9DFC237B91460041C7D5 /* howtestworks@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9DF9237B91460041C7D5 /* howtestworks@2x.png */; };
+		502B9DFD237B91460041C7D5 /* howtestworks@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9DFA237B91460041C7D5 /* howtestworks@3x.png */; };
+		502B9E07237B93950041C7D5 /* howthishelps@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9E04237B93950041C7D5 /* howthishelps@3x.png */; };
+		502B9E08237B93950041C7D5 /* howthishelps.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9E05237B93950041C7D5 /* howthishelps.png */; };
+		502B9E09237B93950041C7D5 /* howthishelps@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9E06237B93950041C7D5 /* howthishelps@2x.png */; };
 		505A59832358F23A00A8505F /* bullet@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 505A597D2358F23900A8505F /* bullet@2x.png */; };
 		505A59842358F23A00A8505F /* bullet_rev@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 505A597E2358F23A00A8505F /* bullet_rev@2x.png */; };
 		505A59852358F23A00A8505F /* bullet_rev@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 505A597F2358F23A00A8505F /* bullet_rev@3x.png */; };
@@ -217,6 +223,12 @@
 		21F42D6C228A404F0082B8DA /* RDTViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDTViewManager.h; sourceTree = "<group>"; };
 		21F42D6D228A404F0082B8DA /* RDTView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDTView.h; sourceTree = "<group>"; };
 		2C1548D9E4CB1AEFA5CCAE6D /* Pods-fluathome.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-fluathome.debug.xcconfig"; path = "Pods/Target Support Files/Pods-fluathome/Pods-fluathome.debug.xcconfig"; sourceTree = "<group>"; };
+		502B9DF2237B91450041C7D5 /* howtestworks.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = howtestworks.png; path = ../../../assets/images/howtestworks.png; sourceTree = "<group>"; };
+		502B9DF9237B91460041C7D5 /* howtestworks@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "howtestworks@2x.png"; path = "../../../assets/images/howtestworks@2x.png"; sourceTree = "<group>"; };
+		502B9DFA237B91460041C7D5 /* howtestworks@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "howtestworks@3x.png"; path = "../../../assets/images/howtestworks@3x.png"; sourceTree = "<group>"; };
+		502B9E04237B93950041C7D5 /* howthishelps@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "howthishelps@3x.png"; path = "../../../assets/images/howthishelps@3x.png"; sourceTree = "<group>"; };
+		502B9E05237B93950041C7D5 /* howthishelps.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = howthishelps.png; path = ../../../assets/images/howthishelps.png; sourceTree = "<group>"; };
+		502B9E06237B93950041C7D5 /* howthishelps@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "howthishelps@2x.png"; path = "../../../assets/images/howthishelps@2x.png"; sourceTree = "<group>"; };
 		505A597D2358F23900A8505F /* bullet@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bullet@2x.png"; path = "../../../assets/images/bullet@2x.png"; sourceTree = "<group>"; };
 		505A597E2358F23A00A8505F /* bullet_rev@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bullet_rev@2x.png"; path = "../../../assets/images/bullet_rev@2x.png"; sourceTree = "<group>"; };
 		505A597F2358F23A00A8505F /* bullet_rev@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bullet_rev@3x.png"; path = "../../../assets/images/bullet_rev@3x.png"; sourceTree = "<group>"; };
@@ -534,6 +546,12 @@
 				598638CC22C6BAAD00138905 /* fluathome_whitelogo.png */,
 				598638CB22C6BAAD00138905 /* fluathome_whitelogo@2x.png */,
 				598638C422C6BAAD00138905 /* fluathome_whitelogo@3x.png */,
+				502B9DF2237B91450041C7D5 /* howtestworks.png */,
+				502B9DF9237B91460041C7D5 /* howtestworks@2x.png */,
+				502B9DFA237B91460041C7D5 /* howtestworks@3x.png */,
+				502B9E05237B93950041C7D5 /* howthishelps.png */,
+				502B9E06237B93950041C7D5 /* howthishelps@2x.png */,
+				502B9E04237B93950041C7D5 /* howthishelps@3x.png */,
 				505A59802358F23A00A8505F /* bullet_rev.png */,
 				505A597E2358F23A00A8505F /* bullet_rev@2x.png */,
 				505A597F2358F23A00A8505F /* bullet_rev@3x.png */,
@@ -818,6 +836,7 @@
 				EAEBD2E422691AB7009815C6 /* opennasalswab.png in Resources */,
 				B501732B1DC01252003445D9 /* EXShell.plist in Resources */,
 				507F749622BAFC930055CE82 /* flashoff@3x.png in Resources */,
+				502B9DFC237B91460041C7D5 /* howtestworks@2x.png in Resources */,
 				EA01F00D236B81BF00FB903A /* pinklinebelowblueline@3x.png in Resources */,
 				EAEBD29822691AB7009815C6 /* putteststripintube@3x.png in Resources */,
 				F041BFC422C69D6F00606E8F /* fever@3x.png in Resources */,
@@ -857,10 +876,12 @@
 				EAEBD2E822691AB7009815C6 /* colorlogo.png in Resources */,
 				59109E6D22FA4547001543C8 /* largebg.png in Resources */,
 				F041BFB322C69D6F00606E8F /* fluvaccine.png in Resources */,
+				502B9DFB237B91460041C7D5 /* howtestworks.png in Resources */,
 				EAEBD2CB22691AB7009815C6 /* opennasalswab@2x.png in Resources */,
 				59EDB81A229F0901001B7F12 /* scanbarcode@2x.png in Resources */,
 				59109E7022FA4547001543C8 /* bg.png in Resources */,
 				59109E6C22FA4547001543C8 /* largesplash.png in Resources */,
+				502B9E08237B93950041C7D5 /* howthishelps.png in Resources */,
 				F041BFC222C69D6F00606E8F /* washhands@3x.png in Resources */,
 				F041BFB522C69D6F00606E8F /* drinkfluids.png in Resources */,
 				505A59832358F23A00A8505F /* bullet@2x.png in Resources */,
@@ -875,6 +896,7 @@
 				B5693E8E1FABD16A00307FA4 /* LaunchScreen.xib in Resources */,
 				EAEBD2CE22691AB7009815C6 /* finalthanks@3x.png in Resources */,
 				B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */,
+				502B9DFD237B91460041C7D5 /* howtestworks@3x.png in Resources */,
 				F041BFAF22C69D6F00606E8F /* runnynose@2x.png in Resources */,
 				F041BFC322C69D6F00606E8F /* washhands.png in Resources */,
 				507F749722BAFC930055CE82 /* flashon.png in Resources */,
@@ -887,8 +909,10 @@
 				59AC902022B8319700277C62 /* nointernetconnection.png in Resources */,
 				59109E7122FA4547001543C8 /* mediumsplash.png in Resources */,
 				507F749922BAFC930055CE82 /* flashon@3x.png in Resources */,
+				502B9E07237B93950041C7D5 /* howthishelps@3x.png in Resources */,
 				59AC902222B8319700277C62 /* nointernetconnection@2x.png in Resources */,
 				505A59872358F23A00A8505F /* bullet.png in Resources */,
+				502B9E09237B93950041C7D5 /* howthishelps@2x.png in Resources */,
 				B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */,
 				EA01EFFC236B81B000FB903A /* blueonly@3x.png in Resources */,
 				EA01F009236B81BF00FB903A /* pinklineabovebelow.png in Resources */,

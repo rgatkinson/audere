@@ -27,14 +27,20 @@ export async function getBarcodeNextScreen() {
   }
 }
 
+const DEMO_BARCODE = "1111111111";
+
 async function getPatientAchievementInfo(
   barcode: string,
   identifier: string,
   demo: boolean
 ): Promise<PatientAchievementInfo> {
-  // TODO: Replace with actual call to backend once it is ready
-  // return await matchKit(barcode, identifier, demo);
-  return { actualEmail: "philip@auderenow.org", state: "wa", zipCode: 98040 };
+  if (demo && barcode === DEMO_BARCODE) {
+    return { actualEmail: "test@auderenow.org", state: "wa", zipCode: 98134 };
+  } else {
+    // TODO: Replace with actual call to backend once it is ready
+    // return await matchKit(barcode, identifier, demo);
+    return { actualEmail: "philip@auderenow.org", state: "wa", zipCode: 98040 };
+  }
 }
 
 const FILLER_CHAR = "/*";

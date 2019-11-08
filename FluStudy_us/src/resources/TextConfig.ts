@@ -9,12 +9,16 @@ import {
   callNumber,
   contactSupport,
   dropOffPackage,
+  emailAddress,
+  pushNavigate,
   websiteForPickup,
 } from "./LinkConfig";
 
 export const textActions = {
   PHONE: callNumber,
+  EMAIL: emailAddress,
   CONTACTSUPPORT: contactSupport,
+  PUSHNAVIGATE: pushNavigate,
   BARCODESCAN: barcodeScan,
   CALLFORPICKUP: callForPickup,
   WEBSITEFORPICKUP: websiteForPickup,

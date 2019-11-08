@@ -129,7 +129,6 @@ export const Screens: ScreenConfig[] = [
           style: { color: "white", fontSize: SMALL_TEXT },
         },
       },
-      { tag: Links, props: { links: ["notEnrolledInStudy"] } },
     ],
     chromeProps: {
       dispatchOnFirstLoad: [setHasBeenOpened],
@@ -141,26 +140,22 @@ export const Screens: ScreenConfig[] = [
     key: "Welcome",
   },
   {
-    backgroundColor: "transparent",
     body: [
-      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
-      { tag: Title, props: { center: false, color: "white" } },
+      { tag: Title },
       {
         tag: ScreenText,
         props: {
           label: "desc",
           linkStyle: { color: LINK_COLOR, fontFamily: FONT_NORMAL },
-          style: { color: "white" },
         },
       },
     ],
-    chromeProps: { showBackgroundOnly: true },
     key: "NotEnrolledInStudy",
   },
   {
     backgroundColor: "transparent",
     body: [
-      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: MainImage, props: { uri: "howtestworks", useForChrome: true } },
       { tag: Title, props: { center: false, color: "white" } },
       { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
@@ -178,7 +173,7 @@ export const Screens: ScreenConfig[] = [
   {
     backgroundColor: "transparent",
     body: [
-      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: MainImage, props: { uri: "howthishelps", useForChrome: true } },
       { tag: Title, props: { center: false, color: "white" } },
       { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
@@ -204,7 +199,7 @@ export const Screens: ScreenConfig[] = [
   {
     backgroundColor: "transparent",
     body: [
-      { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
+      { tag: MainImage, props: { uri: "howthishelps", useForChrome: true } },
       { tag: Title, props: { center: false, color: "white" } },
       { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
@@ -328,18 +323,6 @@ export const Screens: ScreenConfig[] = [
           label: "desc",
           textVariablesFn: getEmailConfirmationTextVariables,
         },
-      },
-      {
-        tag: EmailEntry,
-        props: {
-          placeholder: "common:emailEntry:placeholder",
-        },
-        validate: true,
-      },
-      { tag: ScreenText, props: { label: "desc2" } },
-      {
-        tag: ContinueButton,
-        props: { surveyGetNextFn: getEmailConfirmationNextScreen },
       },
     ],
     key: "EmailError",

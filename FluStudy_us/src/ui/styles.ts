@@ -81,7 +81,7 @@ export const BG_RATIO = isTablet ? 0.65 : isIPhoneSE ? 0.695 : 0.63;
 export const BG_IMAGE = {
   uri: isTablet ? "largebg" : isIPhoneSE ? "mediumbg" : "bg",
 };
-export const ASPECT_RATIO = 1.75;
+export const ASPECT_RATIO = 1.61;
 export const VIDEO_ASPECT_RATIO = 1920 / 1080;
 export const KEYBOARD_BEHAVIOR =
   Platform.OS === "android" ? undefined : "padding";
