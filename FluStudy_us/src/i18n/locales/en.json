@@ -27,23 +27,6 @@
       "unknown": "device",
       "iosHint": " >"
     },
-    "testResult": {
-      "desc": "Your test strip indicates you may be:",
-      "descNegative": "Your test strip indicates you **may be **",
-      "positive": "**POSITIVE for INFLUENZA**",
-      "negative": "**negative for influenza.**",
-      "whyTitle": "**Why did I get this result?**",
-      "blueLine": "A blue line in the middle of your test strip",
-      "positive++WhatToDo": "**What should I do if my test is positive?**\nIf your flu test is positive, this means that you are highly likely to have the flu. If your doctor has prescribed medication you should take them as directed.",
-      "negative++WhatToDo": "**What should I do if my test is negative?**\nIf your flu test is negative, it is less likely that you have flu. However, if your doctor has prescribed medication you should take them as directed. The results of your GP-taken swab will be available soon.",
-      "whatToDoCommon": "Most people with flu or other respiratory viruses will get better over a few days, but sometimes flu can cause more serious illness, particularly if you have some other health problems or are pregnant. If you are worried about your symptoms, you should contact or visit your GP again and they can tell you what to do. For more information on the flu, visit:\n[https://www.healthdirect.gov.au/colds-and-flu](https://www.healthdirect.gov.au/colds-and-flu)",
-      "urgeToContinue": "Please tap 'Continue' below to complete the final steps.",
-      "disclaimer": "**Medical Disclaimer:**\n\nThis app and communication of the flu test results do not constitute professional medical or healthcare advice, diagnosis, assessment or recommendation of treatment and are not intended to, nor should they be used to, replace professional medical advice.\n\nThe interpretation of your result may differ from a medical test conducted in a clinical lab environment. In no circumstances should the results of the test kit be relied upon without independent consideration and confirmation by a qualified medical practitioner.\n\nAudere makes no representations or warranties with respect to any treatment, action, suitability or application of medication or preparation by any person whether in connection with this app, the test kit or not. In no circumstances will Audere be liable for any direct, indirect, consequential, special, exemplary or other damages arising therefrom.",
-      "negativeExplanation": "Sometimes you can have the flu but get a negative result because:\n",
-      "negativeExplanationBullet": "The swab did not collect enough virus to indicate a positive result",
-      "negativeExplanationBulletAllUnder4Days": "Too much time passed between when you first felt sick and took the test",
-      "negativeExplanationBulletOne4Days": "Your symptoms started 4+ days ago, in which case the test may be less accurate"
-    },
     "timer": {
       "timerDone": "Finished!"
     },
@@ -613,11 +596,11 @@
   },
   "EmailConfirmation": {
     "title": "Verify your email",
-    "desc": "Now let's confirm that your kit (barcode {{barcode}}) matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:\n\n{{emailHint}}"
+    "desc": "Now let's confirm that your kit (barcode {{barcode}}) matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:\n\n**{{emailHint}}**"
   },
   "EmailError": {
     "title": "Email could not be verified",
-    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievment account on record.\n\nPlease try entering the email address you use for Achievement again. Here is a hint:\n\n{{emailHint}}",
+    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievment account on record.\n\nPlease try entering the email address you use for Achievement again. Here is a hint:\n\n**{{emailHint}}**",
     "desc2": "Do you have more than one flu@home test kit in your home? If yes, find the other one and let's try again.\n\n[Try scanning a different barcode](BARCODESCAN)\n\nIf your email cannot be verified, [contact support](CONTACTSUPPORT)."
   },
   "VideoPlayer": {
@@ -639,18 +622,10 @@
     "title": "Collect sample from nose",
     "desc": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
   },
-  "MucusUTM": {
-    "title": "Collect sample from nose",
-    "desc": "Gently insert the **entire** soft tip of the swab into one nostril.\nRub it around the inside wall of the nostril four times.\nNext, gently insert the same swab into the other nostril and rub it around the same way."
-  },
   "SwabInTube": {
     "title": "Put swab in tube",
     "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around **4 times** in the tube.\nTap \"Start timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
-  },
-  "SwabInTubeUTM": {
-    "title": "Put swab in tube",
-    "desc": "Place the swab directly into the tube and put the red top back on the tube tightly."
   },
   "FirstTimer": {
     "title": "Did you know?",
@@ -754,17 +729,9 @@
     "titleTimerUp": "Timer finished",
     "descTimerUp": "Tap **Continue** and we'll remove your test strip from the test tube."
   },
-  "PrepareUTM": {
-    "title": "Prepare for UTM test",
-    "desc": "Open the swab"
-  },
   "TestStripReady": {
     "title": "Remove test strip",
-    "desc": "Remove the test strip from the tube and put the stopper back on the tube.\nPlace the test strip on the kit box where it says \"Place test strip here.\""
-  },
-  "TestStripReadyUTM": {
-    "title": "Remove test strip",
-    "desc": "Remove the test strip from the tube and put the stopper back on the tube.\nPlace the test strip on the kit box where it says \"Place test strip here.\""
+    "desc": "Remove the test strip from the tube.\nPut the grey stopper securely back on the tube.\nPlace the test strip on the indent in the middle of the kit box with the arrows pointing down towards you."
   },
   "TestStripSurvey": {
     "title": "What do you see?",
@@ -775,9 +742,11 @@
     "desc": "Look at the test strip with the arrows pointing down towards you to answer the following questions."
   },
   "RDTInstructions": {
-    "title": "Scan the test strip",
-    "desc": "Next, let's scan your test strip. Similar to scanning your barcode, the app will access your camera and automatically capture an image of the test strip for you.",
-    "instructions": "Position your test strip in the indent in the middle of the kit box.\nThe app will show you a sample image to help you line your test strip up.\nIf the test strip doesn't scan after {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo using the app."
+    "title": "Scan your test strip",
+    "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap **Continue** when ready.",
+    "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
+    "instructions2": "Hold your device flat and directly above your test strip.",
+    "desc2": "Please note: If the test strip doesn't scan within {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo of it using the app."
   },
   "NonRDTInstructions": {
     "title": "Take a photo of test strip",
@@ -812,7 +781,7 @@
   },
   "TestStripCamera": {
     "title": "Tap the screen to focus the image.",
-    "description": "Tap the round button to take a photo",
+    "description": "Tap the button below to take a photo",
     "alertTitle": "We are unable to scan the test strip",
     "alertDesc": "The app is having trouble scanning your test strip. Please take a photo of the strip.",
     "cameraErrorTitle": "Something's gone wrong.",
@@ -823,57 +792,62 @@
     "off": "OFF"
   },
   "TestStripConfirmation": {
-    "title": "Picture captured!",
+    "title": "Photo captured",
     "desc": "Thank you! Your test strip photo was captured successfully.",
     "diagnosis": "Your machine overlord has decided your test result is {{ testResult }}."
   },
-  "PostRDTTestStripSurvey": {
-    "title": "How many lines?",
-    "desc": "We enhanced and magnified your test strip photo, so it may now be easier to see a faint line. Let us know how many lines (darker horizontal bars) you see in the photo above. Tap the \"?\" below to see examples. If the photo above does not look like any of the examples, select \"None of the above.\""
+  "PackUpTest": {
+    "title": "Clean up the first test",
+    "desc": "Now that you've completed the first test, put the test strip and Test 1 tube inside the small bag and set it aside."
   },
-  "TestResult": {
-    "title": "Your test result",
-    "why": "You indicated you saw the following on your test strip:",
-    "onePinkAndBlue": "A pink line above or below the blue line",
-    "noPink": "No pink line"
+  "PrepareUTM": {
+    "title": "Begin second test",
+    "desc": "This test has fewer steps than the first one and some steps are different, so please read carefully.",
+    "desc2": "Pick up Test 2 tube (blue top) from the right side of the box.\nHolding it straight so the liquid inside doesn't spill, open the top.\nStand up the tube in the large hole."
+  },
+  "OpenSwabUTM": {
+    "title": "Open nasal swab",
+    "desc": "Remove the Test 2 nasal swab from the wrapper.\nBe careful to only touch the handle, not the tip."
+  },
+  "MucusUTM": {
+    "title": "Collect sample from nose",
+    "desc": "Now you'll swab your nose the same was you did in the first test.",
+    "desc2": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
+  },
+  "SwabInTubeUTM": {
+    "title": "Put swab in tube",
+    "desc": "Place the swab directly into the large tube.\nScrew the blue top back onto the tube tightly."
   },
   "PackUpUTM": {
-    "title": "Pack up",
-    "desc": "Now let's pack up our UTM test"
-  },
-  "TimerDoneUTM": {
-    "title": "",
-    "titleTimerUp": "Timer finished",
-    "desc": "",
-    "descThanksForAnswering": "Thank you"
-  },
-  "SelfCare": {
-    "title": "Self-care tips",
-    "desc": "Also refer a friend"
-  },
-  "PackUpTest": {
-    "title": "Pack up your kit",
-    "desc": "Put the swab and strip in the box"
+    "title": "Clean up second test",
+    "desc": "Remove the two bags from the pouch on the kit lid. Put the larger FedEx shipping bag aside.\nPut the tube with the blue top and the small bag containing the small tube and strip inside the Lab Guard specimen bag.\nRemove as much air as possible from the bag, roll it up, and close it using the zip-top closure."
   },
   "PackUpBox": {
-    "title": "Pack up the box",
-    "desc": "Put the box in the other box"
+    "title": "Prepare kit return package",
+    "desc": "Place the rolled up specimen bag inside the kit box and close the kit box.\nPlace the kit box inside the FedEx shipping bag.\nRemove the white strip on the top of the shipping bag and seal it."
   },
   "Shipping": {
-    "title": "Shipping",
-    "desc": "Now that your box is ready to go, please mail it **as soon as possible**. The return postage is pre-paid, so you can mail your package normally, provided it fits in your local mailbox. \n\nIf you don't have an outgoing mail service to leave the package with, locate a nearby USPS location, blue mailbox, or schedule a pickup from your location.",
-    "pickup": "Schedule a pickup",
-    "dropoff": "I will drop off"
+    "title": "FedEx your kit",
+    "desc": "Now that your package is ready to go, please send it back as soon as possible. The sample can only be used if it's returned quickly. The return postage is prepaid, you just need to schedule a pickup or drop it off.\n\nThere are three options to send the kit back:",
+    "desc2": "[Call FedEx to arrange for a pickup](CALLFORPICKUP) from your location\n[Schedule a pickup on the FedEx website](WEBSITEFORPICKUP)\n[Drop off your package](DROPOFFPACKAGE:{{state}}) at a nearby FedEx office or drop box.",
+    "desc3": "Please note: This package **can NOT** be dropped off at a FedEx retail location (e.g. Walgreens, Safeway, etc.)"
   },
-  "SchedulePickup": {
-    "title": "Schedule a pickup",
-    "desc": "You will be directed to the USPS site where you can enter the pickup address.\n\nThe mailperson can pick up the package directly from your doorstep while on their typical route. Indicate the following items on the form:",
-    "desc2": "One **Priority Mail** package for pickup.\nPick up during your **regular mail delivery** so there is no additional charge.  The weight of the package is **1 lb**.",
-    "desc3": "[Go to USPS site to schedule pickup](https://tools.usps.com/go/POLocatorAction!input.action?address={{zipcode}}&radius=10&locationTypeQ=po)"
+  "CallForPickup": {
+    "title": "Call FedEx to pickup package",
+    "desc": "Call 1.800.GO.FEDEX ([1.800.463.3339](PHONE)) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try to not leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
+    "desc2": "What are you calling about? Say \"**pickup**\"\nIs stamp on your label? Say \"**no**\"\nWhat kind of return? Say \"**FedEx Express**\"",
+    "desc3": "The FedEx Express return tracking number is the 12-digit number on the return label.",
+    "desc4": "Note the confirmation and pickup numbers provided after you schedule the pickup.\nYou should not be asked for a credit card number because the return postage is prepaid. If you are transferred to FedEx customer service and a credit card is requested, state that this is a FedEx Express return pickup."
+  },
+  "WebSiteForPickup": {
+    "title": "Schedule a FedEx pickup online",
+    "desc": "You can fill out a form on the FedEx website to arrange for a pickup. If you leave the package on your doorstep for pickup, try not leave it in direct sunlight or freezing temperatures.\n\nWhen filling out the form on the FedEx site, please note:",
+    "desc2": "First enter the Tracking ID from the label on the return package. It is a 12-digit number called **Trk#** near the bottom.\nEnter your name, the pickup address, a phone number, the pickup type, the date, and any special pickup instructions.\nNumber of packages: **1**\nDoes package contain hazardous material? **Yes**",
+    "desc3": "Packages will be picked up from most residences 8am-8pm Tue-Sat and from business locations 8am-6pm Mon-Fri.\n\n[Schedule pickup](https://www.fedex.com/grd/rpp/ShowRPP.do)"
   },
   "Thanks": {
-    "title": "Test completed",
-    "desc": "Thank you. Your participation in this research study could help us stop the spread of the flu, lead to personalized treatments, smarter prevention, and a safer and healthier world for all of us.",
+    "title": "All done!",
+    "desc": "Thank you for participating in this research study and helping us to find better ways to manage the flu.  We hope you feel better soon. If you are concerned about your symptoms, please contact your healthcare provider.",
     "treatmentTitle": "Influenza Treatment",
     "treatmentLinkLabel": "healthdirect: How to treat cold and flu symptoms",
     "preventingTitle": "Preventing Influenza",

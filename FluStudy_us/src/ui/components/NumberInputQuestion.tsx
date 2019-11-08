@@ -16,14 +16,31 @@ import NumberInput from "./NumberInput";
 interface Props {
   maxDigits?: number;
   minDigits?: number;
-  answer?: string;
+  answer?: number;
   highlighted?: boolean;
   question: TextQuestion;
   dispatch(action: Action): void;
 }
 
-class NumberInputQuestion extends React.Component<Props & WithNamespaces> {
-  state = { text: this.props.answer };
+interface State {
+  text?: string;
+}
+
+class NumberInputQuestion extends React.Component<
+  Props & WithNamespaces,
+  State
+> {
+  constructor(props: Props & WithNamespaces) {
+    super(props);
+    this.state = {
+      text:
+        this.props.answer !== undefined
+          ? this.props.minDigits
+            ? this.props.answer.toString().padStart(this.props.minDigits, "0")
+            : this.props.answer.toString()
+          : undefined,
+    };
+  }
 
   _onChangeText = (text: string) => {
     this.setState({ text });

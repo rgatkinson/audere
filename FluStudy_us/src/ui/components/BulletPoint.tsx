@@ -37,17 +37,42 @@ interface BulletProps {
   namespace: string;
   remoteConfigValues?: { [key: string]: string };
   textStyle?: StyleProp<TextStyle>;
+  textVariablesFn?(): any;
+}
+
+interface BulletState {
+  textVariables: any;
 }
 
 class BulletPointsComponent extends React.Component<
-  BulletProps & WithNamespaces
+  BulletProps & WithNamespaces,
+  BulletState
 > {
-  shouldComponentUpdate(props: BulletProps & WithNamespaces) {
+  constructor(props: BulletProps & WithNamespaces) {
+    super(props);
+    this.state = { textVariables: null };
+  }
+
+  shouldComponentUpdate(
+    props: BulletProps & WithNamespaces,
+    state: BulletState
+  ) {
     return (
       props.customBulletUri != this.props.customBulletUri ||
       props.label != this.props.label ||
-      props.namespace != this.props.namespace
+      props.namespace != this.props.namespace ||
+      state.textVariables != this.state.textVariables
     );
+  }
+
+  async componentDidMount() {
+    const { textVariablesFn } = this.props;
+    let textVariables;
+
+    if (!!textVariablesFn) {
+      textVariables = await textVariablesFn();
+      this.setState({ textVariables });
+    }
   }
 
   render() {
@@ -63,10 +88,10 @@ class BulletPointsComponent extends React.Component<
     return (
       <Fragment>
         <View>
-          {t(
-            namespace + (!!label ? `:${label}` : ":bullets"),
-            remoteConfigValues
-          )
+          {t(namespace + (!!label ? `:${label}` : ":bullets"), {
+            ...remoteConfigValues,
+            ...this.state.textVariables,
+          })
             .split("\n")
             .map((bullet: string, index: number) => {
               return (

@@ -17,7 +17,7 @@ import MultiTapContainer from "./MultiTapContainer";
 const SECOND_MS = 1000;
 const SECONDS_MINUTE = 60;
 const MINUTE_MS = SECONDS_MINUTE * SECOND_MS;
-const FAST_FORWARD_MS = 5.1 * SECOND_MS;
+const FAST_FORWARD_MS = 5.9 * SECOND_MS;
 
 const OUTER_DIAMETER = 150;
 const INNER_DIAMETER = 140;

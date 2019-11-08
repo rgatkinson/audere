@@ -4,13 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import {
-  Dimensions,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import {
   NavigationScreenProp,
   withNavigationFocus,
@@ -40,7 +34,8 @@ interface Props {
   errorScreen: string;
   invalidBarcodes: SampleInfo[];
   navigation: NavigationScreenProp<any, any>;
-  next: string;
+  next?: string;
+  surveyGetNextFn?(): Promise<string>;
   timeoutScreen: string;
   isFocused: boolean;
 }
@@ -135,6 +130,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
       invalidBarcodes,
       navigation,
       next,
+      surveyGetNextFn,
       t,
     } = this.props;
     const barcode = data.toLowerCase();
@@ -163,7 +159,14 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
             code: barcode,
           })
         );
-        navigation.dispatch(StackActions.push({ routeName: next }));
+
+        if (!!surveyGetNextFn) {
+          navigation.dispatch(
+            StackActions.push({ routeName: await surveyGetNextFn() })
+          );
+        } else {
+          next && navigation.dispatch(StackActions.push({ routeName: next }));
+        }
       }
     }
   };

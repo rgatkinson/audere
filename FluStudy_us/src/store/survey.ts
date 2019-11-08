@@ -12,8 +12,6 @@ import {
   SampleInfo,
   WorkflowInfo,
 } from "audere-lib/chillsProtocol";
-import { format } from "date-fns";
-import i18n from "i18next";
 import { onCSRUIDEstablished } from "../util/tracker";
 
 export type SurveyAction =

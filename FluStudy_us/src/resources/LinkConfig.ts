@@ -15,6 +15,7 @@ import { logFirebaseEvent, AppEvents } from "../util/tracker";
 import i18n from "i18next";
 
 const CDCUrl = "https://www.cdc.gov/flu/treatment/whatyoushould.htm";
+const FedExUrl = "https://local.fedex.com/";
 
 const testQuestionsURL = "fluathome@adelaide.edu.au";
 const appSupportURL = "flu-support@auderenow.org";
@@ -58,6 +59,28 @@ export function barcodeScan(
   navigation: NavigationScreenProp<any, any>
 ) {
   navigation.dispatch(StackActions.push({ routeName: "ScanInstructions" }));
+}
+
+export function callForPickup(
+  title: string,
+  navigation: NavigationScreenProp<any, any>
+) {
+  navigation.dispatch(StackActions.push({ routeName: "CallForPickup" }));
+}
+
+export function websiteForPickup(
+  title: string,
+  navigation: NavigationScreenProp<any, any>
+) {
+  navigation.dispatch(StackActions.push({ routeName: "WebSiteForPickup" }));
+}
+
+export function dropOffPackage(
+  title: string,
+  navigation: NavigationScreenProp<any, any>,
+  target: string
+) {
+  Linking.openURL(FedExUrl + target);
 }
 
 export interface LinkConfigProps {

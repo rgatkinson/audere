@@ -141,7 +141,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
               onPress: () => {
                 logFirebaseEvent(AppHealthEvents.CAMERA_ERROR);
                 navigation.dispatch(
-                  StackActions.replace({ routeName: "TestResult" })
+                  StackActions.replace({ routeName: "PackUpTest" })
                 );
               },
             },

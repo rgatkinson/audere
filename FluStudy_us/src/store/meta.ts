@@ -16,7 +16,12 @@ export type MetaAction =
   | { type: "SET_OFFLINE_WARNING"; shownOfflineWarning: boolean }
   | { type: "SET_RDT_CAPTURE_FAIL_WARNING"; shownRDTFailWarning: boolean }
   | { type: "SCHEDULED_SURVEY_NOTIF" }
-  | { type: "SET_DEMO"; isDemo: boolean };
+  | { type: "SET_DEMO"; isDemo: boolean }
+  | {
+      type: "SET_PATIENT_ACHIEVEMENT_INFO";
+      patientAchievementInfo: PatientAchievementInfo;
+    }
+  | { type: "SET_ENTERED_EMAIL"; enteredEmail: string };
 
 export type MetaState = {
   activeRouteName: string;
@@ -28,6 +33,8 @@ export type MetaState = {
   shownOfflineWarning: boolean;
   shownRDTFailWarning: boolean;
   scheduledSurveyNotif: boolean;
+  patientAchievementInfo: PatientAchievementInfo;
+  enteredEmail: string;
 };
 
 const initialState: MetaState = {
@@ -40,6 +47,18 @@ const initialState: MetaState = {
   shownOfflineWarning: false,
   shownRDTFailWarning: false,
   scheduledSurveyNotif: false,
+  patientAchievementInfo: {
+    actualEmail: "",
+    state: "",
+    zipCode: 0,
+  },
+  enteredEmail: "",
+};
+
+export type PatientAchievementInfo = {
+  actualEmail: string;
+  state: string;
+  zipCode: number;
 };
 
 export default function reducer(state = initialState, action: MetaAction) {
@@ -63,6 +82,13 @@ export default function reducer(state = initialState, action: MetaAction) {
       return { ...state, isConnected: action.isConnected };
     case "SCHEDULED_SURVEY_NOTIF":
       return { ...state, scheduledSurveyNotif: true };
+    case "SET_PATIENT_ACHIEVEMENT_INFO":
+      return {
+        ...state,
+        patientAchievementInfo: action.patientAchievementInfo,
+      };
+    case "SET_ENTERED_EMAIL":
+      return { ...state, enteredEmail: action.enteredEmail };
     default:
       return state;
   }
@@ -125,4 +151,14 @@ export function setHasBeenOpened(): MetaAction {
 
 export function setScheduledSurveyNotif(): MetaAction {
   return { type: "SCHEDULED_SURVEY_NOTIF" };
+}
+
+export function setPatientAchievementInfo(
+  patientAchievementInfo: PatientAchievementInfo
+): MetaAction {
+  return { type: "SET_PATIENT_ACHIEVEMENT_INFO", patientAchievementInfo };
+}
+
+export function setEnteredEmail(enteredEmail: string): MetaAction {
+  return { type: "SET_ENTERED_EMAIL", enteredEmail };
 }

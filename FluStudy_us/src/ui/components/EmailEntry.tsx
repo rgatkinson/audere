@@ -5,19 +5,16 @@
 
 import React from "react";
 import { Alert, StyleSheet, View } from "react-native";
+import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import {
-  withNavigation,
-  NavigationScreenProp,
-  StackActions,
-} from "react-navigation";
+import { withNavigation, NavigationScreenProp } from "react-navigation";
+import { Action, setEnteredEmail, StoreState } from "../../store";
 import { customRef } from "./CustomRef";
 import { GUTTER } from "./../styles";
-import { getStore, StoreState } from "../../store";
 import TextInput from "./TextInput";
 
 interface Props {
-  errorScreen: string;
+  dispatch(action: Action): void;
   email: string;
   namespace: string;
   placeholder?: string;
@@ -77,7 +74,7 @@ class EmailEntry extends React.Component<Props & WithNamespaces, State> {
   }
 
   validate() {
-    const { errorScreen, t } = this.props;
+    const { dispatch, t } = this.props;
     const { email } = this.state;
     if (!email || email.length === 0) {
       Alert.alert("", t("common:emailEntry:emailRequired"), [
@@ -88,17 +85,16 @@ class EmailEntry extends React.Component<Props & WithNamespaces, State> {
         { text: t("common:button:ok"), onPress: () => {} },
       ]);
     } else {
-      //TODO: check against connected prop for actual email address
-      //this.props.navigation.dispatch(
-      //  StackActions.push({ routeName: errorScreen })
-      //);
+      dispatch(setEnteredEmail(email));
       return true;
     }
     return false;
   }
 }
 
-export default withNavigation(withNamespaces()(customRef(EmailEntry)));
+export default connect((state: StoreState) => ({}))(
+  withNavigation(withNamespaces()(customRef(EmailEntry)))
+);
 
 const styles = StyleSheet.create({
   inputContainer: {
@@ -109,13 +105,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-export async function getEmailConfirmationTextVariables() {
-  const state: StoreState = (await getStore()).getState();
-  //TBD: return correct email hint and entered email
-  return {
-    barcode: state.survey.kitBarcode && state.survey.kitBarcode.code,
-    emailHint: "**j/*/*/*/*/*/*n@gmail.com**",
-    enteredEmail: "no@one.com",
-  };
-}

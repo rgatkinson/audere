@@ -82,8 +82,17 @@ const textActionLink = (
 ) => {
   const onPress = () => {
     logFirebaseEvent(AppEvents.LINK_PRESSED, { link: link.title });
-    if (textActions.hasOwnProperty(link.url)) {
-      (textActions as any)[link.url](link.title, navigation);
+    const separatorPos = link.url.indexOf(":");
+    let url = link.url;
+    if (separatorPos > 0) {
+      url = link.url.substr(0, separatorPos);
+    }
+    if (textActions.hasOwnProperty(url)) {
+      (textActions as any)[url](
+        link.title,
+        navigation,
+        separatorPos > 0 ? link.url.substr(separatorPos + 1) : undefined
+      );
     } else {
       Linking.openURL(link.url);
     }

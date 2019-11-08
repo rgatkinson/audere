@@ -169,7 +169,7 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
     conditions: [
       {
         dependsOnId: ChildrenAgeGroupsConfig.id,
-        includeWhen: isSelected("zeroToFive"),
+        includeWhen: hasOption("zeroToFive"),
       },
     ],
   },
@@ -478,6 +478,15 @@ function shouldIncludeResponse(
 function isSelected(...keys: string[]): ResponsePredicate {
   return (resp: SurveyResponse) =>
     resp.answer != null && keys.some(x => x === resp.answer!.selectedButtonKey);
+}
+
+function hasOption(...keys: string[]): ResponsePredicate {
+  return (resp: SurveyResponse) =>
+    resp.answer != null &&
+    resp.answer!.options != null &&
+    keys.some(
+      k => resp.answer!.options!.findIndex(o => o.key === k && o.selected) >= 0
+    );
 }
 
 function responseById(r: SurveyResponse): ById<SurveyResponse> {

@@ -3,11 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import {
-  logFirebaseEvent,
-  FunnelEvents,
-  RDTInterpretationEventTypes,
-} from "./tracker";
+import { logFirebaseEvent, FunnelEvents } from "./tracker";
 import { getStore } from "../store";
 import { getSelectedButton } from "./survey";
 import {
@@ -53,45 +49,4 @@ export async function logFluResult() {
     });
   }
   _previousPinkAnswer = pinkAnswer;
-}
-
-export function getExplanationRedAnswer(redAnswer: string | undefined) {
-  switch (redAnswer) {
-    case "yesAboveBlue":
-      return "onePinkAndBlue";
-    case "yesBelowBlue":
-      return "onePinkAndBlue";
-    case "yesAboveBelowBlue":
-      return "onePinkAndBlue";
-    default:
-      return "noPink";
-  }
-}
-
-export function getResultRedAnswer(redAnswer: string | undefined) {
-  switch (redAnswer) {
-    case "yesAboveBlue":
-      return "positive";
-    case "yesBelowBlue":
-      return "positive";
-    case "yesAboveBelowBlue":
-      return "positive";
-    default:
-      return "negative";
-  }
-}
-
-export function isShowRDTInterpretationOfType(
-  eventType: RDTInterpretationEventTypes
-): boolean {
-  const interpreter = getRemoteConfig("showRDTInterpretation") as
-    | RDTInterpretationEventTypes
-    | "";
-  if (eventType === RDTInterpretationEventTypes.None && !interpreter) {
-    return true;
-  }
-  return (
-    !!interpreter &&
-    interpreter.toString().toLowerCase() === eventType.toLowerCase()
-  );
 }

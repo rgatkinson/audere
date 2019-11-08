@@ -63,14 +63,11 @@ import CameraPermissionContinueButton from "../ui/components/CameraPermissionCon
 import ContinueButton from "../ui/components/ContinueButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
-import EmailEntry, {
-  getEmailConfirmationTextVariables,
-} from "../ui/components/EmailEntry";
+import EmailEntry from "../ui/components/EmailEntry";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
 import AndroidRDTReader from "../ui/components/flu/AndroidRDTReader";
 import RDTReader from "../ui/components/flu/RDTReader";
-import TestResult from "../ui/components/flu/TestResult";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import Links from "../ui/components/Links";
@@ -95,9 +92,14 @@ import {
   logFluResult,
 } from "../util/fluResults";
 import { openSettingsApp } from "../util/openSettingsApp";
+import {
+  getBarcodeNextScreen,
+  getEmailConfirmationNextScreen,
+  getEmailConfirmationTextVariables,
+  getShippingTextVariables,
+} from "../util/patientAchievementInfo";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
 import { getRdtResult } from "../util/results";
-import { getShippingTextVariables } from "../util/shipping";
 import { getGeneralExposureTextVariables } from "../util/generalExposure";
 
 const SECOND_MS = 1000;
@@ -237,7 +239,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: BarcodeScanner,
         props: {
-          next: "EmailConfirmation",
+          surveyGetNextFn: getBarcodeNextScreen,
           timeoutScreen: "ManualEntry",
           errorScreen: "BarcodeContactSupport",
         },
@@ -258,7 +260,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "tips" } },
       {
         tag: ContinueButton,
-        props: { next: "EmailConfirmation" },
+        props: { surveyGetNextFn: getBarcodeNextScreen },
       },
     ],
     key: "ManualEntry",
@@ -287,13 +289,12 @@ export const Screens: ScreenConfig[] = [
         tag: EmailEntry,
         props: {
           placeholder: "common:emailEntry:placeholder",
-          errorScreen: "EmailError",
         },
         validate: true,
       },
       {
         tag: ContinueButton,
-        props: { next: "Unpacking" },
+        props: { surveyGetNextFn: getEmailConfirmationNextScreen },
       },
     ],
     key: "EmailConfirmation",
@@ -313,14 +314,13 @@ export const Screens: ScreenConfig[] = [
         tag: EmailEntry,
         props: {
           placeholder: "common:emailEntry:placeholder",
-          errorScreen: "EmailError",
         },
         validate: true,
       },
       { tag: ScreenText, props: { label: "desc2" } },
       {
         tag: ContinueButton,
-        props: { next: "Unpacking" },
+        props: { surveyGetNextFn: getEmailConfirmationNextScreen },
       },
     ],
     key: "EmailError",
@@ -727,7 +727,7 @@ export const Screens: ScreenConfig[] = [
         props: { surveyGetNextFn: getTestStripSurveyNextScreen },
       },
     ],
-    automationNext: "TestResult",
+    automationNext: "PackUpTest",
     key: "TestStripSurvey",
   },
   {
@@ -747,7 +747,7 @@ export const Screens: ScreenConfig[] = [
         props: { surveyGetNextFn: getPinkWhenBlueNextScreen },
       },
     ],
-    automationNext: "TestResult",
+    automationNext: "PackUpTest",
     key: "TestStripSurvey2",
   },
   {
@@ -758,6 +758,10 @@ export const Screens: ScreenConfig[] = [
       {
         tag: BulletPointsComponent,
         props: { label: "instructions" },
+      },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "instructions2" },
       },
       {
         tag: CameraPermissionContinueButton,
@@ -849,10 +853,7 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: ContinueButton,
-        props: {
-          next:
-            "PackUpTest" /*surveyGetNextFn: getTestStripConfirmationNextScreen*/,
-        },
+        props: { next: "PackUpTest" },
       },
     ],
     key: "TestStripConfirmation",
@@ -900,6 +901,22 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "opennasalswab" } },
       { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc2" },
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "OpenSwabUTM" },
+      },
+    ],
+    key: "PrepareUTM",
+  },
+  {
+    body: [
+      { tag: MainImage, props: { uri: "opennasalswab" } },
+      { tag: Title },
       {
         tag: BulletPointsComponent,
         props: { label: "desc" },
@@ -909,7 +926,7 @@ export const Screens: ScreenConfig[] = [
         props: { next: "MucusUTM" },
       },
     ],
-    key: "PrepareUTM",
+    key: "OpenSwabUTM",
   },
   {
     body: [
@@ -918,9 +935,10 @@ export const Screens: ScreenConfig[] = [
         props: { uri: COLLECT_MUCUS_IMAGE_NAME },
       },
       { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc" },
+        props: { label: "desc2" },
       },
       {
         tag: ContinueButton,
@@ -947,7 +965,10 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc" },
+      },
       {
         tag: ContinueButton,
         props: { next: "PackUpBox" },
@@ -958,7 +979,10 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc" },
+      },
       {
         tag: ContinueButton,
         props: { next: "Shipping" },
@@ -967,22 +991,20 @@ export const Screens: ScreenConfig[] = [
     key: "PackUpBox",
   },
   {
-    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
-    key: "Shipping",
-    footer: [
+    body: [
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
       {
-        tag: ContinueButton,
-        props: {
-          label: "pickup",
-          next: "SchedulePickup",
-          showButtonStyle: true,
-        },
+        tag: BulletPointsComponent,
+        props: { label: "desc2", textVariablesFn: getShippingTextVariables },
       },
+      { tag: ScreenText, props: { label: "desc3" } },
       {
         tag: ContinueButton,
-        props: { label: "dropoff", next: "TestResult", showButtonStyle: true },
+        props: { surveyGetNextFn: pendingNavigation },
       },
     ],
+    key: "Shipping",
   },
   {
     body: [
@@ -992,55 +1014,33 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc2" },
       },
+      { tag: ScreenText, props: { label: "desc3" } },
       {
-        tag: ScreenText,
-        props: { label: "desc3", textVariablesFn: getShippingTextVariables },
+        tag: BulletPointsComponent,
+        props: { label: "desc4" },
       },
       {
         tag: ContinueButton,
-        props: { next: "TestResult" },
+        props: { surveyGetNextFn: pendingNavigation },
       },
     ],
-    key: "SchedulePickup",
-  },
-  {
-    body: [
-      { tag: Title },
-      { tag: TestResult },
-      { tag: Divider },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:urgeToContinue",
-        },
-      },
-      {
-        tag: ScreenText,
-        props: {
-          label: "common:testResult:disclaimer",
-          style: {
-            fontSize: SMALL_TEXT,
-          },
-        },
-      },
-      {
-        tag: ContinueButton,
-        props: { next: "SelfCare" },
-      },
-    ],
-    key: "TestResult",
+    key: "CallForPickup",
   },
   {
     body: [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       {
+        tag: BulletPointsComponent,
+        props: { label: "desc2" },
+      },
+      { tag: ScreenText, props: { label: "desc3" } },
+      {
         tag: ContinueButton,
         props: { surveyGetNextFn: pendingNavigation },
       },
     ],
-    key: "SelfCare",
-    automationNext: "Thanks",
+    key: "WebSiteForPickup",
   },
   {
     body: [
