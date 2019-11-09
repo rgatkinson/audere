@@ -58,14 +58,14 @@ export async function get_element_location(driver, deviceInfo, element) {
     await driver.setImplicitWaitTimeout(500);
     const found = await driver.hasElement(
       "-ios predicate string",
-      `name BEGINSWITH '${element.slice(0, 127)}'`
+      `name BEGINSWITH '${element.replace("'", "\\'").slice(0, 127)}'`
     );
     await driver.setImplicitWaitTimeout(10000);
     if (found) {
       return await driver
         .element(
           "-ios predicate string",
-          `name BEGINSWITH '${element.slice(0, 127)}'`
+          `name BEGINSWITH '${element.replace("'", "\\'").slice(0, 127)}'`
         )
         .getLocation();
     }

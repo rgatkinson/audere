@@ -206,7 +206,11 @@ export async function ios_select(driver, question, inputs) {
     "XCUIElementTypePickerWheel"
   );
   await driver.setImplicitWaitTimeout(100);
-  while (!(await driver.hasElementByAccessibilityId(inputs[question.name]))) {
+  const target =
+    "state" in inputs[question.name]
+      ? inputs[question.name].state
+      : inputs[question.name];
+  while (!(await driver.hasElementByAccessibilityId(target))) {
     await driver.execute("mobile: selectPickerWheelValue", {
       element: pickerWheel,
       order: "previous",
@@ -264,11 +268,44 @@ export async function choose_radio(driver, deviceInfo, question, inputs) {
     let buttonLocation = await button.getLocation();
     if (buttonLocation.y > questionLocation.y) {
       while (buttonLocation.y > deviceInfo.SCREEN_Y) {
-        half_scroll(driver, deviceInfo);
+        await half_scroll(driver, deviceInfo);
         buttonLocation = await button.getLocation();
+        if (
+          deviceInfo.PLATFORM === "iOS" &&
+          buttonLocation.y > deviceInfo.SCREEN_Y
+        ) {
+          await full_scroll(driver, deviceInfo);
+        }
       }
       await button.click();
       break;
     }
+  }
+}
+
+export async function ios_date(driver, question, inputs, deviceInfo) {
+  await driver.elementByAccessibilityId(question.placeholder).click();
+  await driver.sleep(1000);
+  await new wd.TouchAction(driver)
+    .tap({ x: deviceInfo.SCREEN_X * 0.89, y: deviceInfo.SCREEN_Y * 0.64 })
+    .perform();
+}
+
+export async function android_date(driver, question, inputs, deviceInfo) {
+  // fill in later
+  return;
+}
+
+export async function enter_location(driver, question, inputs, deviceInfo) {
+  if (deviceInfo.PLATFORM === "iOS") {
+    await driver
+      .elementByAccessibilityId(question.placeholder1)
+      .type(inputs[question.name].city);
+    await driver.elementByAccessibilityId("Done").click();
+    await ios_select(driver, question, inputs);
+    await driver
+      .elementByAccessibilityId(question.placeholder2)
+      .type(inputs[question.name].zip);
+    await driver.elementByAccessibilityId("Done").click();
   }
 }

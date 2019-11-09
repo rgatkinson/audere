@@ -25,6 +25,9 @@ import {
   text_entry,
   choose_checkboxes,
   choose_radio,
+  ios_date,
+  anderoid_date,
+  enter_location,
 } from "./util/controls";
 
 console.log(
@@ -254,6 +257,14 @@ async function input_screen(driver, screen_info, screens_visited) {
         } else {
           await android_select(driver, question, inputs, deviceInfo);
         }
+      } else if (question.type == "date" && question.name in inputs) {
+        if (platform == "iOS") {
+          await ios_date(driver, question, inputs, deviceInfo);
+        } else {
+          await android_date(driver, question, inputs, deviceInfo);
+        }
+      } else if (question.type == "location" && question.name in inputs) {
+        await enter_location(driver, question, inputs, deviceInfo);
       }
     }
   }
@@ -497,13 +508,7 @@ async function verify_db_contents(
       question => "dbLocation" in question && question.name in inputs
     );
     questions.forEach(question => {
-      if (
-        [
-          strings.surveyTitle.symptomsStart,
-          strings.surveyTitle.symptomsLast48,
-          strings.surveyTitle.symptomsSeverity,
-        ].includes(question.name)
-      ) {
+      if (question.name === strings.surveyTitle.symptomsSeverity) {
         const symptoms = inputs[strings.surveyTitle.whatSymptoms];
         for (let i = 0; i < symptoms.length; i++) {
           const questionDb = dbRow.survey.responses[0].item.find(
@@ -517,14 +522,9 @@ async function verify_db_contents(
           expect(questionDb.answer).toHaveLength(1);
           expect(answerApp).toEqual(answerDb);
         }
-      } else if (
-        question.dbLocation === "responses" &&
-        inputs[question.name] != strings.surveyButton.preferNotToSay &&
-        (question.name != strings.surveyTitle.numLinesSeen ||
-          !screens_visited.includes("TestStripCamera"))
-      ) {
+      } else if (question.dbLocation === "responses") {
         const questionDb = dbRow.survey.responses[0].item.find(item =>
-          item.text.startsWith(question.name)
+          item.text.startsWith(question.name.replace("WA", ""))
         );
         if (Array.isArray(inputs[question.name])) {
           expect(questionDb.answer).toHaveLength(inputs[question.name].length);
@@ -536,6 +536,10 @@ async function verify_db_contents(
           expect(inputs[question.name]).toEqual(
             questionDb.answer[0].valueString
           );
+        } else if (question.type === "date") {
+          // fill in later
+        } else if (question.type === "location") {
+          // fill in later
         } else {
           const answerDb =
             questionDb.answerOptions[questionDb.answer[0].valueIndex].text;
@@ -603,6 +607,7 @@ async function app_setup_for_automation(driver, isDemo) {
       "base64"
     ).toString();
     installation = /Installation:\*\* (.*)/.exec(versionInfo);
+    await driver.sleep(1000); //hopefully prevent socket hang
   }
 
   await new wd.TouchAction(driver)
