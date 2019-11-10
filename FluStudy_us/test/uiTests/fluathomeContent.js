@@ -564,9 +564,18 @@ export const content = [
     title: strings.PrepareUTM.title,
     button: {
       name: strings.common.button.continue + " ",
-      onClick: "MucusUTM",
+      onClick: "OpenSwabUTM",
     },
     key: "PrepareUTM",
+  },
+  {
+    type: "basic",
+    title: strings.OpenSwabUTM.title,
+    button: {
+      name: strings.common.button.continue + " ",
+      onClick: "MucusUTM",
+    },
+    key: "OpenSwabUTM",
   },
   {
     type: "basic",
@@ -608,28 +617,10 @@ export const content = [
     type: "basic",
     title: strings.Shipping.title,
     button: {
-      name: strings.Shipping.dropoff.toUpperCase(),
-      onClick: "TestResult",
-    },
-    key: "Shipping",
-  },
-  {
-    type: "basic",
-    title: strings.TestResult.title,
-    button: {
-      name: strings.common.button.continue + " ",
-      onClick: "SelfCare",
-    },
-    key: "TestResult",
-  },
-  {
-    type: "basic",
-    title: strings.SelfCare.title,
-    button: {
       name: strings.common.button.continue + " ",
       onClick: "Thanks",
     },
-    key: "SelfCare",
+    key: "Shipping",
   },
   {
     type: "basic",

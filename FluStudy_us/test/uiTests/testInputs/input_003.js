@@ -39,7 +39,7 @@ export const inputs = {
   // },
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton.three,
   [strings.surveyTitle.childrenAgeGroups]: [strings.surveyOption.zeroToFive],
-  // [strings.surveyTitle.childrenDaycarePreschool]: strings.surveyButton.yes,
+  [strings.surveyTitle.childrenDaycarePreschool]: strings.surveyButton.yes,
   [strings.surveyTitle.someoneDiagnosed]: strings.surveyButton.no,
   [strings.surveyTitle.inContact]: strings.surveyButton.dontKnow,
   [strings.surveyTitle.publicTransportation]: strings.surveyButton.yes,

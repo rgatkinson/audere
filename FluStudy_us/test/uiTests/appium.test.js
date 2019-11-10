@@ -130,10 +130,7 @@ async function runThroughApp(models, isDemo) {
       next_screen = await basic_screen(driver, screen_info, screens_visited);
     } else if (screen_info.type == "input") {
       //skip question about number of lines if RDT capture was not successful
-      if (
-        screen_info.title != strings.PostRDTTestStripSurvey.title ||
-        !screens_visited.includes("TestStripCamera")
-      ) {
+      if (!screens_visited.includes("TestStripCamera")) {
         next_screen = await input_screen(driver, screen_info, screens_visited);
       } else {
         next_screen = screen_info.button.onClick;
