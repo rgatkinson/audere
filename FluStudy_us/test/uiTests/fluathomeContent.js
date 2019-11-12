@@ -203,7 +203,7 @@ export const content = [
   },
   {
     type: "input",
-    title: strings.WhatSymptoms.title,
+    title: strings.SymptomsInfo.title,
     button: {
       name: strings.common.button.continue + " ",
       onClick: "IllnessBeginnings",
