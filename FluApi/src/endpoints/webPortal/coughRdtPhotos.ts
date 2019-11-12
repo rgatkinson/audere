@@ -103,6 +103,7 @@ export class CoughRDTPhotos {
           ? "PII"
           : "No PII"
         : "Not Reviewed",
+      piiNotes: survey.pii_review ? survey.pii_review.notes : "",
       expert_read: survey.expert_read
         ? INTERPRETATIONS[survey.expert_read.interpretation]
         : "Not interpreted",
