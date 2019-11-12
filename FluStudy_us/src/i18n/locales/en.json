@@ -743,8 +743,9 @@
   },
   "RDTInstructions": {
     "title": "Scan your test strip",
-    "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap **Continue** when ready.",
+    "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap ‘Continue’ when ready.",
     "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
+    "subinstruction": "For best results, lay the strip with arrows pointing down.",
     "instructions2": "Hold your device flat and directly above your test strip.",
     "desc2": "Please note: If the test strip doesn't scan within {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo of it using the app."
   },
@@ -768,9 +769,7 @@
     "badOrientationPos": "Turn device to the right (clockwise)",
     "badOrientationNeg": "Turn device to the left (anti-clockwise)",
     "underExposed": "Turn on the flash or move to better lighting",
-    "overExposed": "Ensure test strip is on kit box or turn off the flash",
-    "instructions": "Hold your device directly over the test strip to scan",
-    "instructionsSubText": "Hold the device flat and steady"
+    "overExposed": "Ensure test strip is on kit box or turn off the flash"
   },
   "CameraSettings": {
     "title": "Camera access required",

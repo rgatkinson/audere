@@ -752,17 +752,44 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "scanthestrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      { tag: Divider },
       {
         tag: BulletPointsComponent,
-        props: { label: "instructions" },
+        props: {
+          num: 1,
+          label: "instructions",
+          textStyle: { fontWeight: "bold" },
+        },
       },
       {
-        tag: BulletPointsComponent,
-        props: { label: "instructions2" },
+        tag: MainImage,
+        props: { uri: "scanthestrip", imageStyle: { marginTop: 0 } },
       },
+      {
+        tag: ScreenText,
+        props: {
+          label: "subinstruction",
+          style: { fontSize: SMALL_TEXT },
+          center: true,
+        },
+      },
+      { tag: Divider },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          num: 2,
+          label: "instructions2",
+          textStyle: { fontWeight: "bold" },
+        },
+      },
+      {
+        tag: MainImage,
+        props: { uri: "holdphone", imageStyle: { marginTop: 0 } },
+      },
+      { tag: Divider },
+      { tag: ScreenText, props: { label: "desc2" } },
       {
         tag: CameraPermissionContinueButton,
         props: {
