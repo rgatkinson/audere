@@ -39,6 +39,7 @@ td {
         <td>Result</td>
         {{#if shouldShowPII}}
           <td>Contains PII?</td>
+          <td>PII Notes</td>
         {{/if}}
       </thead>
       <tbody>
@@ -51,6 +52,7 @@ td {
           <td>{{expert_read}}</td>
           {{#if ../shouldShowPII}}
             <td>{{pii}}</td>
+            <td>{{piiNotes}}</td>
           {{/if}}
         </tr>
       {{/each}}
