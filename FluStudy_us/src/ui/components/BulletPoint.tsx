@@ -7,21 +7,27 @@ import React, { Fragment } from "react";
 import { Image, StyleProp, StyleSheet, TextStyle, View } from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import Text from "./Text";
+import Number from "./Number";
 import { REGULAR_TEXT, GUTTER, CUSTOM_BULLET_OFFSET } from "../styles";
 
 interface Props {
   content: string;
   customBulletUri?: string;
+  num?: number;
   textStyle?: StyleProp<TextStyle>;
 }
 
 export class BulletPoint extends React.PureComponent<Props> {
   render() {
-    const { customBulletUri, content, textStyle } = this.props;
+    const { customBulletUri, content, num, textStyle } = this.props;
     const bulletUri = customBulletUri || "bullet";
     return (
       <View style={styles.container}>
-        <Image source={{ uri: bulletUri }} style={styles.bulletImage} />
+        {num != null ? (
+          <Number num={num} />
+        ) : (
+          <Image source={{ uri: bulletUri }} style={styles.bulletImage} />
+        )}
         <Text
           style={[styles.bulletText, textStyle && textStyle]}
           content={content}
@@ -35,6 +41,7 @@ interface BulletProps {
   customBulletUri?: string;
   label?: string;
   namespace: string;
+  num?: number;
   remoteConfigValues?: { [key: string]: string };
   textStyle?: StyleProp<TextStyle>;
   textVariablesFn?(): any;
@@ -58,6 +65,7 @@ class BulletPointsComponent extends React.Component<
     state: BulletState
   ) {
     return (
+      props.num != this.props.num ||
       props.customBulletUri != this.props.customBulletUri ||
       props.label != this.props.label ||
       props.namespace != this.props.namespace ||
@@ -80,6 +88,7 @@ class BulletPointsComponent extends React.Component<
       customBulletUri,
       label,
       namespace,
+      num,
       remoteConfigValues,
       t,
       textStyle,
@@ -99,6 +108,7 @@ class BulletPointsComponent extends React.Component<
                   key={`bullet-${index}`}
                   content={bullet}
                   customBulletUri={customBulletUri}
+                  num={num}
                   textStyle={textStyle}
                 />
               );
