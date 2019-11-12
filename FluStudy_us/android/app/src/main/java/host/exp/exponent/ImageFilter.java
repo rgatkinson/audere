@@ -32,7 +32,8 @@ import static org.opencv.imgproc.Imgproc.cvtColor;
 public class ImageFilter {
     private static final String TAG = "ImageFilter";
 
-    public static double SHARPNESS_THRESHOLD = 10;
+    public static double PREVIEW_SHARPNESS_THRESHOLD = 10;
+    public static double HIGH_RES_SHARPNESS_THRESHOLD = 150;
     public static double OVER_EXP_THRESHOLD = 255;
     public static double UNDER_EXP_THRESHOLD = 120;
     public static double OVER_EXP_WHITE_COUNT = 100;
@@ -52,14 +53,17 @@ public class ImageFilter {
     public class FilterResult {
         public ExposureResult exposureResult;
         public double sharpness;
+        public boolean isHighRes;
 
-        public boolean isSharp() {
-            return sharpness > SHARPNESS_THRESHOLD;
-        }
-
-        public FilterResult(ExposureResult exposureResult, double sharpness) {
+        public FilterResult(ExposureResult exposureResult, double sharpness, boolean isHighRes) {
             this.exposureResult = exposureResult;
             this.sharpness = sharpness;
+            this.isHighRes = isHighRes;
+        }
+
+        public boolean isSharp() {
+            return sharpness >
+                    (isHighRes ? HIGH_RES_SHARPNESS_THRESHOLD : PREVIEW_SHARPNESS_THRESHOLD);
         }
     }
 
@@ -101,7 +105,7 @@ public class ImageFilter {
         }
     }
 
-    public FilterResult validateImage(Bitmap bitmap) {
+    public FilterResult validateImage(Bitmap bitmap, boolean isHighRes) {
         Mat inputMat = new Mat();
         Utils.bitmapToMat(bitmap, inputMat);
 
@@ -121,7 +125,7 @@ public class ImageFilter {
         inputMat.release();
         greyMat.release();
 
-        return new FilterResult(exposureResult, sharpness);
+        return new FilterResult(exposureResult, sharpness, isHighRes);
     }
 
     private double calculateSharpness(Mat input) {
@@ -164,7 +168,8 @@ public class ImageFilter {
 
         // Compare exposure to requirements
         ExposureResult exposureResult;
-        if (maxWhite >= OVER_EXP_THRESHOLD && clippingCount > OVER_EXP_WHITE_COUNT) {
+
+        if (maxWhite > OVER_EXP_THRESHOLD && clippingCount > OVER_EXP_WHITE_COUNT) {
             exposureResult = ExposureResult.OVER_EXPOSED;
             return exposureResult;
         } else if (maxWhite < UNDER_EXP_THRESHOLD) {

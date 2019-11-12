@@ -20,7 +20,6 @@ import {
   StackActions,
 } from "react-navigation";
 import { Feather } from "@expo/vector-icons";
-import ProgressCircle from "react-native-progress-circle";
 import Spinner from "react-native-loading-spinner-overlay";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
@@ -130,7 +129,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     appState: "",
     supportsTorchMode: false,
     frameImageScale: 1,
-    progress: 0,
     stripFound: false,
     boundary: null,
     viewport: null,
@@ -252,7 +250,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
       // Timeout after 30 seconds
       this._timer = global.setTimeout(() => {
         const { dispatch, fallback, isFocused, navigation } = this.props;
-        if (this.state.progress < 0.5 && !this._interpreting && isFocused) {
+        if (!this._interpreting && isFocused) {
           logFirebaseEvent(AppEvents.RDT_TIMEOUT);
           dispatch(setRDTCaptureTime(false));
           dispatch(setShownRDTFailWarning(false));
@@ -458,7 +456,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this.setState({
       spinner: false,
-      progress: args.progress,
       stripFound: args.testStripDetected,
       boundary: args.testStripBoundary,
       viewport: args.viewportDimensions,
@@ -729,7 +726,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     return (
       <View style={styles.container}>
         <StatusBar hidden={true} />
-        <Spinner visible={this.state.progress == 100 || this.state.spinner} />
+        <Spinner visible={this.state.spinner} />
         <RDTReaderComponent
           style={styles.camera}
           onRDTCaptured={this._onRDTCaptured}
@@ -751,21 +748,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
                     content={t(this.state.instructionMsg)}
                     style={styles.instructionText}
                   />
-                </View>
-                <View style={styles.progressCircleContainer}>
-                  <ProgressCircle
-                    percent={this.state.progress}
-                    radius={40}
-                    borderWidth={6}
-                    color={PROGRESS_COLOR}
-                    shadowColor="#999"
-                    bgColor="rgba(52, 52, 52, 1)"
-                  >
-                    <Text
-                      content={this.state.progress + "%"}
-                      style={styles.feedbackItemText}
-                    />
-                  </ProgressCircle>
                 </View>
               </View>
             </View>
@@ -891,10 +873,6 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     color: "white",
     fontSize: REGULAR_TEXT,
-  },
-  progressCircleContainer: {
-    flex: 1,
-    paddingRight: GUTTER,
   },
   feedbackItemText: {
     alignItems: "center",
