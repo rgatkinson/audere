@@ -600,7 +600,7 @@
   },
   "EmailError": {
     "title": "Email could not be verified",
-    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievment account on record.\n\nPlease try entering the email address you use for Achievement again. Here is a hint:\n\n**{{emailHint}}**",
+    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievement account on record.\n\nPlease try entering the email address you use for Achievement again. Here is a hint:\n\n**{{emailHint}}**",
     "desc2": "Do you have more than one flu@home test kit in your home? If yes, find the other one and let's try again.\n\n[Try scanning a different barcode](BARCODESCAN)\n\nIf your email cannot be verified, [contact support](CONTACTSUPPORT)."
   },
   "VideoPlayer": {
@@ -612,7 +612,7 @@
   },
   "Swab": {
     "title": "Prepare the Test 1 tube",
-    "desc": "Carefully twist open the saline (salt water) vial.\nSqueeze the liquid into the tube.\nSqueeze slowly and carefully so all the liquid gets into the tube."
+    "desc": "Carefully twist open the saline vial.\nSqueeze the liquid carefully into the tube so that all the liquid gets into the tube."
   },
   "OpenSwab": {
     "title": "Open nasal swab",
@@ -725,7 +725,7 @@
   },
   "ThankYouSurvey": {
     "title": "Please wait for timer",
-    "desc": "Thank you for answering all the survey questions.\n\nYour test strip is still processing. Just wait for the timer to end and the app will direct you to the next steps.",
+    "desc": "Thank you for completing the survey.\n\nYour test strip is still processing. Just wait for the timer to end and the app will direct you to the next steps.",
     "titleTimerUp": "Timer finished",
     "descTimerUp": "Tap **Continue** and we'll remove your test strip from the test tube."
   },
@@ -811,7 +811,7 @@
   },
   "MucusUTM": {
     "title": "Collect sample from nose",
-    "desc": "Now you'll swab your nose the same was you did in the first test.",
+    "desc": "Now you'll swab your nose the same way you did in the first test.",
     "desc2": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
   },
   "SwabInTubeUTM": {
@@ -828,20 +828,20 @@
   },
   "Shipping": {
     "title": "FedEx your kit",
-    "desc": "Now that your package is ready to go, please send it back as soon as possible. The sample can only be used if it's returned quickly. The return postage is prepaid, you just need to schedule a pickup or drop it off.\n\nThere are three options to send the kit back:",
+    "desc": "Now that your package is ready to go, please send it back as soon as possible. The sample can only be used if it's returned quickly. The return postage is prepaid; you just need to schedule a pickup or drop it off.\n\nThere are three options to send the kit back:",
     "desc2": "[Call FedEx to arrange for a pickup](CALLFORPICKUP) from your location\n[Schedule a pickup on the FedEx website](WEBSITEFORPICKUP)\n[Drop off your package](DROPOFFPACKAGE:{{state}}) at a nearby FedEx office or drop box.",
     "desc3": "Please note: This package **can NOT** be dropped off at a FedEx retail location (e.g. Walgreens, Safeway, etc.)"
   },
   "CallForPickup": {
     "title": "Call FedEx to pickup package",
-    "desc": "Call 1.800.GO.FEDEX ([1.800.463.3339](PHONE)) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try to not leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
+    "desc": "Call (800) GOFEDEX ([(800) 463-3339](PHONE)) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
     "desc2": "What are you calling about? Say \"**pickup**\"\nIs stamp on your label? Say \"**no**\"\nWhat kind of return? Say \"**FedEx Express**\"",
     "desc3": "The FedEx Express return tracking number is the 12-digit number on the return label.",
     "desc4": "Note the confirmation and pickup numbers provided after you schedule the pickup.\nYou should not be asked for a credit card number because the return postage is prepaid. If you are transferred to FedEx customer service and a credit card is requested, state that this is a FedEx Express return pickup."
   },
   "WebSiteForPickup": {
     "title": "Schedule a FedEx pickup online",
-    "desc": "You can fill out a form on the FedEx website to arrange for a pickup. If you leave the package on your doorstep for pickup, try not leave it in direct sunlight or freezing temperatures.\n\nWhen filling out the form on the FedEx site, please note:",
+    "desc": "You can fill out a form on the FedEx website to arrange for a pickup. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen filling out the form on the FedEx site, please note:",
     "desc2": "First enter the Tracking ID from the label on the return package. It is a 12-digit number called **Trk#** near the bottom.\nEnter your name, the pickup address, a phone number, the pickup type, the date, and any special pickup instructions.\nNumber of packages: **1**\nDoes package contain hazardous material? **Yes**",
     "desc3": "Packages will be picked up from most residences 8am-8pm Tue-Sat and from business locations 8am-6pm Mon-Fri.\n\n[Schedule pickup](https://www.fedex.com/grd/rpp/ShowRPP.do)"
   },
