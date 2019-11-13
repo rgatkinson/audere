@@ -111,24 +111,23 @@ public class DetectorView extends LinearLayout implements
 
         // TODO: move this to background thread and check that it's ready where needed
 
-        // TODO: uncomment once licensing issues are resolved
-//        try {
-//            MappedByteBuffer iprdModel = TFLiteObjectDetectionAPIModel.loadModelFile(
-//                activity.getAssets(),
-//                IPRD_MODEL_FILE
-//            );
+        try {
+            MappedByteBuffer iprdModel = TFLiteObjectDetectionAPIModel.loadModelFile(
+                activity.getAssets(),
+                IPRD_MODEL_FILE
+            );
             this.iprdApi = IprdAdapter.RdtApi.builder()
-//                .setModel(iprdModel)
+                .setModel(iprdModel)
                 .build();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Log.e(TAG, "Exception initializing filter: " + e.toString());
-//            Toast.makeText(
-//                activity.getApplicationContext(),
-//                "IPRD filter could not be initialized",
-//                Toast.LENGTH_SHORT
-//            ).show();
-//        }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Exception initializing filter: " + e.toString());
+            Toast.makeText(
+                activity.getApplicationContext(),
+                "IPRD filter could not be initialized",
+                Toast.LENGTH_SHORT
+            ).show();
+        }
 
         try {
             boxDetector =
@@ -383,11 +382,13 @@ public class DetectorView extends LinearLayout implements
                                 // IPRD Filter
                                 final long iprdStartTimeMs = SystemClock.uptimeMillis();
                                 Trace.beginSection("IPRD Filter");
-                                IprdAdapter.FrameResult iprdResult = iprdApi.checkFrame(boxModelBitmap);
+                                IprdAdapter.FrameResult iprdResult = iprdApi == null
+                                    ? null
+                                    : iprdApi.checkFrame(boxModelBitmap);
                                 Trace.endSection();
                                 Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
 
-                                if (iprdResult != null && iprdResult.isAccepted()) {
+                                if (iprdApi == null || (iprdResult != null && iprdResult.isAccepted())) {
                                     // Local interpretation prototype
                                     Trace.beginSection("Running Process Image");
                                     final long boxStartTimeMs = SystemClock.uptimeMillis();
@@ -468,7 +469,7 @@ public class DetectorView extends LinearLayout implements
         ) {
             ImageFilter.FilterResult filterResult = null;
 
-            if (iprdResult.isAccepted() && rdtResult.testArea != null) {
+            if ((iprdResult == null || iprdResult.isAccepted()) && rdtResult.testArea != null) {
                 filterResult = imageFilter.validateImage(rdtResult.rdtStrip, false);
                 if (!stillCaptureInProgress && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
                     Log.d(TAG, "Have good preview frame, making single request");
@@ -496,7 +497,7 @@ public class DetectorView extends LinearLayout implements
             CaptureResult captureResult,
             RDTTracker.RDTResult rdtResult
         ) {
-            if (iprdResult.isAccepted() && rdtResult.testArea != null) {
+            if ((iprdResult == null || iprdResult.isAccepted()) && rdtResult.testArea != null) {
 
                 ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, true);
 
