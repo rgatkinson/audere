@@ -219,6 +219,15 @@ public class RDTTracker {
             this.rdtStrip = rdtStrip;
             this.rdtOutline = rdtOutline;
         }
+
+        @Override
+        public String toString() {
+            return new StringBuilder()
+                .append("Audere RDTResult")
+                .append(" strip=").append(rdtStrip != null)
+                .append(" outline=").append(rdtOutline == null ? 0 : rdtOutline.length)
+                .toString();
+        }
     }
 
     public class RDTPreviewResult extends RDTResult {

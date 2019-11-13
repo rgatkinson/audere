@@ -33,3 +33,17 @@ FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader
 is governed by
 FluStudy_au/android/app/src/main/java/edu/washington/cs/ubicomplab/rdt_reader/LICENSE.
 Please see that file for details.
+
+================================================================================
+
+Copyright for portions of this project are held by IPRD Solutions, Inc.
+as part of the RDTCamera projects under the MIT license and AGPL license.
+Specifically:
+
+1) Code under FluStudy_us/android/app/src/main/java/com/iprd is governed
+by FluStudy_us/android/app/src/main/java/com/iprd/LICENSE.  Please see that
+file for details.
+
+2) The iprd.tflite model file at FluStudy_us/android/app/src/main/assets/iprd.tflite
+is governed by FluStudy_us/android/app/src/main/assets/LICENSE.  Other files in
+that directory are governed by the MIT license specified in this file.

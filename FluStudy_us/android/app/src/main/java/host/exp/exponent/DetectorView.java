@@ -39,7 +39,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,7 +71,7 @@ public class DetectorView extends LinearLayout implements
     private static final float BOX_MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
     private static final float INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API = 0.2f;
     private static final boolean MAINTAIN_ASPECT = false;
-    private static final Size DESIRED_PREVIEW_SIZE = new Size(480, 640);
+    private static final Size DESIRED_PREVIEW_SIZE = new Size(720, 1280);
 
     private static final int PERMISSIONS_REQUEST = 1;
     private static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
@@ -112,24 +114,23 @@ public class DetectorView extends LinearLayout implements
 
         // TODO: move this to background thread and check that it's ready where needed
 
-        // TODO: uncomment once licensing issues are resolved
-//        try {
-//            MappedByteBuffer iprdModel = TFLiteObjectDetectionAPIModel.loadModelFile(
-//                activity.getAssets(),
-//                IPRD_MODEL_FILE
-//            );
+        try {
+            MappedByteBuffer iprdModel = TFLiteObjectDetectionAPIModel.loadModelFile(
+                activity.getAssets(),
+                IPRD_MODEL_FILE
+            );
             this.iprdApi = IprdAdapter.RdtApi.builder()
-//                .setModel(iprdModel)
+                .setModel(iprdModel)
                 .build();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Log.e(TAG, "Exception initializing filter: " + e.toString());
-//            Toast.makeText(
-//                activity.getApplicationContext(),
-//                "IPRD filter could not be initialized",
-//                Toast.LENGTH_SHORT
-//            ).show();
-//        }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e(TAG, "Exception initializing filter: " + e.toString());
+            Toast.makeText(
+                activity.getApplicationContext(),
+                "IPRD filter could not be initialized",
+                Toast.LENGTH_SHORT
+            ).show();
+        }
 
         try {
             boxDetector =
@@ -369,7 +370,7 @@ public class DetectorView extends LinearLayout implements
                 readyForNextImage();
                 return;
             }
-            Log.d(TAG, "Process preview image");
+            Log.d(TAG, ImageListener.this.getClass().getSimpleName() + "analyizingFrame = true");
             analyzingFrame = true;
 
             Trace.beginSection("processImage");
@@ -381,14 +382,13 @@ public class DetectorView extends LinearLayout implements
                         @Override
                         public void run() {
                             try {
-                                // IPRD Filter
-                                final long iprdStartTimeMs = SystemClock.uptimeMillis();
-                                Trace.beginSection("IPRD Filter");
-                                IprdAdapter.FrameResult iprdResult = iprdApi.checkFrame(boxModelBitmap);
-                                Trace.endSection();
-                                Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
-
-                                if (iprdResult != null && iprdResult.isAccepted()) {
+                                IprdAdapter.FrameResult iprdResult = checkIPRDFilter(imageBitmap);
+                                saveDebugImage(
+                                    boxModelBitmap,
+                                    ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult
+                                );
+                                Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult);
+                                if (iprdResult == null || iprdResult.isAccepted()) {
                                     // Local interpretation prototype
                                     Trace.beginSection("Running Process Image");
                                     final long boxStartTimeMs = SystemClock.uptimeMillis();
@@ -405,12 +405,15 @@ public class DetectorView extends LinearLayout implements
                                     Log.d(TAG, "IPRD filter not accepted");
                                 }
                             } finally {
+                                Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " analyzingFrame = false");
                                 analyzingFrame = false;
                             }
                         }
                     });
             Trace.endSection(); // processPreviewImage
         }
+
+        protected abstract IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap);
 
         protected abstract void processResult(
             IprdAdapter.FrameResult iprdResult,
@@ -436,14 +439,36 @@ public class DetectorView extends LinearLayout implements
 
         protected String saveImage(Bitmap bitmap, String filename) {
             File photo = new File(activity.getFilesDir(), filename);
+            return saveImage(photo, bitmap);
+        }
 
-            if (photo.exists()) {
-                photo.delete();
+        int debugImageCounter = 0;
+        protected String saveDebugImage(Bitmap bitmap, String description) {
+            File debugImages = new File("/sdcard/debug-images");
+            debugImages.mkdirs();
+
+            int n = debugImageCounter++;
+
+            File descriptionFile = new File(debugImages, "image" + n + ".txt");
+            try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(descriptionFile.getPath()))) {
+                osw.write(description, 0, description.length());
+            } catch (java.io.IOException e) {
+                Log.e(TAG, "Exception in saveDebugImage", e);
+                return null;
             }
 
-            try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(photo.getPath()))) {
+            File photoFile = new File(debugImages, "image" + n + ".jpeg");
+            return saveImage(photoFile, bitmap);
+        }
+
+        protected String saveImage(File file, Bitmap bitmap) {
+            if (file.exists()) {
+                file.delete();
+            }
+
+            try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file.getPath()))) {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-                return Uri.fromFile(new File(photo.getPath())).toString();
+                return Uri.fromFile(new File(file.getPath())).toString();
             } catch (java.io.IOException e) {
                 Log.e(TAG, "Exception in saveImage", e);
                 return null;
@@ -459,15 +484,33 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
+        @Override
+        protected IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap) {
+            final long iprdStartTimeMs = SystemClock.uptimeMillis();
+            Trace.beginSection("IPRD Filter");
+            IprdAdapter.FrameResult iprdResult = iprdApi == null
+                ? null
+                : iprdApi.checkFrame(bitmap);
+            Trace.endSection();
+            Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
+            Log.i(TAG, "  IPRD " + IprdAdapter.FrameResult.str(iprdResult));
+
+            return iprdResult;
+        }
+
         protected void processResult(IprdAdapter.FrameResult iprdResult, List<Classifier.Recognition> mappedRecognitions) {
             RDTTracker.RDTPreviewResult rdtResult = rdtTracker.extractRDTFromPreview(mappedRecognitions, imageBitmap);
+            Log.d(TAG, "Preview rdtResult: " + rdtResult);
 
             if (rdtResult == null || rdtResult.rdtOutline == null || rdtResult.rdtStrip == null) {
-                Log.d(TAG, "No RDT found");
                 ImageFilter.FilterResult filterResult = imageFilter.validateImage(imageBitmap, false);
+                Log.d(TAG, "No RDT preview filter(rdtResult.rdtStrip): " + filterResult);
+                Log.d(TAG, "  stillCaptureInProgress=" + stillCaptureInProgress);
                 detectorListener.onRDTDetected(iprdResult, new CaptureResult(null), null, filterResult);
             } else {
                 ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, false);
+                Log.d(TAG, "RDT preview filter(rdtResult.rdtStrip): " + filterResult);
+                Log.d(TAG, "  stillCaptureInProgress=" + stillCaptureInProgress);
                 if (rdtResult.centered && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
                     if (!stillCaptureInProgress) {
                         Log.d(TAG, "Have good preview frame, making single request");
@@ -492,14 +535,18 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
+        protected IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap) {
+            return null;
+        }
+
         @Override
         protected void processResult(IprdAdapter.FrameResult iprdResult, List<Classifier.Recognition> mappedRecognitions) {
             Log.d(TAG, "Processing still frame");
             RDTTracker.RDTStillFrameResult rdtResult = rdtTracker.extractRDTFromStillFrame(mappedRecognitions, imageBitmap);
 
             if (rdtResult != null && rdtResult.testArea != null) {
-
                 ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, true);
+                Log.d(TAG, "Still filter(rdtResult.rdtStrip): " + filterResult);
 
                 if (filterResult.isSharp()) {
 
@@ -566,7 +613,8 @@ public class DetectorView extends LinearLayout implements
 
     private boolean hasPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return activity.checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED;
+            return activity.checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED
+                && activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         } else {
             return true;
         }
@@ -581,7 +629,14 @@ public class DetectorView extends LinearLayout implements
                         Toast.LENGTH_LONG)
                         .show();
             }
-            activity.requestPermissions(new String[]{PERMISSION_CAMERA}, PERMISSIONS_REQUEST);
+            if (activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(
+                    activity,
+                    "Storage permission is required for this demo",
+                    Toast.LENGTH_LONG)
+                    .show();
+            }
+            activity.requestPermissions(new String[]{PERMISSION_CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST);
         }
     }
 

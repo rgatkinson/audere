@@ -300,19 +300,45 @@ public class CameraController {
         Log.i(TAG, "Rejected preview sizes: [" + TextUtils.join(", ", tooSmall) + "]");
 
         if (exactSizeFound) {
-            Log.i(TAG, "Exact size match found.");
+            Log.i(TAG, "Matched exact size.");
             return desiredSize;
         }
 
-        // Pick the smallest of those, assuming we found any
-        if (bigEnough.size() > 0) {
-            final Size chosenSize = Collections.min(bigEnough, new CompareSizesByArea());
-            Log.i(TAG, "Chosen size: " + chosenSize.getWidth() + "x" + chosenSize.getHeight());
-            return chosenSize;
-        } else {
-            Log.e(TAG, "Couldn't find any suitable preview size");
+        if (bigEnough.size() == 0) {
+            Log.e(
+                TAG,
+                "No preview size large enough, using "
+                    + choices[0].getWidth() + "x" + choices[0].getHeight()
+            );
             return choices[0];
         }
+
+        // In general we will want the smallest size
+        Collections.sort(bigEnough, new CompareSizesByArea());
+
+        // First try to find one that matches aspect ratio
+        for (final Size option : bigEnough) {
+            if (option.getHeight() * width == option.getWidth() * height) {
+                Log.i(TAG, "Matched aspect ratio: " + option.getWidth() + "x" + option.getHeight());
+                return option;
+            }
+        }
+
+        // Second try to find one that matches reversed aspect ratio
+        for (final Size option : bigEnough) {
+          if (option.getHeight() * height == option.getWidth() * width) {
+            Log.i(TAG, "Matched inverse aspect ratio: " + option.getWidth() + "x" + option.getHeight());
+            return option;
+          }
+        }
+
+        Size chosen = bigEnough.get(0);
+        Log.w(
+            TAG,
+            "Large enough, but could not match aspect ratio, using "
+                + chosen.getWidth() + "x" + chosen.getHeight()
+        );
+        return chosen;
     }
 
     /**

@@ -6,25 +6,29 @@
 package host.exp.exponent;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
-//import com.iprd.rdtcamera.AcceptanceStatus;
-//import com.iprd.rdtcamera.RdtAPI;
+import com.iprd.rdtcamera.AcceptanceStatus;
+import com.iprd.rdtcamera.RdtAPI;
 
 import java.nio.MappedByteBuffer;
 
-// TODO: uncomment code once license issues are resolved.
 public class IprdAdapter {
 
-  public static class RdtApi {
-//    private RdtAPI iprdApi;
+  public static final String TAG = "IprdAdapter";
 
-//    private RdtApi(RdtAPI iprdApi) {
-//      this.iprdApi = iprdApi;
-//    }
+  public static class RdtApi {
+    private RdtAPI iprdApi;
+
+    private RdtApi(RdtAPI iprdApi) {
+      this.iprdApi = iprdApi;
+//      this.iprdApi.saveInput(true);
+//      this.iprdApi.setSavePoints(true);
+    }
 
     public FrameResult checkFrame(Bitmap frame) {
-//      AcceptanceStatus status = this.iprdApi.checkFrame(frame);
-      return new FrameResult(); //status);
+      AcceptanceStatus status = this.iprdApi.checkFrame(frame);
+      return new FrameResult(status);
     }
 
     public static Builder builder() {
@@ -32,46 +36,55 @@ public class IprdAdapter {
     }
 
     public static class Builder {
-//      private RdtAPI.RdtAPIBuilder iprdBuilder = new RdtAPI.RdtAPIBuilder();
+      private RdtAPI.RdtAPIBuilder iprdBuilder;
 
-      private Builder() {}
+      private Builder() {
+        iprdBuilder = new RdtAPI.RdtAPIBuilder();
+        iprdBuilder.setMaxScale((short) 100);
+        iprdBuilder.setMinScale((short) 0);
+        iprdBuilder.setXMin((short) 0);
+        iprdBuilder.setXMax((short) 100);
+        iprdBuilder.setYMin((short) 0);
+        iprdBuilder.setXMax((short) 100);
+      }
 
       public RdtApi build() {
-//        return new RdtApi(this.iprdBuilder.build());
-        return new RdtApi();
+        return new RdtApi(this.iprdBuilder.build());
       }
 
       public Builder setModel(MappedByteBuffer model) {
-//        this.iprdBuilder.setModel(model);
+        this.iprdBuilder.setModel(model);
         return this;
       }
     }
   }
 
   public static class FrameResult {
-    public static final int NOT_COMPUTED = 0; // AcceptanceStatus.NOT_COMPUTED;
-    public static final int TOO_HIGH = 1; //AcceptanceStatus.TOO_HIGH;
-    public static final int TOO_LOW = 2; //AcceptanceStatus.TOO_LOW;
-    public static final int GOOD = 3; //AcceptanceStatus.GOOD;
+    public static final int NOT_COMPUTED = AcceptanceStatus.NOT_COMPUTED;
+    public static final int TOO_HIGH = AcceptanceStatus.TOO_HIGH;
+    public static final int TOO_LOW = AcceptanceStatus.TOO_LOW;
+    public static final int GOOD = AcceptanceStatus.GOOD;
 
-    private FrameResult(){ // AcceptanceStatus status) {
-      this.sharpness = GOOD; //status.mSharpness;
-      this.scale = GOOD; //status.mScale;
-      this.brightness = GOOD; //status.mBrightness;
-      this.perspectiveDistortion = GOOD; //status.mPerspectiveDistortion;
-      this.xOffset = 0; //status.mDisplacementX;
-      this.yOffset = 0; //status.mDisplacementY;
-      this.foundRDT = true; //status.mRDTFound;
-      this.left = 0; //status.mBoundingBoxX;
-      this.top = 0; //status.mBoundingBoxY;
-      this.right = this.left + 100; //status.mBoundingBoxWidth;
-      this.bottom = this.top + 100; //status.mBoundingBoxHeight;
+    private FrameResult(AcceptanceStatus status) {
+      this.sharpness = status.mSharpness;
+      this.scale = status.mScale;
+      this.brightness = status.mBrightness;
+      this.perspectiveDistortion = status.mPerspectiveDistortion;
+      this.steady = status.mSteady;
+      this.xOffset = status.mDisplacementX;
+      this.yOffset = status.mDisplacementY;
+      this.foundRDT = status.mRDTFound;
+      this.left = status.mBoundingBoxX;
+      this.top = status.mBoundingBoxY;
+      this.right = this.left + status.mBoundingBoxWidth;
+      this.bottom = this.top + status.mBoundingBoxHeight;
     }
 
     public final int sharpness;
     public final int scale;
     public final int brightness;
     public final int perspectiveDistortion;
+    public final int steady;
     public final int xOffset;
     public final int yOffset;
     public final boolean foundRDT;
@@ -82,10 +95,32 @@ public class IprdAdapter {
 
     public boolean isAccepted() {
       return this.foundRDT &&
+          this.steady == GOOD &&
           this.sharpness == GOOD &&
           this.scale == GOOD &&
           this.brightness == GOOD &&
           this.perspectiveDistortion == GOOD;
+    }
+
+    public static String str(FrameResult result) {
+      if (result == null) {
+        return "null";
+      } else {
+        return result.toString();
+      }
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      return builder.append("FrameResult:")
+          .append(" steady=").append(this.steady)
+          .append(" sharp=").append(this.sharpness)
+          .append(" scale=").append(this.scale)
+          .append(" bright=").append(this.brightness)
+          .append(" perspec=").append(this.perspectiveDistortion)
+          .append(" rdt=").append(this.foundRDT)
+          .toString();
     }
   }
 }

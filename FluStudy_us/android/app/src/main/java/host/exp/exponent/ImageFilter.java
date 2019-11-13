@@ -64,6 +64,17 @@ public class ImageFilter {
             this.sharpness = sharpness;
             this.highResImage = highResImage;
         }
+
+        @Override
+        public String toString() {
+            return new StringBuilder()
+                .append("AudereFilterResult")
+                .append(" expose=").append(exposureResult)
+                .append(" sharp=").append(sharpness)
+                .append(" high=").append(highResImage)
+                .append(" isSharp=").append(isSharp())
+                .toString();
+        }
     }
 
     public ImageFilter(Activity activity) {
