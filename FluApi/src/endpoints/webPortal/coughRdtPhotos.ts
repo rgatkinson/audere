@@ -91,6 +91,7 @@ export class CoughRDTPhotos {
       offset: page * PAGE_SIZE,
     });
 
+    const title = "flu@home Australia Photos";
     const barcodes = surveys.slice(0, PAGE_SIZE).map(survey => ({
       barcode: survey.survey.samples.find(
         sample => sample.sample_type === "manualEntry"
@@ -133,6 +134,7 @@ export class CoughRDTPhotos {
       ? "?" + querystring.stringify({ page: page - 1, orderBy })
       : "";
     res.render("barcodes.html", {
+      title,
       barcodes,
       static: this.getStatic(),
       hasPrevPage,
