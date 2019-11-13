@@ -37,9 +37,11 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
     firebaseAnalytics: defineFirebaseAnalytics(sql),
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
+    matchedKits: defineMatchedKits(sql),
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
     photoUploadLog: definePhotoUploadLog(sql),
+    shippedKits: defineShippedKits(sql),
     survey: defineSurvey(sql.nonPii),
   };
 
@@ -61,9 +63,11 @@ export interface ChillsModels {
   firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
   importProblem: Model<ImportProblemAttributes>;
+  matchedKits: Model<MatchedKitAttributes>;
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
+  shippedKits: Model<ShippedKitAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
 }
 
@@ -263,6 +267,58 @@ export function defineFirebaseAnalayticsTable(
     {
       name: unique(stringColumn()),
       modified: bigIntColumn(),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface ShippedKitAttributes {
+  id?: number;
+  evidationId: string;
+  barcode: string;
+  email: string;
+  birthdate: string;
+  sex: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  orderedAt: string;
+}
+
+export function defineShippedKits(sql: SplitSql) {
+  return defineModel<ShippedKitAttributes>(
+    sql.nonPii,
+    "shipped_kits",
+    {
+      evidationId: stringColumn("evidation_id"),
+      barcode: stringColumn(),
+      email: stringColumn(),
+      birthdate: stringColumn(),
+      sex: stringColumn(),
+      city: stringColumn(),
+      state: stringColumn(),
+      postalCode: stringColumn("postal_code"),
+      orderedAt: stringColumn("ordered_at"),
+    },
+    { schema }
+  );
+}
+
+export interface MatchedKitAttributes {
+  id?: number;
+  barcode: string;
+  identifier: string;
+}
+
+export function defineMatchedKits(sql: SplitSql) {
+  return defineModel<MatchedKitAttributes>(
+    sql.nonPii,
+    "matched_kits",
+    {
+      barcode: stringColumn(),
+      identifier: stringColumn(),
     },
     { schema }
   );

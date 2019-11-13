@@ -28,7 +28,7 @@ import {
   piiDatabaseUrl,
   Inst,
 } from "../src/util/sql";
-import { generateRandomKey, sha256 } from "../src/util/crypto";
+import { generateRandomKey } from "../src/util/crypto";
 import { Locations as snifflesLocations } from "audere-lib/locations";
 import {
   defineSnifflesModels,
@@ -51,7 +51,7 @@ import {
   SurveyInstance,
   SurveyModel,
 } from "../src/models/db/fever";
-import { defineCoughModels, GiftcardAttributes } from "../src/models/db/cough";
+import { defineCoughModels } from "../src/models/db/cough";
 import {
   DeviceInfo as FeverDevice,
   EventInfo,
@@ -69,6 +69,7 @@ import { defineDeviceSetting } from "../src/models/db/devices";
 import { extractVisitNonPii } from "../src/endpoints/snifflesApi";
 import { extractVisitPii } from "../src/endpoints/snifflesApi";
 import { addDemoGiftcards } from "../src/endpoints/coughGiftcardApi";
+import { defineChillsModels } from "../src/models/db/chills";
 
 const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
@@ -86,6 +87,7 @@ const sql = createSplitSql();
 const snifflesModels = defineSnifflesModels(sql);
 const feverModels = defineFeverModels(sql);
 const coughModels = defineCoughModels(sql);
+const chillsModels = defineChillsModels(sql);
 const auth = new AuthManager(sql);
 const deviceSetting = defineDeviceSetting(sql);
 
@@ -148,6 +150,7 @@ enum Release {
   Sniffles = "sniffles",
   Fever = "fever",
   Cough = "cough",
+  Chills = "chills",
 }
 
 yargs.strict(true);
@@ -422,6 +425,11 @@ async function cmdPhoto(argv: PhotosArgs): Promise<void> {
   const csruid = argv.csruid;
   let rows: SomePhotoInstance[];
   switch (argv.release) {
+    case Release.Chills:
+      rows = await chillsModels.photo.findAll({
+        where: { docid: { [Op.like]: `${csruid}%` } },
+      });
+      break;
     case Release.Cough:
       rows = await coughModels.photo.findAll({
         where: { docid: { [Op.like]: `${csruid}%` } },
@@ -460,6 +468,25 @@ interface PhotoOfArgs {
 
 async function cmdPhotoOf(argv: PhotoOfArgs): Promise<void> {
   switch (argv.release) {
+    case Release.Chills: {
+      const surveyRow = expectOne(
+        await chillsModels.survey.findAll({
+          where: { docid: { [Op.like]: `${argv.row}%` } },
+        })
+      );
+      const sample = expectOne(
+        surveyRow.survey.samples.filter(
+          x => x.sample_type === "TestStripBase64"
+        )
+      );
+      const photoRow = expectOne(
+        await chillsModels.photo.findAll({
+          where: { docid: { [Op.eq]: sample.code } },
+        })
+      );
+      console.log(photoRow.photo.jpegBase64);
+      break;
+    }
     case Release.Cough: {
       const surveyRow = expectOne(
         await coughModels.survey.findAll({
@@ -1218,6 +1245,8 @@ function getKeyA(release: Release): string {
       return "7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F";
     case Release.Cough:
       return "7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F";
+    case Release.Chills:
+      return "7rebwsthpz5A9Xk8-h6lMd9a8hurQ2GuwQnkpYynzWfKJKogO8gHbQBS86Gjsk-F";
     default:
       throw failRelease(release);
   }
@@ -1531,6 +1560,7 @@ function accessKey(release: Release) {
     sniffles: () => snifflesModels.accessKey,
     fever: () => feverModels.accessKey,
     cough: () => coughModels.accessKey,
+    chills: () => chillsModels.accessKey,
   });
 }
 
@@ -1574,6 +1604,9 @@ function piiUpdater(release: Release) {
     cough: () => {
       throw failRelease(release);
     },
+    chills: () => {
+      throw failRelease(release);
+    },
   });
 }
 
@@ -1582,6 +1615,9 @@ function nonPiiUpdater(release: Release) {
     sniffles: () => sniffles.nonPii,
     fever: () => fever.nonPii,
     cough: () => {
+      throw failRelease(release);
+    },
+    chills: () => {
       throw failRelease(release);
     },
   });

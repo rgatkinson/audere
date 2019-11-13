@@ -29,6 +29,17 @@ export function sha256(...values: string[]): string {
   return hash.digest("hex");
 }
 
+/**
+ * Returns 64 byte key from PBKDF2 as a Base64 string after 10,000 iterations.
+ *
+ * @param value Value to hash
+ * @param salt Salt to use
+ */
+export function pbkdf2(value: string, salt: string): string {
+  const key = crypto.pbkdf2Sync(value, salt, 10000, 64, "sha512");
+  return key.toString("base64");
+}
+
 // Simplified version of crypto.createHash() that:
 // * supports builder pattern by update() returning this.
 // * tolerates nulls in update().

@@ -39,6 +39,7 @@ import { CoughFollowUpEndpoint } from "./endpoints/coughFollowUpApi";
 import { CoughGiftcardEndpoint } from "./endpoints/coughGiftcardApi";
 import { ChillsEndpoint } from "./endpoints/chillsApi";
 import { ChillsFirebaseAnalyticsEndpoint } from "./endpoints/chillsFirebaseAnalyticsApi";
+import { ChillsMatchKits } from "./endpoints/chillsMatchKits";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -175,6 +176,13 @@ export async function createPublicApp(config: AppConfig) {
     "/api/cough/giftcardAvailable",
     stats("coughGiftcard"),
     wrap(jsonApi(coughGiftcardApi.checkGiftcardAvailability, "giftcardRequest"))
+  );
+
+  const chillsMatchKits = new ChillsMatchKits(sql);
+  publicApp.post(
+    "/api/chills/matchBarcode",
+    stats("chillsMatchKit"),
+    wrap(chillsMatchKits.matchKit)
   );
 
   return useOuch(publicApp);
