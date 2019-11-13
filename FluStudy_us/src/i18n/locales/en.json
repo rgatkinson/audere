@@ -91,7 +91,7 @@
     "willConfidential": "**Will my information be kept confidential?**",
     "willConfidential++Answer": "Your privacy is very important to us and the study team will make every effort to protect the privacy of your data.\n\nYou will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information.\n\nFor more details, please refer to the flu@home [Privacy Policy](https://fluathome.org/privacy) and the study consent document you signed, available through your Achievement account.",
     "appDelete": "**After I finish the tests, may I delete the app?**",
-    "appDelete++Answer": "Yes. Once you have completed the tests and shipped back your test kit you may delete the flu@home app from your device."
+    "appDelete++Answer": "Yes. Once you have completed the tests and shipped back your test kit, you may delete the flu@home app from your device."
   },
   "buildInfo": {
     "version": "**Version:** ",
@@ -114,7 +114,7 @@
   },
   "ReportComplaint": {
     "title": "Report a complaint",
-    "description": "**What if I have a question, complaint, or any concerns?**\n\nFor any questions about the study, your Fitbit, or the flu@home app and test kit, contact the Achievement Studies Team at [study+homekit2020@myachievement.com](EMAIL) or [(415) 417-1905](PHONE). The email address and phone number will be monitored for 6 months after study completion.\n\nFor questions about your rights as a research participant or for questions, concerns, complaints about the research, please contact Western Institutional Review Board® (WIRB®). WIRB is a group of people who independently review research.\n\n**Address:**\n1019 39th Avenue SE Suite 120,\nPuyallup, Washington 98374-2115\n\n**Phone number:**\n[(800) 562-4789](PHONE) or\n[(360) 252-2500](PHONE)\n\n**Email address:**\n[help@wirb.com](EMAIL)"
+    "description": "**What if I have a question, complaint, or any concerns?**\n\nFor any questions about the study, your Fitbit, or the flu@home app and test kit, contact the Achievement Studies Team at [study+homekit2020@myachievement.com](EMAIL) or [(415) 417-1905](PHONE). The email address and phone number will be monitored for 6 months after study completion.\n\nFor questions about your rights as a research participant or for questions, concerns, or complaints about the research, please contact Western Institutional Review Board® (WIRB®). WIRB is a group of people who independently review research.\n\n**Address:**\n1019 39th Avenue SE Suite 120,\nPuyallup, Washington 98374-2115\n\n**Phone number:**\n[(800) 562-4789](PHONE) or\n[(360) 252-2500](PHONE)\n\n**Email address:**\n[help@wirb.com](EMAIL)"
   },
   "surveyTitle": {
     "spentTimeCity": "Where did you spend the majority of your time this past week?",
