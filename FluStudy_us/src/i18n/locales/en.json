@@ -110,7 +110,8 @@
   "ContactSupport": {
     "title": "Test & study support",
     "description": "Contact us with study questions or problems with the test procedure, kit contents, or the flu@home app.",
-    "emailSupport": "EMAIL SUPPORT"
+    "emailSupport": "EMAIL SUPPORT",
+    "callSupport": "Call Support: [(415) 417-1905](PHONE)"
   },
   "ReportComplaint": {
     "title": "Report a complaint",

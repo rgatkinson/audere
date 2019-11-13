@@ -79,11 +79,14 @@ export const MenuScreens: ScreenConfig[] = [
         style: {
           borderWidth: 2,
           borderColor: PRIMARY_COLOR,
-          //borderRadius: 50,
           alignSelf: "center",
         },
         textStyle: { color: PRIMARY_COLOR },
       },
+    },
+    {
+      tag: ScreenText,
+      props: { label: "callSupport" },
     },
   ]),
   menuScreen("Version", false, [
