@@ -3,36 +3,33 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import base64url from "base64url";
 import {
-  createStore,
-  combineReducers,
-  applyMiddleware,
-  Store,
-  Middleware,
-  Dispatch,
   AnyAction,
+  applyMiddleware,
+  combineReducers,
+  createStore,
+  Dispatch,
+  Middleware,
   MiddlewareAPI,
+  Store,
 } from "redux";
-import { persistStore, persistReducer, createTransform } from "redux-persist";
-import storage from "redux-persist/lib/storage";
-import { Transform } from "redux-persist/es/createTransform";
+import { persistReducer, persistStore } from "redux-persist";
 import immutableTransform from "redux-persist-transform-immutable";
-import * as SecureStore from "expo-secure-store";
-import { uploaderMiddleware } from "./uploader";
+import storage from "redux-persist/lib/storage";
 import { crashlytics, crashReportingDetailsMiddleware } from "../crashReporter";
 import { PhotoUploader } from "../transport/PhotoUploader";
-
-export * from "./types";
-
+import { photoCollectionName } from "./FirebaseStore";
 import { default as meta, MetaAction } from "./meta";
-export * from "./meta";
-
 import { default as questions, QuestionsAction } from "./questions";
-export * from "./questions";
-
+import { StoreState } from "./StoreState";
 import { default as survey, SurveyAction } from "./survey";
+import { uploaderMiddleware } from "./uploader";
+
+export * from "./meta";
+export * from "./questions";
+export { StoreState } from "./StoreState";
 export * from "./survey";
+export * from "./types";
 
 type ClearStateAction = { type: "CLEAR_STATE" };
 export function clearState(): ClearStateAction {
@@ -44,10 +41,6 @@ export type Action =
   | QuestionsAction
   | SurveyAction
   | ClearStateAction;
-
-import { StoreState } from "./StoreState";
-import { photoCollectionName } from "./FirebaseStore";
-export { StoreState } from "./StoreState";
 
 const reducer = combineReducers({
   meta,

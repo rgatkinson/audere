@@ -7,8 +7,15 @@ export async function getBarcodeNextScreen() {
   if (!state.survey.kitBarcode) {
     return "BarcodeContactSupport";
   }
+
+  if (!state.meta.isConnected) {
+    return "BarcodeConnectionToServerError";
+  }
+
   const patientAchievementInfo = await getPatientAchievementInfo(
-    state.survey.kitBarcode.code
+    state.survey.kitBarcode.code,
+    state.survey.csruid || "",
+    state.meta.isDemo
   );
   if (patientAchievementInfo) {
     // Success - barcode matches with Achievement record
@@ -21,9 +28,12 @@ export async function getBarcodeNextScreen() {
 }
 
 async function getPatientAchievementInfo(
-  barcode: string
+  barcode: string,
+  identifier: string,
+  demo: boolean
 ): Promise<PatientAchievementInfo> {
-  //TODO: hook up to server API
+  // TODO: Replace with actual call to backend once it is ready
+  // return await matchKit(barcode, identifier, demo);
   return { actualEmail: "philip@auderenow.org", state: "wa", zipCode: 98040 };
 }
 

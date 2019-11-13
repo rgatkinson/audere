@@ -19,7 +19,9 @@
       "oneMinuteStartTime": "Next you'll remove your swab from the tube.",
       "tenMinuteStartTime": "Next you'll remove your test strip from the tube.",
       "connectionErrorTitle": "Connection Error",
-      "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\""
+      "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\"",
+      "resetAppAlertTitle": "Do you want to restart the test with a different kit?",
+      "resetAppAlertBody": "Saying Yes will reset the app."
     },
     "device": {
       "handset": "phone",
@@ -53,14 +55,6 @@
     "october": "October",
     "november": "November",
     "december": "December"
-  },
-  "relaunch": {
-    "returningOrNewTitle": "Are you returning to the app or are you a new user?",
-    "returningOrNewBody": "Selecting \"New User\" will reset the flu@home app to start over.",
-    "button": {
-      "newUser": "New User",
-      "returningUser": "Returning User"
-    }
   },
   "menu": {
     "fluAtHomeHelp": "FLU@HOME HELP"
@@ -593,6 +587,10 @@
   "BarcodeContactSupport": {
     "title": "Invalid barcode",
     "desc": "We're sorry, but the barcode you entered did not match our records. Please [contact support](CONTACTSUPPORT).\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
+  },
+  "BarcodeConnectionToServerError": {
+    "title": "Connect to verify your barcode",
+    "desc": "We could not connect to verify your barcode. Once you are connected, please come back to the app and try again."
   },
   "EmailConfirmation": {
     "title": "Verify your email",

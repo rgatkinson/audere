@@ -3,26 +3,25 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { WorkflowInfo } from "audere-lib/chillsProtocol";
+import i18n from "i18next";
 import React, { ComponentType, Fragment, RefObject } from "react";
 import {
+  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   View,
-  KeyboardAvoidingView,
 } from "react-native";
+import { wrapScrollView } from "react-native-scroll-into-view";
 import { NavigationScreenProp, StackActions } from "react-navigation";
 import { connect } from "react-redux";
-import i18n from "i18next";
-import { wrapScrollView } from "react-native-scroll-into-view";
-import { WorkflowInfo } from "audere-lib/chillsProtocol";
-import { Action, StoreState, setWorkflow } from "../../store";
-import { logFirebaseEvent } from "../../util/tracker";
-import Chrome from "./Chrome";
-import AnimatedChrome from "./AnimatedChrome";
-import { SCREEN_MARGIN, NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "../styles";
-
-import { PubSubToken, PubSubHub, PubSubEvents } from "../../util/pubsub";
+import { Action, setWorkflow, StoreState } from "../../store";
+import { PubSubEvents, PubSubHub, PubSubToken } from "../../util/pubsub";
 import { getRemoteConfig } from "../../util/remoteConfig";
+import { logFirebaseEvent } from "../../util/tracker";
+import { NAV_BAR_HEIGHT, SCREEN_MARGIN, STATUS_BAR_HEIGHT } from "../styles";
+import AnimatedChrome from "./AnimatedChrome";
+import Chrome from "./Chrome";
 
 export interface ScreenConfig {
   body: Component[];
@@ -54,6 +53,10 @@ export interface ChromeProps {
   hideChrome?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
+  onBack?: (
+    nav: NavigationScreenProp<any, any>,
+    dispatch: (action: Action) => void
+  ) => void;
   splashImage?: string;
   showBackgroundOnly?: boolean;
   disableBounce?: boolean;

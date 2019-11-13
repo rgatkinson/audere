@@ -31,6 +31,9 @@ import {
   SneezingSeverityConfig,
   SomeoneDiagnosedConfig,
   SoreThroatSeverityConfig,
+  SpentTimeCityConfig,
+  SpentTimeStateConfig,
+  SpentTimeZipCodeConfig,
   SweatsSeverityConfig,
   SymptomsSeverityConfig,
   TravelOutsideStateConfig,
@@ -42,9 +45,6 @@ import {
   WhenFirstStartedAntiviralConfig,
   WhichCountriesOutsideUSConfig,
   WorseOrDifferentFromTypicalConfig,
-  SpentTimeCityConfig,
-  SpentTimeStateConfig,
-  SpentTimeZipCodeConfig,
 } from "audere-lib/chillsQuestionConfig";
 import { Platform } from "react-native";
 import DeviceInfo from "react-native-device-info";
@@ -64,9 +64,9 @@ import ContinueButton from "../ui/components/ContinueButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
 import EmailEntry from "../ui/components/EmailEntry";
+import AndroidRDTReader from "../ui/components/flu/AndroidRDTReader";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
-import AndroidRDTReader from "../ui/components/flu/AndroidRDTReader";
 import RDTReader from "../ui/components/flu/RDTReader";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
@@ -85,12 +85,12 @@ import {
   LINK_COLOR,
   SMALL_TEXT,
 } from "../ui/styles";
-import { getSymptomsNextScreen } from "../util/symptomsResults";
 import {
   getPinkWhenBlueNextScreen,
   getTestStripSurveyNextScreen,
   logFluResult,
 } from "../util/fluResults";
+import { getGeneralExposureTextVariables } from "../util/generalExposure";
 import { openSettingsApp } from "../util/openSettingsApp";
 import {
   getBarcodeNextScreen,
@@ -99,8 +99,9 @@ import {
   getShippingTextVariables,
 } from "../util/patientAchievementInfo";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
+import { resetAlert } from "../util/resetAlert";
 import { getRdtResult } from "../util/results";
-import { getGeneralExposureTextVariables } from "../util/generalExposure";
+import { getSymptomsNextScreen } from "../util/symptomsResults";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -279,6 +280,21 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: Title },
       {
+        tag: ContinueButton,
+
+        props: {
+          label: "common:button:tryAgain",
+          style: { alignSelf: "center" },
+          surveyGetNextFn: getBarcodeNextScreen,
+        },
+      },
+    ],
+    key: "BarcodeConnectionToServerError",
+  },
+  {
+    body: [
+      { tag: Title },
+      {
         tag: ScreenText,
         props: {
           label: "desc",
@@ -297,6 +313,9 @@ export const Screens: ScreenConfig[] = [
         props: { surveyGetNextFn: getEmailConfirmationNextScreen },
       },
     ],
+    chromeProps: {
+      onBack: resetAlert,
+    },
     key: "EmailConfirmation",
     keyboardAvoidingView: true,
   },

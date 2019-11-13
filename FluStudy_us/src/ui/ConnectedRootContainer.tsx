@@ -3,10 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import NetInfo from "@react-native-community/netinfo";
+import { EventInfoKind, WorkflowInfo } from "audere-lib/chillsProtocol";
+import * as Permissions from "expo-permissions";
 import React from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   AppState,
   AsyncStorage,
   Dimensions,
@@ -14,46 +17,41 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import NetInfo from "@react-native-community/netinfo";
 import {
-  Action,
-  StoreState,
-  appendEvent,
-  clearState,
-  setActiveRouteName,
-  setCSRUIDIfUnset,
-  setShownOfflineWarning,
-  setConnectivity,
-  resetTimestamp,
-} from "../store/";
-import * as Permissions from "expo-permissions";
-import { crashlytics } from "../crashReporter";
-import { notificationLaunchHandler } from "../util/notifications";
-import {
-  logFirebaseEvent,
-  onCSRUIDEstablished,
-  logCurrentScreen,
-  NavEvents,
-  DrawerEvents,
-  AppEvents,
-} from "../util/tracker";
-import { connect } from "react-redux";
-import { WithNamespaces, withNamespaces } from "react-i18next";
-import {
+  createAppContainer,
   NavigationAction,
   NavigationActions,
   NavigationContainerComponent,
   NavigationState,
   StackActions,
-  createAppContainer,
 } from "react-navigation";
 import { DrawerActions } from "react-navigation-drawer";
-import { EventInfoKind, WorkflowInfo } from "audere-lib/chillsProtocol";
-import AppNavigator, { getActiveRouteName } from "./AppNavigator";
-import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
+import { connect } from "react-redux";
+import { crashlytics } from "../crashReporter";
+import {
+  Action,
+  appendEvent,
+  clearState,
+  setActiveRouteName,
+  setConnectivity,
+  setCSRUIDIfUnset,
+  setShownOfflineWarning,
+  StoreState,
+} from "../store/";
 import { newUID } from "../util/csruid";
+import { notificationLaunchHandler } from "../util/notifications";
+import {
+  AppEvents,
+  DrawerEvents,
+  logCurrentScreen,
+  logFirebaseEvent,
+  NavEvents,
+  onCSRUIDEstablished,
+} from "../util/tracker";
 import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
+import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import MultiTapContainer from "./components/MultiTapContainer";
+import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
 
 notificationLaunchHandler();
 
@@ -197,46 +195,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       );
       this.clearState();
     } else if (nextAppState === "launch" || nextAppState === "active") {
-      const MILLIS_IN_SECOND = 1000.0;
-      const SECONDS_IN_MINUTE = 60;
-      const MINUTES_IN_HOUR = 60;
-      const HOURS_IN_DAY = 24;
-
-      const intervalMilis = currentDate.getTime() - this.props.lastUpdate;
-      const elapsedHours =
-        intervalMilis /
-        (MILLIS_IN_SECOND * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
-
-      if (elapsedHours > 3 * HOURS_IN_DAY) {
-        const { t } = this.props;
-        Alert.alert(
-          t("relaunch:returningOrNewTitle"),
-          t("relaunch:returningOrNewBody"),
-          [
-            {
-              text: t("relaunch:button:newUser"),
-              onPress: () => {
-                logFirebaseEvent(AppEvents.APP_IDLE_NEW_USER);
-                this.props.dispatch(
-                  appendEvent(
-                    EventInfoKind.TimeoutNav,
-                    "app:" + nextAppState + ":newUserRedirectToScreeningStart"
-                  )
-                );
-                this.clearState();
-              },
-            },
-            {
-              text: t("relaunch:button:returningUser"),
-              onPress: () => {
-                logFirebaseEvent(AppEvents.APP_IDLE_SAME_USER);
-                this.props.dispatch(resetTimestamp());
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      } else if (this.props.activeRouteName === "CameraSettings") {
+      if (this.props.activeRouteName === "CameraSettings") {
         // Expo V35 currently has an issue on iOS where permissions aren't queried
         // correctly when using Permissions.getAsync. The workaround is to use
         // Permissions.askAsync instead, but on Android this has the unfortunate side-effect
@@ -300,6 +259,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       crashlytics.log("Navigating from " + currentScreen + " to " + nextScreen);
       logCurrentScreen(nextScreen);
       const navEvent = this._getNavEvent(action);
+
       if (navEvent) {
         logFirebaseEvent(navEvent, { from: currentScreen, to: nextScreen });
       }

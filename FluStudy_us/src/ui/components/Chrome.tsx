@@ -7,24 +7,25 @@ import React from "react";
 import {
   Dimensions,
   Image,
+  ImageBackground,
   StatusBar,
   StyleSheet,
   View,
-  ImageBackground,
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
-import NavigationBar from "./NavigationBar";
+import { Action } from "redux";
 import {
+  GUTTER,
   IMAGE_WIDTH_SQUARE,
+  isTablet,
+  NAV_BAR_HEIGHT,
+  PRIMARY_COLOR,
   SPLASH_IMAGE,
   SPLASH_RATIO,
-  SYSTEM_PADDING_BOTTOM,
-  NAV_BAR_HEIGHT,
   STATUS_BAR_HEIGHT,
-  isTablet,
-  PRIMARY_COLOR,
-  GUTTER,
+  SYSTEM_PADDING_BOTTOM,
 } from "../styles";
+import NavigationBar from "./NavigationBar";
 
 interface Props {
   children?: any;
@@ -32,6 +33,10 @@ interface Props {
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
+  onBack?: (
+    nav: NavigationScreenProp<any, any>,
+    dispatch: (action: Action) => void
+  ) => void;
   splashImage?: string;
   showBackgroundOnly?: boolean;
 }
@@ -82,6 +87,7 @@ export default class Chrome extends React.PureComponent<Props> {
               translucent={true}
             />
             <NavigationBar
+              onBack={this.props.onBack}
               hideBackButton={hideBackButton}
               menuItem={menuItem}
               navigation={navigation}

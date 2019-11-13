@@ -3,14 +3,13 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { connect } from "react-redux";
 import { Feather } from "@expo/vector-icons";
-import { NavigationScreenProp, StackActions } from "react-navigation";
+import React from "react";
 import { WithNamespaces, withNamespaces } from "react-i18next";
-import { StoreState } from "../../store";
-import Text from "./Text";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { NavigationScreenProp, StackActions } from "react-navigation";
+import { connect } from "react-redux";
+import { Action, StoreState } from "../../store";
 import {
   GUTTER,
   NAV_BAR_HEIGHT,
@@ -18,12 +17,18 @@ import {
   SYSTEM_FONT,
   SYSTEM_TEXT,
 } from "../styles";
+import Text from "./Text";
 
 interface Props {
   demoMode?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
   navigation: NavigationScreenProp<any, any>;
+  onBack?: (
+    nav: NavigationScreenProp<any, any>,
+    dispatch: (action: Action) => void
+  ) => void;
+  dispatch(action: Action): void;
 }
 
 class NavigationBar extends React.Component<Props & WithNamespaces> {
@@ -44,6 +49,10 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
   _onBack = () => {
     if (this._debounce) {
       return;
+    }
+
+    if (!!this.props.onBack) {
+      this.props.onBack(this.props.navigation, this.props.dispatch);
     }
 
     // @ts-ignore

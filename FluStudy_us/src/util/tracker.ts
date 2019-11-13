@@ -3,10 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import firebase from "react-native-firebase";
-import DeviceInfo from "react-native-device-info";
-import { recordErrorToFirebase } from "../crashReporter";
 import Constants from "expo-constants";
+import DeviceInfo from "react-native-device-info";
+import firebase from "react-native-firebase";
+import { recordErrorToFirebase } from "../crashReporter";
 
 const FIREBASE_LOG_TO_CONSOLE =
   process.env.NODE_ENV === "development" &&
@@ -71,8 +71,6 @@ export const AppEvents = {
   FAQ_PRESSED: "faq_pressed",
   WHAT_TO_DO_WITH_TEST_RESULT_PRESSED: "what_to_do_with_test_result_pressed",
   HELP_TOGGLED: "help_toggled",
-  APP_IDLE_NEW_USER: "app_idle_new_user",
-  APP_IDLE_SAME_USER: "app_idle_same_user",
   READ_CONFIG_VALUE: "read_config_value",
   LINK_PRESSED: "link_pressed",
 };
