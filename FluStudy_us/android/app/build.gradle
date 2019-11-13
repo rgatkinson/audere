@@ -127,7 +127,8 @@ apply from: 'expo.gradle'
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 
 dependencies {
-    implementation project(':react-native-modal-translucent')
+  implementation project(':react-native-referrer') 
+  implementation project(':react-native-modal-translucent')
   implementation 'org.tensorflow:tensorflow-lite:0.0.0-nightly'
   implementation project(':react-native-push-notification')
   implementation project(':react-native-fbsdk')

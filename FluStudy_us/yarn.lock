@@ -1826,6 +1826,11 @@
   resolved "https://registry.yarnpkg.com/@types/react-native-push-notification/-/react-native-push-notification-3.0.5.tgz#9e80a3015cae9ffb3b4a2601ea655481f64da940"
   integrity sha512-pIvo2I/i9vVisDGGxP/stAbZ8ODnwHhPWEU7GweWZU/mqwmUXDbAgq824AsDAzbeI1ApDLE7MdLDVjQDYueaqA==
 
+"@types/react-native-referrer@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@types/react-native-referrer/-/react-native-referrer-0.1.0.tgz#d49f7246263b0f1886e231428ad8c099e2ff5974"
+  integrity sha512-dl4Riiz+fnxe2chaK/L3XkTNKVgJ1KtPVI07prCMFDmBdqouBArjgP0sKkbtxI8PAJmmhSN3wbem+jJwOQXg5g==
+
 "@types/react-native-vector-icons@*":
   version "6.4.1"
   resolved "https://registry.yarnpkg.com/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.1.tgz#d0862f3eb97bbe5720ab604f2f10ee07dacb31ef"
@@ -9643,6 +9648,11 @@ react-native-reanimated@~1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-1.2.0.tgz#9219227a52a5dfa4d34c324596d6726ccd874293"
   integrity sha512-vkWRHrPK5qfHP/ZawlRoo38oeYe9NZaaOH/lmFxRcsKzaSK6x3H5ZPXI8lK6MfTLveqwo1QhJje3zIKXO4nQQw==
+
+react-native-referrer@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-referrer/-/react-native-referrer-0.1.4.tgz#c1deeb126abd34855cd64992b8c1463469346f52"
+  integrity sha512-YgUgdH7w5rO0yDTtWt+e6tECIcYCArcjJmuWNNVz1wZHJepPaBEBPL74QB91BlZX/4ukAw06gjQhiiAmQWjNuA==
 
 react-native-safe-area-view@^0.14.1:
   version "0.14.6"

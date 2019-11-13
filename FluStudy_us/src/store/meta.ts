@@ -21,7 +21,8 @@ export type MetaAction =
       type: "SET_PATIENT_ACHIEVEMENT_INFO";
       patientAchievementInfo: PatientAchievementInfo;
     }
-  | { type: "SET_ENTERED_EMAIL"; enteredEmail: string };
+  | { type: "SET_ENTERED_EMAIL"; enteredEmail: string }
+  | { type: "SET_MARKETING_PROPERTIES"; marketingProperties: any };
 
 export type MetaState = {
   activeRouteName: string;
@@ -89,6 +90,8 @@ export default function reducer(state = initialState, action: MetaAction) {
       };
     case "SET_ENTERED_EMAIL":
       return { ...state, enteredEmail: action.enteredEmail };
+    case "SET_MARKETING_PROPERTIES":
+      return { ...state, marketingProperties: action.marketingProperties };
     default:
       return state;
   }
@@ -161,4 +164,11 @@ export function setPatientAchievementInfo(
 
 export function setEnteredEmail(enteredEmail: string): MetaAction {
   return { type: "SET_ENTERED_EMAIL", enteredEmail };
+}
+
+export function setMarketingProperties(marketingProperties: any): MetaAction {
+  return {
+    type: "SET_MARKETING_PROPERTIES",
+    marketingProperties,
+  };
 }

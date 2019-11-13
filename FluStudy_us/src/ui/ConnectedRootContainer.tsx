@@ -35,6 +35,7 @@ import {
   setActiveRouteName,
   setConnectivity,
   setCSRUIDIfUnset,
+  setMarketingProperties,
   setShownOfflineWarning,
   StoreState,
 } from "../store/";
@@ -52,6 +53,7 @@ import { uploadingErrorHandler } from "../util/uploadingErrorHandler";
 import AppNavigator, { getActiveRouteName } from "./AppNavigator";
 import MultiTapContainer from "./components/MultiTapContainer";
 import { NAV_BAR_HEIGHT, STATUS_BAR_HEIGHT } from "./styles";
+import RNReferrer from "react-native-referrer";
 
 notificationLaunchHandler();
 
@@ -124,6 +126,13 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     });
   };
 
+  _setMarketingProperties = async () => {
+    const referrer = await RNReferrer.getReferrer();
+    if (!!referrer) {
+      this.props.dispatch(setMarketingProperties({ referrer }));
+    }
+  };
+
   componentDidMount() {
     AppState.addEventListener("change", this._handleAppStateChange);
     if (this.props.csruid) {
@@ -134,6 +143,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       this._handleConnectivityChange
     );
     this._getConnectivity();
+    this._setMarketingProperties();
   }
 
   componentWillUnmount() {

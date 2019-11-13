@@ -225,7 +225,7 @@
       android:exported="false" />
 
     <!-- Used for Google Play Store Campaign Measurement-->
-    <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+    <receiver android:name="com.jdc.reactlibrary.ReferrerReceiver"
         android:enabled="true"
         android:exported="true">
         <intent-filter>

@@ -31,6 +31,7 @@ import org.linusu.RNGetRandomValuesPackage;
 // Needed starting Expo v32
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import host.exp.exponent.generated.BasePackageList;
+import com.jdc.reactlibrary.RNReferrerPackage;
 
 public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface {
 
@@ -75,7 +76,8 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
             new RNFirebaseFirestorePackage(),
             new RNFirebaseStoragePackage(),
             new RNGetRandomValuesPackage(),
-            new ReactVideoPackage()
+            new ReactVideoPackage(),
+            new RNReferrerPackage() 
     );
   }
 
