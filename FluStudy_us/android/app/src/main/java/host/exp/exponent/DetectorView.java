@@ -387,22 +387,24 @@ public class DetectorView extends LinearLayout implements
                                 Trace.endSection();
                                 Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
 
-                                // Local interpretation prototype
-                                Trace.beginSection("Running Process Image");
-                                final long boxStartTimeMs = SystemClock.uptimeMillis();
+                                if (iprdResult != null && iprdResult.isAccepted()) {
+                                    // Local interpretation prototype
+                                    Trace.beginSection("Running Process Image");
+                                    final long boxStartTimeMs = SystemClock.uptimeMillis();
 
-                                final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
-                                Log.i(TAG, "Phase 1 processing time: " + (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
+                                    final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
+                                    Log.i(TAG, "Phase 1 processing time: " + (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
 
-                                final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
+                                    final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
 
-                                RDTTracker.RDTResult rdtResult = rdtTracker.extractRDT(mappedRecognitions, imageBitmap);
+                                    RDTTracker.RDTResult rdtResult = rdtTracker.extractRDT(mappedRecognitions, imageBitmap);
 
-                                CaptureResult captureResult = new CaptureResult(rdtResult.testArea != null, rdtResult.rdtOutline);
+                                    CaptureResult captureResult = new CaptureResult(rdtResult.testArea != null, rdtResult.rdtOutline);
 
-                                processResult(iprdResult, captureResult, rdtResult);
+                                    processResult(iprdResult, captureResult, rdtResult);
 
-                                Trace.endSection(); // Running Process Image
+                                    Trace.endSection(); // Running Process Image
+                                }
                             } finally {
                                 analyzingFrame = false;
                             }
