@@ -32,7 +32,7 @@ export const inputs = {
     strings.surveyButton.notAtAll,
   [strings.surveyTitle.smokeTobacco]: strings.surveyButton.yes,
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.yes,
-  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA")]: strings
+  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
     .surveyButton.yes,
   [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton.liveByMyself,

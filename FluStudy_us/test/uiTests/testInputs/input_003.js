@@ -29,6 +29,9 @@ export const inputs = {
     strings.surveyButton.somewhat,
   [strings.surveyTitle.smokeTobacco]: strings.surveyButton.yes,
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.no,
+  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
+    .surveyButton.yes,
+  [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
   // [strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA")]: strings
   //   .surveyButton.yes,
   // [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.no,

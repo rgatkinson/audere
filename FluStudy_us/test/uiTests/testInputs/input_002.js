@@ -29,7 +29,10 @@ export const inputs = {
     strings.surveyButton.aLittleBit,
   [strings.surveyTitle.smokeTobacco]: strings.surveyButton.no,
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.no,
-  // [strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA")]: strings
+  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
+    .surveyButton.yes,
+  [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
+  // [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
   //   .surveyButton.no,
   // [strings.surveyTitle.spentTimeCity]: {
   //   city: "Burlington",

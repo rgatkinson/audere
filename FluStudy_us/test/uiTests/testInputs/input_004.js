@@ -29,6 +29,9 @@ export const inputs = {
     strings.surveyButton.quiteABit,
   [strings.surveyTitle.smokeTobacco]: strings.surveyButton.no,
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.yes,
+  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
+    .surveyButton.yes,
+  [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
   // [strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA")]: strings
   //   .surveyButton.no,
   // [strings.surveyTitle.spentTimeCity]: {

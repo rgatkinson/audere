@@ -14,6 +14,10 @@ export const inputs = {
   [strings.surveyTitle.howLongToSickest]: strings.surveyButton.halfDay,
   [strings.surveyTitle.antiviral]: strings.surveyButton.no,
   [strings.surveyTitle.fluShot]: strings.surveyButton.no,
+  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
+    .surveyButton.yes,
+  [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
+  [strings.surveyTitle.futureStudies]: strings.surveyButton.no,
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.noPink,
 };

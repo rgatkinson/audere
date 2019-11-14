@@ -521,7 +521,7 @@ async function verify_db_contents(
         }
       } else if (question.dbLocation === "responses") {
         const questionDb = dbRow.survey.responses[0].item.find(item =>
-          item.text.startsWith(question.name.replace("WA", ""))
+          item.text.startsWith(question.name.replace("wa", ""))
         );
         if (Array.isArray(inputs[question.name])) {
           expect(questionDb.answer).toHaveLength(inputs[question.name].length);
