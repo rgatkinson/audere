@@ -829,7 +829,7 @@
   },
   "CallForPickup": {
     "title": "Call FedEx to pickup package",
-    "desc": "Call (800) GOFEDEX ([(800) 463-3339](PHONE)) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
+    "desc": "Call [(800) GO FEDEX](PHONE:8004633339) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
     "desc2": "What are you calling about? Say \"**pickup**\"\nIs stamp on your label? Say \"**no**\"\nWhat kind of return? Say \"**FedEx Express**\"",
     "desc3": "The FedEx Express return tracking number is the 12-digit number on the return label.",
     "desc4": "Note the confirmation and pickup numbers provided after you schedule the pickup.\nYou should not be asked for a credit card number because the return postage is prepaid. If you are transferred to FedEx customer service and a credit card is requested, state that this is a FedEx Express return pickup."
