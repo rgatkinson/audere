@@ -47,6 +47,9 @@ export interface DropDownQuestion extends SurveyQuestion {
 export interface MonthQuestion extends SurveyQuestion {
     monthRange: number;
 }
+export interface DateQuestion extends SurveyQuestion {
+    minDate?: Date;
+}
 export interface MultiDropDownQuestion extends SurveyQuestion {
     placeholder: string;
     options: string[];
@@ -72,7 +75,7 @@ export declare const WorseOrDifferentFromTypicalConfig: SurveyQuestion;
 export declare const AntiviralConfig: SurveyQuestion;
 export declare const WhenFirstStartedAntiviralConfig: SurveyQuestion;
 export declare const FluShotConfig: SurveyQuestion;
-export declare const FluShotDateConfig: SurveyQuestion;
+export declare const FluShotDateConfig: DateQuestion;
 export declare const HowReceivedFluShotConfig: SurveyQuestion;
 export declare const AffectedRegularActivitiesConfig: SurveyQuestion;
 export declare const SmokeTobaccoConfig: SurveyQuestion;
