@@ -143,7 +143,9 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       this._handleConnectivityChange
     );
     this._getConnectivity();
-    this._setMarketingProperties();
+    if (Platform.OS === "android") {
+      this._setMarketingProperties();
+    }
   }
 
   componentWillUnmount() {
