@@ -53,14 +53,15 @@ export class ChillsMatchKits {
     }
 
     // UUID V4
-    const validIdentifier = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/i;
+    const validIdentifier = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}\./i;
     if (request.id == null || !validIdentifier.test(request.id)) {
       logger.error(`Invalid id in request to match barcode, ${request.id}`);
       res.sendStatus(400);
       return;
     }
 
-    const match = await this.service.matchKit(request.barcode, request.id);
+    const parts = request.id.split(".");
+    const match = await this.service.matchKit(request.barcode, parts[0]);
 
     if (match != null) {
       res.json(match);

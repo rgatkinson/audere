@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import request from "supertest";
-import uuidv1 from "uuid/v1";
 import uuidv4 from "uuid/v4";
 import { pbkdf2 } from "../../src/util/crypto";
 import { createPublicApp } from "../../src/app";
@@ -56,7 +55,7 @@ describe("Chills match kit", () => {
 
   it("should reject requests without a valid access key", async () => {
     const barcode = "123456789Z";
-    const id = uuidv4();
+    const id = `${uuidv4()}.${uuidv4()}`;
 
     await request(publicApp)
       .post("/api/chills/matchBarcode")
@@ -66,22 +65,24 @@ describe("Chills match kit", () => {
   });
 
   it("should reject invalid barcodes", async () => {
+    const id = `${uuidv4()}.${uuidv4()}`;
+
     await request(publicApp)
       .post("/api/chills/matchBarcode")
       .set("Content-Type", "application/json")
-      .send({ secret: accessKey, id: uuidv4() })
+      .send({ secret: accessKey, id })
       .expect(400);
 
     await request(publicApp)
       .post("/api/chills/matchBarcode")
       .set("Content-Type", "application/json")
-      .send({ secret: accessKey, id: uuidv4(), barcode: "barcode" })
+      .send({ secret: accessKey, id, barcode: "barcode" })
       .expect(400);
 
     await request(publicApp)
       .post("/api/chills/matchBarcode")
       .set("Content-Type", "application/json")
-      .send({ secret: accessKey, id: uuidv4(), barcode: 12345 })
+      .send({ secret: accessKey, id, barcode: 12345 })
       .expect(400);
   });
 
@@ -107,13 +108,13 @@ describe("Chills match kit", () => {
     await request(publicApp)
       .post("/api/chills/matchBarcode")
       .set("Content-Type", "application/json")
-      .send({ secret: accessKey, id: uuidv1(), barcode: 1234567890 })
+      .send({ secret: accessKey, id: uuidv4(), barcode: 1234567890 })
       .expect(400);
   });
 
   it("should match an existing barcode", async () => {
     const barcode = "123456789Z";
-    const id = uuidv4();
+    const id = `${uuidv4()}.${uuidv4()}`;
 
     await models.shippedKits.upsert({
       evidationId: "evidation1",
@@ -147,12 +148,12 @@ describe("Chills match kit", () => {
       },
     });
 
-    expect(match.identifier).toBe(id);
+    expect(match.identifier).toBe(id.split(".")[0]);
   });
 
   it("should not match a non-existent barcode", async () => {
     const barcode = "123456789Z";
-    const id = uuidv4();
+    const id = `${uuidv4()}.${uuidv4()}`;
 
     await request(publicApp)
       .post("/api/chills/matchBarcode")
