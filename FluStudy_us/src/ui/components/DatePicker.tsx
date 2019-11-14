@@ -51,8 +51,9 @@ class DatePicker extends React.Component<Props & WithNamespaces> {
           confirmBtnText={t("common:button:done")}
           cancelBtnText={t("common:button:cancel")}
           format="YYYY-MM-DD"
+          timeZoneOffsetInMinutes={-new Date().getTimezoneOffset()}
           minDate={question.minDate}
-          maxDate={new Date(Date.now())}
+          maxDate={new Date()}
           onDateChange={this._onDateChange}
           style={{ width: "100%" }}
           customStyles={{
