@@ -143,6 +143,7 @@
     "inContact": "Do you believe you were exposed to the flu in the past week?",
     "publicTransportation": "In the past week, did you take public transportation?",
     "aroundSickChildren": "In the past week, were you around sick children?",
+    "futureStudies": "Are you willing to be contacted for future studies conducted by the same researchers related to this study?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "pinkLine": "Which image below most closely matches your test strip?"
   },
@@ -718,6 +719,9 @@
   "GeneralExposure": {
     "title": "General Exposure",
     "desc": "In this section, the questions are about recent travel and contact with other people."
+  },
+  "FutureStudies": {
+    "title": "Future Studies"
   },
   "ThankYouSurvey": {
     "title": "Please wait for timer",

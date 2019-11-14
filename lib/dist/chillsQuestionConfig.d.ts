@@ -90,6 +90,7 @@ export declare const SomeoneDiagnosedConfig: SurveyQuestion;
 export declare const InContactConfig: SurveyQuestion;
 export declare const PublicTransportationConfig: SurveyQuestion;
 export declare const AroundSickChildrenConfig: SurveyQuestion;
+export declare const FutureStudiesConfig: SurveyQuestion;
 export declare const BlueLineConfig: SurveyQuestion;
 export declare const PinkWhenBlueConfig: SurveyQuestion;
 export declare const SURVEY_QUESTIONS: SurveyQuestion[];

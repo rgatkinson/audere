@@ -44,6 +44,7 @@ export const inputs = {
   [strings.surveyTitle.inContact]: strings.surveyButton.dontKnow,
   [strings.surveyTitle.publicTransportation]: strings.surveyButton.yes,
   [strings.surveyTitle.aroundSickChildren]: strings.surveyButton.no,
+  [strings.surveyTitle.futureStudies]: strings.surveyButton.yes,
   [strings.surveyTitle.blueLine]: strings.surveyButton.yes,
   [strings.surveyTitle.pinkLine]: strings.surveyButton.yesBelowBlue,
 };

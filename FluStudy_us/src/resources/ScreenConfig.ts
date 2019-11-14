@@ -18,6 +18,7 @@ import {
   FluOrColdConfig,
   FluShotConfig,
   FluShotDateConfig,
+  FutureStudiesConfig,
   HeadacheSeverityConfig,
   HouseholdTobaccoConfig,
   HowLongToSickestConfig,
@@ -650,11 +651,28 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: ContinueButton,
-        props: { next: "ThankYouSurvey" },
+        props: { next: "FutureStudies" },
       },
     ],
     key: "GeneralExposure",
     keyboardAvoidingView: true,
+  },
+  {
+    body: [
+      { tag: Title },
+      {
+        tag: Questions,
+        props: {
+          questions: [FutureStudiesConfig],
+        },
+        validate: true,
+      },
+      {
+        tag: ContinueButton,
+        props: { next: "ThankYouSurvey" },
+      },
+    ],
+    key: "FutureStudies",
   },
   {
     body: [

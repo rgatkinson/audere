@@ -762,6 +762,17 @@ export const AroundSickChildrenConfig: SurveyQuestion = {
   type: SurveyQuestionType.RadioGrid,
 };
 
+export const FutureStudiesConfig: SurveyQuestion = {
+  buttons: [
+    { key: "yes", primary: false, enabled: true },
+    { key: "no", primary: false, enabled: true },
+  ],
+  id: "FutureStudies",
+  title: "futureStudies",
+  required: true,
+  type: SurveyQuestionType.RadioGrid,
+};
+
 export const BlueLineConfig: SurveyQuestion = {
   id: "BlueLine",
   title: "blueLine",
@@ -853,6 +864,7 @@ export const SURVEY_QUESTIONS = [
   InContactConfig,
   PublicTransportationConfig,
   AroundSickChildrenConfig,
+  FutureStudiesConfig,
   BlueLineConfig,
   PinkWhenBlueConfig,
 ];

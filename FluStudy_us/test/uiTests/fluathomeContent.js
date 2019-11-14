@@ -377,7 +377,7 @@ export const content = [
     title: strings.GeneralExposure.title,
     button: {
       name: strings.common.button.continue + " ",
-      onClick: "ThankYouSurvey",
+      onClick: "FutureStudies",
     },
     key: "GeneralExposure",
     input: [
@@ -464,6 +464,23 @@ export const content = [
       },
       {
         name: strings.surveyTitle.aroundSickChildren,
+        type: "radio",
+        dbLocation: "responses",
+        options: [strings.surveyButton.yes, strings.surveyButton.no],
+      },
+    ],
+  },
+  {
+    type: "input",
+    title: strings.FutureStudies.title,
+    button: {
+      name: strings.common.button.continue + " ",
+      onClick: "ThankYouSurvey",
+    },
+    key: "FutureStudies",
+    input: [
+      {
+        name: strings.surveyTitle.futureStudies,
         type: "radio",
         dbLocation: "responses",
         options: [strings.surveyButton.yes, strings.surveyButton.no],
