@@ -210,6 +210,7 @@ class AnimatedChrome extends React.PureComponent<Props> {
                   ? chromeBgHeight
                   : NAV_BAR_HEIGHT + STATUS_BAR_HEIGHT) -
                 (isTablet ? NAV_BAR_HEIGHT : 0),
+              width: "100%",
               opacity: this.state.textFadeAnim,
             },
           ]}

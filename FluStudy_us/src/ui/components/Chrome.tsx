@@ -109,6 +109,7 @@ export default class Chrome extends React.PureComponent<Props> {
                     chromeBgHeight -
                     (isTablet ? NAV_BAR_HEIGHT : 0)
                   : screenHeight - NAV_BAR_HEIGHT - STATUS_BAR_HEIGHT,
+              width: "100%",
             },
           ]}
         >

@@ -133,7 +133,7 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
       surveyGetNextFn,
       t,
     } = this.props;
-    const barcode = data.toLowerCase();
+    const barcode = data.toUpperCase();
 
     if (!this.state.activeScan) {
       this.setState({ activeScan: true });
