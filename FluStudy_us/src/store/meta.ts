@@ -51,7 +51,7 @@ const initialState: MetaState = {
   patientAchievementInfo: {
     actualEmail: "",
     state: "",
-    zipCode: 0,
+    city: "",
   },
   enteredEmail: "",
 };
@@ -59,7 +59,7 @@ const initialState: MetaState = {
 export type PatientAchievementInfo = {
   actualEmail: string;
   state: string;
-  zipCode: number;
+  city: string;
 };
 
 export default function reducer(state = initialState, action: MetaAction) {

@@ -21,6 +21,8 @@ import DropDown from "./DropDown";
 import MultiDropDown from "./MultiDropDown";
 import { View } from "react-native";
 import {
+  ConditionalQuestionConfig,
+  DateQuestion,
   DropDownQuestion,
   MonthQuestion,
   MultiDropDownQuestion,
@@ -28,7 +30,6 @@ import {
   SurveyQuestion,
   SurveyQuestionType,
   TextQuestion,
-  ConditionalQuestionConfig,
 } from "audere-lib/chillsQuestionConfig";
 import RequiredHint from "./RequiredHint";
 
@@ -172,7 +173,12 @@ class Questions extends React.PureComponent<Props, State> {
           />
         );
       case SurveyQuestionType.DatePicker:
-        return <DatePicker highlighted={highlighted} question={config} />;
+        return (
+          <DatePicker
+            highlighted={highlighted}
+            question={config as DateQuestion}
+          />
+        );
       case SurveyQuestionType.TextInput:
         return (
           <TextInputQuestion

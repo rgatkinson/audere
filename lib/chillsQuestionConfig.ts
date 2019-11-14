@@ -65,6 +65,10 @@ export interface MonthQuestion extends SurveyQuestion {
   monthRange: number;
 }
 
+export interface DateQuestion extends SurveyQuestion {
+  minDate?: Date;
+}
+
 export interface MultiDropDownQuestion extends SurveyQuestion {
   placeholder: string;
   options: string[];
@@ -467,12 +471,13 @@ export const FluShotConfig: SurveyQuestion = {
   type: SurveyQuestionType.RadioGrid,
 };
 
-export const FluShotDateConfig: SurveyQuestion = {
+export const FluShotDateConfig: DateQuestion = {
   buttons: [],
   conditions: [
     { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
   ],
   id: "FluShotDate",
+  minDate: new Date(2019, 6, 1),
   required: true,
   title: "fluShotDate",
   type: SurveyQuestionType.DatePicker,
@@ -532,6 +537,7 @@ export const TravelOutsideStateConfig: SurveyQuestion = {
     { key: "no", primary: false, enabled: true },
   ],
   id: "TravelOutsideState",
+  required: true,
   title: "travelOutsideState",
   type: SurveyQuestionType.RadioGrid,
 };
@@ -701,6 +707,12 @@ export const ChildrenDaycarePreschoolConfig: SurveyQuestion = {
     { key: "no", primary: false, enabled: true },
   ],
   conditions: [
+    {
+      key: "selectedButtonKey",
+      id: PeopleInHouseholdConfig.id,
+      answer: "liveByMyself",
+      anythingBut: true,
+    },
     {
       key: "options",
       id: ChildrenAgeGroupsConfig.id,

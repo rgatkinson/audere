@@ -21,12 +21,13 @@ import {
 } from "../../../store";
 import { customRef } from "../CustomRef";
 import { GUTTER } from "../../styles";
-import NumberInput from "../NumberInput";
 import {
   invalidBarcodeShapeAlert,
   validBarcodeShape,
+  BARCODE_CHARS,
 } from "../../../util/barcodeVerification";
 import { maxAttempts } from "../../../resources/BarCodeConfig";
+import TextInput from "../TextInput";
 
 interface Props {
   dispatch(action: Action): void;
@@ -37,16 +38,16 @@ interface Props {
 }
 
 interface State {
-  barcode1: string | null;
-  barcode2: string | null;
+  barcode1: string;
+  barcode2: string;
 }
 
 class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   constructor(props: Props & WithNamespaces) {
     super(props);
     this.state = {
-      barcode1: !!props.kitBarcode ? props.kitBarcode.code.toLowerCase() : null,
-      barcode2: !!props.kitBarcode ? props.kitBarcode.code.toLowerCase() : null,
+      barcode1: !!props.kitBarcode ? props.kitBarcode.code.toUpperCase() : "",
+      barcode2: !!props.kitBarcode ? props.kitBarcode.code.toUpperCase() : "",
     };
   }
 
@@ -54,22 +55,30 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
     return props.kitBarcode != this.props.kitBarcode || state != this.state;
   }
 
-  confirmInput = React.createRef<NumberInput>();
-
-  _matchingBarcodes = () => {
-    return (
-      this.state.barcode1 != null &&
-      this.state.barcode2 != null &&
-      this.state.barcode1.trim() === this.state.barcode2.trim()
-    );
-  };
+  confirmInput = React.createRef<TextInput>();
 
   _onBarcodeOneChange = (barcode1: string) => {
-    this.setState({ barcode1: barcode1.toLowerCase() });
+    this.setState({
+      barcode1: barcode1.substring(0, BARCODE_CHARS),
+    });
+  };
+
+  _onBarcodeOneEndEditing = () => {
+    this.setState({
+      barcode1: this.state.barcode1.toUpperCase().trim(),
+    });
   };
 
   _onBarcodeTwoChange = (barcode2: string) => {
-    this.setState({ barcode2: barcode2.toLowerCase() });
+    this.setState({
+      barcode2: barcode2.substring(0, BARCODE_CHARS),
+    });
+  };
+
+  _onBarcodeTwoEndEditing = () => {
+    this.setState({
+      barcode2: this.state.barcode2.toUpperCase().trim(),
+    });
   };
 
   _onBarcodeOneSubmit = () => {
@@ -81,24 +90,30 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
     return (
       <Fragment>
         <View style={[styles.inputContainer, { marginBottom: GUTTER }]}>
-          <NumberInput
+          <TextInput
+            autoCapitalize="characters"
+            autoCorrect={false}
             autoFocus={navigation.isFocused()}
             placeholder={t("placeholder")}
             returnKeyType="done"
             style={styles.textInput}
             value={this.state.barcode1}
             onChangeText={this._onBarcodeOneChange}
+            onEndEditing={this._onBarcodeOneEndEditing}
             onSubmitEditing={this._onBarcodeOneSubmit}
           />
         </View>
         <View style={styles.inputContainer}>
-          <NumberInput
+          <TextInput
+            autoCapitalize="characters"
+            autoCorrect={false}
             placeholder={t("secondPlaceholder")}
             ref={this.confirmInput}
             returnKeyType="done"
             style={styles.textInput}
             value={this.state.barcode2}
             onChangeText={this._onBarcodeTwoChange}
+            onEndEditing={this._onBarcodeTwoEndEditing}
           />
         </View>
       </Fragment>
@@ -108,11 +123,11 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
   validate() {
     const { errorScreen, invalidBarcodes, t } = this.props;
     const { barcode1 } = this.state;
-    if (barcode1 == null) {
+    if (barcode1.length === 0) {
       Alert.alert("", t("barcodeRequired"), [
         { text: t("common:button:ok"), onPress: () => {} },
       ]);
-    } else if (!this._matchingBarcodes()) {
+    } else if (this.state.barcode1 !== this.state.barcode2) {
       Alert.alert("", t("dontMatch"), [
         { text: t("common:button:ok"), onPress: () => {} },
       ]);
@@ -123,7 +138,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
       this.props.dispatch(
         appendInvalidBarcode({
           sample_type: "manualEntry",
-          code: barcode1!.trim(),
+          code: barcode1,
         })
       );
       if (priorUnverifiedAttempts > maxAttempts) {
@@ -137,7 +152,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
       this.props.dispatch(
         setKitBarcode({
           sample_type: "manualEntry",
-          code: this.state.barcode1!.trim(),
+          code: this.state.barcode1,
         })
       );
       return true;

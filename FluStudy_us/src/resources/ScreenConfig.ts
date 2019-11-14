@@ -61,6 +61,7 @@ import BarcodeScanner from "../ui/components/BarcodeScanner";
 import BulletPointsComponent from "../ui/components/BulletPoint";
 import Button from "../ui/components/Button";
 import CameraPermissionContinueButton from "../ui/components/CameraPermissionContinueButton";
+import CollapsibleText from "../ui/components/CollapsibleText";
 import ContinueButton from "../ui/components/ContinueButton";
 import DidYouKnow from "../ui/components/DidYouKnow";
 import Divider from "../ui/components/Divider";
@@ -70,7 +71,6 @@ import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
 import RDTReader from "../ui/components/flu/RDTReader";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
-import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import PendingButton from "../ui/components/PendingButton";
@@ -98,6 +98,7 @@ import {
   getEmailConfirmationNextScreen,
   getEmailConfirmationTextVariables,
   getShippingTextVariables,
+  getThankYouTextVariables,
 } from "../util/patientAchievementInfo";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
 import { resetAlert } from "../util/resetAlert";
@@ -1088,33 +1089,50 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "finalthanks" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
       {
-        tag: LinkInfoBlock,
+        tag: ScreenText,
+        props: { label: "desc", textVariablesFn: getThankYouTextVariables },
+      },
+      {
+        tag: CollapsibleText,
         props: {
-          titleLabel: "treatmentTitle",
-          icons: ["drinkfluids", "getrest", "staywarm"],
-          linkLabel: "treatmentLinkLabel",
-          uri: "https://www.healthdirect.gov.au/colds-and-flu-treatments",
+          titleLabel: "Thanks:fact0:title",
+          bodyLabel: "Thanks:fact0:description",
         },
       },
       {
-        tag: LinkInfoBlock,
+        tag: CollapsibleText,
         props: {
-          titleLabel: "preventingTitle",
-          icons: ["fluvaccine", "keepclean", "washhands"],
-          linkLabel: "preventingLinkLabel",
-          uri:
-            "https://www.healthdirect.gov.au/10-tips-to-fight-the-flu-infographic",
+          titleLabel: "Thanks:fact1:title",
+          bodyLabel: "Thanks:fact1:description",
         },
       },
       {
-        tag: LinkInfoBlock,
+        tag: CollapsibleText,
         props: {
-          titleLabel: "symptomsTitle",
-          icons: ["headache", "runnynose", "fever"],
-          linkLabel: "symptomsLinkLabel",
-          uri: "https://www.healthdirect.gov.au/colds-and-flu-symptoms",
+          titleLabel: "Thanks:fact2:title",
+          bodyLabel: "Thanks:fact2:description",
+        },
+      },
+      {
+        tag: CollapsibleText,
+        props: {
+          titleLabel: "Thanks:fact3:title",
+          bodyLabel: "Thanks:fact3:description",
+        },
+      },
+      {
+        tag: CollapsibleText,
+        props: {
+          titleLabel: "Thanks:fact4:title",
+          bodyLabel: "Thanks:fact4:description",
+        },
+      },
+      {
+        tag: CollapsibleText,
+        props: {
+          titleLabel: "Thanks:fact5:title",
+          bodyLabel: "Thanks:fact5:description",
         },
       },
     ],

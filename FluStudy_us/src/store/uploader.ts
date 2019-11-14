@@ -168,6 +168,11 @@ const CONDITIONAL_QUESTIONS: ConditionalQuestion[] = [
     conditionalId: ChildrenDaycarePreschoolConfig.id,
     conditions: [
       {
+        dependsOnId: PeopleInHouseholdConfig.id,
+        includeWhen: isSelected("liveByMyself"),
+        anythingBut: true,
+      },
+      {
         dependsOnId: ChildrenAgeGroupsConfig.id,
         includeWhen: hasOption("zeroToFive"),
       },

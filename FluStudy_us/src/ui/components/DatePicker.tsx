@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import * as DatePickerComponent from "react-native-datepicker";
 import { getAnswer } from "../../util/survey";
 import { Action, updateAnswer, StoreState } from "../../store";
-import { SurveyQuestion } from "audere-lib/chillsQuestionConfig";
+import { DateQuestion } from "audere-lib/chillsQuestionConfig";
 import {
   BORDER_COLOR,
   GUTTER,
@@ -22,7 +22,7 @@ import {
 interface Props {
   date?: Date;
   highlighted?: boolean;
-  question: SurveyQuestion;
+  question: DateQuestion;
   dispatch(action: Action): void;
 }
 
@@ -40,7 +40,7 @@ class DatePicker extends React.Component<Props & WithNamespaces> {
   };
 
   render() {
-    const { date, highlighted, t } = this.props;
+    const { date, highlighted, question, t } = this.props;
 
     return (
       <View style={[styles.container, !!highlighted && HIGHLIGHT_STYLE]}>
@@ -51,6 +51,7 @@ class DatePicker extends React.Component<Props & WithNamespaces> {
           confirmBtnText={t("common:button:done")}
           cancelBtnText={t("common:button:cancel")}
           format="YYYY-MM-DD"
+          minDate={question.minDate}
           maxDate={new Date(Date.now())}
           onDateChange={this._onDateChange}
           style={{ width: "100%" }}

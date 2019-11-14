@@ -58,7 +58,7 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
     // @ts-ignore
     this._debounce = setTimeout(() => {
       this._debounce = 0;
-    }, 1000);
+    }, 400);
 
     this.props.navigation.dispatch(StackActions.pop({ n: 1 }));
   };

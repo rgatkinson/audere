@@ -27,7 +27,7 @@ export async function getBarcodeNextScreen() {
   }
 }
 
-const DEMO_BARCODE = "1111111111";
+const DEMO_BARCODE = "ID11111111";
 
 async function getPatientAchievementInfo(
   barcode: string,
@@ -35,11 +35,15 @@ async function getPatientAchievementInfo(
   demo: boolean
 ): Promise<PatientAchievementInfo> {
   if (demo && barcode === DEMO_BARCODE) {
-    return { actualEmail: "test@auderenow.org", state: "wa", zipCode: 98134 };
+    return { actualEmail: "test@auderenow.org", state: "WA", city: "Seattle" };
   } else {
     // TODO: Replace with actual call to backend once it is ready
     // return await matchKit(barcode, identifier, demo);
-    return { actualEmail: "philip@auderenow.org", state: "wa", zipCode: 98040 };
+    return {
+      actualEmail: "philip@auderenow.org",
+      state: "wa",
+      city: "Seattle",
+    };
   }
 }
 
@@ -75,6 +79,19 @@ export async function getEmailConfirmationNextScreen() {
 export async function getShippingTextVariables() {
   const state: StoreState = (await getStore()).getState();
   return {
-    state: state.meta.patientAchievementInfo.state,
+    state: state.meta.patientAchievementInfo.state.toLowerCase(),
+    city: state.meta.patientAchievementInfo.city
+      .toLowerCase()
+      .replace(" ", "-"),
+  };
+}
+
+export async function getThankYouTextVariables() {
+  const state: StoreState = (await getStore()).getState();
+  return {
+    state: state.meta.patientAchievementInfo.state.toLowerCase(),
+    city: state.meta.patientAchievementInfo.city
+      .toLowerCase()
+      .replace(" ", "+"),
   };
 }
