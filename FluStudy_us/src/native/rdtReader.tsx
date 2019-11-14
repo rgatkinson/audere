@@ -24,7 +24,6 @@ type InternalRDTCapturedArgs = {
   control: boolean;
   testA: boolean;
   testB: boolean;
-  progress?: number;
   boundary?: { x: number; y: number }[];
   viewportDimensions?: { width: number; height: number };
 };
@@ -46,7 +45,6 @@ export type RDTCapturedArgs = {
   testBLineFound: boolean;
   testStripBoundary?: { x: number; y: number }[];
   viewportDimensions?: { width: number; height: number };
-  progress?: number;
 };
 
 export type RDTCameraReadyArgs = {
@@ -90,7 +88,6 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       testBLineFound: capturedArgs.testB,
       testStripBoundary: capturedArgs.boundary,
       viewportDimensions: capturedArgs.viewportDimensions,
-      progress: capturedArgs.progress,
     });
   };
 
