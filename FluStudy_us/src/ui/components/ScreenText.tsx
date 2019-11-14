@@ -22,6 +22,7 @@ interface Props {
   conditionalTextFn?(): string | null;
   isDemo: boolean;
   demoOnly?: boolean;
+  remoteConfigValues?: { [key: string]: string };
   textVariablesFn?(): any;
 }
 
@@ -81,7 +82,10 @@ class ScreenText extends React.Component<Props & WithNamespaces, State> {
 
     const allTheLabels = label instanceof Array ? label : [label];
     const allTheLabelText = allTheLabels.map(l =>
-      t(getScopedLabel(l, namespace), this.state.textVariables)
+      t(getScopedLabel(l, namespace), {
+        ...this.props.remoteConfigValues,
+        ...this.state.textVariables,
+      })
     );
 
     return (

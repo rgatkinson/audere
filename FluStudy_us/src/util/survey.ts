@@ -14,7 +14,6 @@ export function getAnswerType(questionType: string) {
     case "monthPicker":
       return "dateInput";
     case "zipCodeInput":
-      return "numberInput";
     case "textInput":
       return "textInput";
     case "text":

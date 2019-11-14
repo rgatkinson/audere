@@ -16,7 +16,7 @@ import NumberInput from "./NumberInput";
 interface Props {
   maxDigits?: number;
   minDigits?: number;
-  answer?: number;
+  answer?: string;
   highlighted?: boolean;
   question: TextQuestion;
   dispatch(action: Action): void;
@@ -32,14 +32,7 @@ class NumberInputQuestion extends React.Component<
 > {
   constructor(props: Props & WithNamespaces) {
     super(props);
-    this.state = {
-      text:
-        this.props.answer !== undefined
-          ? this.props.minDigits
-            ? this.props.answer.toString().padStart(this.props.minDigits, "0")
-            : this.props.answer.toString()
-          : undefined,
-    };
+    this.state = { text: this.props.answer };
   }
 
   _onChangeText = (text: string) => {
@@ -47,18 +40,14 @@ class NumberInputQuestion extends React.Component<
   };
 
   _onEndEditing = (e: any) => {
+    const answer = !!this.state.text
+      ? this.props.minDigits
+        ? this.state.text.padStart(this.props.minDigits, "0")
+        : this.state.text
+      : undefined;
+    this.setState({ text: answer });
     this.props.dispatch(
-      updateAnswer(
-        {
-          numberInput:
-            !!this.state.text &&
-            (!this.props.minDigits ||
-              this.state.text.length >= this.props.minDigits)
-              ? +this.state.text
-              : undefined,
-        },
-        this.props.question
-      )
+      updateAnswer({ textInput: answer }, this.props.question)
     );
   };
 
@@ -69,7 +58,7 @@ class NumberInputQuestion extends React.Component<
         <NumberInput
           placeholder={t("surveyPlaceholder:" + question.placeholder)}
           returnKeyType="done"
-          value={(this.state.text || "").toString()}
+          value={this.state.text || ""}
           onChangeText={this._onChangeText}
           onEndEditing={this._onEndEditing}
           maxDigits={maxDigits}

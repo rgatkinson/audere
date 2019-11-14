@@ -35,6 +35,15 @@ export default class NumberInput extends React.PureComponent<Props, State> {
     };
   }
 
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (props.value !== state.text) {
+      return {
+        text: props.value,
+      };
+    }
+    return null;
+  }
+
   onChangeText = (text: string) => {
     const numbers = "0123456789";
     let newText = text.replace(/[^0-9]/g, "");
