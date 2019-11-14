@@ -36,6 +36,9 @@
       "placeholder": "Enter your email",
       "emailRequired": "Please enter your email to continue.",
       "emailInvalid": "That doesn't appear to be a valid email address. Please try again."
+    },
+    "requiredHint": {
+      "desc": "Required question"
     }
   },
   "datePicker": {
@@ -695,24 +698,19 @@
     "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\nIn the meantime, please answer some questions so we can better understand how this illness has affected you."
   },
   "WhatSymptoms": {
-    "title": "Symptom Survey",
-    "desc": "* = Required question"
+    "title": "Symptom Survey"
   },
   "SymptomsInfo": {
-    "title": "Symptom Severity",
-    "desc": "* = Required question"
+    "title": "Symptom Severity"
   },
   "IllnessBeginnings": {
-    "title": "Illness beginnings",
-    "desc": "* = Required question"
+    "title": "Illness beginnings"
   },
   "AntiviralMedication": {
-    "title": "Antiviral medication",
-    "desc": "* = Required question"
+    "title": "Antiviral medication"
   },
   "InfluenzaVaccination": {
-    "title": "Influenza vaccination",
-    "desc": "* = Required question"
+    "title": "Influenza vaccination"
   },
   "GeneralHealth": {
     "title": "General Health"

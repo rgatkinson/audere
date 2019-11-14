@@ -19,6 +19,7 @@ import NumberInputQuestion from "./NumberInputQuestion";
 import TextInputQuestion from "./TextInputQuestion";
 import DropDown from "./DropDown";
 import MultiDropDown from "./MultiDropDown";
+import { View } from "react-native";
 import {
   DropDownQuestion,
   MonthQuestion,
@@ -29,6 +30,7 @@ import {
   TextQuestion,
   ConditionalQuestionConfig,
 } from "audere-lib/chillsQuestionConfig";
+import RequiredHint from "./RequiredHint";
 
 interface Props {
   answers: Map<string, any>;
@@ -207,22 +209,27 @@ class Questions extends React.PureComponent<Props, State> {
   };
 
   render() {
-    return this.props.questions.map(config => {
-      if (this._evaluateConditional(config)) {
-        const ref = this._requiredQuestions.get(config.id);
-        return (
-          <ScrollIntoView onMount={false} ref={ref} key={config.id}>
-            {!!config.title && (
-              <QuestionText
-                question={config}
-                textVariablesFn={this.props.textVariablesFn}
-              />
-            )}
-            {this._renderQuestion(config)}
-          </ScrollIntoView>
-        );
-      }
-    });
+    return (
+      <View>
+        {this._requiredQuestions.size > 0 && <RequiredHint />}
+        {this.props.questions.map(config => {
+          if (this._evaluateConditional(config)) {
+            const ref = this._requiredQuestions.get(config.id);
+            return (
+              <ScrollIntoView onMount={false} ref={ref} key={config.id}>
+                {!!config.title && (
+                  <QuestionText
+                    question={config}
+                    textVariablesFn={this.props.textVariablesFn}
+                  />
+                )}
+                {this._renderQuestion(config)}
+              </ScrollIntoView>
+            );
+          }
+        })}
+      </View>
+    );
   }
 }
 

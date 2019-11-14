@@ -513,7 +513,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
       { tag: Divider },
       {
         tag: Questions,
@@ -530,7 +529,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
       { tag: Divider },
       {
         tag: Questions,
@@ -563,7 +561,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
       {
         tag: Questions,
         props: {
@@ -586,7 +583,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
       {
         tag: Questions,
         props: {
@@ -604,7 +600,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { center: true, label: "desc" } },
       {
         tag: Questions,
         props: {
