@@ -108,14 +108,14 @@
     "description": "Copyright © 2019 Audere.\nAll rights reserved."
   },
   "ContactSupport": {
-    "title": "Test & study support",
-    "description": "Contact us with study questions or problems with the test procedure, kit contents, or the flu@home app.",
+    "title": "Contact Support",
+    "description": "Contact us with study questions or problems with the test procedure, kit contents, or the flu@home app. The email address and phone number will be monitored for 6 months after study completion.",
     "emailSupport": "EMAIL SUPPORT",
-    "callSupport": "Call Support: [(415) 417-1905](PHONE)"
+    "callSupport": "Call (415) 417-1905"
   },
   "ReportComplaint": {
-    "title": "Report a complaint",
-    "description": "**What if I have a question, complaint, or any concerns?**\n\nFor any questions about the study, your Fitbit, or the flu@home app and test kit, contact the Achievement Studies Team at [study+homekit2020@myachievement.com](EMAIL) or [(415) 417-1905](PHONE). The email address and phone number will be monitored for 6 months after study completion.\n\nFor questions about your rights as a research participant or for questions, concerns, or complaints about the research, please contact Western Institutional Review Board® (WIRB®). WIRB is a group of people who independently review research.\n\n**Address:**\n1019 39th Avenue SE Suite 120,\nPuyallup, Washington 98374-2115\n\n**Phone number:**\n[(800) 562-4789](PHONE) or\n[(360) 252-2500](PHONE)\n\n**Email address:**\n[help@wirb.com](EMAIL)"
+    "title": "Report a Complaint",
+    "description": "**What if I have a question, complaint, or any concerns?**\n\nFor any questions about the study, your Fitbit, or the flu@home app and test kit, [contact support](CONTACTSUPPORT).\n\nFor questions about your rights as a research participant or for questions, concerns, or complaints about the research, please contact Western Institutional Review Board® (WIRB®). WIRB is a group of people who independently review research.\n\n**Address:**\n1019 39th Avenue SE Suite 120,\nPuyallup, Washington 98374-2115\n\n**Phone number:**\n[(800) 562-4789](PHONE) or\n[(360) 252-2500](PHONE)\n\n**Email address:**\n[help@wirb.com](EMAIL)"
   },
   "surveyTitle": {
     "spentTimeCity": "Where did you spend the majority of your time this past week?",

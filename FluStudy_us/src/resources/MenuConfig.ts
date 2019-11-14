@@ -10,7 +10,7 @@ import ScreenText from "../ui/components/ScreenText";
 import CollapsibleText from "../ui/components/CollapsibleText";
 import Title from "../ui/components/Title";
 import { PRIMARY_COLOR } from "../ui/styles";
-import { testSupport } from "./LinkConfig";
+import { testSupport, callSupport } from "./LinkConfig";
 import Button from "../ui/components/Button";
 import { AppEvents } from "../util/tracker";
 
@@ -67,7 +67,6 @@ function getFAQComponents(key: string): Component[] {
 export const MenuScreens: ScreenConfig[] = [
   menuScreen("Funding"),
   menuScreen("GeneralQuestions", false, getFAQComponents("GeneralQuestions")),
-  menuScreen("ReportComplaint"),
   menuScreen("ContactSupport", true, [
     {
       tag: Button,
@@ -85,10 +84,22 @@ export const MenuScreens: ScreenConfig[] = [
       },
     },
     {
-      tag: ScreenText,
-      props: { label: "callSupport" },
+      tag: Button,
+      props: {
+        enabled: true,
+        primary: false,
+        label: "callSupport",
+        onPress: callSupport,
+        style: {
+          borderWidth: 2,
+          borderColor: PRIMARY_COLOR,
+          alignSelf: "center",
+        },
+        textStyle: { color: PRIMARY_COLOR },
+      },
     },
   ]),
+  menuScreen("ReportComplaint"),
   menuScreen("Version", false, [
     {
       tag: ScreenText,
