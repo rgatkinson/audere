@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
-  COUNTRY_MULTIDROPDOWN_DATA,
+  FOREIGN_COUNTRY_MULTIDROPDOWN_DATA,
   STATE_DROPDOWN_DATA,
 } from "./chillsQuestionData";
 
@@ -663,7 +663,7 @@ export const WhichCountriesOutsideUSConfig: MultiDropDownQuestion = {
     },
   ],
   id: "WhichCountriesOutsideUS",
-  options: COUNTRY_MULTIDROPDOWN_DATA,
+  options: FOREIGN_COUNTRY_MULTIDROPDOWN_DATA,
   placeholder: "selectCountries",
   title: "whichCountriesOutsideUS",
   type: SurveyQuestionType.MultiDropdown,

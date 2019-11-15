@@ -60,7 +60,7 @@ export const STATE_DROPDOWN_DATA = [
   { key: "VI", primary: false, enabled: true }, // U.S. Virgin Islands
 ];
 
-export const COUNTRY_MULTIDROPDOWN_DATA = [
+export const FOREIGN_COUNTRY_MULTIDROPDOWN_DATA = [
   "AF", // Afghanistan
   "AX", // Åland Islands
   "AL", // Albania
@@ -296,7 +296,6 @@ export const COUNTRY_MULTIDROPDOWN_DATA = [
   "UA", // Ukraine
   "AE", // United Arab Emirates
   "GB", // United Kingdom of Great Britain and Northern Ireland
-  "US", // United States of America
   "UM", // United States Minor Outlying Islands
   "UY", // Uruguay
   "UZ", // Uzbekistan
