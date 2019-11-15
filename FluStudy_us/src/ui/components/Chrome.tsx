@@ -5,6 +5,7 @@
 
 import React from "react";
 import {
+  BackHandler,
   Dimensions,
   Image,
   ImageBackground,
@@ -14,6 +15,7 @@ import {
 } from "react-native";
 import { NavigationScreenProp } from "react-navigation";
 import { Action } from "redux";
+import { connect } from "react-redux";
 import {
   GUTTER,
   IMAGE_WIDTH_SQUARE,
@@ -29,6 +31,7 @@ import NavigationBar from "./NavigationBar";
 
 interface Props {
   children?: any;
+  dispatch(action: Action): void;
   hasBeenOpened?: boolean;
   hideBackButton?: boolean;
   menuItem?: boolean;
@@ -41,7 +44,52 @@ interface Props {
   showBackgroundOnly?: boolean;
 }
 
-export default class Chrome extends React.PureComponent<Props> {
+class Chrome extends React.PureComponent<Props> {
+  _willFocus: any;
+  _willBlur: any;
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this._willFocus = navigation.addListener(
+      "willFocus",
+      this._handleWillFocus
+    );
+    this._willBlur = navigation.addListener("willBlur", this._handleWillBlur);
+
+    // We need to manually call this here in case the component is being instantiated
+    // on first run of the app, or on StackActions.replace. In other words, if the
+    // screen that it's a part of isn't being pushed on to the nav stack.
+    this._handleWillFocus();
+  }
+
+  componentWillUnmount() {
+    this._handleWillBlur();
+    this._willFocus.remove();
+    this._willBlur.remove();
+  }
+
+  _handleWillFocus = () => {
+    BackHandler.addEventListener(
+      "hardwareBackPress",
+      this._handleHardwareBackPress
+    );
+  };
+
+  _handleWillBlur = () => {
+    BackHandler.removeEventListener(
+      "hardwareBackPress",
+      this._handleHardwareBackPress
+    );
+  };
+
+  _handleHardwareBackPress = (): boolean => {
+    return (
+      this.props.navigation.isFocused() &&
+      (!!this.props.onBack &&
+        !this.props.onBack(this.props.navigation, this.props.dispatch))
+    );
+  };
+
   render() {
     const {
       children,
@@ -119,6 +167,8 @@ export default class Chrome extends React.PureComponent<Props> {
     );
   }
 }
+
+export default connect()(Chrome);
 
 const styles = StyleSheet.create({
   alignBottom: {
