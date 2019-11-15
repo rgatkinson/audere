@@ -47,7 +47,6 @@ import {
   WorseOrDifferentFromTypicalConfig,
 } from "audere-lib/chillsQuestionConfig";
 import { Platform } from "react-native";
-import DeviceInfo from "react-native-device-info";
 import {
   setHasBeenOpened,
   setOneMinuteStartTime,
@@ -67,7 +66,6 @@ import EmailEntry from "../ui/components/EmailEntry";
 import AndroidRDTReader from "../ui/components/flu/AndroidRDTReader";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
-import RDTReader from "../ui/components/flu/RDTReader";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
 import LinkInfoBlock from "../ui/components/LinkInfoBlock";
 import Links from "../ui/components/Links";
@@ -106,7 +104,6 @@ import { getSymptomsNextScreen } from "../util/symptomsResults";
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
 const TEST_STRIP_MS = 10 * MINUTE_MS;
-const CAN_USE_RDT = !DeviceInfo.isEmulator();
 
 export const Screens: ScreenConfig[] = [
   {
@@ -764,14 +761,6 @@ export const Screens: ScreenConfig[] = [
         tag: MainImage,
         props: { uri: "scanthestrip", imageStyle: { marginTop: 0 } },
       },
-      {
-        tag: ScreenText,
-        props: {
-          label: "subinstruction",
-          style: { fontSize: SMALL_TEXT },
-          center: true,
-        },
-      },
       { tag: Divider },
       {
         tag: BulletPointsComponent,
@@ -790,11 +779,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: CameraPermissionContinueButton,
         props: {
-          grantedNext: CAN_USE_RDT
-            ? Platform.OS === "android"
-              ? "AndroidRDTReader"
-              : "RDTReader"
-            : "TestStripCamera",
+          grantedNext: "AndroidRDTReader",
           deniedNext: "CameraSettings",
         },
       },
@@ -805,12 +790,42 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "scanthestrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      { tag: Divider },
       {
         tag: BulletPointsComponent,
-        props: { label: "instructions" },
+        props: {
+          num: 1,
+          label: "instructions",
+          textStyle: { fontWeight: "bold" },
+        },
+      },
+      {
+        tag: MainImage,
+        props: { uri: "scanthestrip", imageStyle: { marginTop: 0 } },
+      },
+      { tag: Divider },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          num: 2,
+          label: "instructions2",
+          textStyle: { fontWeight: "bold" },
+        },
+      },
+      {
+        tag: MainImage,
+        props: { uri: "holdphone", imageStyle: { marginTop: 0 } },
+      },
+      { tag: Divider },
+      {
+        tag: BulletPointsComponent,
+        props: {
+          num: 3,
+          label: "instructions3",
+          textStyle: { fontWeight: "bold" },
+        },
       },
       {
         tag: CameraPermissionContinueButton,
@@ -822,19 +837,6 @@ export const Screens: ScreenConfig[] = [
     ],
     automationNext: "TestStripConfirmation",
     key: "NonRDTInstructions",
-  },
-  {
-    body: [
-      {
-        tag: RDTReader,
-        props: { next: "TestStripConfirmation", fallback: "TestStripCamera" },
-      },
-    ],
-    chromeProps: {
-      disableBounce: true,
-    },
-    backgroundColor: "black",
-    key: "RDTReader",
   },
   {
     body: [
@@ -857,6 +859,7 @@ export const Screens: ScreenConfig[] = [
       },
     ],
     chromeProps: {
+      hideChrome: true,
       disableBounce: true,
     },
     backgroundColor: "black",

@@ -741,14 +741,15 @@
     "title": "Scan your test strip",
     "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap ‘Continue’ when ready.",
     "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
-    "subinstruction": "For best results, lay the strip with arrows pointing down.",
     "instructions2": "Hold your device flat and directly above your test strip.",
     "desc2": "Please note: If the test strip doesn't scan within {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo of it using the app."
   },
   "NonRDTInstructions": {
     "title": "Take a photo of test strip",
     "desc": "Next, we'd like you to take a photo of your test strip using your device camera. The app will access your device camera for you.",
-    "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip.\nCenter the test strip within the viewfinder, then tap the round button to take a photo."
+    "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
+    "instructions2": "Hold your device flat and directly above your test strip.",
+    "instructions3": "Tap the round button on the screen to take a photo."
   },
   "RDTReader": {
     "flash": "FLASH: ",
