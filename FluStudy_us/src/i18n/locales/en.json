@@ -699,10 +699,10 @@
     "desc": "The arrows on the test strip should be **pointing down** as you lower it into the tube. Make sure the strip is touching the liquid in the bottom.\nLeave the test strip in the tube. It needs to be there for at least 10 minutes. We will let you know when to take it out.\nIn the meantime, please answer some questions so we can better understand how this illness has affected you."
   },
   "WhatSymptoms": {
-    "title": "Symptom Survey"
+    "title": "Symptom survey"
   },
   "SymptomsInfo": {
-    "title": "Symptom Severity"
+    "title": "Symptom severity"
   },
   "IllnessBeginnings": {
     "title": "Illness beginnings"
@@ -714,14 +714,14 @@
     "title": "Influenza vaccination"
   },
   "GeneralHealth": {
-    "title": "General Health"
+    "title": "General health"
   },
   "GeneralExposure": {
-    "title": "General Exposure",
+    "title": "General exposure",
     "desc": "In this section, the questions are about recent travel and contact with other people."
   },
   "FutureStudies": {
-    "title": "Future Studies"
+    "title": "Future studies"
   },
   "ThankYouSurvey": {
     "title": "Please wait for timer",

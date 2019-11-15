@@ -75,6 +75,7 @@ import Links from "../ui/components/Links";
 import MainImage from "../ui/components/MainImage";
 import PendingButton from "../ui/components/PendingButton";
 import Questions from "../ui/components/Questions";
+import RequiredHint from "../ui/components/RequiredHint";
 import { ScreenConfig } from "../ui/components/Screen";
 import ScreenText from "../ui/components/ScreenText";
 import SelectableComponent from "../ui/components/SelectableComponent";
@@ -498,6 +499,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
+      { tag: RequiredHint },
       { tag: Divider },
       {
         tag: Questions,
@@ -546,6 +548,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
+      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -568,6 +571,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
+      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -585,6 +589,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
+      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -606,6 +611,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
+      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -628,6 +634,7 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -661,6 +668,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
+      { tag: Divider },
       {
         tag: Questions,
         props: {
