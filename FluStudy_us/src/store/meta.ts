@@ -49,17 +49,21 @@ const initialState: MetaState = {
   shownRDTFailWarning: false,
   scheduledSurveyNotif: false,
   patientAchievementInfo: {
-    actualEmail: "",
-    state: "",
     city: "",
+    email: "",
+    emailHash: "",
+    emailSalt: "",
+    state: "",
   },
   enteredEmail: "",
 };
 
 export type PatientAchievementInfo = {
-  actualEmail: string;
-  state: string;
   city: string;
+  email: string;
+  emailHash: string;
+  emailSalt: string;
+  state: string;
 };
 
 export default function reducer(state = initialState, action: MetaAction) {

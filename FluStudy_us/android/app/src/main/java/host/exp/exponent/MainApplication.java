@@ -32,6 +32,7 @@ import org.linusu.RNGetRandomValuesPackage;
 import expo.loaders.provider.interfaces.AppLoaderPackagesProviderInterface;
 import host.exp.exponent.generated.BasePackageList;
 import com.jdc.reactlibrary.RNReferrerPackage;
+import com.tectiv3.aes.RCTAesPackage;
 
 public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface {
 
@@ -77,7 +78,8 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
             new RNFirebaseStoragePackage(),
             new RNGetRandomValuesPackage(),
             new ReactVideoPackage(),
-            new RNReferrerPackage() 
+            new RNReferrerPackage(),
+            new RCTAesPackage()
     );
   }
 

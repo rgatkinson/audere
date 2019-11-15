@@ -20,6 +20,7 @@
 		502B9E07237B93950041C7D5 /* howthishelps@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9E04237B93950041C7D5 /* howthishelps@3x.png */; };
 		502B9E08237B93950041C7D5 /* howthishelps.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9E05237B93950041C7D5 /* howthishelps.png */; };
 		502B9E09237B93950041C7D5 /* howthishelps@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 502B9E06237B93950041C7D5 /* howthishelps@2x.png */; };
+		502B9E4B237F2BCF0041C7D5 /* libRCTAes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 502B9E4A237F2BA20041C7D5 /* libRCTAes.a */; };
 		505A59832358F23A00A8505F /* bullet@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 505A597D2358F23900A8505F /* bullet@2x.png */; };
 		505A59842358F23A00A8505F /* bullet_rev@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 505A597E2358F23A00A8505F /* bullet_rev@2x.png */; };
 		505A59852358F23A00A8505F /* bullet_rev@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 505A597F2358F23A00A8505F /* bullet_rev@3x.png */; };
@@ -137,6 +138,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		502B9E49237F2BA20041C7D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 502B9E3A237F2B990041C7D5 /* RCTAes.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 32D980DD1BE9F11C00FA27E5;
+			remoteInfo = RCTAes;
+		};
 		EA054780220D289A00AC77FF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */;
@@ -202,6 +210,7 @@
 		502B9E04237B93950041C7D5 /* howthishelps@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "howthishelps@3x.png"; path = "../../../assets/images/howthishelps@3x.png"; sourceTree = "<group>"; };
 		502B9E05237B93950041C7D5 /* howthishelps.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = howthishelps.png; path = ../../../assets/images/howthishelps.png; sourceTree = "<group>"; };
 		502B9E06237B93950041C7D5 /* howthishelps@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "howthishelps@2x.png"; path = "../../../assets/images/howthishelps@2x.png"; sourceTree = "<group>"; };
+		502B9E3A237F2B990041C7D5 /* RCTAes.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAes.xcodeproj; path = "../../node_modules/react-native-aes-crypto/ios/RCTAes.xcodeproj"; sourceTree = "<group>"; };
 		505A597D2358F23900A8505F /* bullet@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bullet@2x.png"; path = "../../../assets/images/bullet@2x.png"; sourceTree = "<group>"; };
 		505A597E2358F23A00A8505F /* bullet_rev@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bullet_rev@2x.png"; path = "../../../assets/images/bullet_rev@2x.png"; sourceTree = "<group>"; };
 		505A597F2358F23A00A8505F /* bullet_rev@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bullet_rev@3x.png"; path = "../../../assets/images/bullet_rev@3x.png"; sourceTree = "<group>"; };
@@ -334,6 +343,7 @@
 				EBB8117C1BFA0514F79CAF74 /* libPods-fluathome.a in Frameworks */,
 				EA054784220D28B800AC77FF /* libRCTPushNotification.a in Frameworks */,
 				F08F61EC222DD19F008CCF6A /* libRNDeviceInfo.a in Frameworks */,
+				502B9E4B237F2BCF0041C7D5 /* libRCTAes.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -360,6 +370,14 @@
 				21F42D63228A3FFB0082B8DA /* ImageQualityViewController.mm */,
 			);
 			path = RDTReader;
+			sourceTree = "<group>";
+		};
+		502B9E46237F2BA20041C7D5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				502B9E4A237F2BA20041C7D5 /* libRCTAes.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		5B29BC350A332C58878A9F13 /* Pods */ = {
@@ -537,6 +555,7 @@
 		EA05477A220D284100AC77FF /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				502B9E3A237F2B990041C7D5 /* RCTAes.xcodeproj */,
 				F08F62402230A8A8008CCF6A /* SMXCrashlytics.xcodeproj */,
 				F08F61E0222DD184008CCF6A /* RNDeviceInfo.xcodeproj */,
 				EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */,
@@ -644,6 +663,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 502B9E46237F2BA20041C7D5 /* Products */;
+					ProjectRef = 502B9E3A237F2B990041C7D5 /* RCTAes.xcodeproj */;
+				},
+				{
 					ProductGroup = EA05477C220D289A00AC77FF /* Products */;
 					ProjectRef = EA05477B220D289A00AC77FF /* RCTPushNotification.xcodeproj */;
 				},
@@ -664,6 +687,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		502B9E4A237F2BA20041C7D5 /* libRCTAes.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTAes.a;
+			remoteRef = 502B9E49237F2BA20041C7D5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		EA054781220D289A00AC77FF /* libRCTPushNotification.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;

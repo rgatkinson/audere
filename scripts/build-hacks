@@ -9,6 +9,7 @@ REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
 function do_FluStudy_hacks() {
   update_PushNotificationIOS "$1"
   update_RNDeviceInfo "$1"
+  update_RCTAesCrypto "$1"
   maybe_create_ExpoBuildConstants "$1"
   fix_ExpoGlCpp_android "$1"
   download_android_openCVLibrary "$1"
@@ -40,6 +41,19 @@ function update_RNDeviceInfo() {
   				);'
   FILEBAK="$DEVICEINFO_FILE.bak"
   perl -0777 -i.bak -pe "s/$match/$replace/gs" $DEVICEINFO_FILE && rm $FILEBAK
+}
+
+function update_RCTAesCrypto() {
+  AESCRYPTO_FILE="$REPO_ROOT_DIR/$1/node_modules/react-native-aes-crypto/ios/RCTAes.xcodeproj/project.pbxproj"
+  if [ -f $AESCRYPTO_FILE ]; then
+    echo "Updating RCTAes build search paths"
+    match='HEADER_SEARCH_PATHS = .+?;'
+    replace='HEADER_SEARCH_PATHS = (\
+              "\$(SRCROOT)\/..\/..\/..\/ios\/Pods\/Headers\/Public\/React\/**",\
+            );'
+    FILEBAK="$AESCRYPTO_FILE.bak"
+    perl -0777 -i.bak -pe "s/$match/$replace/gs" $AESCRYPTO_FILE && rm $FILEBAK
+  fi
 }
 
 # Workaround for https://forums.expo.io/t/dealing-with-version-control-git-and-detached-expo-project/1233

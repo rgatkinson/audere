@@ -265,6 +265,10 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     const currentScreen = this.props.activeRouteName;
     const nextScreen = getActiveRouteName(newState);
 
+    if (!this.props.csruid) {
+      this.initializeCSRUID();
+    }
+
     if (nextScreen != null && nextScreen !== currentScreen) {
       this.props.dispatch(setActiveRouteName(nextScreen));
       this.props.dispatch(appendEvent(EventInfoKind.AppNav, nextScreen));

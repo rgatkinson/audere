@@ -240,6 +240,7 @@ dependencies {
     ]
   ])
   implementation project(path: ':openCVLibrary341-contrib')
+  implementation project(':react-native-aes-crypto')
 }
 
 // This has to be down here for some reason
