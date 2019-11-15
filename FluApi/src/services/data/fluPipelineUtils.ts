@@ -59,9 +59,29 @@ export function namedSampleColumns(): string[] {
         (${selectIndexOfKeyValue(
           "survey->'samples'",
           "sample_type",
+          "org.iso.Code39"
+        )})::text
+      )->>'code' as samples_code39
+    `,
+    `
+      jsonb_extract_path(
+        survey->'samples',
+        (${selectIndexOfKeyValue(
+          "survey->'samples'",
+          "sample_type",
           "1"
         )})::text
       )->>'code' as samples_1
+    `,
+    `
+      jsonb_extract_path(
+        survey->'samples',
+        (${selectIndexOfKeyValue(
+          "survey->'samples'",
+          "sample_type",
+          "2"
+        )})::text
+      )->>'code' as samples_2
     `,
     `
       jsonb_extract_path(
@@ -103,7 +123,7 @@ export function sampleColumns(): string[] {
     "samples_photoguid",
     "samples_rdtreaderphotoguid",
     "samples_rdtreaderhcphotoguid",
-    `coalesce(samples_code128, samples_1, samples_manualentry) as samples_barcode`,
+    `coalesce(samples_code128, samples_code39, samples_1, samples_2, samples_manualentry) as samples_barcode`,
     `coalesce(samples_rdtreaderphotoguid, samples_photoguid) as samples_photo`,
   ];
 }
