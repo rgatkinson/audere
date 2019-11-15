@@ -479,6 +479,8 @@ public class DetectorView extends LinearLayout implements
                     stillCaptureInProgress = true;
                     cameraController.captureStill();
                 }
+            } else {
+                filterResult = imageFilter.validateImage(imageBitmap, false);
             }
 
             detectorListener.onRDTDetected(iprdResult, captureResult, null, filterResult);

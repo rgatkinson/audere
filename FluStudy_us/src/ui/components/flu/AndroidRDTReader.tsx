@@ -101,8 +101,6 @@ interface FeedbackInstructionRequest {
 }
 
 const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
-const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
-const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const PREDICATE_DURATION_LONG = 3000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
@@ -111,11 +109,19 @@ const RDT_ASPECT_RATIO = 5.0 / 87;
 const INSTRUCTION_HEIGHT_PCT = 0.25;
 const RDT_HEIGHT_PCT = 0.65;
 const BOTTOM_HEIGHT_PCT = 1 - INSTRUCTION_HEIGHT_PCT - RDT_HEIGHT_PCT;
+const RDT_BUFFER = 128;
 
 function debug(s: string) {
   if (DEBUG_RDT_READER_UX) {
     console.log(`RDT: ${s}`);
   }
+}
+
+enum SizeResult {
+  UNKNOWN,
+  TOO_SMALL,
+  TOO_BIG,
+  OK,
 }
 
 interface State {
@@ -127,6 +133,7 @@ interface State {
   appState: string;
   supportsTorchMode: boolean;
   frameImageScale: number;
+  showFlashToggle: boolean;
   stripFound: boolean;
   boundary?: { x: number; y: number }[];
   viewport?: { height: number; width: number };
@@ -143,6 +150,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     supportsTorchMode: false,
     frameImageScale: 1,
     stripFound: false,
+    showFlashToggle: false,
   };
 
   _didFocus: any;
@@ -157,37 +165,62 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   _rdtRect: any = null;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
-    exposureFlash: {
-      predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected &&
-        readerResult.exposureResult === RDTReaderExposureResult.UNDER_EXPOSED,
-      duration: PREDICATE_DURATION_LONG,
-      action: () =>
-        this.setState({
-          flashEnabled: true,
-          flashEnabledAutomatically: true,
-        }),
-      cooldown: Infinity,
-    },
     underExposed: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.UNDER_EXPOSED,
-      duration: PREDICATE_DURATION_NORMAL,
-      action: () =>
-        this._addInstructionRequest("exposure", "underExposed", "underExposed"),
+      duration: PREDICATE_DURATION_LONG,
+      action: () => {
+        this.setState({ showFlashToggle: true });
+        this._addInstructionRequest("exposure", "underExposed", "underExposed");
+      },
       inaction: () =>
         this._removeInstructionRequest("exposure", "underExposed"),
       cooldown: 0,
     },
     overExposed: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
       duration: PREDICATE_DURATION_NORMAL,
       action: () =>
         this._addInstructionRequest("exposure", "overExposed", "overExposed"),
       inaction: () => this._removeInstructionRequest("exposure", "overExposed"),
+      cooldown: 0,
+    },
+    overExposedWithFlash: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED &&
+        this.state.flashEnabled,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest(
+          "exposure",
+          "overExposedWithFlash",
+          "overExposedWithFlash"
+        ),
+      inaction: () =>
+        this._removeInstructionRequest("exposure", "overExposedWithFlash"),
+      cooldown: 0,
+    },
+    tooSmall: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        this._getSizeResult(
+          readerResult.testStripBoundary,
+          readerResult.viewportDimensions
+        ) == SizeResult.TOO_SMALL,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () => this._addInstructionRequest("size", "tooSmall", "tooSmall"),
+      inaction: () => this._removeInstructionRequest("size", "tooSmall"),
+      cooldown: 0,
+    },
+    tooBig: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        this._getSizeResult(
+          readerResult.testStripBoundary,
+          readerResult.viewportDimensions
+        ) == SizeResult.TOO_BIG,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () => this._addInstructionRequest("size", "tooBig", "tooBig"),
+      inaction: () => this._removeInstructionRequest("size", "tooBig"),
       cooldown: 0,
     },
     holdSteady: {
@@ -332,14 +365,14 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
   componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isFocused && nextProps.isFocused) {
-      this.setState({ spinner: true });
+      this.setState({ spinner: true, flashEnabled: false });
     }
   }
 
   _cameraReady = (args: RDTCameraReadyArgs) => {
     this.setState({
       spinner: false,
-      // supportsTorchMode: args.supportsTorchMode,
+      supportsTorchMode: args.supportsTorchMode,
     });
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
@@ -595,6 +628,59 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
+  _getCurrentRdtPosition = (boundary: { x: number; y: number }[]) => {
+    const upsideDown = boundary[0].y > boundary[3].y;
+
+    return {
+      left: upsideDown ? boundary[1].x : boundary[0].x,
+      top: upsideDown ? boundary[3].y : boundary[0].y,
+      right: upsideDown ? boundary[0].x : boundary[1].x,
+      bottom: upsideDown ? boundary[0].y : boundary[3].y,
+    };
+  };
+
+  _getSizeResult = (
+    boundary?: { x: number; y: number }[],
+    viewport?: { height: number; width: number }
+  ) => {
+    if (boundary == null || viewport == null) {
+      return SizeResult.UNKNOWN;
+    }
+
+    const { height, width } = viewport!;
+    const desired = this._getDesiredRdtPosition(height, width);
+    const current = this._getCurrentRdtPosition(boundary);
+
+    if (
+      current.top > desired.top + RDT_BUFFER &&
+      current.bottom < desired.bottom - RDT_BUFFER
+    ) {
+      return SizeResult.TOO_SMALL;
+    } else if (
+      current.top < desired.top - RDT_BUFFER &&
+      current.bottom > desired.bottom + RDT_BUFFER
+    ) {
+      return SizeResult.TOO_BIG;
+    }
+
+    return SizeResult.OK;
+  };
+
+  _getDesiredRdtPosition = (height: number, width: number) => {
+    const rdtHeight = height * RDT_HEIGHT_PCT;
+    const rdtWidth = rdtHeight * RDT_ASPECT_RATIO;
+
+    const rdtLeft = width / 2 - rdtWidth / 2;
+    const rdtTop = height * INSTRUCTION_HEIGHT_PCT;
+
+    return {
+      left: rdtLeft,
+      top: rdtTop,
+      right: rdtLeft + rdtWidth,
+      bottom: rdtTop + rdtHeight,
+    };
+  };
+
   _getRdtOutline = () => {
     const { boundary, viewport } = this.state;
     if (viewport == null) {
@@ -603,51 +689,38 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
     const { height, width } = viewport!;
 
-    const rdtHeight = height * RDT_HEIGHT_PCT;
-    const rdtWidth = rdtHeight * RDT_ASPECT_RATIO;
-
-    const rdtLeft = width / 2 - rdtWidth / 2;
-    const rdtTop = height * INSTRUCTION_HEIGHT_PCT;
-    const rdtRight = rdtLeft + rdtWidth;
-    const rdtBottom = rdtTop + rdtHeight;
+    const desired = this._getDesiredRdtPosition(height, width);
 
     let topLeft, topRight, bottomLeft, bottomRight;
     topLeft = topRight = bottomLeft = bottomRight = "red";
 
     if (boundary != null && boundary.length > 3) {
-      const upsideDown = boundary[0].y > boundary[3].y;
-
-      const curLeft = upsideDown ? boundary[1].x : boundary[0].x;
-      const curTop = upsideDown ? boundary[3].y : boundary[0].y;
-      const curRight = upsideDown ? boundary[0].x : boundary[1].x;
-      const curBottom = upsideDown ? boundary[0].y : boundary[3].y;
-
-      const BUFFER = 128;
+      const current = this._getCurrentRdtPosition(boundary);
 
       if (
-        Math.abs(curLeft - rdtLeft) < BUFFER &&
-        Math.abs(curTop - rdtTop) < BUFFER
+        Math.abs(current.left - desired.left) < RDT_BUFFER &&
+        Math.abs(current.top - desired.top) < RDT_BUFFER
       ) {
         topLeft = PROGRESS_COLOR;
       }
 
       if (
-        Math.abs(curRight - rdtRight) < BUFFER &&
-        Math.abs(curTop - rdtTop) < BUFFER
+        Math.abs(current.right - desired.right) < RDT_BUFFER &&
+        Math.abs(current.top - desired.top) < RDT_BUFFER
       ) {
         topRight = PROGRESS_COLOR;
       }
 
       if (
-        Math.abs(curLeft - rdtLeft) < BUFFER &&
-        Math.abs(curBottom - rdtBottom) < BUFFER
+        Math.abs(current.left - desired.left) < RDT_BUFFER &&
+        Math.abs(current.bottom - desired.bottom) < RDT_BUFFER
       ) {
         bottomLeft = PROGRESS_COLOR;
       }
 
       if (
-        Math.abs(curRight - rdtRight) < BUFFER &&
-        Math.abs(curBottom - rdtBottom) < BUFFER
+        Math.abs(current.right - desired.right) < RDT_BUFFER &&
+        Math.abs(current.bottom - desired.bottom) < RDT_BUFFER
       ) {
         bottomRight = PROGRESS_COLOR;
       }
@@ -659,73 +732,73 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
     const lines = [
       <Line
-        x1={rdtLeft - STROKE}
-        y1={rdtTop - STROKE / 2}
-        x2={rdtLeft + HORIZ_LINE_LENGTH}
-        y2={rdtTop - STROKE / 2}
+        x1={desired.left - STROKE}
+        y1={desired.top - STROKE / 2}
+        x2={desired.left + HORIZ_LINE_LENGTH}
+        y2={desired.top - STROKE / 2}
         stroke={topLeft}
         strokeWidth={STROKE}
         key="topLeftH"
       />,
       <Line
-        x1={rdtLeft - STROKE / 2}
-        y1={rdtTop - STROKE / 2}
-        x2={rdtLeft - STROKE / 2}
-        y2={rdtTop + VERT_LINE_LENGTH}
+        x1={desired.left - STROKE / 2}
+        y1={desired.top - STROKE / 2}
+        x2={desired.left - STROKE / 2}
+        y2={desired.top + VERT_LINE_LENGTH}
         stroke={topLeft}
         strokeWidth={STROKE}
         key="topLeftV"
       />,
       <Line
-        x1={rdtRight + STROKE}
-        y1={rdtTop - STROKE / 2}
-        x2={rdtRight - HORIZ_LINE_LENGTH}
-        y2={rdtTop - STROKE / 2}
+        x1={desired.right + STROKE}
+        y1={desired.top - STROKE / 2}
+        x2={desired.right - HORIZ_LINE_LENGTH}
+        y2={desired.top - STROKE / 2}
         stroke={topRight}
         strokeWidth={STROKE}
         key="topRightH"
       />,
       <Line
-        x1={rdtRight + STROKE / 2}
-        y1={rdtTop - STROKE / 2}
-        x2={rdtRight + STROKE / 2}
-        y2={rdtTop + VERT_LINE_LENGTH}
+        x1={desired.right + STROKE / 2}
+        y1={desired.top - STROKE / 2}
+        x2={desired.right + STROKE / 2}
+        y2={desired.top + VERT_LINE_LENGTH}
         stroke={topRight}
         strokeWidth={STROKE}
         key="topRightV"
       />,
       <Line
-        x1={rdtLeft - STROKE}
-        y1={rdtBottom + STROKE / 2}
-        x2={rdtLeft + HORIZ_LINE_LENGTH}
-        y2={rdtBottom + STROKE / 2}
+        x1={desired.left - STROKE}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.left + HORIZ_LINE_LENGTH}
+        y2={desired.bottom + STROKE / 2}
         stroke={bottomLeft}
         strokeWidth={STROKE}
         key="bottomLeftH"
       />,
       <Line
-        x1={rdtLeft - STROKE / 2}
-        y1={rdtBottom + STROKE / 2}
-        x2={rdtLeft - STROKE / 2}
-        y2={rdtBottom - VERT_LINE_LENGTH}
+        x1={desired.left - STROKE / 2}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.left - STROKE / 2}
+        y2={desired.bottom - VERT_LINE_LENGTH}
         stroke={bottomLeft}
         strokeWidth={STROKE}
         key="bottomLeftV"
       />,
       <Line
-        x1={rdtRight + STROKE}
-        y1={rdtBottom + STROKE / 2}
-        x2={rdtRight - HORIZ_LINE_LENGTH}
-        y2={rdtBottom + STROKE / 2}
+        x1={desired.right + STROKE}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.right - HORIZ_LINE_LENGTH}
+        y2={desired.bottom + STROKE / 2}
         stroke={bottomRight}
         strokeWidth={STROKE}
         key="bottomRightH"
       />,
       <Line
-        x1={rdtRight + STROKE / 2}
-        y1={rdtBottom + STROKE / 2}
-        x2={rdtRight + STROKE / 2}
-        y2={rdtBottom - VERT_LINE_LENGTH}
+        x1={desired.right + STROKE / 2}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.right + STROKE / 2}
+        y2={desired.bottom - VERT_LINE_LENGTH}
         stroke={bottomRight}
         strokeWidth={STROKE}
         key="bottomRightV"
@@ -742,14 +815,42 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     );
   };
 
+  _getFlashToggle = () => {
+    if (this.state.supportsTorchMode && this.state.showFlashToggle) {
+      const { t } = this.props;
+      return (
+        <View style={styles.overlayContainer}>
+          <View style={{ flex: 3 }} />
+          <View style={{ flex: 1 }} />
+          <View style={{ flex: 3 }}>
+            <TouchableOpacity onPress={this._toggleFlash}>
+              <View style={{ alignItems: "center", justifyContent: "center" }}>
+                <Image
+                  style={styles.feedbackItemIcon}
+                  source={{
+                    uri: this.state.flashEnabled ? "flashon" : "flashoff",
+                  }}
+                />
+                <Text
+                  content={
+                    t("flash") + (this.state.flashEnabled ? t("on") : t("off"))
+                  }
+                  style={styles.feedbackItemText}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+    return null;
+  };
+
   render() {
     const { isDemo, isFocused, t } = this.props;
     if (!isFocused) {
       return null;
     }
-    const isPositionValid = ALLOW_ICON_FEEDBACK;
-    const isRotationValid = ALLOW_ICON_FEEDBACK;
-
     return (
       <View style={styles.container}>
         <StatusBar hidden={true} />
@@ -805,6 +906,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
           </View>
         </View>
         {this._getRdtOutline()}
+        {this._getFlashToggle()}
         <MultiTapContainer
           active={isDemo}
           style={styles.touchableLeft}
@@ -845,10 +947,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: -SCREEN_MARGIN,
   },
-  overlayImage: {
-    aspectRatio: 1,
-    width: "85%",
-  },
   overlayContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -862,6 +960,10 @@ const styles = StyleSheet.create({
   backgroundOverlay: {
     backgroundColor: "rgba(51,51,51, 0.6)",
   },
+  feedbackItemIcon: {
+    height: 32,
+    width: 32,
+  },
   instructionContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -874,7 +976,6 @@ const styles = StyleSheet.create({
   instructionTextContainer: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 3,
     padding: GUTTER,
   },
   instructionText: {
@@ -889,6 +990,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: GUTTER,
     textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.99)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   testStripViewfinder: {
     aspectRatio: RDT_ASPECT_RATIO,

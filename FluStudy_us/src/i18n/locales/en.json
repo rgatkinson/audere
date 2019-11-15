@@ -751,21 +751,16 @@
     "instructions": "Position your test strip flat on the kit box, within the dotted guide lines.\nHold your device flat and directly above your test strip.\nCenter the test strip within the viewfinder, then tap the round button to take a photo."
   },
   "RDTReader": {
-    "title": "RDT READER",
-    "position": "POSITION",
-    "distance": "DISTANCE",
-    "rotation": "ROTATION",
     "flash": "FLASH: ",
     "on": "ON",
     "off": "OFF",
-    "centerStrip": "Position device so your test strip aligns with sample image",
+    "centerStrip": "Hold your device flat and directly above the test strip",
     "holdSteady": "Hold steady",
-    "sizeResultLarge": "Move farther away",
-    "sizeResultSmall": "Move closer",
-    "badOrientationPos": "Turn device to the right (clockwise)",
-    "badOrientationNeg": "Turn device to the left (anti-clockwise)",
+    "tooBig": "Raise your device",
+    "tooSmall": "Lower your device",
     "underExposed": "Turn on the flash or move to better lighting",
-    "overExposed": "Ensure test strip is on kit box or turn off the flash"
+    "overExposed": "Ensure test strip is on the kit box and avoid glare from bright lights",
+    "overExposedWithFlash": "Turn off the flash"
   },
   "CameraSettings": {
     "title": "Camera access required",
