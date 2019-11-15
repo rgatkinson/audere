@@ -36,7 +36,7 @@ import { logFirebaseEvent, AppHealthEvents } from "../../../util/tracker";
 import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "../../styles";
-import { savePhoto } from "../../../store";
+import { uploadFile } from "../../../store";
 import { canUseRdtReader } from "../../../util/fluResults";
 
 interface Props {
@@ -174,7 +174,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
         });
         const photoId = await newUID();
 
-        savePhoto(photoId, photo.base64);
+        uploadFile(photoId, photo.uri);
 
         dispatch(
           setTestStripImg({

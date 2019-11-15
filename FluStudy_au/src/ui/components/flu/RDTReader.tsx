@@ -43,7 +43,7 @@ import {
   RDTReaderExposureResult,
 } from "audere-lib/coughProtocol";
 import { GUTTER, SCREEN_MARGIN, LARGE_TEXT, REGULAR_TEXT } from "../../styles";
-import { savePhoto } from "../../../store";
+import { uploadFile } from "../../../store";
 import {
   logFirebaseEvent,
   AppEvents,
@@ -556,7 +556,7 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
     try {
       const photoId = await newUID();
       const hcPhotoId = await newUID();
-      dispatch(setRDTPhoto(`data:image/png;base64,${args.imgBase64}`));
+      dispatch(setRDTPhoto(args.imageUri));
       dispatch(
         setTestStripImg(
           {
@@ -569,11 +569,9 @@ class RDTReader extends React.Component<Props & WithNamespaces> {
           }
         )
       );
-      savePhoto(photoId, args.imgBase64);
-      savePhoto(hcPhotoId, args.resultWindowImgBase64);
-      dispatch(
-        setRDTPhotoHC(`data:image/png;base64,${args.resultWindowImgBase64}`)
-      );
+      uploadFile(photoId, args.imageUri);
+      uploadFile(hcPhotoId, args.resultWindowImageUri);
+      dispatch(setRDTPhotoHC(args.resultWindowImageUri));
       dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(

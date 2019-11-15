@@ -101,8 +101,8 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
             event.putMap("iprdResult", iprdResult);
         }
 
-        if (captureResult.image != null) {
-            event.putString("img", captureResult.image);
+        if (captureResult.imageUri != null) {
+            event.putString("imageUri", captureResult.imageUri);
         }
 
         if (captureResult.stripLocation != null) {

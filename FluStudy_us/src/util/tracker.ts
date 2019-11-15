@@ -49,6 +49,7 @@ export const VideoEvents = {
 };
 
 export const AppHealthEvents = {
+  ASYNC_ERROR: "async_error",
   CAMERA_ERROR: "camera_loading_error",
   LOW_MEMORY_WARNING: "low_memory_warning",
   REDUCED_FRAME_SCALE: "reduced_frame_scale",

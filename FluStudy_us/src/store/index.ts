@@ -73,8 +73,12 @@ const photoUploader = new PhotoUploader({
   collection: photoCollectionName(),
 });
 
-export function savePhoto(photoId: string, jpegBase64: string) {
-  return photoUploader.savePhoto(photoId, jpegBase64);
+export function uploadFile(uid: string, filepath: string) {
+  return photoUploader.enqueueFileContents(uid, filepath);
+}
+
+export function uploadBase64String(photoId: string, base64String: string) {
+  return photoUploader.enqueueFileContents(photoId, base64String);
 }
 
 export async function hasPendingPhotos() {

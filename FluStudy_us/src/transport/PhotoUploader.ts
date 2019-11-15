@@ -3,36 +3,26 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import firebase from "react-native-firebase";
 import NetInfo from "@react-native-community/netinfo";
 import { InteractionManager } from "react-native";
 import { Pump } from "./Pump";
 import { Timer } from "./Timer";
-import { AppHealthEvents, logFirebaseEvent } from "../util/tracker";
-import * as FileSystem from "expo-file-system";
 import { IdleManager } from "./IdleManager";
-import { syncPhoto } from "../store/FirebaseStore";
+import { UploadQueue, createUploadQueue } from "./FirebaseUploadHelper";
+import { logError, logIfAsyncError } from "../util/AsyncError";
+
+const DEBUG_PHOTO_UPLOADER = process.env.DEBUG_PHOTO_UPLOADER === "true";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 export const RETRY_DELAY = 1 * MINUTE;
 
-const DEBUG_PHOTO_UPLOADER = process.env.DEBUG_PHOTO_UPLOADER === "true";
+type Event = EnqueueFileContentsEvent | UploadNextEvent;
 
-// Visible for testing
-export const PENDING_DIR = `${FileSystem.documentDirectory}PhotoUploader/pending`;
-export const PENDING_DIR_PREFIX = PENDING_DIR + "/";
-
-type FileInfo = {
-  exists: boolean;
-};
-
-type Event = SaveEvent | UploadNextEvent;
-
-interface SaveEvent {
-  type: "SavePhoto";
+interface EnqueueFileContentsEvent {
+  type: "EnqueueFileContents";
   photoId: string;
-  jpegBase64: string;
+  filepath: string;
 }
 
 interface UploadNextEvent {
@@ -40,19 +30,10 @@ interface UploadNextEvent {
 }
 
 export interface Config {
-  storage?: FirebaseStorage;
   network?: NetInfoIsConnected;
   collection?: string;
+  queue?: UploadQueue;
 }
-
-export interface FirebaseStorage {
-  putFile(args: FirebaseStoragePutFileArgs): Promise<void>;
-}
-
-export type FirebaseStoragePutFileArgs = {
-  filePath: string;
-  storagePath: string;
-};
 
 export interface NetInfoIsConnected {
   addEventListener(
@@ -71,18 +52,17 @@ export class PhotoUploader {
   private readonly failedFiles: Set<string>;
   private readonly timer: Timer;
   private readonly pump: Pump;
-  private readonly storage: FirebaseStorage;
   private readonly network: NetInfoIsConnected;
   private readonly idle: IdleManager;
-  private readonly collection: string;
+  private readonly queue: UploadQueue;
 
   constructor(config: Config = {}) {
     this.pendingEvents = [];
     this.failedFiles = new Set();
     this.idle = new IdleManager(false);
-    this.storage = config.storage || new DefaultFirebaseStorage();
     this.network = config.network || NetInfo.isConnected;
-    this.collection = config.collection || "photos";
+    this.queue =
+      config.queue || createUploadQueue(config.collection || "photos");
     this.pump = new Pump(() => this.pumpEvents());
     this.timer = new Timer(() => this.uploadNext(), RETRY_DELAY);
     this.network.addEventListener("connectionChange", connected =>
@@ -95,17 +75,13 @@ export class PhotoUploader {
     await this.idle.waitForIdle(ms);
   }
 
-  public storagePathFromId(photoId: string): string {
-    return `${this.collection}/${photoId}`;
-  }
-
-  public savePhoto(photoId: string, jpegBase64: string): void {
-    const argSummary = `savePhoto '${photoId}' length=${jpegBase64.length}`;
+  public enqueueFileContents(photoId: string, filepath: string): void {
+    const argSummary = `enqueueFileContents '${photoId}' path='${filepath}'`;
     debug(argSummary);
-    if (!photoId.length || !jpegBase64.length) {
-      throw logError("savePhoto", "args", new Error(argSummary));
+    if (!photoId.length || !filepath.length) {
+      throw logError("enqueueFileContents.args", new Error(argSummary));
     }
-    this.fireEvent({ type: "SavePhoto", photoId, jpegBase64 });
+    this.fireEvent({ type: "EnqueueFileContents", photoId, filepath });
   }
 
   private onConnectionChange(connected: boolean) {
@@ -137,8 +113,8 @@ export class PhotoUploader {
         const event = running[i];
         try {
           switch (event.type) {
-            case "SavePhoto":
-              await this.handleSave(event);
+            case "EnqueueFileContents":
+              await this.handleEnqueueFileContents(event);
               break;
             case "UploadNext":
               await this.handleUploadNext();
@@ -146,7 +122,7 @@ export class PhotoUploader {
           }
         } catch (err) {
           if (!err.logged) {
-            logError("pumpEvents", "unknown", err);
+            logError("PhotoUploader.pumpEvents:unknown", err);
             throw err;
           }
         }
@@ -156,23 +132,19 @@ export class PhotoUploader {
     debug("pumpEvents leave");
   }
 
-  private async handleSave(save: SaveEvent): Promise<void> {
-    debug("handleSave");
-    await this.ensurePendingDir();
-
-    const path = pendingPathFromId(save.photoId);
-    await logIfError("handleSave", "writeAsStringAsync", () =>
-      FileSystem.writeAsStringAsync(path, save.jpegBase64, {
-        encoding: FileSystem.EncodingType.Base64,
-      })
+  private async handleEnqueueFileContents(
+    enqueue: EnqueueFileContentsEvent
+  ): Promise<void> {
+    await logIfAsyncError(
+      "PhotoUploader.handleEnqueueFileContents:queue.add",
+      () => this.queue.add(enqueue.photoId, enqueue.filepath)
     );
     await idleness();
     this.uploadNext();
   }
 
   async hasPendingPhotos() {
-    const pendingFiles = await this.pendingFiles();
-    return pendingFiles.length > 0;
+    return (await this.pendingPhotoIds()).length > 0;
   }
 
   private async handleUploadNext(): Promise<void> {
@@ -181,10 +153,10 @@ export class PhotoUploader {
     // Ensure we keep retrying until we have no pending photos.
     this.timer.start();
 
-    const pendingFiles = await this.pendingFiles();
+    const pendingPhotoIds = await this.pendingPhotoIds();
     await idleness();
 
-    if (pendingFiles.length === 0) {
+    if (pendingPhotoIds.length === 0) {
       debug("No pending photos, resetting state to dormant");
       // No pending photos, so reset state.
       this.failedFiles.clear();
@@ -198,8 +170,8 @@ export class PhotoUploader {
       return;
     }
 
-    const filePath = pendingFiles.find(key => !this.failedFiles.has(key));
-    if (filePath == null) {
+    const photoId = pendingPhotoIds.find(key => !this.failedFiles.has(key));
+    if (photoId == null) {
       // All pending photos have failed upload.  Retry when the timer fires or
       // when the network comes back up.
       debug(
@@ -211,59 +183,19 @@ export class PhotoUploader {
 
     // Any errors on this file should not affect whether we try uploading other files.
     try {
-      const photoId = pendingIdFromPath(filePath);
-      const storagePath = this.storagePathFromId(photoId);
-
-      await logIfError("handleUploadNext", "putFile", () =>
-        this.storage.putFile({ filePath, storagePath })
+      await logIfAsyncError("PhotoUploader.handleUploadNext:upload", () =>
+        this.queue.upload(photoId)
       );
       await idleness();
-
-      await logIfError("handleUploadNext", "deleteAsync", () =>
-        FileSystem.deleteAsync(filePath)
-      );
-      await idleness();
-
-      await syncPhoto(photoId);
     } catch (err) {
-      this.failedFiles.add(filePath);
+      this.failedFiles.add(photoId);
     }
 
     this.uploadNext();
   }
 
-  private async pendingFiles(): Promise<string[]> {
-    const pendingInfo = await logIfError<FileInfo>(
-      "pendingFiles",
-      "getInfoAsync",
-      () => FileSystem.getInfoAsync(PENDING_DIR)
-    );
-    if (!pendingInfo.exists) {
-      return [];
-    }
-
-    const files = await logIfError<string[]>(
-      "pendingFiles",
-      "readDirectoryAsync",
-      () => FileSystem.readDirectoryAsync(PENDING_DIR)
-    );
-    return files.map(x => PENDING_DIR_PREFIX + x);
-  }
-
-  private async ensurePendingDir(): Promise<void> {
-    const pendingInfo = await logIfError<FileInfo>(
-      "ensurePendingDir",
-      "getInfoAsync",
-      () => FileSystem.getInfoAsync(PENDING_DIR)
-    );
-    await idleness();
-    if (!pendingInfo.exists) {
-      debug(`Creating directory '${PENDING_DIR}'`);
-      await logIfError("ensurePendingDir", "makeDirectoryAsync", () =>
-        FileSystem.makeDirectoryAsync(PENDING_DIR, { intermediates: true })
-      );
-      await idleness();
-    }
+  private pendingPhotoIds(): Promise<string[]> {
+    return this.queue.list();
   }
 }
 
@@ -277,67 +209,5 @@ function idleness(): Promise<void> {
 function debug(s: string) {
   if (DEBUG_PHOTO_UPLOADER) {
     console.log(`PhotoUploader: ${s}`);
-  }
-}
-
-export function pendingPathFromId(photoId: string): string {
-  return PENDING_DIR_PREFIX + photoId;
-}
-
-export function pendingIdFromPath(photoPath: string): string {
-  if (!photoPath.startsWith(PENDING_DIR_PREFIX)) {
-    throw new Error(
-      `Expected path to start with '${PENDING_DIR_PREFIX}', got '${photoPath}'`
-    );
-  }
-  return photoPath.substring(PENDING_DIR_PREFIX.length);
-}
-
-export class DefaultFirebaseStorage implements FirebaseStorage {
-  public async putFile(args: FirebaseStoragePutFileArgs): Promise<void> {
-    await firebase
-      .storage()
-      .ref()
-      .child(args.storagePath)
-      .putFile(args.filePath, { contentType: "image/jpeg" });
-  }
-}
-
-async function logIfError<T>(
-  func: string,
-  location: string,
-  call: () => Promise<T>
-): Promise<T> {
-  try {
-    return await call();
-  } catch (err) {
-    if ((err as any).logged) {
-      throw err;
-    } else {
-      throw logError(func, location, err);
-    }
-  }
-}
-
-function logError(func: string, location: string, err: any): LoggedError {
-  const message = err != null ? err.message : "";
-  const name = err != null ? err.name : "";
-  const summary = `${func}: ${location} threw '${name}': '${message}'`;
-  debug(summary);
-  logFirebaseEvent(AppHealthEvents.PHOTO_UPLOADER_ERROR, {
-    func,
-    location,
-    message,
-    name,
-  });
-  return new LoggedError(summary);
-}
-
-class LoggedError extends Error {
-  readonly logged: boolean;
-
-  constructor(message: string) {
-    super(message);
-    this.logged = true;
   }
 }

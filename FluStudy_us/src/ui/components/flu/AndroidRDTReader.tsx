@@ -58,7 +58,7 @@ import {
   SMALL_TEXT,
   THICK_BORDER_WIDTH,
 } from "../../styles";
-import { savePhoto } from "../../../store";
+import { uploadFile } from "../../../store";
 import {
   logFirebaseEvent,
   AppEvents,
@@ -503,7 +503,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       this._callbackTimestamps.push(Date.now());
     }
 
-    if (!args.imgBase64) {
+    if (!args.imageUri) {
       this._lastRDTReaderResult = rdtCapturedArgsToResult(args);
       return;
     }
@@ -512,14 +512,14 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     dispatch(setRDTCaptureTime(true));
     try {
       const photoId = await newUID();
-      dispatch(setRDTPhoto(`file://${args.imgBase64}`));
+      dispatch(setRDTPhoto(args.imageUri));
       dispatch(
         setTestStripImg({
           sample_type: "RDTReaderPhotoGUID",
           code: photoId,
         })
       );
-      savePhoto(photoId, args.imgBase64);
+      uploadFile(photoId, args.imageUri);
       dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(

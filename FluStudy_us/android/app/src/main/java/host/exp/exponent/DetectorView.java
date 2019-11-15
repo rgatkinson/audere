@@ -20,6 +20,7 @@ import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -443,13 +444,9 @@ public class DetectorView extends LinearLayout implements
                 photo.delete();
             }
 
-            try {
-                FileOutputStream fos = new FileOutputStream(photo.getPath());
-                BufferedOutputStream bos = new BufferedOutputStream(fos);
+            try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(photo.getPath()))) {
                 imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-                fos.flush();
-                fos.close();
-                return photo.getPath();
+                return Uri.fromFile(new File(photo.getPath())).toString();
             } catch (java.io.IOException e) {
                 Log.e(TAG, "Exception in saveImage", e);
                 return null;
@@ -518,11 +515,10 @@ public class DetectorView extends LinearLayout implements
 
                     Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
 
-                    captureResult.image = saveImage();
+                    captureResult.imageUri = saveImage();
 
-                    if (captureResult.image != null) {
+                    if (captureResult.imageUri != null) {
                         cameraController.onPause();
-                        // TODO: upload image to firestore: https://firebase.google.com/docs/storage/android/upload-files
                         detectorListener.onRDTDetected(iprdResult, captureResult, interpretationResult, filterResult);
 
                     } else {
@@ -652,7 +648,7 @@ public class DetectorView extends LinearLayout implements
         public final int viewportWidth;
         public final int viewportHeight;
 
-        public String image;
+        public String imageUri;
 
         public CaptureResult(boolean testStripFound, float[] stripLocation) {
             this.testStripFound = testStripFound;
