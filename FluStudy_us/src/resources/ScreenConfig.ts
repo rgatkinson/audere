@@ -308,9 +308,6 @@ export const Screens: ScreenConfig[] = [
         props: { surveyGetNextFn: getEmailConfirmationNextScreen },
       },
     ],
-    chromeProps: {
-      onBack: resetAlert,
-    },
     key: "EmailConfirmation",
     keyboardAvoidingView: true,
   },
@@ -340,6 +337,9 @@ export const Screens: ScreenConfig[] = [
         props: { next: "Swab" },
       },
     ],
+    chromeProps: {
+      onBack: resetAlert,
+    },
     key: "Unpacking",
     workflowEvent: "surveyStartedAt",
   },

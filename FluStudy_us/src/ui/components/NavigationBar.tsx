@@ -27,7 +27,7 @@ interface Props {
   onBack?: (
     nav: NavigationScreenProp<any, any>,
     dispatch: (action: Action) => void
-  ) => void;
+  ) => boolean;
   dispatch(action: Action): void;
 }
 
@@ -52,7 +52,9 @@ class NavigationBar extends React.Component<Props & WithNamespaces> {
     }
 
     if (!!this.props.onBack) {
-      this.props.onBack(this.props.navigation, this.props.dispatch);
+      if (!this.props.onBack(this.props.navigation, this.props.dispatch)) {
+        return;
+      }
     }
 
     // @ts-ignore

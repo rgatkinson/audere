@@ -36,7 +36,7 @@ interface Props {
   onBack?: (
     nav: NavigationScreenProp<any, any>,
     dispatch: (action: Action) => void
-  ) => void;
+  ) => boolean;
   splashImage?: string;
   showBackgroundOnly?: boolean;
 }

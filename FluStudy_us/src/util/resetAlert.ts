@@ -23,7 +23,7 @@ function clearNavState(
 export function resetAlert(
   nav: NavigationScreenProp<any, any>,
   dispatch: (action: Action) => void
-) {
+): boolean {
   Alert.alert(
     i18n.t("common:notifications:resetAppAlertTitle"),
     i18n.t("common:notifications:resetAppAlertBody"),
@@ -37,4 +37,5 @@ export function resetAlert(
       },
     ]
   );
+  return false;
 }
