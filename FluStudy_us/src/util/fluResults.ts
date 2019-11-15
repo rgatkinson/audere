@@ -3,6 +3,8 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { Platform } from "react-native";
+import DeviceInfo from "react-native-device-info";
 import { logFirebaseEvent, FunnelEvents } from "./tracker";
 import { getStore } from "../store";
 import { getSelectedButton } from "./survey";
@@ -15,6 +17,14 @@ import { getRemoteConfig } from "../util/remoteConfig";
 let _previousBlueAnswer: string | undefined;
 let _previousPinkAnswer: string | undefined;
 
+export function canUseRdtReader() {
+  return (
+    !DeviceInfo.isEmulator() &&
+    Platform.OS === "android" &&
+    getRemoteConfig("rdtTimeoutSeconds") > 0
+  );
+}
+
 export async function getTestStripSurveyNextScreen() {
   const state = (await getStore()).getState();
   const blueAnswer = getSelectedButton(state, BlueLineConfig);
@@ -24,9 +34,7 @@ export async function getTestStripSurveyNextScreen() {
 }
 
 export function getPinkWhenBlueNextScreen() {
-  return getRemoteConfig("rdtTimeoutSeconds") > 0
-    ? "RDTInstructions"
-    : "NonRDTInstructions";
+  return canUseRdtReader() ? "RDTInstructions" : "NonRDTInstructions";
 }
 
 export async function logFluResult() {

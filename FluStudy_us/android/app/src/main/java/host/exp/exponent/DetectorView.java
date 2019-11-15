@@ -473,12 +473,14 @@ public class DetectorView extends LinearLayout implements
             ImageFilter.FilterResult filterResult = null;
 
             if (iprdResult.isAccepted() && rdtResult.testArea != null) {
-                filterResult = imageFilter.validateImage(rdtResult.rdtStrip);
+                filterResult = imageFilter.validateImage(rdtResult.rdtStrip, false);
                 if (!stillCaptureInProgress && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
                     Log.d(TAG, "Have good preview frame, making single request");
                     stillCaptureInProgress = true;
                     cameraController.captureStill();
                 }
+            } else {
+                filterResult = imageFilter.validateImage(imageBitmap, false);
             }
 
             detectorListener.onRDTDetected(iprdResult, captureResult, null, filterResult);
@@ -500,7 +502,7 @@ public class DetectorView extends LinearLayout implements
         ) {
             if (iprdResult.isAccepted() && rdtResult.testArea != null) {
 
-                ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip);
+                ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, true);
 
                 if (filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
 

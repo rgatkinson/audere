@@ -33,6 +33,7 @@ public class ImageFilter {
     private static final String TAG = "ImageFilter";
 
     public static double SHARPNESS_THRESHOLD = 10;
+    public static double HIGH_RES_SHARPNESS_THRESHOLD = 100;
     public static double OVER_EXP_THRESHOLD = 255;
     public static double UNDER_EXP_THRESHOLD = 120;
     public static double OVER_EXP_WHITE_COUNT = 100;
@@ -52,14 +53,20 @@ public class ImageFilter {
     public class FilterResult {
         public ExposureResult exposureResult;
         public double sharpness;
+        public boolean highResImage;
 
         public boolean isSharp() {
-            return sharpness > SHARPNESS_THRESHOLD;
+            if (highResImage) {
+                return sharpness > HIGH_RES_SHARPNESS_THRESHOLD;
+            } else {
+                return sharpness > SHARPNESS_THRESHOLD;
+            }
         }
 
-        public FilterResult(ExposureResult exposureResult, double sharpness) {
+        public FilterResult(ExposureResult exposureResult, double sharpness, boolean highResImage) {
             this.exposureResult = exposureResult;
             this.sharpness = sharpness;
+            this.highResImage = highResImage;
         }
     }
 
@@ -101,7 +108,7 @@ public class ImageFilter {
         }
     }
 
-    public FilterResult validateImage(Bitmap bitmap) {
+    public FilterResult validateImage(Bitmap bitmap, boolean highResImage) {
         Mat inputMat = new Mat();
         Utils.bitmapToMat(bitmap, inputMat);
 
@@ -121,7 +128,7 @@ public class ImageFilter {
         inputMat.release();
         greyMat.release();
 
-        return new FilterResult(exposureResult, sharpness);
+        return new FilterResult(exposureResult, sharpness, highResImage);
     }
 
     private double calculateSharpness(Mat input) {

@@ -123,7 +123,6 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         event.putBoolean("testA", interpretationResult.testA);
         event.putBoolean("testB", interpretationResult.testB);
         event.putBoolean("passed", interpretationResult != null);
-        event.putInt("progress", 0);
         callReactCallback("RDTCaptured", event);
     }
 

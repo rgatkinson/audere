@@ -34,9 +34,9 @@ public class RDTTracker extends Tracker {
     private static final float RDT_TEST_TOP = 51;
     private static final float RDT_TEST_BOTTOM = 61;
     private static final int TEST_RECOGNIZER_SIZE = TF_OD_API_INPUT_SIZE;
-    public static final float RDT_CANVAS_MARGIN = .05f;
-    public static final float RDT_CANVAS_HEIGHT = 0.65f;
-    public static final float RDT_CANVAS_HEIGHT_PERCENT = RDT_CANVAS_HEIGHT * (1 - RDT_CANVAS_MARGIN * 2);
+    public static final float INSTRUCTION_HEIGHT_PERCENT = 0.25f;
+    public static final float RDT_HEIGHT_PERCENT = 0.65f;
+    public static final int RDT_LOCATION_BUFFER = 128;
 
     public RDTTracker(final Activity activity, int previewWidth, int previewHeight, final int sensorOrientation, final int screenWidth, final int screenHeight) {
         super(activity, previewWidth, previewHeight, sensorOrientation, screenWidth, screenHeight);
@@ -47,15 +47,15 @@ public class RDTTracker extends Tracker {
     }
 
     private float[] getDesiredRdtOutline() {
-        float scale = canvasSize.y / RDT_HEIGHT / (1 / RDT_CANVAS_HEIGHT_PERCENT);
-        float height = RDT_HEIGHT * scale;
-        float width = RDT_WIDTH * scale;
+        float rdtAspectRatio = RDT_WIDTH / RDT_HEIGHT;
+        float rdtHeight = canvasSize.y * RDT_HEIGHT_PERCENT;
+        float rdtWidth = rdtHeight * rdtAspectRatio;
 
-        float rdtLeft = canvasSize.x / 2 - width / 2;
-        float rdtTop = canvasSize.y * .25f + canvasSize.y * RDT_CANVAS_HEIGHT * RDT_CANVAS_MARGIN;
-        float rdtRight = rdtLeft + width;
-        float rdtBottom = rdtTop + height;
-        return new float[] {
+        float rdtLeft = canvasSize.x / 2 - rdtWidth / 2;
+        float rdtTop = canvasSize.y * INSTRUCTION_HEIGHT_PERCENT;
+        float rdtRight = rdtLeft + rdtWidth;
+        float rdtBottom = rdtTop + rdtHeight;
+        return new float[]{
                 rdtLeft, rdtTop, rdtRight, rdtTop, rdtRight, rdtTop, rdtRight, rdtBottom,
                 rdtRight, rdtBottom, rdtLeft, rdtBottom, rdtLeft, rdtBottom, rdtLeft, rdtTop };
     }
@@ -64,8 +64,12 @@ public class RDTTracker extends Tracker {
         if (rdtOutline == null ) {
             return false;
         }
-        for (int i = 0; i < desiredOutline.length; i++) {
-            if (Math.abs(desiredOutline[i] - rdtOutline[i]) > 128) {
+
+        boolean upsideDown = rdtOutline[1] > rdtOutline[7]; // rdtTop > rdtBottom
+
+        for (int i = 0; i < rdtOutline.length; i++) {
+            int desiredIndex = upsideDown ? (i + 8) % 16 : i;
+            if (Math.abs(desiredOutline[desiredIndex] - rdtOutline[i]) > RDT_LOCATION_BUFFER) {
                 return false;
             }
         }

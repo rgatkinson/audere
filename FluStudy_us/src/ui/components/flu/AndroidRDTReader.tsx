@@ -19,7 +19,6 @@ import {
   NavigationScreenProp,
   StackActions,
 } from "react-navigation";
-import ProgressCircle from "react-native-progress-circle";
 import Spinner from "react-native-loading-spinner-overlay";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
@@ -102,14 +101,15 @@ interface FeedbackInstructionRequest {
 }
 
 const DEBUG_RDT_READER_UX = process.env.DEBUG_RDT_READER_UX === "true";
-const ALLOW_ICON_FEEDBACK = false; // Show iconic feedback during capture
-const PREDICATE_DURATION_SHORT = 500;
 const PREDICATE_DURATION_NORMAL = 1000;
 const PREDICATE_DURATION_LONG = 3000;
 const INSTRUCTION_DURATION_NORMAL = 2000;
 const INSTRUCTION_DURATION_OKTEXT = 1000;
 const RDT_ASPECT_RATIO = 5.0 / 87;
-const RDT_MARGIN = 20;
+const INSTRUCTION_HEIGHT_PCT = 0.25;
+const RDT_HEIGHT_PCT = 0.65;
+const BOTTOM_HEIGHT_PCT = 1 - INSTRUCTION_HEIGHT_PCT - RDT_HEIGHT_PCT;
+const RDT_BUFFER = 128;
 
 function debug(s: string) {
   if (DEBUG_RDT_READER_UX) {
@@ -117,10 +117,31 @@ function debug(s: string) {
   }
 }
 
-class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
-  state = {
+enum SizeResult {
+  UNKNOWN,
+  TOO_SMALL,
+  TOO_BIG,
+  OK,
+}
+
+interface State {
+  spinner: boolean;
+  flashEnabled: boolean;
+  flashEnabledAutomatically: boolean;
+  fps: number;
+  instructionMsg: string;
+  appState: string;
+  supportsTorchMode: boolean;
+  frameImageScale: number;
+  showFlashToggle: boolean;
+  stripFound: boolean;
+  boundary?: { x: number; y: number }[];
+  viewport?: { height: number; width: number };
+}
+
+class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
+  state: State = {
     spinner: true,
-    exposureResult: RDTReaderExposureResult.UNDER_EXPOSED,
     flashEnabled: false,
     flashEnabledAutomatically: false,
     fps: 0,
@@ -128,10 +149,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     appState: "",
     supportsTorchMode: false,
     frameImageScale: 1,
-    progress: 0,
     stripFound: false,
-    boundary: null,
-    viewport: null,
+    showFlashToggle: false,
   };
 
   _didFocus: any;
@@ -146,37 +165,62 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   _rdtRect: any = null;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
-    exposureFlash: {
-      predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected &&
-        readerResult.exposureResult === RDTReaderExposureResult.UNDER_EXPOSED,
-      duration: PREDICATE_DURATION_LONG,
-      action: () =>
-        this.setState({
-          flashEnabled: true,
-          flashEnabledAutomatically: true,
-        }),
-      cooldown: Infinity,
-    },
     underExposed: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.UNDER_EXPOSED,
-      duration: PREDICATE_DURATION_NORMAL,
-      action: () =>
-        this._addInstructionRequest("exposure", "underExposed", "underExposed"),
+      duration: PREDICATE_DURATION_LONG,
+      action: () => {
+        this.setState({ showFlashToggle: true });
+        this._addInstructionRequest("exposure", "underExposed", "underExposed");
+      },
       inaction: () =>
         this._removeInstructionRequest("exposure", "underExposed"),
       cooldown: 0,
     },
     overExposed: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected &&
         readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED,
       duration: PREDICATE_DURATION_NORMAL,
       action: () =>
         this._addInstructionRequest("exposure", "overExposed", "overExposed"),
       inaction: () => this._removeInstructionRequest("exposure", "overExposed"),
+      cooldown: 0,
+    },
+    overExposedWithFlash: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        readerResult.exposureResult === RDTReaderExposureResult.OVER_EXPOSED &&
+        this.state.flashEnabled,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () =>
+        this._addInstructionRequest(
+          "exposure",
+          "overExposedWithFlash",
+          "overExposedWithFlash"
+        ),
+      inaction: () =>
+        this._removeInstructionRequest("exposure", "overExposedWithFlash"),
+      cooldown: 0,
+    },
+    tooSmall: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        this._getSizeResult(
+          readerResult.testStripBoundary,
+          readerResult.viewportDimensions
+        ) == SizeResult.TOO_SMALL,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () => this._addInstructionRequest("size", "tooSmall", "tooSmall"),
+      inaction: () => this._removeInstructionRequest("size", "tooSmall"),
+      cooldown: 0,
+    },
+    tooBig: {
+      predicate: (readerResult: RDTCapturedArgs) =>
+        this._getSizeResult(
+          readerResult.testStripBoundary,
+          readerResult.viewportDimensions
+        ) == SizeResult.TOO_BIG,
+      duration: PREDICATE_DURATION_NORMAL,
+      action: () => this._addInstructionRequest("size", "tooBig", "tooBig"),
+      inaction: () => this._removeInstructionRequest("size", "tooBig"),
       cooldown: 0,
     },
     holdSteady: {
@@ -245,7 +289,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     // Timeout after 30 seconds
     this._timer = global.setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
-      if (this.state.progress < 0.5 && !this._interpreting && isFocused) {
+      if (!this._interpreting && isFocused) {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
@@ -321,14 +365,14 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
 
   componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isFocused && nextProps.isFocused) {
-      this.setState({ spinner: true });
+      this.setState({ spinner: true, flashEnabled: false });
     }
   }
 
   _cameraReady = (args: RDTCameraReadyArgs) => {
     this.setState({
       spinner: false,
-      // supportsTorchMode: args.supportsTorchMode,
+      supportsTorchMode: args.supportsTorchMode,
     });
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
@@ -449,7 +493,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this.setState({
       spinner: false,
-      progress: args.progress,
       stripFound: args.testStripDetected,
       boundary: args.testStripBoundary,
       viewport: args.viewportDimensions,
@@ -585,85 +628,222 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     navigation.dispatch(StackActions.push({ routeName: next }));
   };
 
-  _getLines = (boundary: { x: number; y: number }[] | null, color: string) => {
-    if (boundary == null) {
-      return null;
-    }
-    const lines = [];
+  _getCurrentRdtPosition = (boundary: { x: number; y: number }[]) => {
+    const upsideDown = boundary[0].y > boundary[3].y;
 
-    const shifts = [-1, -1, 1, 1, -1, -1].map(x => x * RDT_MARGIN);
-
-    let i = 0;
-    for (i = 0; i < boundary.length - 1; i += 2) {
-      lines.push(
-        <Line
-          key={"line:" + i}
-          x1={boundary[i].x + shifts[i / 2 + 1]}
-          y1={boundary[i].y + shifts[i / 2]}
-          x2={boundary[i + 1].x + shifts[i / 2 + 2]}
-          y2={boundary[i + 1].y + shifts[i / 2 + 1]}
-          stroke={color}
-          strokeDasharray="15, 15"
-          strokeWidth="10"
-        />
-      );
-    }
-    return lines;
+    return {
+      left: upsideDown ? boundary[1].x : boundary[0].x,
+      top: upsideDown ? boundary[3].y : boundary[0].y,
+      right: upsideDown ? boundary[0].x : boundary[1].x,
+      bottom: upsideDown ? boundary[0].y : boundary[3].y,
+    };
   };
 
-  _getDesiredRdtOutline = () => {
-    if (this._rdtRect == null) {
-      const { viewport } = this.state;
-
-      if (viewport == null) {
-        return null;
-      }
-
-      const { height, width } = viewport!;
-
-      const rdtHeight = height * 0.65 * 0.9 + 2 * RDT_MARGIN;
-      const rdtWidth = rdtHeight * RDT_ASPECT_RATIO + 2 * RDT_MARGIN;
-
-      const left = width / 2 - rdtWidth / 2;
-      const top = height * 0.25 + height * 0.65 * 0.05 - RDT_MARGIN;
-
-      this._rdtRect = (
-        <Rect
-          x={left}
-          y={top}
-          width={rdtWidth}
-          height={rdtHeight}
-          stroke={PROGRESS_COLOR}
-          strokeWidth={10}
-          fillOpacity={0}
-        />
-      );
+  _getSizeResult = (
+    boundary?: { x: number; y: number }[],
+    viewport?: { height: number; width: number }
+  ) => {
+    if (boundary == null || viewport == null) {
+      return SizeResult.UNKNOWN;
     }
 
-    return this._rdtRect;
+    const { height, width } = viewport!;
+    const desired = this._getDesiredRdtPosition(height, width);
+    const current = this._getCurrentRdtPosition(boundary);
+
+    if (
+      current.top > desired.top + RDT_BUFFER &&
+      current.bottom < desired.bottom - RDT_BUFFER
+    ) {
+      return SizeResult.TOO_SMALL;
+    } else if (
+      current.top < desired.top - RDT_BUFFER &&
+      current.bottom > desired.bottom + RDT_BUFFER
+    ) {
+      return SizeResult.TOO_BIG;
+    }
+
+    return SizeResult.OK;
+  };
+
+  _getDesiredRdtPosition = (height: number, width: number) => {
+    const rdtHeight = height * RDT_HEIGHT_PCT;
+    const rdtWidth = rdtHeight * RDT_ASPECT_RATIO;
+
+    const rdtLeft = width / 2 - rdtWidth / 2;
+    const rdtTop = height * INSTRUCTION_HEIGHT_PCT;
+
+    return {
+      left: rdtLeft,
+      top: rdtTop,
+      right: rdtLeft + rdtWidth,
+      bottom: rdtTop + rdtHeight,
+    };
   };
 
   _getRdtOutline = () => {
-    const { stripFound, boundary, viewport } = this.state;
-
+    const { boundary, viewport } = this.state;
     if (viewport == null) {
       return null;
     }
 
     const { height, width } = viewport!;
 
-    const shape = !stripFound
-      ? this._getLines(boundary, RED)
-      : this._getDesiredRdtOutline();
+    const desired = this._getDesiredRdtPosition(height, width);
+
+    let topLeft, topRight, bottomLeft, bottomRight;
+    topLeft = topRight = bottomLeft = bottomRight = "red";
+
+    if (boundary != null && boundary.length > 3) {
+      const current = this._getCurrentRdtPosition(boundary);
+
+      if (
+        Math.abs(current.left - desired.left) < RDT_BUFFER &&
+        Math.abs(current.top - desired.top) < RDT_BUFFER
+      ) {
+        topLeft = PROGRESS_COLOR;
+      }
+
+      if (
+        Math.abs(current.right - desired.right) < RDT_BUFFER &&
+        Math.abs(current.top - desired.top) < RDT_BUFFER
+      ) {
+        topRight = PROGRESS_COLOR;
+      }
+
+      if (
+        Math.abs(current.left - desired.left) < RDT_BUFFER &&
+        Math.abs(current.bottom - desired.bottom) < RDT_BUFFER
+      ) {
+        bottomLeft = PROGRESS_COLOR;
+      }
+
+      if (
+        Math.abs(current.right - desired.right) < RDT_BUFFER &&
+        Math.abs(current.bottom - desired.bottom) < RDT_BUFFER
+      ) {
+        bottomRight = PROGRESS_COLOR;
+      }
+    }
+
+    const STROKE = 10;
+    const VERT_LINE_LENGTH = 75;
+    const HORIZ_LINE_LENGTH = 25;
+
+    const lines = [
+      <Line
+        x1={desired.left - STROKE}
+        y1={desired.top - STROKE / 2}
+        x2={desired.left + HORIZ_LINE_LENGTH}
+        y2={desired.top - STROKE / 2}
+        stroke={topLeft}
+        strokeWidth={STROKE}
+        key="topLeftH"
+      />,
+      <Line
+        x1={desired.left - STROKE / 2}
+        y1={desired.top - STROKE / 2}
+        x2={desired.left - STROKE / 2}
+        y2={desired.top + VERT_LINE_LENGTH}
+        stroke={topLeft}
+        strokeWidth={STROKE}
+        key="topLeftV"
+      />,
+      <Line
+        x1={desired.right + STROKE}
+        y1={desired.top - STROKE / 2}
+        x2={desired.right - HORIZ_LINE_LENGTH}
+        y2={desired.top - STROKE / 2}
+        stroke={topRight}
+        strokeWidth={STROKE}
+        key="topRightH"
+      />,
+      <Line
+        x1={desired.right + STROKE / 2}
+        y1={desired.top - STROKE / 2}
+        x2={desired.right + STROKE / 2}
+        y2={desired.top + VERT_LINE_LENGTH}
+        stroke={topRight}
+        strokeWidth={STROKE}
+        key="topRightV"
+      />,
+      <Line
+        x1={desired.left - STROKE}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.left + HORIZ_LINE_LENGTH}
+        y2={desired.bottom + STROKE / 2}
+        stroke={bottomLeft}
+        strokeWidth={STROKE}
+        key="bottomLeftH"
+      />,
+      <Line
+        x1={desired.left - STROKE / 2}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.left - STROKE / 2}
+        y2={desired.bottom - VERT_LINE_LENGTH}
+        stroke={bottomLeft}
+        strokeWidth={STROKE}
+        key="bottomLeftV"
+      />,
+      <Line
+        x1={desired.right + STROKE}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.right - HORIZ_LINE_LENGTH}
+        y2={desired.bottom + STROKE / 2}
+        stroke={bottomRight}
+        strokeWidth={STROKE}
+        key="bottomRightH"
+      />,
+      <Line
+        x1={desired.right + STROKE / 2}
+        y1={desired.bottom + STROKE / 2}
+        x2={desired.right + STROKE / 2}
+        y2={desired.bottom - VERT_LINE_LENGTH}
+        stroke={bottomRight}
+        strokeWidth={STROKE}
+        key="bottomRightV"
+      />,
+    ];
 
     const viewBox = "0 0 " + " " + width + " " + height;
     return (
       <View style={styles.overlayContainer}>
         <Svg height="100%" width="100%" viewBox={viewBox}>
-          {shape}
+          {lines}
         </Svg>
       </View>
     );
+  };
+
+  _getFlashToggle = () => {
+    if (this.state.supportsTorchMode && this.state.showFlashToggle) {
+      const { t } = this.props;
+      return (
+        <View style={styles.overlayContainer}>
+          <View style={{ flex: 3 }} />
+          <View style={{ flex: 1 }} />
+          <View style={{ flex: 3 }}>
+            <TouchableOpacity onPress={this._toggleFlash}>
+              <View style={{ alignItems: "center", justifyContent: "center" }}>
+                <Image
+                  style={styles.feedbackItemIcon}
+                  source={{
+                    uri: this.state.flashEnabled ? "flashon" : "flashoff",
+                  }}
+                />
+                <Text
+                  content={
+                    t("flash") + (this.state.flashEnabled ? t("on") : t("off"))
+                  }
+                  style={styles.feedbackItemText}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+    return null;
   };
 
   render() {
@@ -671,12 +851,10 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
     if (!isFocused) {
       return null;
     }
-    const isPositionValid = ALLOW_ICON_FEEDBACK;
-    const isRotationValid = ALLOW_ICON_FEEDBACK;
     return (
       <View style={styles.container}>
         <StatusBar hidden={true} />
-        <Spinner visible={this.state.progress == 100 || this.state.spinner} />
+        <Spinner visible={this.state.spinner} />
         <RDTReaderComponent
           style={styles.camera}
           onRDTCaptured={this._onRDTCaptured}
@@ -691,7 +869,12 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
         />
         <View style={styles.overlayContainer}>
           <View style={{ flex: 1 }}>
-            <View style={[styles.backgroundOverlay, { flex: 25 }]}>
+            <View
+              style={[
+                styles.backgroundOverlay,
+                { flex: INSTRUCTION_HEIGHT_PCT },
+              ]}
+            >
               <View style={styles.instructionContainer}>
                 <View style={styles.instructionTextContainer}>
                   <Text
@@ -699,47 +882,31 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
                     style={styles.instructionText}
                   />
                 </View>
-                <View style={styles.progressCircleContainer}>
-                  <ProgressCircle
-                    percent={this.state.progress}
-                    radius={40}
-                    borderWidth={6}
-                    color={PROGRESS_COLOR}
-                    shadowColor="#999"
-                    bgColor="rgba(52, 52, 52, 1)"
-                  >
-                    <Text
-                      content={this.state.progress + "%"}
-                      style={styles.feedbackItemText}
-                    />
-                  </ProgressCircle>
-                </View>
               </View>
             </View>
-            <View
-              style={{
-                flex: 65,
-                flexDirection: "row",
-              }}
-            >
+            <View style={{ flex: RDT_HEIGHT_PCT, flexDirection: "row" }}>
               <View style={[styles.backgroundOverlay, { flex: 1 }]} />
               <View style={styles.testStripContainer}>
-                {this.state.stripFound ? (
-                  <View style={styles.testStripViewfinder} />
-                ) : (
-                  <Image
-                    style={styles.testStrip}
-                    source={{ uri: "teststrip2" }}
-                    resizeMode={"contain"}
-                  />
-                )}
+                <View style={styles.testStripViewfinder} />
               </View>
               <View style={[styles.backgroundOverlay, { flex: 1 }]} />
             </View>
-            <View style={[styles.backgroundOverlay, { flex: 10 }]} />
+            <View
+              style={[
+                styles.backgroundOverlay,
+                { flex: BOTTOM_HEIGHT_PCT, justifyContent: "flex-end" },
+              ]}
+            >
+              {isDemo && (
+                <View style={{ backgroundColor: "black" }}>
+                  <Text content={`FPS: ${this.state.fps.toFixed(2)}`} />
+                </View>
+              )}
+            </View>
           </View>
         </View>
         {this._getRdtOutline()}
+        {this._getFlashToggle()}
         <MultiTapContainer
           active={isDemo}
           style={styles.touchableLeft}
@@ -752,11 +919,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces> {
           taps={3}
           onMultiTap={this._forcePositiveResult}
         />
-        {isDemo && (
-          <View>
-            <Text content={`FPS: ${this.state.fps.toFixed(2)}`} />
-          </View>
-        )}
       </View>
     );
   }
@@ -785,10 +947,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: -SCREEN_MARGIN,
   },
-  overlayImage: {
-    aspectRatio: 1,
-    width: "85%",
-  },
   overlayContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -802,6 +960,10 @@ const styles = StyleSheet.create({
   backgroundOverlay: {
     backgroundColor: "rgba(51,51,51, 0.6)",
   },
+  feedbackItemIcon: {
+    height: 32,
+    width: 32,
+  },
   instructionContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -814,17 +976,12 @@ const styles = StyleSheet.create({
   instructionTextContainer: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 3,
     padding: GUTTER,
   },
   instructionText: {
     alignSelf: "stretch",
     color: "white",
     fontSize: REGULAR_TEXT,
-  },
-  progressCircleContainer: {
-    flex: 1,
-    paddingRight: GUTTER,
   },
   feedbackItemText: {
     alignItems: "center",
@@ -833,20 +990,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: GUTTER,
     textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.99)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
   },
   testStripViewfinder: {
     aspectRatio: RDT_ASPECT_RATIO,
-    height: "90%",
-  },
-  testStrip: {
-    aspectRatio: RDT_ASPECT_RATIO,
-    height: "90%",
-    opacity: 0.5,
+    height: "100%",
   },
   testStripContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: "5%",
     flexDirection: "column",
   },
   touchableLeft: {

@@ -9,10 +9,12 @@ import {
   AppState,
   Dimensions,
   Image,
+  StatusBar,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { connect } from "react-redux";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
@@ -35,7 +37,7 @@ import { newUID } from "../../../util/csruid";
 import Text from "../Text";
 import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "../../styles";
 import { savePhoto } from "../../../store";
-import { getRemoteConfig } from "../../../util/remoteConfig";
+import { canUseRdtReader } from "../../../util/fluResults";
 
 interface Props {
   next: string;
@@ -43,6 +45,11 @@ interface Props {
   navigation: NavigationScreenProp<any, any>;
   shownRDTFailWarning: boolean;
 }
+
+const RDT_ASPECT_RATIO = 5.0 / 87;
+const INSTRUCTION_HEIGHT_PCT = 0.15;
+const RDT_HEIGHT_PCT = 0.65;
+const BOTTOM_HEIGHT_PCT = 1 - INSTRUCTION_HEIGHT_PCT - RDT_HEIGHT_PCT;
 
 class TestStripCamera extends React.Component<Props & WithNamespaces> {
   camera = React.createRef<any>();
@@ -74,10 +81,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
   }
 
   _shouldShowAlert() {
-    return (
-      !this.props.shownRDTFailWarning &&
-      getRemoteConfig("rdtTimeoutSeconds") > 0
-    );
+    return !this.props.shownRDTFailWarning && canUseRdtReader();
   }
 
   _handleDidFocus = () => {
@@ -191,6 +195,41 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
     }
   };
 
+  _getFlashToggle = () => {
+    if (this.state.supportsTorchMode) {
+      const { t } = this.props;
+      return (
+        <View style={styles.overlayContainer}>
+          <View style={{ flex: 3 }} />
+          <View style={{ flex: 1 }} />
+          <View style={{ flex: 3 }}>
+            <TouchableOpacity onPress={this._toggleFlash}>
+              <View style={{ alignItems: "center", justifyContent: "center" }}>
+                <Image
+                  style={styles.feedbackItemIcon}
+                  source={{
+                    uri: this.state.flashEnabled ? "flashon" : "flashoff",
+                  }}
+                />
+                <Text
+                  content={
+                    t("flash") + (this.state.flashEnabled ? t("on") : t("off"))
+                  }
+                  style={styles.feedbackItemText}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  _onBack = () => {
+    this.props.navigation.dispatch(StackActions.pop({ n: 1 }));
+  };
+
   render() {
     if (!this.props.navigation.isFocused()) {
       return null;
@@ -200,6 +239,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
 
     return (
       <View style={styles.container}>
+        <StatusBar hidden={true} />
         <Spinner visible={this.state.spinner} />
         {this.state.showCamera && (
           <Camera
@@ -215,61 +255,43 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           />
         )}
         <View style={styles.overlayContainer}>
-          <View style={{ flexDirection: "column", flex: 1 }}>
-            <View style={styles.backgroundOverlay} />
+          <View style={{ flex: 1 }}>
             <View
-              style={{
-                height: "65%",
-                flexDirection: "row",
-              }}
+              style={[
+                styles.backgroundOverlay,
+                { flex: INSTRUCTION_HEIGHT_PCT },
+              ]}
             >
-              <View style={styles.backgroundOverlay}>
-                <View style={styles.feedbackContainer} />
-              </View>
-              <View style={styles.testStripContainer}>
-                <Image
-                  style={styles.testStrip}
-                  source={{ uri: "teststrip2" }}
-                  resizeMode={"contain"}
-                />
-              </View>
-              <View style={styles.backgroundOverlay}>
-                <View style={styles.feedbackContainer}>
-                  {this.state.supportsTorchMode && (
-                    <TouchableOpacity
-                      style={styles.feedbackItem}
-                      onPress={this._toggleFlash}
-                    >
-                      <Image
-                        style={styles.feedbackItemIcon}
-                        source={{
-                          uri: this.state.flashEnabled ? "flashon" : "flashoff",
-                        }}
-                      />
-                      <Text
-                        content={
-                          t("flash") +
-                          (this.state.flashEnabled ? t("on") : t("off"))
-                        }
-                        style={styles.overlayText}
-                      />
-                    </TouchableOpacity>
-                  )}
-                  <View style={styles.feedbackItem} />
-                  <View style={styles.feedbackItem} />
-                </View>
+              <View style={styles.backButton}>
+                <TouchableOpacity onPress={this._onBack}>
+                  <Feather color="white" name="arrow-left" size={30} />
+                </TouchableOpacity>
               </View>
             </View>
-            <View style={styles.backgroundOverlay} />
+            <View style={{ flex: RDT_HEIGHT_PCT, flexDirection: "row" }}>
+              <View style={[styles.backgroundOverlay, { flex: 1 }]} />
+              <View style={styles.testStripContainer}>
+                <View style={styles.testStripViewfinder} />
+              </View>
+              <View style={[styles.backgroundOverlay, { flex: 1 }]} />
+            </View>
+            <View
+              style={[
+                styles.backgroundOverlay,
+                { flex: BOTTOM_HEIGHT_PCT, justifyContent: "flex-end" },
+              ]}
+            >
+              <TouchableOpacity
+                style={styles.outerCircle}
+                onPress={this._takePicture}
+                disabled={!this.state.showCamera}
+              >
+                <View style={styles.circle} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-        <TouchableOpacity
-          style={styles.outerCircle}
-          onPress={this._takePicture}
-          disabled={!this.state.showCamera}
-        >
-          <View style={styles.circle} />
-        </TouchableOpacity>
+        {this._getFlashToggle()}
       </View>
     );
   }
@@ -310,30 +332,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
-  feedbackContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  feedbackItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 1,
-  },
   feedbackItemIcon: {
     height: 32,
     width: 32,
   },
-  testStrip: {
-    aspectRatio: 0.048,
-    flex: 1,
-    opacity: 0.5,
+  feedbackItemText: {
+    alignItems: "center",
+    color: "white",
+    fontSize: REGULAR_TEXT,
+    justifyContent: "center",
+    marginVertical: GUTTER,
+    textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.99)",
+    textShadowOffset: { width: -1, height: 1 },
+    textShadowRadius: 10,
+  },
+  testStripViewfinder: {
+    aspectRatio: RDT_ASPECT_RATIO,
+    height: "100%",
   },
   testStripContainer: {
-    marginHorizontal: "8%",
-    marginVertical: "-4%",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
   },
+
   outerCircle: {
     alignItems: "center",
     justifyContent: "center",
@@ -352,5 +375,9 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     height: 60,
     width: 60,
+  },
+  backButton: {
+    marginTop: GUTTER,
+    marginLeft: GUTTER / 2,
   },
 });
