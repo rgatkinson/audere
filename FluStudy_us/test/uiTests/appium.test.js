@@ -395,7 +395,6 @@ async function rdt_screen(
 ) {
   let manual_capture_required = true;
   if (!isSimulator) {
-    screens_visited.push(screen_info.key);
     startTime = new Date();
     secondsElapsed = 0;
     console.log("RDT Capture attempted");
@@ -414,16 +413,14 @@ async function rdt_screen(
 
   if (manual_capture_required) {
     console.log("RDT Capture FAILED");
+    screens_visited.push(screen_info.key);
     await driver.sleep(3000); //wait to make sure button can load
     if (platform == "Android") {
       await driver.element("id", "android:id/button1").click();
-    } else {
-      await driver.elementByAccessibilityId(strings.common.button.ok).click();
     }
 
     //prevents the tap from happening before the button appears
     await driver.sleep(2000);
-    screens_visited.push("TestStripCamera");
     await new wd.TouchAction(driver)
       .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
       .perform();

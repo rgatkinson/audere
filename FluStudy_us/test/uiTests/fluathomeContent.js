@@ -527,7 +527,7 @@ export const content = [
     title: strings.TestStripSurvey2.title,
     button: {
       name: strings.common.button.continue + " ",
-      onClick: "RDTInstructions",
+      onClick: "NonRDTInstructions",
     },
     key: "TestStripSurvey2",
     input: [
@@ -546,17 +546,17 @@ export const content = [
   },
   {
     type: "basic",
-    title: strings.RDTInstructions.title,
+    title: strings.NonRDTInstructions.title,
     button: {
       name: strings.common.button.continue + " ",
-      onClick: "RDTReader",
+      onClick: "TestStripCamera",
     },
-    key: "RDTInstructions",
+    key: "NonRDTInstructions",
   },
   {
     type: "rdt",
     title: strings.TestStripCamera.title,
-    key: "RDTReader",
+    key: "TestStripCamera",
   },
   {
     type: "basic",
