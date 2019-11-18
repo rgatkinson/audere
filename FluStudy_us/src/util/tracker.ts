@@ -59,6 +59,7 @@ export const AppHealthEvents = {
   SAVE_STORAGE_PASSWORD_ERROR: "save_storage_password_error",
   FIRESTORE_SAVE_PHOTO_ERROR: "firestore_save_photo_error",
   FIRESTORE_SAVE_SURVEY_ERROR: "firestore_save_survey_error",
+  MATCH_BARCODE_ERROR: "match_barcode_error",
 };
 
 export const AppEvents = {

@@ -5,6 +5,7 @@ import { PatientAchievementInfo } from "../store/meta";
 import { getApiBaseUrl } from "../transport";
 import { createAccessKey } from "./accessKey";
 import base64url from "base64url";
+import { AppHealthEvents, logFirebaseEvent } from "./tracker";
 
 export async function getBarcodeNextScreen() {
   const store = await getStore();
@@ -64,7 +65,11 @@ async function getPatientAchievementInfo(
       if (!!response.data) {
         return response.data;
       }
-    } catch (e) {}
+    } catch (error) {
+      logFirebaseEvent(AppHealthEvents.MATCH_BARCODE_ERROR, {
+        error: JSON.stringify(error),
+      });
+    }
     return {
       email: "",
       emailHash: "",
