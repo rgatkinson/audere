@@ -31,16 +31,14 @@ import { crashlytics } from "../crashReporter";
 import {
   Action,
   appendEvent,
-  clearState,
   setActiveRouteName,
   setConnectivity,
-  setCSRUIDIfUnset,
   setMarketingProperties,
   setShownOfflineWarning,
   StoreState,
 } from "../store/";
-import { newUID } from "../util/csruid";
 import { notificationLaunchHandler } from "../util/notifications";
+import { clearNavState, initializeCSRUID } from "../util/resetAlert";
 import {
   AppEvents,
   DrawerEvents,
@@ -165,7 +163,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     //
     // Similarly, we attempt to acquire one whenever we clear state below.
     if (!this.props.csruid) {
-      this.initializeCSRUID();
+      initializeCSRUID(this.props.dispatch);
     }
 
     // NOTE system notifications (camera, push notification permission requests) toggle
@@ -199,13 +197,14 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     }
 
     if (nextAppState === "quadTap") {
-      this.props.dispatch(
-        appendEvent(
-          EventInfoKind.TimeoutNav,
-          "app:" + nextAppState + ":redirectToScreeningStart"
-        )
-      );
-      this.clearState();
+      this.navigator &&
+        this.navigator.current &&
+        this.navigator.current.props.navigation &&
+        clearNavState(
+          this.navigator.current.props.navigation,
+          this.props.dispatch,
+          nextAppState
+        );
     } else if (nextAppState === "launch" || nextAppState === "active") {
       if (this.props.activeRouteName === "CameraSettings") {
         // Expo V35 currently has an issue on iOS where permissions aren't queried
@@ -231,24 +230,6 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     }
   };
 
-  clearState() {
-    this.navigator &&
-      this.navigator.current &&
-      this.navigator.current.dispatch(
-        StackActions.reset({
-          index: 0,
-          actions: [NavigationActions.navigate({ routeName: "Welcome" })],
-        })
-      );
-    this.props.dispatch(clearState());
-    this.initializeCSRUID();
-  }
-
-  async initializeCSRUID(): Promise<void> {
-    const csruid = await newUID();
-    this.props.dispatch(setCSRUIDIfUnset(csruid));
-  }
-
   _getNavEvent(action: NavigationAction): string | undefined {
     switch (action.type) {
       case NavigationActions.BACK:
@@ -264,10 +245,6 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
   ) => {
     const currentScreen = this.props.activeRouteName;
     const nextScreen = getActiveRouteName(newState);
-
-    if (!this.props.csruid) {
-      this.initializeCSRUID();
-    }
 
     if (nextScreen != null && nextScreen !== currentScreen) {
       this.props.dispatch(setActiveRouteName(nextScreen));

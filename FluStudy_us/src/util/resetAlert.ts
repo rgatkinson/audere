@@ -5,12 +5,28 @@ import {
   NavigationScreenProp,
   StackActions,
 } from "react-navigation";
-import { Action, clearState } from "../store";
+import { Action, appendEvent, clearState, setCSRUIDIfUnset } from "../store";
+import { newUID } from "../util/csruid";
+import { EventInfoKind } from "audere-lib/chillsProtocol";
 
-function clearNavState(
-  nav: NavigationScreenProp<any, any>,
+export async function initializeCSRUID(
   dispatch: (action: Action) => void
+): Promise<void> {
+  const csruid = await newUID();
+  dispatch(setCSRUIDIfUnset(csruid));
+}
+
+export function clearNavState(
+  nav: NavigationScreenProp<any, any>,
+  dispatch: (action: Action) => void,
+  nextAppState: string
 ) {
+  dispatch(
+    appendEvent(
+      EventInfoKind.AppNav,
+      "app:" + nextAppState + ":redirectToScreeningStart"
+    )
+  );
   dispatch(clearState());
   nav.dispatch(
     StackActions.reset({
@@ -18,6 +34,7 @@ function clearNavState(
       actions: [NavigationActions.navigate({ routeName: "Welcome" })],
     })
   );
+  initializeCSRUID(dispatch);
 }
 
 export function resetAlert(
@@ -33,7 +50,7 @@ export function resetAlert(
       },
       {
         text: i18n.t("common:button:yes"),
-        onPress: () => clearNavState(nav, dispatch),
+        onPress: () => clearNavState(nav, dispatch, "active"),
       },
     ]
   );
