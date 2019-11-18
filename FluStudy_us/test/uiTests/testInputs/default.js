@@ -6,15 +6,15 @@
 import strings from "../../../src/i18n/locales/en.json";
 
 export const inputs = {
-  [strings.barcode.placeholder]: "0000000000",
-  [strings.common.emailEntry.placeholder]: "philip@auderenow.org",
+  [strings.barcode.placeholder]: "ID11111111",
+  [strings.common.emailEntry.placeholder]: "test@auderenow.org",
   [strings.surveyTitle.whatSymptoms]: [strings.surveyOption.cough],
   [strings.surveyTitle.symptomsSeverity]: strings.surveyButton.mild,
   [strings.surveyTitle.whenFirstNoticedIllness]: "none",
   [strings.surveyTitle.howLongToSickest]: strings.surveyButton.halfDay,
   [strings.surveyTitle.antiviral]: strings.surveyButton.no,
   [strings.surveyTitle.fluShot]: strings.surveyButton.no,
-  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
+  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA")]: strings
     .surveyButton.yes,
   [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
   [strings.surveyTitle.futureStudies]: strings.surveyButton.no,

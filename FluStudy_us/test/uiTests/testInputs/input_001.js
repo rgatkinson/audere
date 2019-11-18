@@ -7,8 +7,8 @@ import strings from "../../../src/i18n/locales/en.json";
 const today = new Date();
 
 export const inputs = {
-  [strings.barcode.placeholder]: "0010010010",
-  [strings.common.emailEntry.placeholder]: "philip@auderenow.org",
+  [strings.barcode.placeholder]: "ID11111111",
+  [strings.common.emailEntry.placeholder]: "test@auderenow.org",
   [strings.surveyTitle.whatSymptoms]: [
     strings.surveyOption.feelingFeverish,
     strings.surveyOption.soreThroat,
@@ -32,7 +32,7 @@ export const inputs = {
     strings.surveyButton.notAtAll,
   [strings.surveyTitle.smokeTobacco]: strings.surveyButton.yes,
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.yes,
-  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa")]: strings
+  [strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA")]: strings
     .surveyButton.yes,
   [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton.liveByMyself,

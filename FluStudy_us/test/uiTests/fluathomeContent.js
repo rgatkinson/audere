@@ -382,7 +382,7 @@ export const content = [
     key: "GeneralExposure",
     input: [
       {
-        name: strings.surveyTitle.travelOutsideState.replace("{{state}}", "wa"),
+        name: strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA"),
         type: "radio",
         dbLocation: "responses",
         options: [strings.surveyButton.yes, strings.surveyButton.no],
