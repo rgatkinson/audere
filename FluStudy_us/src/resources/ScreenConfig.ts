@@ -198,20 +198,14 @@ export const Screens: ScreenConfig[] = [
     key: "HowAmIHelping",
   },
   {
-    backgroundColor: "transparent",
     body: [
-      { tag: MainImage, props: { uri: "howthishelps", useForChrome: true } },
-      { tag: Title, props: { center: false, color: "white" } },
-      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
+      { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
       {
         tag: ContinueButton,
-        props: {
-          next: "ScanInstructions",
-          textStyle: { color: "white" },
-        },
+        props: { next: "ScanInstructions" },
       },
     ],
-    chromeProps: { showBackgroundOnly: true },
     automationNext: "ScanInstructions",
     key: "ResearchStudy",
   },
@@ -916,7 +910,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "updatesettings" } },
       { tag: Title },
       {
         tag: ScreenText,
@@ -1055,12 +1048,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc2", textVariablesFn: getDevice },
-      },
-      { tag: ScreenText, props: { label: "desc3" } },
-      {
-        tag: ContinueButton,
-        props: { surveyGetNextFn: pendingNavigation },
+        props: { label: "desc2" },
       },
     ],
     key: "Shipping",
@@ -1073,14 +1061,18 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc2" },
       },
-      { tag: ScreenText, props: { label: "desc3" } },
       {
-        tag: BulletPointsComponent,
-        props: { label: "desc4" },
+        tag: MainImage,
+        props: { uri: "fedextracking", imageStyle: { marginTop: 0 } },
       },
       {
+        tag: BulletPointsComponent,
+        props: { label: "desc3" },
+      },
+      { tag: ScreenText, props: { label: "desc4" } },
+      {
         tag: ContinueButton,
-        props: { surveyGetNextFn: pendingNavigation },
+        props: { surveyGetNextFn: pendingNavigation, label: "done" },
       },
     ],
     key: "CallForPickup",
@@ -1093,13 +1085,35 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: { label: "desc2" },
       },
-      { tag: ScreenText, props: { label: "desc3" } },
+      {
+        tag: MainImage,
+        props: { uri: "fedextracking", imageStyle: { marginTop: 0 } },
+      },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc3" },
+      },
+      { tag: ScreenText, props: { label: "desc4" } },
+      {
+        tag: ContinueButton,
+        props: { surveyGetNextFn: pendingNavigation, label: "done" },
+      },
+    ],
+    key: "WebsiteForPickup",
+  },
+  {
+    body: [
+      { tag: Title },
+      {
+        tag: ScreenText,
+        props: { label: "desc", textVariablesFn: getShippingTextVariables },
+      },
       {
         tag: ContinueButton,
         props: { surveyGetNextFn: pendingNavigation },
       },
     ],
-    key: "WebSiteForPickup",
+    key: "WebsiteForDropoff",
   },
   {
     body: [
@@ -1156,11 +1170,7 @@ export const Screens: ScreenConfig[] = [
     workflowEvent: "surveyCompletedAt",
   },
   {
-    body: [
-      { tag: MainImage, props: { uri: "nointernetconnection" } },
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-    ],
+    body: [{ tag: Title }, { tag: ScreenText, props: { label: "desc" } }],
     footer: [
       {
         tag: PendingButton,

@@ -67,27 +67,6 @@ export function pushNavigate(
   navigation.dispatch(StackActions.push({ routeName: target }));
 }
 
-export function barcodeScan(
-  title: string,
-  navigation: NavigationScreenProp<any, any>
-) {
-  navigation.dispatch(StackActions.push({ routeName: "ScanInstructions" }));
-}
-
-export function callForPickup(
-  title: string,
-  navigation: NavigationScreenProp<any, any>
-) {
-  navigation.dispatch(StackActions.push({ routeName: "CallForPickup" }));
-}
-
-export function websiteForPickup(
-  title: string,
-  navigation: NavigationScreenProp<any, any>
-) {
-  navigation.dispatch(StackActions.push({ routeName: "WebSiteForPickup" }));
-}
-
 export function dropOffPackage(
   title: string,
   navigation: NavigationScreenProp<any, any>,

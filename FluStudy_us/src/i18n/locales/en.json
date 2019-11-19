@@ -359,7 +359,7 @@
   },
   "EmailError": {
     "title": "Email could not be verified",
-    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievement account on record.\n\nYou can try to re-enter your email, or if you think you've grabbed the wrong kit, you can scan a different kit barcode. Select an option below to try again.\n\n[Re-enter your email](PUSHNAVIGATE:EmailConfirmation)\n\n[Scan a different kit barcode](BARCODESCAN)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
+    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievement account on record.\n\nYou can try to re-enter your email, or if you think you've grabbed the wrong kit, you can scan a different kit barcode. Select an option below to try again.\n\n[Re-enter your email](PUSHNAVIGATE:EmailConfirmation)\n\n[Scan a different kit barcode](PUSHNAVIGATE:ScanInstructions)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
   },
   "Unpacking": {
     "title": "Set up your kit box",
@@ -576,22 +576,28 @@
   },
   "Shipping": {
     "title": "FedEx your kit",
-    "desc": "Now that your package is ready to go, please send it back as soon as possible. The sample can only be used if it's returned quickly. The return postage is prepaid; you just need to schedule a pickup or drop it off.\n\nThere are three options to send the kit back:",
-    "desc2": "[Call FedEx to arrange for a pickup](CALLFORPICKUP) from your location\n[Schedule a pickup on the FedEx website](WEBSITEFORPICKUP)\n[Drop off your package](DROPOFFPACKAGE:{{state}}/{{city}}) at a nearby FedEx office or drop box.",
-    "desc3": "Please note: This package **can NOT** be dropped off at a FedEx retail location (e.g. Walgreens, Safeway, etc.)"
+    "desc": "Now that your package is ready to go, please send it back as soon as possible. The sample can only be used if it's returned quickly. The return postage is prepaid.\n\nSelect one of the options below to send the kit back:",
+    "desc2": "[Call FedEx to arrange for a pickup](PUSHNAVIGATE:CallForPickup) from your location\n[Schedule a pickup on the FedEx website](PUSHNAVIGATE:WebsiteForPickup)\n[Drop off your package](PUSHNAVIGATE:WebsiteForDropoff) at a nearby FedEx office or drop box."
   },
   "CallForPickup": {
     "title": "Call FedEx to pickup package",
     "desc": "Call [(800) GO FEDEX](PHONE:8004633339) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
-    "desc2": "What are you calling about? Say \"**pickup**\"\nIs stamp on your label? Say \"**no**\"\nWhat kind of return? Say \"**FedEx Express**\"",
-    "desc3": "The FedEx Express return tracking number is the 12-digit number on the return label.",
-    "desc4": "Note the confirmation and pickup numbers provided after you schedule the pickup.\nYou should not be asked for a credit card number because the return postage is prepaid. If you are transferred to FedEx customer service and a credit card is requested, state that this is a FedEx Express return pickup."
+    "desc2": "How can I help you? Say \"**schedule a pickup**\"\nTo schedule a pickup say \"**I am using a label**\"\nIs the word \"stamp\" on your label? Say \"**no**\"\nFind the tracking number on the bottom of the FedEx shipping bag label after the characters **TRK#**",
+    "desc3": "Confirm your pickup address and answer the other questions\nNote the pickup confirmation number provided by FedEx",
+    "desc4": "You should not be asked for a credit card number because the return postage is prepaid. If you are transferred to FedEx customer service and a credit card is requested, state that this is a FedEx Express return pickup.\n\nCall [(800) GO FEDEX](PHONE:8004633339)",
+    "done": "Done scheduling pickup"
   },
-  "WebSiteForPickup": {
+  "WebsiteForPickup": {
     "title": "Schedule a FedEx pickup online",
     "desc": "You can fill out a form on the FedEx website to arrange for a pickup. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen filling out the form on the FedEx site, please note:",
-    "desc2": "First enter the Tracking ID from the label on the return package. It is a 12-digit number called **Trk#** near the bottom.\nEnter your name, the pickup address, a phone number, the pickup type, the date, and any special pickup instructions.\nNumber of packages: **1**\nDoes package contain hazardous material? **Yes**",
-    "desc3": "Packages will be picked up from most residences 8am-8pm Tue-Sat and from business locations 8am-6pm Mon-Fri.\n\n[Schedule pickup](https://www.fedex.com/grd/rpp/ShowRPP.do)"
+    "desc2": "First enter the tracking number from the label on the FedEx shipping bag. It is a 12-digit number beginning with **TRK#** at the bottom, above the barcode.",
+    "desc3": "Enter your name, the pickup address, a phone number, the pickup type, the date, and any special pickup instructions.\nDoes package contain hazardous material? **Yes**",
+    "desc4": "[Schedule pickup](https://www.fedex.com/grd/rpp/ShowRPP.do)",
+    "done": "Done scheduling pickup"
+  },
+  "WebsiteForDropoff": {
+    "title": "Drop off your package",
+    "desc": "Your return postage is prepaid for your package. You can drop it off at a nearby FedEx office or drop box.\n\nPlease note, this package cannot be dropped off at a FedEx retail location (e.g. Walgreens, Safeway, etc.)\n\n[Find a FedEx location](DROPOFFPACKAGE:{{state}}/{{city}})"
   },
   "Thanks": {
     "title": "All done!",

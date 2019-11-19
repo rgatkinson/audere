@@ -4,14 +4,11 @@
 // can be found in the LICENSE file distributed with this file.
 
 import {
-  barcodeScan,
-  callForPickup,
   callNumber,
   contactSupport,
   dropOffPackage,
   emailAddress,
   pushNavigate,
-  websiteForPickup,
 } from "./LinkConfig";
 
 export const textActions = {
@@ -19,8 +16,5 @@ export const textActions = {
   EMAIL: emailAddress,
   CONTACTSUPPORT: contactSupport,
   PUSHNAVIGATE: pushNavigate,
-  BARCODESCAN: barcodeScan,
-  CALLFORPICKUP: callForPickup,
-  WEBSITEFORPICKUP: websiteForPickup,
   DROPOFFPACKAGE: dropOffPackage,
 };
