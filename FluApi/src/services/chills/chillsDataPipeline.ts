@@ -139,8 +139,8 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           s.evidation_id
         from
           chills_derived.survey_named_array_items c
-          left join chills.matched_kits m on c.docid ilike m.identifier || '%' and m.demo = false
-          left join chills.shipped_kits s on m.barcode = s.barcode
+          left join chills.matched_kits m on c.docid ilike m.identifier || '%'
+          left join chills.shipped_kits s on m.barcode = s.barcode and s.demo = false
       `,
     }),
 

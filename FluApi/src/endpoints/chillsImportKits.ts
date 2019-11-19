@@ -69,7 +69,7 @@ export class ChillsImportKits {
 
     // refresh pipeline
     logger.info("Refreshing derived schema");
-    this.pipelineSvc.refresh(this.pipeline);
+    await this.pipelineSvc.refresh(this.pipeline);
     logger.info("Refresh of derived schema complete");
 
     res.sendStatus(200);

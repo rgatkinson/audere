@@ -117,15 +117,16 @@ export function namedSampleColumns(): string[] {
 }
 
 export function sampleColumns(columnPrefix?: string): string[] {
+  const prefix = columnPrefix || "";
   return [
-    `${columnPrefix}samples_manualentry`,
-    `${columnPrefix}samples_code128`,
-    `${columnPrefix}samples_code39`,
-    `${columnPrefix}samples_photoguid`,
-    `${columnPrefix}samples_rdtreaderphotoguid`,
-    `${columnPrefix}samples_rdtreaderhcphotoguid`,
-    `coalesce(${columnPrefix}samples_code128, ${columnPrefix}samples_code39, ${columnPrefix}samples_1, ${columnPrefix}samples_2, ${columnPrefix}samples_manualentry) as samples_barcode`,
-    `coalesce(${columnPrefix}samples_rdtreaderphotoguid, ${columnPrefix}samples_photoguid) as samples_photo`,
+    `${prefix}samples_manualentry`,
+    `${prefix}samples_code128`,
+    `${prefix}samples_code39`,
+    `${prefix}samples_photoguid`,
+    `${prefix}samples_rdtreaderphotoguid`,
+    `${prefix}samples_rdtreaderhcphotoguid`,
+    `coalesce(${prefix}samples_code128, ${prefix}samples_code39, ${prefix}samples_1, ${prefix}samples_2, ${prefix}samples_manualentry) as samples_barcode`,
+    `coalesce(${prefix}samples_rdtreaderphotoguid, ${prefix}samples_photoguid) as samples_photo`,
   ];
 }
 
@@ -133,6 +134,7 @@ export function answerColumns(
   questions: SurveyQuestion[],
   columnPrefix?: string
 ): string[] {
+  const prefix = columnPrefix || "";
   return flatMap(columns, questions);
 
   function columns(question: SurveyQuestion): string[] {
@@ -148,7 +150,7 @@ export function answerColumns(
       case SurveyQuestionType.MonthPicker:
         return [
           `
-          ${columnPrefix}response_${qid}->'answer'->0->>'valueDateTime' as ${qid}
+          ${prefix}response_${qid}->'answer'->0->>'valueDateTime' as ${qid}
         `,
         ];
 
@@ -156,7 +158,7 @@ export function answerColumns(
       case SurveyQuestionType.ZipCodeInput:
         return [
           `
-          ${columnPrefix}response_${qid}->'answer'->0->>'valueString' as ${qid}
+          ${prefix}response_${qid}->'answer'->0->>'valueString' as ${qid}
         `,
         ];
 
@@ -169,8 +171,8 @@ export function answerColumns(
         return [
           `
             jsonb_extract_path(
-              ${columnPrefix}response_${qid}->'answerOptions',
-              ${columnPrefix}response_${qid}->'answer'->0->>'valueIndex'
+              ${prefix}response_${qid}->'answerOptions',
+              ${prefix}response_${qid}->'answer'->0->>'valueIndex'
             )->>'id' as ${qid}
           `,
         ];
@@ -189,10 +191,10 @@ export function answerColumns(
           (
             select (
               ${selectIndexOfKeyValue(
-                `${columnPrefix}response_${qid}->'answerOptions'`,
-                `${columnPrefix}id`,
+                `${prefix}response_${qid}->'answerOptions'`,
+                `${prefix}id`,
                 option,
-                `${columnPrefix}response_${qid}->'answer' @> ('[{"valueIndex":' || index || '}]')::jsonb`
+                `${prefix}response_${qid}->'answer' @> ('[{"valueIndex":' || index || '}]')::jsonb`
               )}
             )
             is not null
