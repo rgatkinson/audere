@@ -40,6 +40,7 @@ export interface OptionQuestion extends SurveyQuestion {
 }
 export interface TextQuestion extends SurveyQuestion {
     placeholder: string;
+    autoCapitalize?: "none" | "sentences" | "words" | "characters";
 }
 export interface DropDownQuestion extends SurveyQuestion {
     placeholder: string;
@@ -85,7 +86,7 @@ export declare const TravelOutsideUSConfig: SurveyQuestion;
 export declare const SpentTimeCityConfig: TextQuestion;
 export declare const SpentTimeStateConfig: DropDownQuestion;
 export declare const SpentTimeZipCodeConfig: TextQuestion;
-export declare const WhichCountriesOutsideUSConfig: MultiDropDownQuestion;
+export declare const WhichCountriesOutsideUSConfig: TextQuestion;
 export declare const PeopleInHouseholdConfig: SurveyQuestion;
 export declare const ChildrenAgeGroupsConfig: OptionQuestion;
 export declare const ChildrenDaycarePreschoolConfig: SurveyQuestion;

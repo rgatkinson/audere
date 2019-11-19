@@ -52,6 +52,7 @@ export interface OptionQuestion extends SurveyQuestion {
 
 export interface TextQuestion extends SurveyQuestion {
   placeholder: string;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
 }
 
 export interface DropDownQuestion extends SurveyQuestion {
@@ -558,6 +559,7 @@ export const TravelOutsideUSConfig: SurveyQuestion = {
 };
 
 export const SpentTimeCityConfig: TextQuestion = {
+  autoCapitalize: "words",
   buttons: [],
   conditions: [
     [
@@ -646,6 +648,7 @@ export const SpentTimeZipCodeConfig: TextQuestion = {
 };
 
 export const WhichCountriesOutsideUSConfig: TextQuestion = {
+  autoCapitalize: "words",
   buttons: [],
   conditions: [
     {

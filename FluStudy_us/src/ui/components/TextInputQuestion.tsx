@@ -38,6 +38,7 @@ class TextInputQuestion extends React.Component<Props & WithNamespaces> {
     return (
       <View style={[styles.container, highlighted && HIGHLIGHT_STYLE]}>
         <TextInput
+          autoCapitalize={question.autoCapitalize}
           placeholder={t("surveyPlaceholder:" + question.placeholder)}
           returnKeyType="done"
           value={this.state.text}
