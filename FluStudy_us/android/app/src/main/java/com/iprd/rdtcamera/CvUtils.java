@@ -5,12 +5,18 @@ import android.util.Log;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.utils.Converters;
 import org.opencv.video.Video;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.opencv.core.CvType.CV_8U;
+import static org.opencv.core.CvType.CV_8UC3;
+import static org.opencv.core.CvType.CV_8UC4;
+import static org.opencv.imgproc.Imgproc.line;
 
 public class CvUtils {
 
@@ -86,8 +92,50 @@ public class CvUtils {
         Size imgSize = new Size(1280,720);
         //test for identity
         double l=CvUtils.computePredictionLoss(ref,ins,imgSize);
-
-
     }
+    public static Point mComputeVector_FinalPoint=new Point();
+    public static Point mComputeVector_FinalMVector=new Point();
+    public static Mat ComputeVector(Point translation,Mat m,Scalar s) {
+        double y = translation.y;//warp.get(1, 2)[0];
+        double x = translation.x;//warp.get(0, 2)[0];
+        double r = Math.sqrt(x * x + y * y);
 
+        double angleRadian = Math.atan2(y, x);
+        if(angleRadian < 0){
+            angleRadian += Math.PI * 2;;
+        }
+//        Log.d("ComputedAngle", r+"["+Math.toDegrees(angleRadian) +"]");
+//        if (x < 0.0) { //2  and 3 quad
+//            angleRadian = angleRadian + Math.PI;
+//        } else if (x >= 0.0 && y < 0.0) {
+//            angleRadian = angleRadian + Math.PI * 2;
+//        }
+        double x1 = Math.abs(r * Math.cos(angleRadian));
+        double y1 = Math.abs(r * Math.sin(angleRadian));
+        double angle = Math.toDegrees(angleRadian);
+        if( angle>=0 && angle <=90){
+            x1 = 100+x1;
+            y1 = 100-y1;
+        }else if (angle > 90 && angle <= 180){
+            x1 = 100-x1;
+            y1 = 100-y1;
+        }else if (angle > 180 && angle <= 270) {
+            x1 = 100-x1;
+            y1 = 100+y1;
+        }else if(angle >270 && angle <=360){
+            x1 = 100+x1;
+            y1 = 100+y1;
+        }
+        Point p = new Point(x1,y1);
+        Log.d("MotionVector", r +"["+Math.toDegrees(angleRadian) +"]");
+//        Log.d("Points", "[100,100] -> ["+x1+","+y1+"]");
+        if(m == null) {
+            m = new Mat(200, 200, CV_8UC4);
+            m.setTo(new Scalar(0));
+        }
+        line(m, new Point(100,100), new Point(x1,y1),s,5);
+        mComputeVector_FinalPoint=p;
+        mComputeVector_FinalMVector = new Point(r,Math.toDegrees(angleRadian));
+        return m;
+    }
 }

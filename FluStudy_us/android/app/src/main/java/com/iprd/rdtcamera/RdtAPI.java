@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.Point;
@@ -14,30 +13,32 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import java.nio.MappedByteBuffer;
-import java.util.concurrent.Semaphore;
+import java.util.Vector;
+
 
 import static com.iprd.rdtcamera.AcceptanceStatus.GOOD;
 import static com.iprd.rdtcamera.AcceptanceStatus.TOO_HIGH;
 import static com.iprd.rdtcamera.AcceptanceStatus.TOO_LOW;
 import static com.iprd.rdtcamera.CvUtils.PrintAffineMat;
+import static com.iprd.rdtcamera.CvUtils.mComputeVector_FinalMVector;
+import static com.iprd.rdtcamera.CvUtils.mComputeVector_FinalPoint;
 import static com.iprd.rdtcamera.CvUtils.scaleAffineMat;
-import static com.iprd.rdtcamera.ImageRegistration.getTransformation;
 import static com.iprd.rdtcamera.CvUtils.warpPoint;
+import static com.iprd.rdtcamera.ImageRegistration.ComputeMotion;
 import static com.iprd.rdtcamera.Utils.SaveMatrix;
 import static com.iprd.rdtcamera.Utils.getBitmapFromMat;
 import static com.iprd.rdtcamera.Utils.rotateRect;
-import static com.iprd.rdtcamera.Utils.saveImage;
-import static java.time.Instant.MIN;
 import static org.opencv.core.Core.BORDER_REFLECT101;
-import static org.opencv.core.Core.LINE_4;
 import static org.opencv.core.Core.LINE_AA;
 import static org.opencv.core.Core.mean;
 import static org.opencv.core.Core.meanStdDev;
 import static org.opencv.core.CvType.CV_16S;
+import static org.opencv.core.CvType.CV_32F;
+import static org.opencv.core.CvType.CV_8U;
 import static org.opencv.imgproc.Imgproc.INTER_CUBIC;
-import static org.opencv.imgproc.Imgproc.INTER_LANCZOS4;
 import static org.opencv.imgproc.Imgproc.Laplacian;
 import static org.opencv.imgproc.Imgproc.cvtColor;
+import static org.opencv.imgproc.Imgproc.line;
 import static org.opencv.imgproc.Imgproc.putText;
 import static org.opencv.imgproc.Imgproc.pyrDown;
 import static org.opencv.imgproc.Imgproc.rectangle;
@@ -56,23 +57,17 @@ public class RdtAPI {
     Mat mGreyMat;
     Mat mGreyMatResized;
     AcceptanceStatus mStatus=null;
-    int mTaskID=-1;
+    Vector<Mat> mWarpList= new Vector<>();
 
     private short mBrightness;
     private short mSharpness;
     Mat mLocalcopy;
-    Mat mRefPyr=null;
     boolean mPlaybackMode;
     long mTensorFlowProcessTime;
     long mPreProcessingTime;
     long mPostProcessingTime;
-    Point mPreviousLTPoint;
-    Point mPreviousRBPoint;
-    boolean mPreviousStudy=false;
-    boolean ismPreviousRDT=false;
-    Mat mPreviousMat=null;
     Mat mPipMat=null;
-    Mat mTrackedMat=null;
+    Mat mMotionVectorMat=null;
     private final Object piplock = new Object();
 
     public void setmShowPip(boolean mShowPip) {
@@ -268,6 +263,7 @@ public class RdtAPI {
         Mat matinput = new Mat();
         Mat greyMat = new Mat();
         Mat greyMatResized = new Mat();
+        mMotionVectorMat = null;
         Mat mPrevious;
         mPreProcessingTime = mTensorFlowProcessTime = mPostProcessingTime= 0;
 
@@ -275,127 +271,88 @@ public class RdtAPI {
         try {
             long st  = System.currentTimeMillis();
             Utils.bitmapToMat(capFrame, matinput);
+            if (false) SaveMatrix(matinput, "Input");
+
             cvtColor(matinput, greyMat, Imgproc.COLOR_RGBA2GRAY);
             Point lt = null,rb=null;
-            Mat warpmat=null;
-            if(mTrackingEnable) {
-                warpmat = ImageRegistration.FindMotion(greyMat, true);
-                if (warpmat != null) {
-                    int level = 4;
-                    Mat warp = scaleAffineMat(warpmat, level);
-                    Log.i("Tx-Ty Inp", warpmat.get(0, 2)[0] + "x" + warpmat.get(1, 2)[0]);
-                    if ((Math.abs(warpmat.get(0, 2)[0]) > mConfig.mMaxAllowedTranslationX || Math.abs(warpmat.get(1, 2)[0]) > mConfig.mMaxAllowedTranslationY)) {
-                        ret.mSteady = TOO_HIGH;
-                        mPreviousStudy = false;
-                        mPreProcessingTime = System.currentTimeMillis() - st;
-                        Log.i("Motion Detected", "Too much Motion");
-                        mPreviousRBPoint = new Point(0, 0);
-                        mPreviousLTPoint = new Point(0, 0);
-                        if (mPlaybackMode) {
-                            mLocalcopy = matinput.clone();
-                        }
-                        return ret;
-                    } else {
-                        if ((mPreviousStudy) && (ismPreviousRDT)) {
-                            //if we have previous Bounding box then we should be able to translate it.
-                            //update the new bounding box result.
-                            //Speculate point
-                            //Lets predict the next rectangle
-                            //Tracking BB
-                            ret.mSteady = GOOD;
-                            if ((null != mPreviousLTPoint) && (null != mPreviousRBPoint)) {
-                                PrintAffineMat("Track", warp);
-                                lt = warpPoint(new Point(mPreviousLTPoint.x, mPreviousLTPoint.y), warp);
-                                rb = warpPoint(new Point(mPreviousRBPoint.x + mPreviousLTPoint.x, mPreviousRBPoint.y + mPreviousLTPoint.y), warp);
-                                //Log.i("Previous Mat", mPreviousLTPoint.x+"x"+mPreviousLTPoint.y+" "+mPreviousRBPoint.x+"x"+mPreviousRBPoint.y);
-                                UpdateBB(greyMat, ret, lt, rb.x - lt.x, greyMat.cols(), rb.y - lt.y, greyMat.rows());
-                                Log.i("BBTrack", ret.mBoundingBoxX + "x" + ret.mBoundingBoxY + " " + ret.mBoundingBoxWidth + "x" + ret.mBoundingBoxHeight);
-                                ret.mRDTFound = true;
-                                if(mTrackingEnable) {
-                                    mTrackedMat = matinput.clone();
-                                    rectangle(mTrackedMat, new Point(ret.mBoundingBoxX, ret.mBoundingBoxY), new Point(ret.mBoundingBoxX + ret.mBoundingBoxWidth, ret.mBoundingBoxY + ret.mBoundingBoxHeight), new Scalar(255, 0, 0, 0), 8, LINE_AA, 0);
-                                }
-                            }
-                        } else {
-                            mPreviousStudy = true;
-                        }
-                    }
-                }else{
-                    mPreviousStudy = false;
-                }
+            Mat warp = null;
+            warp = ComputeMotion(greyMat);
+            mWarpList.add(warp.clone());
+
+            if(mWarpList.size() >11){
+                mWarpList.remove(0);
             }
-            ismPreviousRDT = false;
-            //process frame
-            Rect detectedRoi = null;
-            if(true) {
-                Mat rotatedmat = new Mat();
-                if (mSetRotation) rotatedmat = com.iprd.rdtcamera.Utils.rotateFrame(greyMat, -90);
-                org.opencv.core.Size sz = new org.opencv.core.Size(1280, 720);
-                Imgproc.resize(mSetRotation ? rotatedmat:greyMat, greyMatResized, sz, 0.0, 0.0, INTER_CUBIC);
-                mPreProcessingTime = System.currentTimeMillis() - st;
-                if( mRDTProcessingResultAvailable) {
-                    if ((mStatus!= null) && mStatus.mRDTFound) {
-                        //Find Transformation..
-                        ret.mRDTFound =true;
-                        Log.i("Rect ",mStatus.mBoundingBoxX+"x"+mStatus.mBoundingBoxY+" "+mStatus.mBoundingBoxWidth+"x"+mStatus.mBoundingBoxHeight);
-                        ret.mBoundingBoxX = mStatus.mBoundingBoxX;
-                        ret.mBoundingBoxY = mStatus.mBoundingBoxY;
-                        ret.mBoundingBoxWidth = mStatus.mBoundingBoxWidth;
-                        ret.mBoundingBoxHeight = mStatus.mBoundingBoxHeight;
-                        if(mTrackingEnable) {
-                            warpmat = ImageRegistration.FindMotionRefIns(greyMat,mGreyMat);
-                            if (warpmat != null) {
-                                Log.i("Tx-Ty ROITrack", warpmat.get(0, 2)[0] + "x" + warpmat.get(1, 2)[0]);
-                                if (!((Math.abs(warpmat.get(0, 2)[0]) > mConfig.mMaxAllowedTranslationX || Math.abs(warpmat.get(1, 2)[0]) > mConfig.mMaxAllowedTranslationY))) {
-                                    int level = 4;
-                                    Mat warp = scaleAffineMat(warpmat, level);
-                                    PrintAffineMat("ROITrack", warp);
-                                    lt = warpPoint(new Point(mStatus.mBoundingBoxX, mStatus.mBoundingBoxY), warp);
-                                    rb = warpPoint(new Point(mStatus.mBoundingBoxX + mStatus.mBoundingBoxWidth, mStatus.mBoundingBoxY + mStatus.mBoundingBoxHeight), warp);
-                                    Log.i("Points", mStatus.mBoundingBoxX + "x" + mStatus.mBoundingBoxY + "->" + lt.x + "x" + lt.y);
-                                    UpdateBB(mGreyMat, ret, lt, rb.x - lt.x, greyMat.cols(), rb.y - lt.y, greyMat.rows());
-                                    Log.i("BB ROITrack", ret.mBoundingBoxX + "x" + ret.mBoundingBoxY + " " + ret.mBoundingBoxWidth + "x" + ret.mBoundingBoxHeight);
-                                    if(mTrackingEnable) {
-                                        mTrackedMat = matinput.clone();
-                                        rectangle(mTrackedMat, new Point(ret.mBoundingBoxX, ret.mBoundingBoxY), new Point(ret.mBoundingBoxX + ret.mBoundingBoxWidth, ret.mBoundingBoxY + ret.mBoundingBoxHeight), new Scalar(255, 0, 0, 0), 8, LINE_AA, 0);
-                                    }
-                                }
-                            }
-                        }
-                    }else{
-                        ret.mRDTFound =false;
-                    }
-                    if(mInputMat != null ) mInputMat.release();
-                    if(mGreyMat != null) mGreyMat.release();
-                    if(mGreyMatResized != null) mGreyMatResized.release();
-                    mRDTProcessingResultAvailable=false;
-                }
-                //We should thread from here
-                if (!mRDTProcessing) {
-                    mRDTProcessing = true;
-                    mRDTProcessingResultAvailable = false;
-                    if (mInputMat != null) mInputMat.release();
-                    if (mGreyMat != null) mGreyMat.release();
-                    if (mGreyMatResized != null) mGreyMatResized.release();
-                    mInputMat = matinput.clone();
-                    mGreyMat = greyMat.clone();
-                    mGreyMatResized = greyMatResized.clone();
-                    mStatus = new AcceptanceStatus();
-                    if (mLinearflow) {
-                        ProcessRDT(mStatus, mInputMat, mGreyMatResized);
-                        ret = mStatus;
-                    } else {
-                        //Lets run it as thread
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ProcessRDT(mStatus, mInputMat, mGreyMatResized);
-                            }
-                        }).start();
-                    }
-                }
+            //Lets Check Motion now.
+            //Threshold1 and Threshold 2.
+            Point p = new Point(0,0);
+            for(int i=1;i<mWarpList.size();i++){
+                p.x +=mWarpList.elementAt(i).get(0,2)[0];
+                p.y +=mWarpList.elementAt(i).get(1,2)[0];
+                //Log.i(i+"", mWarpList.elementAt(i).get(0,2)[0] + "x" + mWarpList.elementAt(i).get(1,2)[0]);
+            }
+            Log.i("10 frame", p.x + "x" + p.y);
+            Log.i("1 frame", warp.get(0,2)[0] + "x" + warp.get(1,2)[0]);
+
+            Scalar sr = new Scalar(255,0,0,0);//RGBA
+            mMotionVectorMat = CvUtils.ComputeVector(p,mMotionVectorMat,sr);
+            ret.mSteady = GOOD;
+            if(mComputeVector_FinalMVector.x > 40.0){
+                ret.mSteady = TOO_HIGH;
             }
 
+            Scalar sg = new Scalar(0,255,0,0);
+            mMotionVectorMat = CvUtils.ComputeVector(new Point(warp.get(0,2)[0],warp.get(1,2)[0]),mMotionVectorMat,sg);
+            if(mComputeVector_FinalMVector.x > 40.0){
+                ret.mSteady = TOO_HIGH;
+            }
+            //process frame
+            Rect detectedRoi = null;
+            Mat rotatedmat = new Mat();
+            if (mSetRotation) rotatedmat = com.iprd.rdtcamera.Utils.rotateFrame(greyMat, -90);
+            org.opencv.core.Size sz = new org.opencv.core.Size(1280, 720);
+            Imgproc.resize(mSetRotation ? rotatedmat:greyMat, greyMatResized, sz, 0.0, 0.0, INTER_CUBIC);
+            mPreProcessingTime = System.currentTimeMillis() - st;
+            if( mRDTProcessingResultAvailable) {
+                if ((mStatus!= null) && mStatus.mRDTFound) {
+                    //Find Transformation..
+                    ret.mRDTFound =true;
+                    Log.i("Rect ",mStatus.mBoundingBoxX+"x"+mStatus.mBoundingBoxY+" "+mStatus.mBoundingBoxWidth+"x"+mStatus.mBoundingBoxHeight);
+                    ret.mBoundingBoxX = mStatus.mBoundingBoxX;
+                    ret.mBoundingBoxY = mStatus.mBoundingBoxY;
+                    ret.mBoundingBoxWidth = mStatus.mBoundingBoxWidth;
+                    ret.mBoundingBoxHeight = mStatus.mBoundingBoxHeight;
+                }else{
+                    ret.mRDTFound =false;
+                }
+                if(mInputMat != null ) mInputMat.release();
+                if(mGreyMat != null) mGreyMat.release();
+                if(mGreyMatResized != null) mGreyMatResized.release();
+                mRDTProcessingResultAvailable=false;
+            }
+            //We should thread from here
+            if (!mRDTProcessing) {
+                mRDTProcessing = true;
+                mRDTProcessingResultAvailable = false;
+                if (mInputMat != null) mInputMat.release();
+                if (mGreyMat != null) mGreyMat.release();
+                if (mGreyMatResized != null) mGreyMatResized.release();
+                mInputMat = matinput.clone();
+                mGreyMat = greyMat.clone();
+                mGreyMatResized = greyMatResized.clone();
+                mStatus = new AcceptanceStatus();
+                if (mLinearflow) {
+                    ProcessRDT(mStatus, mInputMat, mGreyMatResized);
+                    ret = mStatus;
+                } else {
+                    //Lets run it as thread
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ProcessRDT(mStatus, mInputMat, mGreyMatResized);
+                        }
+                    }).start();
+                }
+            }
             mPostProcessingTime = System.currentTimeMillis();
             if(mPlaybackMode) {
                 if(ret.mRDTFound)rectangle(matinput, new Point(ret.mBoundingBoxX, ret.mBoundingBoxY), new Point(ret.mBoundingBoxX +ret.mBoundingBoxWidth, ret.mBoundingBoxY+ret.mBoundingBoxHeight), new Scalar(255, 0, 0, 0), 4, LINE_AA, 0);
@@ -404,9 +361,6 @@ public class RdtAPI {
             if (!ret.mRDTFound) return ret;
 
             //Log.d("Bounding Box Used ",ret.mBoundingBoxX+"x"+ret.mBoundingBoxY +"  "+ret.mBoundingBoxWidth+"x"+ret.mBoundingBoxHeight);// greyMatResized.submat(detectedRoi);)
-            ismPreviousRDT = true;
-            mPreviousLTPoint = new Point(ret.mBoundingBoxX,ret.mBoundingBoxY);
-            mPreviousRBPoint = new Point(ret.mBoundingBoxWidth,ret.mBoundingBoxHeight);
             if(!computeDistortion(greyMat,ret)){
                 return ret;
             }
@@ -420,27 +374,22 @@ public class RdtAPI {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(((!ret.mRDTFound) && mTensorFlow.getSaveImages())||(mSaveNegativeData&&ret.mRDTFound)){
-//                saveImage(capFrame,"Color");
-            }
             Log.i("BB ",ret.mBoundingBoxX+"x"+ret.mBoundingBoxY+"-"+ret.mBoundingBoxWidth+"x"+ret.mBoundingBoxHeight);
             greyMatResized.release();
             greyMat.release();
             matinput.release();
-            if((mTrackedMat!= null)){
-                if(ret.mRDTFound) {
-                    Mat TrackedImage = new Mat(360, 640, mTrackedMat.type());
-                    resize(mTrackedMat, TrackedImage, new Size(360, 640));
-                    ret.mTrackedImage = getBitmapFromMat(TrackedImage);
-                }
-                mTrackedMat.release();
-                mTrackedMat=null;
+            if(mMotionVectorMat!= null){
+                ret.mInfo.mTrackedImage = getBitmapFromMat(mMotionVectorMat);
+                mMotionVectorMat.release();
+                mMotionVectorMat=null;
             }
             mInprogress = false;
             mPostProcessingTime = System.currentTimeMillis()-mPostProcessingTime;
         }
         return ret;
     }
+
+
 
     private void UpdateBB(Mat greyMat, AcceptanceStatus ret, Point lt, double x, int cols, double y, int rows) {
         ClampBoundingBox(greyMat, lt);
