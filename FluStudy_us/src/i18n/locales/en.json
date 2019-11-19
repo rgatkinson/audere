@@ -306,7 +306,7 @@
   },
   "NotEnrolledInStudy": {
     "title": "Not enrolled in study",
-    "desc": "The flu@home app is intended to be used only by individuals enrolled in the Home Testing of Respiratory Illness study operated through the Achievement Studies platform.\n\nOnly participants in the Achievement study who are **invited** to use the app should move forward in the process.\n\n[Get involved with Achievement Studies](https://www.myachievement.com)"
+    "desc": "The flu@home app is intended to be used only by individuals enrolled in the --Home Testing of Respiratory Illness-- study operated through the Achievement Studies platform.\n\nOnly participants in the Achievement study who are **invited** to use the app should move forward in the process.\n\n[Get involved with Achievement Studies](https://www.myachievement.com)"
   },
   "HowDoesTestWork": {
     "title": "How the test works",
@@ -323,7 +323,7 @@
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "Locate the barcode on the outside of the flu@home test kit in the top right corner.\n\nThe app will indicate where to place the barcode on the screen and will scan it automatically when it's positioned correctly.\n\nThe next screen will ask for access to your camera. **Please note: If you deny camera access you will be unable to continue using the app**. [Contact support](CONTACTSUPPORT) with questions."
+    "desc": "Locate the barcode on the outside of the flu@home test kit in the top right corner.\n\nThe next screen will ask for access to your camera to scan the barcode."
   },
   "barcode": {
     "yourCode": "**Your code**: {{barcode}}",
@@ -380,7 +380,7 @@
   },
   "SwabInTube": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around **4 times** in the tube.\nTap \"Start timer\" below. The swab needs to stay in the tube for one minute.",
+    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around **four times** in the tube.\nTap \"Start timer\" below. The swab needs to stay in the tube for one minute.",
     "startTimer": "Start Timer"
   },
   "FirstTimer": {
@@ -481,7 +481,7 @@
     "title": "Please wait for timer",
     "desc": "Thank you for completing the survey.\n\nYour test strip is still processing. Just wait for the timer to end and the app will direct you to the next steps.",
     "titleTimerUp": "Timer finished!",
-    "descTimerUp": "Tap **Continue** and we'll remove your test strip from the test tube."
+    "descTimerUp": "Tap \"Continue\" and we'll remove your test strip from the test tube."
   },
   "TestStripReady": {
     "title": "Remove test strip",
@@ -497,7 +497,7 @@
   },
   "RDTInstructions": {
     "title": "Scan your test strip",
-    "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap 'Continue' when ready.",
+    "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap \"Continue\" when ready.",
     "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
     "instructions2": "Hold your {{device}} flat and directly above your test strip.",
     "desc2": "Please note: If the test strip doesn't scan within {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo of it using the app."
@@ -523,7 +523,7 @@
   },
   "CameraSettings": {
     "title": "Camera access required",
-    "desc": "We're sorry, but using your {{device}}'s camera is required to continue with the test. If you'd like to continue, please update your settings.\n\nOtherwise, we thank you for your participation, and hope you feel better.\n\n**How to Update:**",
+    "desc": "We're sorry, but using your {{device}}'s camera is required to continue with the test. If you'd like to continue, please update your settings.\n\n**How to Update:**",
     "howToIOS": "**Go to Settings / Privacy / Camera / flu@home.**\n**Flip the switch to \"Yes\".**\n**Please note: When you return, the camera will be active.**",
     "howToAndroid": "**Go to Settings / Apps / flu@home / Permissions.**\n**Toggle the camera switch to on.**\n**Please note: When you return, the camera will be active.**",
     "goToSettings": "Go to Settings"
