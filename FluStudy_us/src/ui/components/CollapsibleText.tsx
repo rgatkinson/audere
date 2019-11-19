@@ -24,6 +24,7 @@ import { logFirebaseEvent } from "../../util/tracker";
 interface Props {
   titleLabel?: string;
   bodyLabel?: string;
+  textVariablesFn?(): any;
   content?: string;
   namespace?: string;
   appEvent?: string; // What event is generated when title is clicked
@@ -32,11 +33,13 @@ interface Props {
 
 interface State {
   expanded: boolean;
+  textVariables: any;
 }
 
 class CollapsibleText extends React.Component<Props & WithNamespaces> {
   state: State = {
     expanded: false,
+    textVariables: null,
   };
 
   _onPress = () => {
@@ -51,6 +54,16 @@ class CollapsibleText extends React.Component<Props & WithNamespaces> {
       });
     }
   };
+
+  async componentDidMount() {
+    const { textVariablesFn } = this.props;
+    let textVariables;
+
+    if (!!textVariablesFn) {
+      textVariables = await textVariablesFn();
+      this.setState({ textVariables });
+    }
+  }
 
   _getTitleAndBody(): { title: string; body: string } {
     const { content, namespace, t } = this.props;
@@ -69,7 +82,8 @@ class CollapsibleText extends React.Component<Props & WithNamespaces> {
           titleLabel!.includes(":") ? titleLabel : namespace + ":" + titleLabel
         ),
         body: t(
-          bodyLabel!.includes(":") ? bodyLabel : namespace + ":" + bodyLabel
+          bodyLabel!.includes(":") ? bodyLabel : namespace + ":" + bodyLabel,
+          this.state.textVariables
         ),
       };
     }

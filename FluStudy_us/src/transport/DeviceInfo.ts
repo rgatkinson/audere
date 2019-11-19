@@ -4,18 +4,20 @@
 // can be found in the LICENSE file distributed with this file.
 
 import Constants from "expo-constants";
+import i18n from "i18next";
 import { Platform } from "react-native";
-import { DeviceInfo } from "audere-lib/chillsProtocol";
+import DeviceInfo from "react-native-device-info";
+import { DeviceInfo as ChillsDeviceInfo } from "audere-lib/chillsProtocol";
 
 export const ios = Constants!.platform!.ios;
 
-export const DEVICE_INFO: DeviceInfo = {
+export const DEVICE_INFO: ChillsDeviceInfo = {
   installation: Constants.installationId,
   clientVersion: loadBuildInfo(),
   clientBuild: getBuildNumber(),
   yearClass: Constants.deviceYearClass + "",
-  // ios.userInterfaceIdiom will return "handset" or "tablet"
-  idiomText: ios ? ios.userInterfaceIdiom : "unknown",
+  idiomText:
+    Platform.OS + "++" + (DeviceInfo.isTablet() ? "tablet" : "handset"),
   platform: getPlatformInfo(),
 };
 
@@ -44,4 +46,8 @@ function getPlatformInfo() {
     info.android!.systemVersion = Platform.Version;
   }
   return info;
+}
+
+export function getDevice() {
+  return { device: i18n.t("common:device:" + DEVICE_INFO.idiomText) };
 }

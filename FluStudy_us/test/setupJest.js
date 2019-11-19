@@ -4,7 +4,7 @@
 // can be found in the LICENSE file distributed with this file.
 
 // See https://github.com/expo/expo/issues/1705
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system";
 
 require("stacktrace-parser");
 
@@ -33,6 +33,7 @@ jest.mock("react-native-device-info", () => {
   return {
     isEmulator: jest.fn(),
     getDeviceName: jest.fn(),
+    isTablet: jest.fn(),
     getIPAddress: jest.fn(() => {
       return {
         catch: jest.fn(),
@@ -48,7 +49,7 @@ jest.mock("react-native-device-info", () => {
 // files and directories.
 jest.mock("expo-file-system", () => {
   return mockFileSystem();
-})
+});
 
 function mockFileSystem() {
   const files = new Map();
@@ -74,7 +75,9 @@ function mockFileSystem() {
   }
 
   function getInfoAsync(uri) {
-    return delay(files.get(canonicalize(uri)) || { exists: false, isDirectory: false });
+    return delay(
+      files.get(canonicalize(uri)) || { exists: false, isDirectory: false }
+    );
   }
 
   function makeDirectoryAsync(uri) {
@@ -102,7 +105,12 @@ function mockFileSystem() {
   }
 
   function writeAsStringAsync(uri, contents) {
-    files.set(canonicalize(uri), { exists: true, isDirectory: false, uri, contents });
+    files.set(canonicalize(uri), {
+      exists: true,
+      isDirectory: false,
+      uri,
+      contents,
+    });
     return delay(undefined);
   }
 
@@ -110,7 +118,9 @@ function mockFileSystem() {
   makeDirectoryAsync(cacheDirectory);
 
   function notYetMocked() {
-    throw new Error(`${__filename}: mockFileSystem does not yet implement this call`);
+    throw new Error(
+      `${__filename}: mockFileSystem does not yet implement this call`
+    );
   }
 
   return {
@@ -129,7 +139,7 @@ function mockFileSystem() {
     writeAsStringAsync: jest.fn(writeAsStringAsync),
     EncodingType: {
       UTF8: "utf8",
-      Base64: "base64"
-    }
+      Base64: "base64",
+    },
   };
 }

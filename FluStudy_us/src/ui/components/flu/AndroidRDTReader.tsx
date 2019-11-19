@@ -66,6 +66,7 @@ import {
 } from "../../../util/tracker";
 import { getRemoteConfig } from "../../../util/remoteConfig";
 import Svg, { Line, Rect } from "react-native-svg";
+import { getDevice } from "../../../transport/DeviceInfo";
 
 interface Props {
   isDemo: boolean;
@@ -878,7 +879,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
               <View style={styles.instructionContainer}>
                 <View style={styles.instructionTextContainer}>
                   <Text
-                    content={t(this.state.instructionMsg)}
+                    content={t(this.state.instructionMsg, getDevice())}
                     style={styles.instructionText}
                   />
                 </View>

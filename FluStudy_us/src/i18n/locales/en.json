@@ -19,13 +19,15 @@
       "oneMinuteStartTime": "Next you'll remove your swab from the tube.",
       "tenMinuteStartTime": "Next you'll remove your test strip from the tube.",
       "connectionErrorTitle": "Connection Error",
-      "connectionError": "It looks like your device is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\"",
+      "connectionError": "It looks like your {{device}} is disconnected at the moment. To send your data, please open the app again when you are connected and tap \"Try Again.\"",
       "resetAppAlertTitle": "Do you want to restart the test with a different kit?",
       "resetAppAlertBody": "Saying Yes will reset the app."
     },
     "device": {
-      "handset": "phone",
-      "tablet": "iPad",
+      "ios++handset": "iPhone",
+      "ios++tablet": "iPad",
+      "android++handset": "phone",
+      "android++tablet": "tablet",
       "unknown": "device",
       "iosHint": " >"
     },
@@ -73,7 +75,7 @@
     "howHelps": "**How does the flu@home test help researchers?**",
     "howHelps++Answer": "Participating in the flu@home test helps researchers:\n\u279e Determine if app-guided instructions enable people to accurately test themselves at home for the flu\n\u279e Build models to predict whether someone like you may have the flu\n\u279e Understand whether an app can read a test strip more accurately than a human",
     "howSoon": "**How soon should I perform the test after being asked to open the test kit?**",
-    "howSoon++Answer": "You should download the flu@home app on your device and complete the test as soon as possible after being asked to open the test kit.",
+    "howSoon++Answer": "You should download the flu@home app on your {{device}} and complete the test as soon as possible after being asked to open the test kit.",
     "howComplete": "**How do I complete the test?**",
     "howComplete++Answer": "The flu@home app will guide you through all the steps involved in taking the test.",
     "howFindOut": "**Will I find out whether I have the flu?**",
@@ -91,7 +93,7 @@
     "willConfidential": "**Will my information be kept confidential?**",
     "willConfidential++Answer": "Your privacy is very important to us and the study team will make every effort to protect the privacy of your data.\n\nYou will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information.\n\nFor more details, please refer to the flu@home [Privacy Policy](https://fluathome.org/privacy) and the study consent document you signed, available through your Achievement account.",
     "appDelete": "**After I finish the tests, may I delete the app?**",
-    "appDelete++Answer": "Yes. Once you have completed the tests and shipped back your test kit, you may delete the flu@home app from your device."
+    "appDelete++Answer": "Yes. Once you have completed the tests and shipped back your test kit, you may delete the flu@home app from your {{device}}."
   },
   "buildInfo": {
     "version": "**Version:** ",
@@ -744,31 +746,31 @@
     "title": "Scan your test strip",
     "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap 'Continue' when ready.",
     "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
-    "instructions2": "Hold your device flat and directly above your test strip.",
+    "instructions2": "Hold your {{device}} flat and directly above your test strip.",
     "desc2": "Please note: If the test strip doesn't scan within {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo of it using the app."
   },
   "NonRDTInstructions": {
     "title": "Take a photo of test strip",
-    "desc": "Next, we'd like you to take a photo of your test strip using your device camera. The app will access your device camera for you.",
+    "desc": "Next, we'd like you to take a photo of your test strip using your {{device}}'s camera. The app will access the camera for you.",
     "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
-    "instructions2": "Hold your device flat and directly above your test strip.",
+    "instructions2": "Hold your {{device}} flat and directly above your test strip.",
     "instructions3": "Tap the round button on the screen to take a photo."
   },
   "RDTReader": {
     "flash": "FLASH: ",
     "on": "ON",
     "off": "OFF",
-    "centerStrip": "Hold your device flat and directly above the test strip",
+    "centerStrip": "Hold your {{device}} flat and directly above the test strip",
     "holdSteady": "Hold steady",
-    "tooBig": "Raise your device",
-    "tooSmall": "Lower your device",
+    "tooBig": "Raise your {{device}}",
+    "tooSmall": "Lower your {{device}}",
     "underExposed": "Turn on the flash or move to better lighting",
     "overExposed": "Ensure test strip is on the kit box and avoid glare from bright lights",
     "overExposedWithFlash": "Turn off the flash"
   },
   "CameraSettings": {
     "title": "Camera access required",
-    "desc": "We're sorry, but using your device's camera is required to continue with the test. If you'd like to continue, please update your device settings.\n\nOtherwise, we thank you for your participation, and hope you feel better.\n\n**How to Update:**",
+    "desc": "We're sorry, but using your {{device}}'s camera is required to continue with the test. If you'd like to continue, please update your settings.\n\nOtherwise, we thank you for your participation, and hope you feel better.\n\n**How to Update:**",
     "howToIOS": "**Go to Settings / Privacy / Camera / flu@home.**\n**Flip the switch to \"Yes\".**\n**Please note: When you return, the camera will be active.**",
     "howToAndroid": "**Go to Settings / Apps / flu@home / Permissions.**\n**Toggle the camera switch to on.**\n**Please note: When you return, the camera will be active.**",
     "goToSettings": "Go to Settings"

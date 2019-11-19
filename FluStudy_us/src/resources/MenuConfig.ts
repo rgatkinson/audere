@@ -13,6 +13,7 @@ import { PRIMARY_COLOR } from "../ui/styles";
 import { testSupport, callSupport } from "./LinkConfig";
 import Button from "../ui/components/Button";
 import { AppEvents } from "../util/tracker";
+import { getDevice } from "../transport/DeviceInfo";
 
 function menuScreen(
   key: string,
@@ -57,6 +58,7 @@ function getFAQComponents(key: string): Component[] {
       props: {
         titleLabel: q,
         bodyLabel: q + FAQ_ANSWER_SUFFIX,
+        textVariablesFn: getDevice,
         namespace: key,
         appEvent: AppEvents.FAQ_PRESSED,
       },

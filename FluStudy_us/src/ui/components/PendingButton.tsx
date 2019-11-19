@@ -13,6 +13,7 @@ import {
 import Button from "./Button";
 import { ActivityIndicator, NetInfo, Alert } from "react-native";
 import { GUTTER } from "../styles";
+import { getDevice } from "../../transport/DeviceInfo";
 
 interface Props {
   pendingResolvedFn(): Promise<boolean>;
@@ -39,7 +40,7 @@ class PendingButton extends React.Component<Props & WithNamespaces, State> {
     if (!isConnected) {
       Alert.alert(
         t("common:notifications:connectionErrorTitle"),
-        t("common:notifications:connectionError")
+        t("common:notifications:connectionError", getDevice())
       );
       return;
     }

@@ -103,6 +103,7 @@ import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
 import { resetAlert } from "../util/resetState";
 import { getRdtResult } from "../util/results";
 import { getSymptomsNextScreen } from "../util/symptomsResults";
+import { getDevice } from "../transport/DeviceInfo";
 
 const SECOND_MS = 1000;
 const MINUTE_MS = 60 * SECOND_MS;
@@ -794,6 +795,7 @@ export const Screens: ScreenConfig[] = [
         props: {
           num: 2,
           label: "instructions2",
+          textVariablesFn: getDevice,
           textStyle: { fontWeight: "bold" },
         },
       },
@@ -818,7 +820,7 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      { tag: ScreenText, props: { label: "desc", textVariablesFn: getDevice } },
       { tag: Divider },
       {
         tag: BulletPointsComponent,
@@ -839,6 +841,7 @@ export const Screens: ScreenConfig[] = [
           num: 2,
           label: "instructions2",
           textStyle: { fontWeight: "bold" },
+          textVariablesFn: getDevice,
         },
       },
       {
@@ -918,7 +921,7 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: ScreenText,
-        props: { label: "desc" },
+        props: { label: "desc", textVariablesFn: getDevice },
       },
       {
         tag: BulletPointsComponent,
@@ -1050,7 +1053,7 @@ export const Screens: ScreenConfig[] = [
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
-        props: { label: "desc2", textVariablesFn: getShippingTextVariables },
+        props: { label: "desc2", textVariablesFn: getDevice },
       },
       { tag: ScreenText, props: { label: "desc3" } },
       {
