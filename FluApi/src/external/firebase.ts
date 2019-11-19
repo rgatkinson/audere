@@ -4,7 +4,6 @@
 // can be found in the LICENSE file distributed with this file.
 
 import os from "os";
-import { promises as fsPromise } from "fs";
 import firebase from "firebase-admin";
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";

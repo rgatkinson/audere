@@ -60,8 +60,9 @@ export class ChillsMatchKits {
       return;
     }
 
+    const demo = request.demo || false;
     const parts = request.id.split(".");
-    const match = await this.service.matchKit(request.barcode, parts[0]);
+    const match = await this.service.matchKit(request.barcode, parts[0], demo);
 
     if (match != null) {
       res.json(match);

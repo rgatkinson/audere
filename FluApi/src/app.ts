@@ -40,6 +40,7 @@ import { CoughGiftcardEndpoint } from "./endpoints/coughGiftcardApi";
 import { ChillsEndpoint } from "./endpoints/chillsApi";
 import { ChillsFirebaseAnalyticsEndpoint } from "./endpoints/chillsFirebaseAnalyticsApi";
 import { ChillsMatchKits } from "./endpoints/chillsMatchKits";
+import { ChillsImportKits } from "./endpoints/chillsImportKits";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -388,6 +389,19 @@ export function createInternalApp(config: AppConfig) {
       sqlLock.runIfFree(
         "/api/import/chillsAnalytics",
         chillsFirebase.importAnalytics,
+        jsonNoOp
+      )
+    )
+  );
+
+  const chillsKits = new ChillsImportKits(sql);
+  internalApp.get(
+    "/api/import/chillsKits",
+    stats("importChillsKits"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/chillsKits",
+        chillsKits.importKits,
         jsonNoOp
       )
     )

@@ -121,11 +121,12 @@ describe("Chills match kit", () => {
       barcode: barcode,
       email: "test@test.com",
       birthdate: "2019-01-01",
-      sex: "M",
+      sex: "Male",
       city: "Newhaven",
       state: "CT",
       postalCode: "06501",
       orderedAt: "2019-03-14 16:51:46 +0000",
+      demo: false,
     });
 
     await request(publicApp)
@@ -168,5 +169,51 @@ describe("Chills match kit", () => {
     });
 
     expect(match).toBeNull();
+  });
+
+  it("should match demo kits and non-demo kits separately", async () => {
+    const barcode1 = "123456789Z";
+    const id1 = `${uuidv4()}.${uuidv4()}`;
+    const barcode2 = "987654321Z";
+    const id2 = `${uuidv4()}.${uuidv4()}`;
+
+    await models.shippedKits.bulkCreate([
+      {
+        evidationId: "evidation1",
+        barcode: barcode1,
+        email: "melody@song.com",
+        birthdate: "2019-01-01",
+        sex: "Male",
+        city: "Newhaven",
+        state: "CT",
+        postalCode: "06501",
+        orderedAt: "2019-03-14 16:51:46 +0000",
+        demo: false,
+      },
+      {
+        evidationId: "evidation2",
+        barcode: barcode2,
+        email: "test@test.com",
+        birthdate: "2017-06-15",
+        sex: "Female",
+        city: "Dearborn",
+        state: "MI",
+        postalCode: "48120",
+        orderedAt: "2019-02-24 10:11:38 +0000",
+        demo: true,
+      },
+    ]);
+
+    await request(publicApp)
+      .post("/api/chills/matchBarcode")
+      .set("Content-Type", "application/json")
+      .send({ secret: accessKey, id: id1, barcode: barcode1, demo: true })
+      .expect(404);
+
+    await request(publicApp)
+      .post("/api/chills/matchBarcode")
+      .set("Content-Type", "application/json")
+      .send({ secret: accessKey, id: id2, barcode: barcode2, demo: false })
+      .expect(404);
   });
 });

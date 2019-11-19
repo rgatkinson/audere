@@ -285,6 +285,7 @@ export interface ShippedKitAttributes {
   state: string;
   postalCode: string;
   orderedAt: string;
+  demo: boolean;
 }
 
 export function defineShippedKits(sql: SplitSql) {
@@ -301,6 +302,7 @@ export function defineShippedKits(sql: SplitSql) {
       state: stringColumn(),
       postalCode: stringColumn("postal_code"),
       orderedAt: stringColumn("ordered_at"),
+      demo: booleanColumn(),
     },
     { schema }
   );

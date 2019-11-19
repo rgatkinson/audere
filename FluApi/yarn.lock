@@ -1265,7 +1265,8 @@ atob@^2.1.1:
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
 "audere-lib@link:../lib":
-  version "0.1.0"
+  version "0.0.0"
+  uid ""
 
 aws-sdk@^2.373.0:
   version "2.523.0"
@@ -3171,12 +3172,31 @@ gaxios@^2.0.0, gaxios@^2.0.1:
     https-proxy-agent "^2.2.1"
     node-fetch "^2.3.0"
 
+gaxios@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/gaxios/-/gaxios-2.1.0.tgz#b5d04ec19bf853d4589ccc2e7d61f0f2ab62afee"
+  integrity sha512-Gtpb5sdQmb82sgVkT2GnS2n+Kx4dlFwbeMYcDlD395aEvsLCSQXJJcHt7oJ2LrGxDEAeiOkK79Zv2A8Pzt6CFg==
+  dependencies:
+    abort-controller "^3.0.0"
+    extend "^3.0.2"
+    https-proxy-agent "^3.0.0"
+    is-stream "^2.0.0"
+    node-fetch "^2.3.0"
+
 gcp-metadata@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/gcp-metadata/-/gcp-metadata-2.0.2.tgz#6b391c531cdd0c1d1ebde35050fdaaf5462aa544"
   integrity sha512-dxPXBvjyfz5qFEBXzEwNmuZXwsGYfuASGYeg3CKZDaQRXdiWti9J3/Ezmtyon1OrCNpDO2YekyoSjEqMtsrcXw==
   dependencies:
     gaxios "^2.0.1"
+    json-bigint "^0.3.0"
+
+gcp-metadata@^3.2.0:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/gcp-metadata/-/gcp-metadata-3.2.2.tgz#dcac6bf65775d5caa3a2e161469c0af068849256"
+  integrity sha512-vR7kcJMCYJG/mYWp/a1OszdOqnLB/XW1GorWW1hc1lWVNL26L497zypWb9cG0CYDQ4Bl1Wk0+fSZFFjwJlTQgQ==
+  dependencies:
+    gaxios "^2.1.0"
     json-bigint "^0.3.0"
 
 gcs-resumable-upload@^2.0.0:
@@ -3308,6 +3328,20 @@ google-auth-library@^5.0.0:
     jws "^3.1.5"
     lru-cache "^5.0.0"
 
+google-auth-library@^5.2.0:
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-5.5.1.tgz#2bf5ade93cb9d00c860d3fb15798db33b39a53a7"
+  integrity sha512-zCtjQccWS/EHYyFdXRbfeSGM/gW+d7uMAcVnvXRnjBXON5ijo6s0nsObP0ifqileIDSbZjTlLtgo+UoN8IFJcg==
+  dependencies:
+    arrify "^2.0.0"
+    base64-js "^1.3.0"
+    fast-text-encoding "^1.0.0"
+    gaxios "^2.1.0"
+    gcp-metadata "^3.2.0"
+    gtoken "^4.1.0"
+    jws "^3.1.5"
+    lru-cache "^5.0.0"
+
 google-gax@^1.1.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.5.2.tgz#996cf70778667cc22befbeae4b8a9d76fce0fabb"
@@ -3333,6 +3367,26 @@ google-p12-pem@^2.0.0:
   integrity sha512-6h6x+eBX3k+IDSe/c8dVYmn8Mzr1mUcmKC9MdUSwaBkFAXlqBEnwFWmSFgGC+tcqtsLn73BDP/vUNWEehf1Rww==
   dependencies:
     node-forge "^0.8.0"
+
+googleapis-common@^3.1.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/googleapis-common/-/googleapis-common-3.1.1.tgz#387e75d914a3e09fec2cb3daf321e04194c8a379"
+  integrity sha512-sXNS9oJifZOk2Pa6SzxoSfv0Mj9y/qIOsVV7D8WHuH//90CXNnpR/nCYVa+KcPMDT9ONq21sbtvjfKATMV1Bug==
+  dependencies:
+    extend "^3.0.2"
+    gaxios "^2.0.1"
+    google-auth-library "^5.2.0"
+    qs "^6.7.0"
+    url-template "^2.0.8"
+    uuid "^3.3.2"
+
+googleapis@^45.0.0:
+  version "45.0.0"
+  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-45.0.0.tgz#27917682f1eee9502164384ceacdc08a17ba9ffb"
+  integrity sha512-v5+4Cw+MnG3z9FRNTdOCcOWBvzhp0zcbapI3D1E1ndykIRA7tE8oflSBRyyVpX6BDhRGSqNu2lU8G15Fe+Ih4g==
+  dependencies:
+    google-auth-library "^5.2.0"
+    googleapis-common "^3.1.0"
 
 got@^6.7.1:
   version "6.7.1"
@@ -3374,6 +3428,16 @@ gtoken@^4.0.0:
   integrity sha512-XaRCfHJxhj06LmnWNBzVTAr85NfAErq0W1oabkdqwbq3uL/QTB1kyvGog361Uu2FMG/8e3115sIy/97Rnd4GjQ==
   dependencies:
     gaxios "^2.0.0"
+    google-p12-pem "^2.0.0"
+    jws "^3.1.5"
+    mime "^2.2.0"
+
+gtoken@^4.1.0:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/gtoken/-/gtoken-4.1.2.tgz#d0dd0c888b52a887512d5f3d85760df826a2477e"
+  integrity sha512-/YvFlrrRjiSJf6a4Kmr4+E+HFbYdEntRPD/W+ZGLYDziHiWjX4S6ld8TNCyPMtUG3J3hPkZkpHbva40JA56spw==
+  dependencies:
+    gaxios "^2.1.0"
     google-p12-pem "^2.0.0"
     jws "^3.1.5"
     mime "^2.2.0"
@@ -3592,6 +3656,14 @@ https-proxy-agent@2.2.2, https-proxy-agent@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.2.tgz#271ea8e90f836ac9f119daccd39c19ff7dfb0793"
   integrity sha512-c8Ndjc9Bkpfx/vCJueCPy0jlP4ccCCSNDp8xwCZzPjKJUm+B+u9WX2x98Qx4n1PiMNTWo3D7KK5ifNV/yJyRzg==
+  dependencies:
+    agent-base "^4.3.0"
+    debug "^3.1.0"
+
+https-proxy-agent@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-3.0.1.tgz#b8c286433e87602311b01c8ea34413d856a4af81"
+  integrity sha512-+ML2Rbh6DAuee7d07tYGEKOEi2voWPUGan+ExdPbPW6Z3svq+JCqr0v8WmKPOkz1vOVykPCBSuobe7G8GJUtVg==
   dependencies:
     agent-base "^4.3.0"
     debug "^3.1.0"
@@ -3971,6 +4043,11 @@ is-stream@^1.0.0, is-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-1.1.0.tgz#12d4a3dd4e68e0b79ceb8dbc84173ae80d91ca44"
   integrity sha1-EtSj3U5o4Lec6428hBc66A2RykQ=
+
+is-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/is-stream/-/is-stream-2.0.0.tgz#bde9c32680d6fae04129d6ac9d921ce7815f78e3"
+  integrity sha512-XCoy+WlUr7d1+Z8GgSuXmpuUFC9fOhRXglJMx+dwLKTkL44Cjd4W1Z5P+BQZpr+cR93aGP4S/s7Ftw6Nd/kiEw==
 
 is-symbol@^1.0.2:
   version "1.0.2"
@@ -6231,6 +6308,11 @@ qs@^6.5.1:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.8.0.tgz#87b763f0d37ca54200334cd57bb2ef8f68a1d081"
   integrity sha512-tPSkj8y92PfZVbinY1n84i1Qdx75lZjMQYx9WZhnkofyxzw2r7Ho39G3/aEvSUdebxpnnM4LZJCtvE/Aq3+s9w==
 
+qs@^6.7.0:
+  version "6.9.1"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.9.1.tgz#20082c65cb78223635ab1a9eaca8875a29bf8ec9"
+  integrity sha512-Cxm7/SS/y/Z3MHWSxXb8lIFqgqBowP5JMlTUFyJN88y0SGQhVmZnqFK/PeuMX9LzUyWsqqhNxIyg0jlzq946yA==
+
 qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
@@ -7959,6 +8041,11 @@ url-parse-lax@^1.0.0:
   integrity sha1-evjzA2Rem9eaJy56FKxovAYJ2nM=
   dependencies:
     prepend-http "^1.0.1"
+
+url-template@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/url-template/-/url-template-2.0.8.tgz#fc565a3cccbff7730c775f5641f9555791439f21"
+  integrity sha1-/FZaPMy/93MMd19WQflVV5FDnyE=
 
 url@0.10.3:
   version "0.10.3"

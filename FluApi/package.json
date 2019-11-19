@@ -61,6 +61,7 @@
     "express-hot-shots": "^1.0.2",
     "express-session": "^1.15.6",
     "firebase-admin": "^8.3.0",
+    "googleapis": "^45.0.0",
     "handlebars": "^4.1.2",
     "helmet": "^3.13.0",
     "hot-shots": "^6.1.1",
