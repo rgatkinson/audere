@@ -323,7 +323,7 @@
   },
   "ScanInstructions": {
     "title": "Scan the barcode",
-    "desc": "Locate the barcode on the outside of the flu@home test kit in the top right corner.\n\nThe next screen will ask for access to your camera to scan the barcode."
+    "desc": "Locate the barcode on the outside of the flu@home test kit in the top right corner.\n\nThe next screen will ask for access to your camera to scan the barcode.\n\nIf your kit doesn't have a barcode, [contact support](CONTACTSUPPORT)."
   },
   "barcode": {
     "yourCode": "**Your code**: {{barcode}}",
@@ -343,8 +343,7 @@
   },
   "ManualEntry": {
     "title": "Enter your barcode",
-    "desc": "Enter the code found below the barcode symbol on the top right corner of your flu@home test kit.",
-    "tips": "**Tips:**\nFind the white barcode on the outside cover of your box in the top right corner. The code is directly below the barcode.\n\nIf your kit doesn't have a barcode, [contact support](CONTACTSUPPORT)."
+    "desc": "Enter the code found below the barcode symbol on the top right corner of your flu@home test kit."
   },
   "BarcodeContactSupport": {
     "title": "Invalid barcode",

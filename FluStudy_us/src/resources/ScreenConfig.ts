@@ -254,7 +254,6 @@ export const Screens: ScreenConfig[] = [
         props: { errorScreen: "BarcodeContactSupport" },
       },
       { tag: MainImage, props: { uri: "scanbarcode" } },
-      { tag: ScreenText, props: { label: "tips" } },
       {
         tag: ContinueButton,
         props: { surveyGetNextFn: getBarcodeNextScreen },
