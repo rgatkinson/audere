@@ -945,6 +945,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
+      { tag: MainImage, props: { uri: "cleanuptest1" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       {
@@ -956,7 +957,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "opennasalswab" } },
+      { tag: MainImage, props: { uri: "begintest2" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       {
@@ -1006,7 +1007,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "putswabintube" } },
+      { tag: MainImage, props: { uri: "putswabintube2" } },
       { tag: Title },
       {
         tag: BulletPointsComponent,
@@ -1021,6 +1022,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
+      { tag: MainImage, props: { uri: "cleanuptest2" } },
       { tag: Title },
       {
         tag: BulletPointsComponent,
@@ -1035,6 +1037,7 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
+      { tag: MainImage, props: { uri: "preparekitreturn" } },
       { tag: Title },
       {
         tag: BulletPointsComponent,
