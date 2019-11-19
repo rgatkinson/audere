@@ -16,7 +16,7 @@ export async function initializeCSRUID(
   dispatch(setCSRUIDIfUnset(csruid));
 }
 
-export function clearNavState(
+export function resetToBeginning(
   nav: NavigationScreenProp<any, any>,
   dispatch: (action: Action) => void,
   nextAppState: string
@@ -50,7 +50,7 @@ export function resetAlert(
       },
       {
         text: i18n.t("common:button:yes"),
-        onPress: () => clearNavState(nav, dispatch, "active"),
+        onPress: () => resetToBeginning(nav, dispatch, "active"),
       },
     ]
   );

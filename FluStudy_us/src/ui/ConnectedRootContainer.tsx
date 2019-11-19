@@ -38,7 +38,7 @@ import {
   StoreState,
 } from "../store/";
 import { notificationLaunchHandler } from "../util/notifications";
-import { clearNavState, initializeCSRUID } from "../util/resetAlert";
+import { initializeCSRUID, resetToBeginning } from "../util/resetState";
 import {
   AppEvents,
   DrawerEvents,
@@ -200,7 +200,7 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
       this.navigator &&
         this.navigator.current &&
         this.navigator.current.props.navigation &&
-        clearNavState(
+        resetToBeginning(
           this.navigator.current.props.navigation,
           this.props.dispatch,
           nextAppState

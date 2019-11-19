@@ -100,7 +100,7 @@ import {
   getThankYouTextVariables,
 } from "../util/patientAchievementInfo";
 import { pendingNavigation, uploadPendingSuccess } from "../util/pendingData";
-import { resetAlert } from "../util/resetAlert";
+import { resetAlert } from "../util/resetState";
 import { getRdtResult } from "../util/results";
 import { getSymptomsNextScreen } from "../util/symptomsResults";
 
