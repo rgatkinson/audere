@@ -458,13 +458,8 @@ public class CameraController {
     private void stopBackgroundThread() {
         if (backgroundThread != null) {
             backgroundThread.quitSafely();
-            try {
-                backgroundThread.join();
-                backgroundThread = null;
-                backgroundHandler = null;
-            } catch (final InterruptedException e) {
-                Log.e(TAG, e.toString());
-            }
+            backgroundThread = null;
+            backgroundHandler = null;
         }
     }
 

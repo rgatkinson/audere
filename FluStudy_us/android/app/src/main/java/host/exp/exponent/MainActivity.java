@@ -4,12 +4,8 @@ import android.os.Bundle;
 
 import com.facebook.react.ReactPackage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.unimodules.core.interfaces.Package;
 import host.exp.exponent.generated.DetachBuildConstants;
 import host.exp.exponent.experience.DetachActivity;
 

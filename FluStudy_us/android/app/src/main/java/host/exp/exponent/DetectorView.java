@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -612,13 +611,8 @@ public class DetectorView extends LinearLayout implements
             cameraController.onPause();
         }
         handlerThread.quitSafely();
-        try {
-            handlerThread.join();
-            handlerThread = null;
-            handler = null;
-        } catch (final InterruptedException e) {
-            Log.e(TAG, "Exception in onPause: " + e.toString());
-        }
+        handlerThread = null;
+        handler = null;
     }
 
     @Override
