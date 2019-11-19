@@ -82,6 +82,7 @@ import Title from "../ui/components/Title";
 import {
   COLLECT_MUCUS_IMAGE_NAME,
   FONT_NORMAL,
+  GUTTER,
   LINK_COLOR,
   SMALL_TEXT,
 } from "../ui/styles";
@@ -94,6 +95,7 @@ import { getGeneralExposureTextVariables } from "../util/generalExposure";
 import { openSettingsApp } from "../util/openSettingsApp";
 import {
   getBarcodeNextScreen,
+  getBarcodeConnectionErrorNextScreen,
   getEmailConfirmationNextScreen,
   getEmailConfirmationTextVariables,
   getShippingTextVariables,
@@ -268,13 +270,14 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
+      { tag: ScreenText, props: { label: "desc" } },
       {
         tag: ContinueButton,
-
         props: {
           label: "common:button:tryAgain",
-          style: { alignSelf: "center" },
-          surveyGetNextFn: getBarcodeNextScreen,
+          showButtonStyle: true,
+          style: { alignSelf: "center", marginTop: GUTTER },
+          surveyGetNextFn: getBarcodeConnectionErrorNextScreen,
         },
       },
     ],

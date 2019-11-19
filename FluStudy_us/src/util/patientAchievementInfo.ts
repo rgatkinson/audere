@@ -1,11 +1,13 @@
 import axios from "axios";
-import { NativeModules } from "react-native";
+import i18n from "i18next";
+import { Alert, NativeModules } from "react-native";
 import { getStore, setPatientAchievementInfo, StoreState } from "../store";
 import { PatientAchievementInfo } from "../store/meta";
 import { getApiBaseUrl } from "../transport";
 import { createAccessKey } from "./accessKey";
 import base64url from "base64url";
 import { AppHealthEvents, logFirebaseEvent } from "./tracker";
+import { getDevice } from "../transport/DeviceInfo";
 
 export async function getBarcodeNextScreen() {
   const store = await getStore();
@@ -35,7 +37,20 @@ export async function getBarcodeNextScreen() {
   }
 }
 
-const DEMO_BARCODE = "ID11111111";
+export async function getBarcodeConnectionErrorNextScreen() {
+  const store = await getStore();
+  const state: StoreState = store.getState();
+
+  if (!state.meta.isConnected) {
+    Alert.alert(
+      i18n.t("common:notifications:connectionErrorTitle"),
+      i18n.t("common:notifications:connectionError", getDevice())
+    );
+    return "BarcodeConnectionToServerError";
+  }
+
+  return getBarcodeNextScreen();
+}
 
 async function getPatientAchievementInfo(
   barcode: string,
@@ -43,41 +58,31 @@ async function getPatientAchievementInfo(
   secret: string,
   demo: boolean
 ): Promise<PatientAchievementInfo> {
-  if (demo && barcode === DEMO_BARCODE) {
-    return {
-      email: "t**t@auderenow.org",
-      emailHash: "",
-      emailSalt: "",
-      city: "Seattle",
-      state: "WA",
-    };
-  } else {
-    try {
-      const response = await axios.post(
-        getApiBaseUrl() + "/chills/matchBarcode",
-        {
-          barcode,
-          id,
-          secret,
-          demo,
-        }
-      );
-      if (!!response.data) {
-        return response.data;
+  try {
+    const response = await axios.post(
+      getApiBaseUrl() + "/chills/matchBarcode",
+      {
+        barcode,
+        id,
+        secret,
+        demo,
       }
-    } catch (error) {
-      logFirebaseEvent(AppHealthEvents.MATCH_BARCODE_ERROR, {
-        error: JSON.stringify(error),
-      });
+    );
+    if (!!response.data) {
+      return response.data;
     }
-    return {
-      email: "",
-      emailHash: "",
-      emailSalt: "",
-      city: "",
-      state: "",
-    };
+  } catch (error) {
+    logFirebaseEvent(AppHealthEvents.MATCH_BARCODE_ERROR, {
+      error: JSON.stringify(error),
+    });
   }
+  return {
+    email: "",
+    emailHash: "",
+    emailSalt: "",
+    city: "",
+    state: "",
+  };
 }
 
 const FILLER_CHAR = "/*";
@@ -95,9 +100,6 @@ export async function getEmailConfirmationTextVariables() {
 
 export async function getEmailConfirmationNextScreen() {
   const state: StoreState = (await getStore()).getState();
-  if (!!state.meta.isDemo && state.survey.kitBarcode!.code === DEMO_BARCODE) {
-    return "Unpacking";
-  }
   const hash = await NativeModules.Aes.pbkdf2(
     state.meta.enteredEmail,
     state.meta.patientAchievementInfo.emailSalt,
@@ -115,7 +117,9 @@ export async function getEmailConfirmationNextScreen() {
 export async function getShippingTextVariables() {
   const state: StoreState = (await getStore()).getState();
   return {
-    state: state.meta.patientAchievementInfo.state.toLowerCase(),
+    state: state.meta.patientAchievementInfo.state
+      .toLowerCase()
+      .replace(" ", "-"),
     city: state.meta.patientAchievementInfo.city
       .toLowerCase()
       .replace(" ", "-"),
@@ -125,7 +129,9 @@ export async function getShippingTextVariables() {
 export async function getThankYouTextVariables() {
   const state: StoreState = (await getStore()).getState();
   return {
-    state: state.meta.patientAchievementInfo.state.toLowerCase(),
+    state: state.meta.patientAchievementInfo.state
+      .toLowerCase()
+      .replace(" ", "+"),
     city: state.meta.patientAchievementInfo.city
       .toLowerCase()
       .replace(" ", "+"),
