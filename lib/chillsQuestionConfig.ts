@@ -3,10 +3,7 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import {
-  FOREIGN_COUNTRY_MULTIDROPDOWN_DATA,
-  STATE_DROPDOWN_DATA,
-} from "./chillsQuestionData";
+import { STATE_DROPDOWN_DATA } from "./chillsQuestionData";
 
 export interface ButtonConfig {
   enabled: boolean;
@@ -648,7 +645,7 @@ export const SpentTimeZipCodeConfig: TextQuestion = {
   type: SurveyQuestionType.ZipCodeInput,
 };
 
-export const WhichCountriesOutsideUSConfig: MultiDropDownQuestion = {
+export const WhichCountriesOutsideUSConfig: TextQuestion = {
   buttons: [],
   conditions: [
     {
@@ -662,11 +659,11 @@ export const WhichCountriesOutsideUSConfig: MultiDropDownQuestion = {
       answer: "yes",
     },
   ],
+  description: "enterCountries",
   id: "WhichCountriesOutsideUS",
-  options: FOREIGN_COUNTRY_MULTIDROPDOWN_DATA,
-  placeholder: "selectCountries",
+  placeholder: "enterCountries",
   title: "whichCountriesOutsideUS",
-  type: SurveyQuestionType.MultiDropdown,
+  type: SurveyQuestionType.TextInput,
 };
 
 export const PeopleInHouseholdConfig: SurveyQuestion = {
