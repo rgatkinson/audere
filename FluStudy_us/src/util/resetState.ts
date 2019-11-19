@@ -8,6 +8,7 @@ import {
 import { Action, appendEvent, clearState, setCSRUIDIfUnset } from "../store";
 import { newUID } from "../util/csruid";
 import { EventInfoKind } from "audere-lib/chillsProtocol";
+import { NavigationResetAction } from "react-navigation";
 
 export async function initializeCSRUID(
   dispatch: (action: Action) => void
@@ -17,24 +18,24 @@ export async function initializeCSRUID(
 }
 
 export function resetToBeginning(
-  nav: NavigationScreenProp<any, any>,
-  dispatch: (action: Action) => void,
+  dispatchNav: (action: NavigationResetAction) => void,
+  dispatchStore: (action: Action) => void,
   nextAppState: string
 ) {
-  dispatch(
+  dispatchStore(
     appendEvent(
       EventInfoKind.AppNav,
       "app:" + nextAppState + ":redirectToScreeningStart"
     )
   );
-  dispatch(clearState());
-  nav.dispatch(
+  dispatchStore(clearState());
+  dispatchNav(
     StackActions.reset({
       index: 0,
       actions: [NavigationActions.navigate({ routeName: "Welcome" })],
     })
   );
-  initializeCSRUID(dispatch);
+  initializeCSRUID(dispatchStore);
 }
 
 export function resetAlert(
@@ -50,7 +51,7 @@ export function resetAlert(
       },
       {
         text: i18n.t("common:button:yes"),
-        onPress: () => resetToBeginning(nav, dispatch, "active"),
+        onPress: () => resetToBeginning(nav.dispatch, dispatch, "active"),
       },
     ]
   );

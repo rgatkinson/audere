@@ -199,9 +199,9 @@ class ConnectedRootContainer extends React.Component<Props & WithNamespaces> {
     if (nextAppState === "quadTap") {
       this.navigator &&
         this.navigator.current &&
-        this.navigator.current.props.navigation &&
+        this.navigator.current.dispatch &&
         resetToBeginning(
-          this.navigator.current.props.navigation,
+          this.navigator.current.dispatch,
           this.props.dispatch,
           nextAppState
         );
