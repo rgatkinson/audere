@@ -158,6 +158,8 @@ async function runThroughApp(models, isDemo) {
         installationId,
         screens_visited
       );
+    } else if (screen_info.type == "shipping") {
+      next_screen = await shipping_screen(driver, screen_info, screens_visited);
     }
     screen_info = next_screen
       ? content.find(screen => screen.key === next_screen)
@@ -210,6 +212,7 @@ async function input_screen(driver, screen_info, screens_visited) {
 
   for (let i = 0; i < screen_info.input.length; i++) {
     const question = screen_info.input[i];
+    question.name = question.name.replace("{{state}}", inputs["state"]);
     if (question.name in inputs) {
       let questionY = await scroll_to_element(
         driver,
@@ -461,6 +464,24 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
   return screen_info.button.onClick;
 }
 
+async function shipping_screen(driver, screen_info, screens_visited) {
+  expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
+    true
+  );
+  screens_visited.push(screen_info.key);
+
+  const text_elements = await driver.elementsByClassName(
+    "XCUIElementTypeStaticText"
+  );
+  const link_to_click = text_elements[text_elements.length - 1];
+  const link_to_click_xy = await link_to_click.getLocation();
+  await new wd.TouchAction(driver)
+    .tap({ x: link_to_click_xy.x + 8, y: link_to_click_xy.y + 8 })
+    .perform();
+
+  return "WebsiteForDropoff";
+}
+
 //Check that navigation events and question answers are correctly stored in the databse
 async function verify_db_contents(
   driver,
@@ -518,7 +539,7 @@ async function verify_db_contents(
         }
       } else if (question.dbLocation === "responses") {
         const questionDb = dbRow.survey.responses[0].item.find(item =>
-          item.text.startsWith(question.name.replace("WA", ""))
+          item.text.startsWith(question.name)
         );
         if (Array.isArray(inputs[question.name])) {
           expect(questionDb.answer).toHaveLength(inputs[question.name].length);

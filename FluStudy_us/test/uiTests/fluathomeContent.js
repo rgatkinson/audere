@@ -382,7 +382,7 @@ export const content = [
     key: "GeneralExposure",
     input: [
       {
-        name: strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA"),
+        name: strings.surveyTitle.travelOutsideState,
         type: "radio",
         dbLocation: "responses",
         options: [strings.surveyButton.yes, strings.surveyButton.no],
@@ -631,13 +631,18 @@ export const content = [
     key: "PackUpBox",
   },
   {
-    type: "basic",
+    type: "shipping",
     title: strings.Shipping.title,
+    key: "Shipping",
+  },
+  {
+    type: "basic",
+    title: strings.WebsiteForDropoff.title,
     button: {
       name: strings.common.button.continue + " ",
       onClick: "Thanks",
     },
-    key: "Shipping",
+    key: "WebsiteForDropoff",
   },
   {
     type: "basic",
