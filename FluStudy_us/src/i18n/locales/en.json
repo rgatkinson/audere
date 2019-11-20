@@ -546,7 +546,7 @@
   },
   "PackUpTest": {
     "title": "Clean up the first test",
-    "desc": "Now that you've completed the first test, put the test strip and Test 1 tube inside the small bag and set it aside."
+    "desc": "Now that you've completed the first test, put the Test 1 tube inside the small bag and set it aside."
   },
   "PrepareUTM": {
     "title": "Begin second test",
@@ -568,7 +568,7 @@
   },
   "PackUpUTM": {
     "title": "Clean up second test",
-    "desc": "Remove the two bags from the pouch on the kit lid. Put the larger FedEx shipping bag aside.\nPut the tube with the blue top and the small bag containing the small tube and strip inside the Lab Guard specimen bag.\nRemove as much air as possible from the bag, roll it up, and close it using the zip-top closure."
+    "desc": "Remove the two bags from the pouch on the kit lid. Put the larger FedEx shipping bag aside.\nPut the test strip, the tube with the blue top, and the small bag containing the small tube inside the Lab Guard specimen bag.\nRemove as much air as possible from the bag, roll it up, and close it using the zip-top closure."
   },
   "PackUpBox": {
     "title": "Prepare kit return package",
