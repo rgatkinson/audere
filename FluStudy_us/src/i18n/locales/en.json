@@ -572,7 +572,7 @@
   },
   "PackUpBox": {
     "title": "Prepare kit return package",
-    "desc": "Place the rolled up specimen bag inside the kit box and close the kit box.\nPlace the kit box inside the FedEx shipping bag.\nRemove the clear liner at the top of the shipping bag to expose the adhesive, then seal the bag."
+    "desc": "Place the rolled up specimen bag into the pouch on the kit lid and close the kit box.\nPlace the kit box inside the FedEx shipping bag.\nRemove the clear liner at the top of the shipping bag to expose the adhesive, then seal the bag."
   },
   "Shipping": {
     "title": "FedEx your kit",
