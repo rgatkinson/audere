@@ -147,7 +147,7 @@ function updateQuestionTextFromTextVars(
 export function setResponseTextVariables(
   question: SurveyQuestion,
   textVariables: any
-) {
+): QuestionsAction {
   return {
     type: "SET_RESPONSE_TEXTVARS",
     question,
