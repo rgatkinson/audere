@@ -34,6 +34,7 @@ import { logFirebaseEvent, AppEvents } from "../../util/tracker";
 interface Props {
   highlighted?: boolean;
   question: SurveyQuestion;
+  textVariables: any;
   style?: StyleProp<ViewStyle>;
   selected?: string;
   dispatch(action: Action): void;
@@ -51,7 +52,11 @@ class RadioGrid extends React.PureComponent<Props, State> {
   _onPress = (key: string) => {
     this.setState({ expandedHelpImage: null });
     this.props.dispatch(
-      updateAnswer({ selectedButtonKey: key }, this.props.question)
+      updateAnswer(
+        { selectedButtonKey: key },
+        this.props.question,
+        this.props.textVariables
+      )
     );
   };
 

@@ -40,6 +40,7 @@ interface Props {
 }
 
 interface State {
+  textVariables: any;
   triedToProceed: boolean;
 }
 
@@ -48,13 +49,23 @@ class Questions extends React.PureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { triedToProceed: false };
+    this.state = { textVariables: undefined, triedToProceed: false };
     this._requiredQuestions = new Map<string, RefObject<any>>();
     props.questions.map(config => {
       if (config.required) {
         this._requiredQuestions.set(config.id, React.createRef());
       }
     });
+  }
+
+  async componentDidMount() {
+    const { textVariablesFn } = this.props;
+    let textVariables;
+
+    if (!!textVariablesFn) {
+      textVariables = await textVariablesFn();
+      this.setState({ textVariables });
+    }
   }
 
   _evaluateConditional = (config: SurveyQuestion) => {
@@ -151,23 +162,38 @@ class Questions extends React.PureComponent<Props, State> {
   _renderQuestion = (config: SurveyQuestion) => {
     const highlighted =
       config.required && this.state.triedToProceed && !this._hasAnswer(config);
+    const { textVariables } = this.state;
     switch (config.type) {
       case SurveyQuestionType.OptionQuestion:
         return (
           <OptionList
             highlighted={highlighted}
             question={config as OptionQuestion}
+            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.RadioGrid:
-        return <RadioGrid highlighted={highlighted} question={config} />;
+        return (
+          <RadioGrid
+            highlighted={highlighted}
+            question={config}
+            textVariables={textVariables}
+          />
+        );
       case SurveyQuestionType.ButtonGrid:
-        return <ButtonGrid highlighted={highlighted} question={config} />;
+        return (
+          <ButtonGrid
+            highlighted={highlighted}
+            question={config}
+            textVariables={textVariables}
+          />
+        );
       case SurveyQuestionType.MonthPicker:
         return (
           <MonthPicker
             highlighted={highlighted}
             question={config as MonthQuestion}
+            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.DatePicker:
@@ -175,6 +201,7 @@ class Questions extends React.PureComponent<Props, State> {
           <DatePicker
             highlighted={highlighted}
             question={config as DateQuestion}
+            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.TextInput:
@@ -182,6 +209,7 @@ class Questions extends React.PureComponent<Props, State> {
           <TextInputQuestion
             highlighted={highlighted}
             question={config as TextQuestion}
+            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.ZipCodeInput:
@@ -191,6 +219,7 @@ class Questions extends React.PureComponent<Props, State> {
             maxDigits={5}
             minDigits={5}
             question={config as TextQuestion}
+            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.Dropdown:
@@ -198,6 +227,7 @@ class Questions extends React.PureComponent<Props, State> {
           <DropDown
             highlighted={highlighted}
             question={config as DropDownQuestion}
+            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.MultiDropdown:
@@ -205,6 +235,7 @@ class Questions extends React.PureComponent<Props, State> {
           <MultiDropDown
             highlighted={highlighted}
             question={config as MultiDropDownQuestion}
+            textVariables={textVariables}
           />
         );
       default:
@@ -221,7 +252,7 @@ class Questions extends React.PureComponent<Props, State> {
             {!!config.title && (
               <QuestionText
                 question={config}
-                textVariablesFn={this.props.textVariablesFn}
+                textVariables={this.state.textVariables}
               />
             )}
             {this._renderQuestion(config)}

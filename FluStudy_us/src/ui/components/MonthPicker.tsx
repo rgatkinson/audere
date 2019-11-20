@@ -151,6 +151,7 @@ interface Props {
   date?: Date;
   highlighted?: boolean;
   question: MonthQuestion;
+  textVariables: any;
   dispatch(action: Action): void;
 }
 
@@ -168,7 +169,8 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
       state != this.state ||
       props.date != this.props.date ||
       props.highlighted != this.props.highlighted ||
-      props.question != this.props.question
+      props.question != this.props.question ||
+      props.textVariables != this.props.textVariables
     );
   }
 
@@ -209,7 +211,9 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
 
   _onDateChange = (dateInput: Date | undefined) => {
     this.setState({ pickerOpen: false });
-    this.props.dispatch(updateAnswer({ dateInput }, this.props.question));
+    this.props.dispatch(
+      updateAnswer({ dateInput }, this.props.question, this.props.textVariables)
+    );
   };
 
   _openModal = () => {

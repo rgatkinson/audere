@@ -17,6 +17,7 @@ interface Props {
   answer?: string;
   highlighted?: boolean;
   question: TextQuestion;
+  textVariables: any;
   dispatch(action: Action): void;
 }
 
@@ -29,7 +30,11 @@ class TextInputQuestion extends React.Component<Props & WithNamespaces> {
 
   _onEndEditing = (e: any) => {
     this.props.dispatch(
-      updateAnswer({ textInput: this.state.text }, this.props.question)
+      updateAnswer(
+        { textInput: this.state.text },
+        this.props.question,
+        this.props.textVariables
+      )
     );
   };
 

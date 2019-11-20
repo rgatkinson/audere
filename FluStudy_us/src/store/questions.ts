@@ -21,6 +21,7 @@ export type QuestionsAction = {
   type: "UPDATE_RESPONSE";
   answer: SurveyAnswer;
   question: OptionQuestion | SurveyQuestion;
+  textVariables?: any;
 };
 
 function asLiterals<T extends string>(arr: T[]): T[] {
@@ -37,7 +38,8 @@ export default function reducer(state = {}, action: QuestionsAction) {
         [action.question.id]: updateResponse(
           state,
           action.answer,
-          action.question
+          action.question,
+          action.textVariables
         ),
       };
 
@@ -47,7 +49,8 @@ export default function reducer(state = {}, action: QuestionsAction) {
 }
 
 function initializeResponse(
-  data: MultiDropDownQuestion | OptionQuestion | SurveyQuestion
+  data: MultiDropDownQuestion | OptionQuestion | SurveyQuestion,
+  textVariables?: any
 ): SurveyResponse {
   const buttonLabels: ButtonLabel[] = [];
   data.buttons.forEach(button => {
@@ -74,9 +77,11 @@ function initializeResponse(
     optionLabels,
     questionId: data.id,
     questionText: (
-      (data.title ? i18n.t("surveyTitle:" + data.title) : "") +
+      (data.title ? i18n.t("surveyTitle:" + data.title, textVariables) : "") +
       " " +
-      (data.description ? i18n.t("surveyDescription:" + data.description) : "")
+      (data.description
+        ? i18n.t("surveyDescription:" + data.description, textVariables)
+        : "")
     ).trim(),
   };
 }
@@ -84,11 +89,12 @@ function initializeResponse(
 function updateResponse(
   state: QuestionsState,
   answer: SurveyAnswer,
-  question: SurveyQuestion
+  question: SurveyQuestion,
+  textVariables?: any
 ) {
   let response = state[question.id];
   if (response == null) {
-    response = initializeResponse(question);
+    response = initializeResponse(question, textVariables);
   }
   response.answer = { ...response.answer, ...answer };
   return response;
@@ -96,11 +102,13 @@ function updateResponse(
 
 export function updateAnswer(
   answer: SurveyAnswer,
-  question: SurveyQuestion
+  question: SurveyQuestion,
+  textVariables?: any
 ): QuestionsAction {
   return {
     type: "UPDATE_RESPONSE",
     answer,
     question,
+    textVariables,
   };
 }

@@ -34,6 +34,7 @@ import {
 
 interface Props {
   question: OptionQuestion;
+  textVariables: any;
   highlighted?: boolean;
   options?: Option[];
   dispatch(action: Action): void;
@@ -58,7 +59,7 @@ class OptionList extends React.PureComponent<Props> {
   };
 
   _onPressItem = (id: string) => {
-    const { dispatch, question } = this.props;
+    const { dispatch, question, textVariables } = this.props;
     const inclusiveOption = question.inclusiveOption;
 
     const dataItem = this._getData().find(
@@ -99,7 +100,7 @@ class OptionList extends React.PureComponent<Props> {
         };
       });
 
-      dispatch(updateAnswer({ options: data }, question));
+      dispatch(updateAnswer({ options: data }, question, textVariables));
     }
   };
 

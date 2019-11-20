@@ -19,6 +19,7 @@ interface Props {
   answer?: string;
   highlighted?: boolean;
   question: TextQuestion;
+  textVariables: any;
   dispatch(action: Action): void;
 }
 
@@ -47,7 +48,11 @@ class NumberInputQuestion extends React.Component<
       : undefined;
     this.setState({ text: answer });
     this.props.dispatch(
-      updateAnswer({ textInput: answer }, this.props.question)
+      updateAnswer(
+        { textInput: answer },
+        this.props.question,
+        this.props.textVariables
+      )
     );
   };
 
