@@ -192,7 +192,7 @@ export function answerColumns(
             select (
               ${selectIndexOfKeyValue(
                 `${prefix}response_${qid}->'answerOptions'`,
-                `${prefix}id`,
+                "id",
                 option,
                 `${prefix}response_${qid}->'answer' @> ('[{"valueIndex":' || index || '}]')::jsonb`
               )}
