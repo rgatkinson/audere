@@ -7,7 +7,12 @@ import React, { RefObject } from "react";
 import { ScrollIntoView } from "react-native-scroll-into-view";
 import { connect } from "react-redux";
 import { getAnswer, getAnswerForID } from "../../util/survey";
-import { Option, StoreState } from "../../store";
+import {
+  Action,
+  Option,
+  setResponseTextVariables,
+  StoreState,
+} from "../../store";
 import { customRef } from "./CustomRef";
 import DatePicker from "./DatePicker";
 import MonthPicker from "./MonthPicker";
@@ -32,6 +37,7 @@ import {
 } from "audere-lib/chillsQuestionConfig";
 
 interface Props {
+  dispatch(action: Action): void;
   answers: Map<string, any>;
   conditionals: Map<string, any>;
   questions: SurveyQuestion[];
@@ -59,12 +65,15 @@ class Questions extends React.PureComponent<Props, State> {
   }
 
   async componentDidMount() {
-    const { textVariablesFn } = this.props;
-    let textVariables;
-
+    const { dispatch, questions, textVariablesFn } = this.props;
     if (!!textVariablesFn) {
-      textVariables = await textVariablesFn();
+      let textVariables = await textVariablesFn();
       this.setState({ textVariables });
+      if (!!textVariables) {
+        questions.forEach(question => {
+          dispatch(setResponseTextVariables(question, textVariables));
+        });
+      }
     }
   }
 
@@ -162,38 +171,23 @@ class Questions extends React.PureComponent<Props, State> {
   _renderQuestion = (config: SurveyQuestion) => {
     const highlighted =
       config.required && this.state.triedToProceed && !this._hasAnswer(config);
-    const { textVariables } = this.state;
     switch (config.type) {
       case SurveyQuestionType.OptionQuestion:
         return (
           <OptionList
             highlighted={highlighted}
             question={config as OptionQuestion}
-            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.RadioGrid:
-        return (
-          <RadioGrid
-            highlighted={highlighted}
-            question={config}
-            textVariables={textVariables}
-          />
-        );
+        return <RadioGrid highlighted={highlighted} question={config} />;
       case SurveyQuestionType.ButtonGrid:
-        return (
-          <ButtonGrid
-            highlighted={highlighted}
-            question={config}
-            textVariables={textVariables}
-          />
-        );
+        return <ButtonGrid highlighted={highlighted} question={config} />;
       case SurveyQuestionType.MonthPicker:
         return (
           <MonthPicker
             highlighted={highlighted}
             question={config as MonthQuestion}
-            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.DatePicker:
@@ -201,7 +195,6 @@ class Questions extends React.PureComponent<Props, State> {
           <DatePicker
             highlighted={highlighted}
             question={config as DateQuestion}
-            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.TextInput:
@@ -209,7 +202,6 @@ class Questions extends React.PureComponent<Props, State> {
           <TextInputQuestion
             highlighted={highlighted}
             question={config as TextQuestion}
-            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.ZipCodeInput:
@@ -219,7 +211,6 @@ class Questions extends React.PureComponent<Props, State> {
             maxDigits={5}
             minDigits={5}
             question={config as TextQuestion}
-            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.Dropdown:
@@ -227,7 +218,6 @@ class Questions extends React.PureComponent<Props, State> {
           <DropDown
             highlighted={highlighted}
             question={config as DropDownQuestion}
-            textVariables={textVariables}
           />
         );
       case SurveyQuestionType.MultiDropdown:
@@ -235,7 +225,6 @@ class Questions extends React.PureComponent<Props, State> {
           <MultiDropDown
             highlighted={highlighted}
             question={config as MultiDropDownQuestion}
-            textVariables={textVariables}
           />
         );
       default:

@@ -22,7 +22,6 @@ import {
 
 interface Props {
   question: MultiDropDownQuestion;
-  textVariables: any;
   highlighted?: boolean;
   options?: Option[];
   dispatch(action: Action): void;
@@ -45,7 +44,7 @@ class MultiDropDown extends React.PureComponent<Props & WithNamespaces> {
   };
 
   onSelectedItemsChange = (selectedItems: string[]) => {
-    const { dispatch, question, textVariables } = this.props;
+    const { dispatch, question } = this.props;
     let newOptions = this._getData().map(option => {
       return {
         key: option.key,
@@ -55,7 +54,7 @@ class MultiDropDown extends React.PureComponent<Props & WithNamespaces> {
           }) >= 0,
       };
     });
-    dispatch(updateAnswer({ options: newOptions }, question, textVariables));
+    dispatch(updateAnswer({ options: newOptions }, question));
   };
 
   render() {

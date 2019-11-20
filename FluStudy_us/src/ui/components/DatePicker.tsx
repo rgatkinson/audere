@@ -23,7 +23,6 @@ interface Props {
   date?: Date;
   highlighted?: boolean;
   question: DateQuestion;
-  textVariables: any;
   dispatch(action: Action): void;
 }
 
@@ -32,15 +31,12 @@ class DatePicker extends React.Component<Props & WithNamespaces> {
     return (
       props.date != this.props.date ||
       props.highlighted != this.props.highlighted ||
-      props.question != this.props.question ||
-      props.textVariables != this.props.textVariables
+      props.question != this.props.question
     );
   }
 
   _onDateChange = (dateStr: string, dateInput: Date | undefined) => {
-    this.props.dispatch(
-      updateAnswer({ dateInput }, this.props.question, this.props.textVariables)
-    );
+    this.props.dispatch(updateAnswer({ dateInput }, this.props.question));
   };
 
   render() {

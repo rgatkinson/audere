@@ -25,7 +25,6 @@ import Text from "./Text";
 interface Props {
   highlighted?: boolean;
   question: SurveyQuestion;
-  textVariables: any;
   selected?: string;
   dispatch(action: Action): void;
 }
@@ -34,11 +33,7 @@ class ButtonGrid extends React.PureComponent<Props> {
   _onPress = (buttonKey: string) => {
     const selected = this.props.selected === buttonKey ? undefined : buttonKey;
     this.props.dispatch(
-      updateAnswer(
-        { selectedButtonKey: selected },
-        this.props.question,
-        this.props.textVariables
-      )
+      updateAnswer({ selectedButtonKey: selected }, this.props.question)
     );
   };
 

@@ -145,7 +145,6 @@ const TranslatedModal = withNamespaces("surveyButton")(DropDownModal);
 interface Props {
   highlighted?: boolean;
   question: DropDownQuestion;
-  textVariables: any;
   selected?: string;
   dispatch(action: Action): void;
 }
@@ -164,7 +163,6 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
       state != this.state ||
       props.highlighted != this.props.highlighted ||
       props.question != this.props.question ||
-      props.textVariables != this.props.textVariables ||
       props.selected != this.props.selected
     );
   }
@@ -176,11 +174,7 @@ class DropDown extends React.Component<Props & WithNamespaces, State> {
   _onDismiss = (text: string | undefined) => {
     this.setState({ pickerOpen: false });
     this.props.dispatch(
-      updateAnswer(
-        { selectedButtonKey: text },
-        this.props.question,
-        this.props.textVariables
-      )
+      updateAnswer({ selectedButtonKey: text }, this.props.question)
     );
   };
 

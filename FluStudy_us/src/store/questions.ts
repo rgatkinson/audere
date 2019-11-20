@@ -17,12 +17,17 @@ import {
 } from "audere-lib/chillsQuestionConfig";
 import { SURVEY_QUESTIONS } from "audere-lib/chillsQuestionConfig";
 
-export type QuestionsAction = {
-  type: "UPDATE_RESPONSE";
-  answer: SurveyAnswer;
-  question: OptionQuestion | SurveyQuestion;
-  textVariables?: any;
-};
+export type QuestionsAction =
+  | {
+      type: "UPDATE_RESPONSE";
+      answer: SurveyAnswer;
+      question: OptionQuestion | SurveyQuestion;
+    }
+  | {
+      type: "SET_RESPONSE_TEXTVARS";
+      question: OptionQuestion | SurveyQuestion;
+      textVariables: any;
+    };
 
 function asLiterals<T extends string>(arr: T[]): T[] {
   return arr;
@@ -38,6 +43,15 @@ export default function reducer(state = {}, action: QuestionsAction) {
         [action.question.id]: updateResponse(
           state,
           action.answer,
+          action.question
+        ),
+      };
+
+    case "SET_RESPONSE_TEXTVARS":
+      return {
+        ...state,
+        [action.question.id]: updateQuestionTextFromTextVars(
+          state,
           action.question,
           action.textVariables
         ),
@@ -49,8 +63,7 @@ export default function reducer(state = {}, action: QuestionsAction) {
 }
 
 function initializeResponse(
-  data: MultiDropDownQuestion | OptionQuestion | SurveyQuestion,
-  textVariables?: any
+  data: MultiDropDownQuestion | OptionQuestion | SurveyQuestion
 ): SurveyResponse {
   const buttonLabels: ButtonLabel[] = [];
   data.buttons.forEach(button => {
@@ -77,11 +90,9 @@ function initializeResponse(
     optionLabels,
     questionId: data.id,
     questionText: (
-      (data.title ? i18n.t("surveyTitle:" + data.title, textVariables) : "") +
+      (data.title ? i18n.t("surveyTitle:" + data.title) : "") +
       " " +
-      (data.description
-        ? i18n.t("surveyDescription:" + data.description, textVariables)
-        : "")
+      (data.description ? i18n.t("surveyDescription:" + data.description) : "")
     ).trim(),
   };
 }
@@ -89,12 +100,11 @@ function initializeResponse(
 function updateResponse(
   state: QuestionsState,
   answer: SurveyAnswer,
-  question: SurveyQuestion,
-  textVariables?: any
+  question: SurveyQuestion
 ) {
   let response = state[question.id];
   if (response == null) {
-    response = initializeResponse(question, textVariables);
+    response = initializeResponse(question);
   }
   response.answer = { ...response.answer, ...answer };
   return response;
@@ -102,12 +112,44 @@ function updateResponse(
 
 export function updateAnswer(
   answer: SurveyAnswer,
-  question: SurveyQuestion,
-  textVariables?: any
+  question: SurveyQuestion
 ): QuestionsAction {
   return {
     type: "UPDATE_RESPONSE",
     answer,
+    question,
+  };
+}
+
+function updateQuestionTextFromTextVars(
+  state: QuestionsState,
+  question: SurveyQuestion,
+  textVariables: any
+) {
+  let response = state[question.id];
+  if (response == null) {
+    response = initializeResponse(question);
+  }
+  return {
+    ...response,
+    questionText: (
+      (question.title
+        ? i18n.t("surveyTitle:" + question.title, textVariables)
+        : "") +
+      " " +
+      (question.description
+        ? i18n.t("surveyDescription:" + question.description, textVariables)
+        : "")
+    ).trim(),
+  };
+}
+
+export function setResponseTextVariables(
+  question: SurveyQuestion,
+  textVariables: any
+) {
+  return {
+    type: "SET_RESPONSE_TEXTVARS",
     question,
     textVariables,
   };
