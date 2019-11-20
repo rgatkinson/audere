@@ -117,9 +117,7 @@ export async function getEmailConfirmationNextScreen() {
 export async function getShippingTextVariables() {
   const state: StoreState = (await getStore()).getState();
   return {
-    state: state.meta.patientAchievementInfo.state
-      .toLowerCase()
-      .replace(" ", "-"),
+    state: state.meta.patientAchievementInfo.state.toLowerCase(),
     city: state.meta.patientAchievementInfo.city
       .toLowerCase()
       .replace(" ", "-"),
@@ -129,9 +127,7 @@ export async function getShippingTextVariables() {
 export async function getThankYouTextVariables() {
   const state: StoreState = (await getStore()).getState();
   return {
-    state: state.meta.patientAchievementInfo.state
-      .toLowerCase()
-      .replace(" ", "+"),
+    state: state.meta.patientAchievementInfo.state.toLowerCase(),
     city: state.meta.patientAchievementInfo.city
       .toLowerCase()
       .replace(" ", "+"),
