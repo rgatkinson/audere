@@ -1083,30 +1083,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "desc2" },
-      },
-      {
-        tag: MainImage,
-        props: { uri: "fedextracking", imageStyle: { marginTop: 0 } },
-      },
-      {
-        tag: BulletPointsComponent,
-        props: { label: "desc3" },
-      },
-      { tag: ScreenText, props: { label: "desc4" } },
-      {
-        tag: ContinueButton,
-        props: { surveyGetNextFn: pendingNavigation, label: "done" },
-      },
-    ],
-    key: "WebsiteForPickup",
-  },
-  {
-    body: [
-      { tag: Title },
       {
         tag: ScreenText,
         props: { label: "desc", textVariablesFn: getShippingTextVariables },

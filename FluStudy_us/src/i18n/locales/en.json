@@ -576,32 +576,24 @@
   },
   "Shipping": {
     "title": "FedEx your kit",
-    "desc": "Now that your package is ready to go, please send it back as soon as possible. The sample can only be used if it's returned quickly. The return postage is prepaid.\n\nSelect one of the options below to send the kit back:",
-    "desc2": "[Call FedEx to arrange for a pickup](PUSHNAVIGATE:CallForPickup) from your location\n[Schedule a pickup on the FedEx website](PUSHNAVIGATE:WebsiteForPickup)\n[Drop off your package](PUSHNAVIGATE:WebsiteForDropoff) at a nearby FedEx office or drop box."
+    "desc": "Now that your package is ready to go, please send it back as soon as possible. The sample can only be used if it's returned quickly. The return postage is prepaid.\n\nSelect an option below to send the kit back:",
+    "desc2": "[Call FedEx to arrange for a pickup](PUSHNAVIGATE:CallForPickup) from your location\n[Drop off your package](PUSHNAVIGATE:WebsiteForDropoff) at a nearby FedEx office or drop box"
   },
   "CallForPickup": {
     "title": "Call FedEx to pickup package",
     "desc": "Call [(800) GO FEDEX](PHONE:8004633339) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
-    "desc2": "How can I help you? Say \"**schedule a pickup**\"\nTo schedule a pickup say \"**I am using a label**\"\nIs the word \"stamp\" on your label? Say \"**no**\"\nFind the tracking number on the bottom of the FedEx shipping bag label after the characters **TRK#**",
-    "desc3": "Confirm your pickup address and answer the other questions\nNote the pickup confirmation number provided by FedEx",
-    "desc4": "You should not be asked for a credit card number because the return postage is prepaid. If you are transferred to FedEx customer service and a credit card is requested, state that this is a FedEx Express return pickup.\n\nCall [(800) GO FEDEX](PHONE:8004633339)",
-    "done": "Done scheduling pickup"
-  },
-  "WebsiteForPickup": {
-    "title": "Schedule a FedEx pickup online",
-    "desc": "You can fill out a form on the FedEx website to arrange for a pickup. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen filling out the form on the FedEx site, please note:",
-    "desc2": "First enter the tracking number from the label on the FedEx shipping bag. It is a 12-digit number beginning with **TRK#** at the bottom, above the barcode.",
-    "desc3": "Enter your name, the pickup address, a phone number, the pickup type, the date, and any special pickup instructions.\nDoes package contain hazardous material? **Yes**",
-    "desc4": "[Schedule pickup](https://www.fedex.com/grd/rpp/ShowRPP.do)",
+    "desc2": "How can I help you? Say \"**schedule a pickup**\"\nTo schedule a pickup say \"**I am using a label**\"\nIs the word \"stamp\" on your label? Say \"**no**\"\nFind the 12-digit tracking number on the bottom of the FedEx shipping bag label",
+    "desc3": "When asked if they have the correct pickup address say \"**no**\"\nYou will be transferred to a FedEx representative who will finish setting up a pickup from your address\nNote the pickup confirmation number provided by FedEx",
+    "desc4": "[Call (800) GO FEDEX](PHONE:8004633339)",
     "done": "Done scheduling pickup"
   },
   "WebsiteForDropoff": {
     "title": "Drop off your package",
-    "desc": "Your return postage is prepaid for your package. You can drop it off at a nearby FedEx office or drop box.\n\nPlease note, this package cannot be dropped off at a FedEx retail location (e.g. Walgreens, Safeway, etc.)\n\n[Find a FedEx location](DROPOFFPACKAGE:{{state}}/{{city}})"
+    "desc": "Use the link below to find a nearby FedEx office or drop box where you can drop off your package.\n\nAfter opening the link, set \"More Filters\" to FedEx Office, FedEx Drop Box, and FedEx Ship Center. The package cannot be dropped off at FedEx retail locations such as Office Depot, Walgreens, Safeway, etc.\n\n[Find a FedEx location](DROPOFFPACKAGE:{{state}}/{{city}})"
   },
   "Thanks": {
     "title": "All done!",
-    "desc": "Thank you for participating in this research study and helping us to find better ways to manage the flu.  We hope you feel better soon. If you are concerned about your symptoms, please contact your healthcare provider.\n\n[Search Maps for urgent care clinics nearby](https://www.google.com/maps/search/urgent+care+clinics+{{city}}+{{state}})\n\nLearn more about influenza below with information from the Centers for Disease Control (CDC).",
+    "desc": "Thank you for participating in this research study and helping us to find better ways to manage the flu. We hope you feel better soon. If you are concerned about your symptoms, please contact your healthcare provider.\n\n[Search Maps for urgent care clinics nearby](https://www.google.com/maps/search/urgent+care+clinics+{{city}}+{{state}})\n\nLearn more about influenza below with information from the Centers for Disease Control (CDC).",
     "fact0": {
       "title": "What are the main differences between a cold and the flu?",
       "description": "Flu and the common cold are both respiratory illnesses, but they are caused by different viruses. Because these two types of illnesses have similar symptoms, it can be difficult to tell the difference between them based on symptoms alone. See [the CDC's page on differences between a cold and the flu](https://www.cdc.gov/flu/symptoms/coldflu.htm) for details."
