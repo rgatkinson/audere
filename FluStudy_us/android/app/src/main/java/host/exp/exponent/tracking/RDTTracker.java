@@ -214,5 +214,15 @@ public class RDTTracker extends Tracker {
             this.testArea = testArea;
             this.rdtOutline = rdtOutline;
         }
+
+        @Override
+        public String toString() {
+            return new StringBuilder()
+                .append("Audere RDTResult")
+                .append(" strip=").append(rdtStrip != null)
+                .append(" testarea=").append(testArea != null)
+                .append(" outline=").append(rdtOutline == null ? 0 : rdtOutline.length)
+                .toString();
+        }
     }
 }

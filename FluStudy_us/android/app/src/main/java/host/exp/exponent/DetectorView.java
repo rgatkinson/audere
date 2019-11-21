@@ -367,7 +367,7 @@ public class DetectorView extends LinearLayout implements
                 readyForNextImage();
                 return;
             }
-            Log.d(TAG, "Process preview image");
+            Log.d(TAG, ImageListener.this.getClass().getSimpleName() + "analyizingFrame = true");
             analyzingFrame = true;
 
             Trace.beginSection("processImage");
@@ -379,16 +379,9 @@ public class DetectorView extends LinearLayout implements
                         @Override
                         public void run() {
                             try {
-                                // IPRD Filter
-                                final long iprdStartTimeMs = SystemClock.uptimeMillis();
-                                Trace.beginSection("IPRD Filter");
-                                IprdAdapter.FrameResult iprdResult = iprdApi == null
-                                    ? null
-                                    : iprdApi.checkFrame(boxModelBitmap);
-                                Trace.endSection();
-                                Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
-
-                                if (iprdApi == null || (iprdResult != null && iprdResult.isAccepted())) {
+                                IprdAdapter.FrameResult iprdResult = checkIPRDFilter(boxModelBitmap);
+                                Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult);
+                                if (iprdResult == null || iprdResult.isAccepted()) {
                                     // Local interpretation prototype
                                     Trace.beginSection("Running Process Image");
                                     final long boxStartTimeMs = SystemClock.uptimeMillis();
@@ -407,12 +400,15 @@ public class DetectorView extends LinearLayout implements
                                     Trace.endSection(); // Running Process Image
                                 }
                             } finally {
+                                Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " analyzingFrame = false");
                                 analyzingFrame = false;
                             }
                         }
                     });
             Trace.endSection(); // processPreviewImage
         }
+
+        protected abstract IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap);
 
         protected abstract void processResult(
             IprdAdapter.FrameResult iprdResult,
@@ -462,15 +458,32 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
+        @Override
+        protected IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap) {
+            final long iprdStartTimeMs = SystemClock.uptimeMillis();
+            Trace.beginSection("IPRD Filter");
+            IprdAdapter.FrameResult iprdResult = iprdApi == null
+                ? null
+                : iprdApi.checkFrame(bitmap);
+            Trace.endSection();
+            Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
+            Log.i(TAG, "  IPRD " + IprdAdapter.FrameResult.str(iprdResult));
+
+            return iprdResult;
+        }
+
         protected void processResult(
             IprdAdapter.FrameResult iprdResult,
             CaptureResult captureResult,
             RDTTracker.RDTResult rdtResult
         ) {
             ImageFilter.FilterResult filterResult = null;
+            Log.d(TAG, "Preview rdtResult: " + rdtResult);
 
             if ((iprdResult == null || iprdResult.isAccepted()) && rdtResult.testArea != null) {
                 filterResult = imageFilter.validateImage(rdtResult.rdtStrip, false);
+                Log.d(TAG, "Preview filter(rdtResult.rdtStrip): " + filterResult);
+                Log.d(TAG, "  stillCaptureInProgress=" + stillCaptureInProgress);
                 if (!stillCaptureInProgress && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
                     Log.d(TAG, "Have good preview frame, making single request");
                     stillCaptureInProgress = true;
@@ -478,6 +491,7 @@ public class DetectorView extends LinearLayout implements
                 }
             } else {
                 filterResult = imageFilter.validateImage(imageBitmap, false);
+                Log.d(TAG, "Preview filter(imageBitmap) " + filterResult);
             }
 
             detectorListener.onRDTDetected(iprdResult, captureResult, null, filterResult);
@@ -492,14 +506,21 @@ public class DetectorView extends LinearLayout implements
         }
 
         @Override
+        protected IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap) {
+            return null;
+        }
+
+        @Override
         protected void processResult(
             IprdAdapter.FrameResult iprdResult,
             CaptureResult captureResult,
             RDTTracker.RDTResult rdtResult
         ) {
+            Log.d(TAG, "Still rdtResult: " + rdtResult);
             if ((iprdResult == null || iprdResult.isAccepted()) && rdtResult.testArea != null) {
 
                 ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, true);
+                Log.d(TAG, "Still filter(rdtResult.rdtStrip): " + filterResult);
 
                 if (filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
 

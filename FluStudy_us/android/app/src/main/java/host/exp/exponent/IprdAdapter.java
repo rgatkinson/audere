@@ -6,6 +6,7 @@
 package host.exp.exponent;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.iprd.rdtcamera.AcceptanceStatus;
 import com.iprd.rdtcamera.RdtAPI;
@@ -14,11 +15,15 @@ import java.nio.MappedByteBuffer;
 
 public class IprdAdapter {
 
+  public static final String TAG = "IprdAdapter";
+
   public static class RdtApi {
     private RdtAPI iprdApi;
 
     private RdtApi(RdtAPI iprdApi) {
       this.iprdApi = iprdApi;
+      this.iprdApi.saveInput(true);
+      this.iprdApi.setSavePoints(true);
     }
 
     public FrameResult checkFrame(Bitmap frame) {
@@ -57,6 +62,7 @@ public class IprdAdapter {
       this.scale = status.mScale;
       this.brightness = status.mBrightness;
       this.perspectiveDistortion = status.mPerspectiveDistortion;
+      this.steady = status.mSteady;
       this.xOffset = status.mDisplacementX;
       this.yOffset = status.mDisplacementY;
       this.foundRDT = status.mRDTFound;
@@ -70,6 +76,7 @@ public class IprdAdapter {
     public final int scale;
     public final int brightness;
     public final int perspectiveDistortion;
+    public final int steady;
     public final int xOffset;
     public final int yOffset;
     public final boolean foundRDT;
@@ -80,10 +87,32 @@ public class IprdAdapter {
 
     public boolean isAccepted() {
       return this.foundRDT &&
+          this.steady == GOOD &&
           this.sharpness == GOOD &&
           this.scale == GOOD &&
           this.brightness == GOOD &&
           this.perspectiveDistortion == GOOD;
+    }
+
+    public static String str(FrameResult result) {
+      if (result == null) {
+        return "null";
+      } else {
+        return result.toString();
+      }
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+      return builder.append("FrameResult:")
+          .append(" steady=").append(this.steady)
+          .append(" sharp=").append(this.sharpness)
+          .append(" scale=").append(this.scale)
+          .append(" bright=").append(this.brightness)
+          .append(" perspec=").append(this.perspectiveDistortion)
+          .append(" rdt=").append(this.foundRDT)
+          .toString();
     }
   }
 }
