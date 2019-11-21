@@ -35,23 +35,43 @@ class DatePicker extends React.Component<Props & WithNamespaces> {
     );
   }
 
-  _onDateChange = (dateStr: string, dateInput: Date | undefined) => {
+  _onDateChange = (dateStr: string, date: Date | undefined) => {
+    let dateInput;
+    if (!!date) {
+      dateInput = new Date();
+      dateInput.setUTCFullYear(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+      );
+      dateInput.setUTCHours(0, 0, 0, 0);
+    }
     this.props.dispatch(updateAnswer({ dateInput }, this.props.question));
   };
 
   render() {
     const { date, highlighted, question, t } = this.props;
-
+    let selectedDate;
+    if (!!date) {
+      selectedDate = new Date(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        0,
+        0,
+        0,
+        0
+      );
+    }
     return (
       <View style={[styles.container, !!highlighted && HIGHLIGHT_STYLE]}>
         <DatePickerComponent.default
-          date={date}
+          date={selectedDate}
           mode="date"
           placeholder={t("selectDate")}
           confirmBtnText={t("common:button:done")}
           cancelBtnText={t("common:button:cancel")}
           format="YYYY-MM-DD"
-          timeZoneOffsetInMinutes={-new Date().getTimezoneOffset()}
           minDate={question.minDate}
           maxDate={new Date()}
           onDateChange={this._onDateChange}
