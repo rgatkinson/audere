@@ -72,8 +72,6 @@
     "title": "FAQ",
     "whyStudy": "**Why are you conducting this study?**",
     "whyStudy++Answer": "The goal of this study is to understand if people who are sick should test themselves at home for the flu. As one of the first to try it, you'll play an important role in helping us find ways to manage flu symptoms in the future.\n\nTaking part in this study is completely voluntary. You can stop at any time; however, it greatly helps us if you finish all steps.",
-    "howHelps": "**How does the flu@home test help researchers?**",
-    "howHelps++Answer": "Participating in the flu@home test helps researchers:\n\u279e Determine if app-guided instructions enable people to accurately test themselves at home for the flu\n\u279e Build models to predict whether someone like you may have the flu\n\u279e Understand whether an app can read a test strip more accurately than a human",
     "howSoon": "**How soon should I perform the test after being asked to open the test kit?**",
     "howSoon++Answer": "You should download the flu@home app on your {{device}} and complete the test as soon as possible after being asked to open the test kit.",
     "howComplete": "**How do I complete the test?**",
@@ -92,6 +90,8 @@
     "whyPersonal++Answer": "Understanding the conditions surrounding your illness helps us put your potential flu results in context. It also enables us to look for trends among the larger group of participants. Thank you for your willingness to share your information. Some of the questions are optional, and may be skipped if you are not comfortable answering.",
     "willConfidential": "**Will my information be kept confidential?**",
     "willConfidential++Answer": "Your privacy is very important to us and the study team will make every effort to protect the privacy of your data.\n\nYou will not be identified personally in any report or publication about this study. We will assign a study code to you and all your information.\n\nFor more details, please refer to the flu@home [Privacy Policy](https://fluathome.org/privacy) and the study consent document you signed, available through your Achievement account.",
+    "whySendBack": "**Why do I need to send my materials back to you?**",
+    "whySendBack++Answer": "The returned materials will be used to compare your flu@home test strip result with the nasal swab you are shipping back to us. This is a key part of achieving the research goals of the study.",
     "appDelete": "**After I finish the tests, may I delete the app?**",
     "appDelete++Answer": "Yes. Once you have completed the tests and shipped back your test kit, you may delete the flu@home app from your {{device}}."
   },

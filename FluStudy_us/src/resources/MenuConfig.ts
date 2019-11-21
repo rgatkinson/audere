@@ -37,7 +37,6 @@ function menuScreen(
 
 const FAQS = [
   "whyStudy",
-  "howHelps",
   "howSoon",
   "howComplete",
   "howFindOut",
@@ -47,6 +46,7 @@ const FAQS = [
   "stripLonger",
   "whyPersonal",
   "willConfidential",
+  "whySendBack",
   "appDelete",
 ];
 const FAQ_ANSWER_SUFFIX = "++Answer";
