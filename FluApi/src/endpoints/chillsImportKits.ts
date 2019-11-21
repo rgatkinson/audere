@@ -12,6 +12,7 @@ import {
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
+import { jsonKeepAlive } from "../util/expressApp";
 import { ChillsDataPipeline } from "../services/chills/chillsDataPipeline";
 import { DataPipelineService } from "../services/data/dataPipelineService";
 import { google, sheets_v4 } from "googleapis";
@@ -21,7 +22,6 @@ export class ChillsImportKits {
   private readonly config: LazyAsync<ChillsGoogleApisConfig>;
   private readonly googleClient: LazyAsync<EvidationKitClient>;
   private readonly pipeline: ChillsDataPipeline;
-  private readonly pipelineSvc: DataPipelineService;
   private readonly service: ChillsKits;
 
   constructor(sql: SplitSql) {
@@ -48,11 +48,13 @@ export class ChillsImportKits {
     });
 
     this.pipeline = new ChillsDataPipeline(sql.nonPii);
-    this.pipelineSvc = new DataPipelineService();
     this.service = new ChillsKits(sql);
   }
 
   public importKits = async (req, res, next) => {
+    const { progress, replyJson } = jsonKeepAlive(res);
+    const pipelineSvc = new DataPipelineService(progress);
+
     const apiConfig = await this.config.get();
     const client = await this.googleClient.get();
 
@@ -69,9 +71,9 @@ export class ChillsImportKits {
 
     // refresh pipeline
     logger.info("Refreshing derived schema");
-    await this.pipelineSvc.refresh(this.pipeline);
+    await pipelineSvc.refresh(this.pipeline);
     logger.info("Refresh of derived schema complete");
 
-    res.sendStatus(200);
+    replyJson({});
   };
 }
