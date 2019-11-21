@@ -8,6 +8,7 @@ import { AsprenImport } from "../services/cough/asprenImport";
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
+import { jsonKeepAlive } from "../util/expressApp";
 import { getS3Config } from "../util/s3Config";
 import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
 import { DataPipeline } from "../services/data/dataPipeline";
@@ -33,17 +34,19 @@ export class CoughAsprenEndpoint {
     });
 
     this.pipeline = new CoughDataPipeline(sql.nonPii);
-    this.pipelineSvc = new DataPipelineService();
   }
 
   public importAsprenReports = async (req, res, next) => {
+    const { progress, replyJson } = jsonKeepAlive(res);
+    const pipelineSvc = new DataPipelineService(progress);
+
     const svc = await this.service.get();
     await svc.importAsprenReports();
 
     logger.info("Refreshing derived schema");
-    await this.pipelineSvc.refresh(this.pipeline);
+    await pipelineSvc.refresh(this.pipeline);
     logger.info("Refresh complete");
 
-    res.json({});
+    replyJson({});
   };
 }

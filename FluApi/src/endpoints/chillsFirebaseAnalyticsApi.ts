@@ -8,6 +8,7 @@ import { FirebaseAnalyticsImport } from "../services/firebaseAnalyticsImport";
 import { LazyAsync } from "../util/lazyAsync";
 import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
+import { jsonKeepAlive } from "../util/expressApp";
 import { defineChillsModels } from "../models/db/chills";
 import { getBigqueryConfig } from "../util/bigQueryConfig";
 import { ChillsDataPipeline } from "../services/chills/chillsDataPipeline";
@@ -18,7 +19,6 @@ import logger from "../util/logger";
 export class ChillsFirebaseAnalyticsEndpoint {
   private firebaseImport: LazyAsync<FirebaseAnalyticsImport>;
   private pipeline: DataPipeline;
-  private pipelineSvc: DataPipelineService;
 
   constructor(sql: SplitSql) {
     const secrets = new SecretConfig(sql);
@@ -34,11 +34,14 @@ export class ChillsFirebaseAnalyticsEndpoint {
       );
       return importer;
     });
+
     this.pipeline = new ChillsDataPipeline(sql.nonPii);
-    this.pipelineSvc = new DataPipelineService();
   }
 
   public importAnalytics = async (req, res, next) => {
+    const { progress, replyJson } = jsonKeepAlive(res);
+    const pipelineSvc = new DataPipelineService(progress);
+
     const svc = await this.firebaseImport.get();
     logger.info("Finding tables to update");
     const tableList = await svc.findTablesToUpdate();
@@ -51,9 +54,9 @@ export class ChillsFirebaseAnalyticsEndpoint {
     }
 
     logger.info("Refreshing derived schema");
-    await this.pipelineSvc.refresh(this.pipeline);
+    await pipelineSvc.refresh(this.pipeline);
     logger.info("Refreshing complete");
 
-    res.json({});
+    replyJson({});
   };
 }
