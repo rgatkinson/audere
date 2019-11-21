@@ -54,7 +54,7 @@ export default withNamespaces()(QuestionText);
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    marginVertical: GUTTER / 2,
+    marginBottom: GUTTER / 2,
   },
   textContainer: {
     alignSelf: "stretch",

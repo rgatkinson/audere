@@ -49,7 +49,7 @@ class Title extends React.Component<Props & WithNamespaces> {
   render() {
     return (
       <Text
-        center={this.props.center !== undefined ? this.props.center : true}
+        center={this.props.center !== undefined ? this.props.center : false}
         content={this._getContent()}
         bold={true}
         style={[
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
-    lineHeight: EXTRA_LARGE_TEXT + LINE_HEIGHT_DIFFERENCE,
+    lineHeight: EXTRA_LARGE_TEXT + LINE_HEIGHT_DIFFERENCE / 2,
     marginTop: GUTTER / 2,
     marginBottom: GUTTER,
   },

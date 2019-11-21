@@ -93,6 +93,12 @@ class DropDownModal extends React.Component<
           style={{ alignSelf: "stretch", justifyContent: "center" }}
           onValueChange={this._onValueChange}
         >
+          <Picker.Item
+            label={t(placeholder)}
+            color={PLACEHOLDER_COLOR}
+            value={placeholder}
+            key={placeholder}
+          />
           {this.props.options.map(option => (
             <Picker.Item
               label={t(option)}
@@ -101,12 +107,6 @@ class DropDownModal extends React.Component<
               key={option}
             />
           ))}
-          <Picker.Item
-            label={t(placeholder)}
-            color={PLACEHOLDER_COLOR}
-            value={placeholder}
-            key={placeholder}
-          />
         </Picker>
       </View>
     );
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     borderBottomColor: BORDER_COLOR,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flex: 1,
-    height: INPUT_HEIGHT,
+    height: INPUT_HEIGHT - GUTTER / 4,
     justifyContent: "center",
     padding: GUTTER / 4,
   },

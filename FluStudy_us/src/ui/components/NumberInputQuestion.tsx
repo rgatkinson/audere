@@ -73,6 +73,6 @@ export default connect((state: StoreState, props: Props) => ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: GUTTER / 2,
+    marginBottom: GUTTER,
   },
 });

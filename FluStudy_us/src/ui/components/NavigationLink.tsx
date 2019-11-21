@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from "react-native";
-import { EXTRA_LARGE_TEXT, GUTTER, LARGE_TEXT } from "../styles";
+import { EXTRA_LARGE_TEXT, GUTTER, LARGE_TEXT, PRIMARY_COLOR } from "../styles";
 import Text from "./Text";
 
 interface Props {
@@ -65,9 +65,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: LARGE_TEXT,
     lineHeight: LARGE_TEXT,
+    color: PRIMARY_COLOR,
   },
   arrow: {
     marginLeft: GUTTER / 4,
+    color: PRIMARY_COLOR,
   },
 });
 

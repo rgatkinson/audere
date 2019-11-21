@@ -81,9 +81,8 @@ import TimerRing from "../ui/components/TimerRing";
 import Title from "../ui/components/Title";
 import {
   COLLECT_MUCUS_IMAGE_NAME,
-  FONT_NORMAL,
   GUTTER,
-  LINK_COLOR,
+  LINK_COLOR_FOR_DARK,
   SMALL_TEXT,
 } from "../ui/styles";
 import {
@@ -116,20 +115,24 @@ export const Screens: ScreenConfig[] = [
     backgroundColor: "transparent",
     body: [
       { tag: MainImage, props: { uri: "welcome", useForChrome: true } },
-      { tag: Title, props: { center: false, color: "white" } },
+      { tag: Title, props: { color: "white" } },
       { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
         tag: ContinueButton,
         props: {
           next: "HowDoesTestWork",
-          textStyle: { color: "white" },
+          textStyle: { color: LINK_COLOR_FOR_DARK },
         },
       },
       {
         tag: ScreenText,
         props: {
           label: "desc2",
-          style: { color: "white", fontSize: SMALL_TEXT },
+          style: {
+            color: "white",
+            fontSize: SMALL_TEXT,
+          },
+          linkStyle: { color: LINK_COLOR_FOR_DARK },
         },
       },
     ],
@@ -147,10 +150,7 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: ScreenText,
-        props: {
-          label: "desc",
-          linkStyle: { color: LINK_COLOR, fontFamily: FONT_NORMAL },
-        },
+        props: { label: "desc" },
       },
     ],
     key: "NotEnrolledInStudy",
@@ -159,13 +159,13 @@ export const Screens: ScreenConfig[] = [
     backgroundColor: "transparent",
     body: [
       { tag: MainImage, props: { uri: "howtestworks", useForChrome: true } },
-      { tag: Title, props: { center: false, color: "white" } },
+      { tag: Title, props: { color: "white" } },
       { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
         tag: ContinueButton,
         props: {
           next: "HowAmIHelping",
-          textStyle: { color: "white" },
+          textStyle: { color: LINK_COLOR_FOR_DARK },
         },
       },
     ],
@@ -177,7 +177,7 @@ export const Screens: ScreenConfig[] = [
     backgroundColor: "transparent",
     body: [
       { tag: MainImage, props: { uri: "howthishelps", useForChrome: true } },
-      { tag: Title, props: { center: false, color: "white" } },
+      { tag: Title, props: { color: "white" } },
       { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
         tag: BulletPointsComponent,
@@ -191,7 +191,7 @@ export const Screens: ScreenConfig[] = [
         tag: ContinueButton,
         props: {
           next: "ResearchStudy",
-          textStyle: { color: "white" },
+          textStyle: { color: LINK_COLOR_FOR_DARK },
         },
       },
     ],
@@ -200,14 +200,19 @@ export const Screens: ScreenConfig[] = [
     key: "HowAmIHelping",
   },
   {
+    backgroundColor: "transparent",
     body: [
-      { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      { tag: Title, props: { color: "white" } },
+      { tag: ScreenText, props: { label: "desc", style: { color: "white" } } },
       {
         tag: ContinueButton,
-        props: { next: "ScanInstructions" },
+        props: {
+          next: "ScanInstructions",
+          textStyle: { color: LINK_COLOR_FOR_DARK },
+        },
       },
     ],
+    chromeProps: { showBackgroundOnly: true },
     automationNext: "ScanInstructions",
     key: "ResearchStudy",
   },
@@ -509,7 +514,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -541,7 +545,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -564,7 +567,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -582,7 +584,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -604,7 +605,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -661,7 +661,6 @@ export const Screens: ScreenConfig[] = [
   {
     body: [
       { tag: Title },
-      { tag: Divider },
       {
         tag: Questions,
         props: {
@@ -748,7 +747,6 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "lookatteststrip" } },
       { tag: Title },
       {
         tag: Questions,

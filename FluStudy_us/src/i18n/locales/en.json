@@ -590,27 +590,27 @@
     "title": "All done!",
     "desc": "Thank you for participating in this research study and helping us find better ways to manage the flu. We hope you feel better soon. If you are concerned about your symptoms, contact your healthcare provider.\n\n[Search Maps for urgent care clinics nearby](https://www.google.com/maps/search/urgent+care+clinics+{{city}}+{{state}})\n\nLearn more about influenza below with information from the Centers for Disease Control (CDC).",
     "fact0": {
-      "title": "What are the main differences between a cold and the flu?",
+      "title": "**What are the main differences between a cold and the flu?**",
       "description": "Flu and the common cold are both respiratory illnesses, but they are caused by different viruses. Because these two types of illnesses have similar symptoms, it can be difficult to tell the difference between them based on symptoms alone. See [the CDC's page on differences between a cold and the flu](https://www.cdc.gov/flu/symptoms/coldflu.htm) for details."
     },
     "fact1": {
-      "title": "What should I do if I am sick?",
+      "title": "**What should I do if I am sick?**",
       "description": "Most people with the flu have mild illness and do not need medical care or antiviral drugs. [According to the CDC](https://www.cdc.gov/flu/treatment/takingcare.htm), if you get sick with flu symptoms, in most cases, you should stay home and avoid contact with other people except to get medical care.\n\nIf, however, you have symptoms of flu and are in a high risk group (including young children, people 65 and older, pregnant women and people with certain medical conditions), or are very sick or worried about your illness, contact your healthcare provider (doctor, physician assistant, etc.)."
     },
     "fact2": {
-      "title": "Do I need to go to the emergency room if I am sick?",
+      "title": "**Do I need to go to the emergency room if I am sick?**",
       "description": "The emergency room should be used for people who are very sick. See [the CDC's page on emergency warning signs for flu](https://www.cdc.gov/flu/treatment/takingcare.htm#anchor_1553702039) for which you should go to the emergency room."
     },
     "fact3": {
-      "title": "Are there medications to treat the flu?",
+      "title": "**Are there medications to treat the flu?**",
       "description": "There are medications your healthcare provider may prescribe for treating the flu called \"antivirals.\" See [the CDC's page on antiviral drugs for the flu](https://www.cdc.gov/flu/treatment/whatyoushould.htm) for more information."
     },
     "fact4": {
-      "title": "How long should I stay home if I'm sick?",
+      "title": "**How long should I stay home if I'm sick?**",
       "description": "The CDC recommends that you [stay home for at least 24 hours after your fever is gone](https://www.cdc.gov/flu/treatment/takingcare.htm) except to get medical care or for other necessities. Your fever should be gone without the need to use a fever-reducing medicine, such as Tylenol®. Until then, you should stay home from work, school, travel, shopping, social events, and public gatherings."
     },
     "fact5": {
-      "title": "Do people with the flu always have a fever?",
+      "title": "**Do people with the flu always have a fever?**",
       "description": "A fever is a sign that your body is fighting an infection. Fevers for flu-related illnesses are typically 100˚F (38˚C) or higher. However, not everyone who has the flu will have a fever. See [healthline's description of flu symptoms](https://www.healthline.com/health/cold-flu/early-flu-symptoms) to learn more."
     }
   },

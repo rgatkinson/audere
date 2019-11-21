@@ -102,14 +102,5 @@ export const MenuScreens: ScreenConfig[] = [
     },
   ]),
   menuScreen("ReportComplaint"),
-  menuScreen("Version", false, [
-    {
-      tag: ScreenText,
-      props: {
-        label: "description",
-        center: true,
-      },
-    },
-    { tag: BuildInfo },
-  ]),
+  menuScreen("Version", true, [{ tag: BuildInfo }]),
 ];

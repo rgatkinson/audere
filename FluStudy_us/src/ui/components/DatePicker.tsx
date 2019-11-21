@@ -71,7 +71,7 @@ class DatePicker extends React.Component<Props & WithNamespaces> {
           placeholder={t("selectDate")}
           confirmBtnText={t("common:button:done")}
           cancelBtnText={t("common:button:cancel")}
-          format="YYYY-MM-DD"
+          format="MMMM D, YYYY"
           minDate={question.minDate}
           maxDate={new Date()}
           onDateChange={this._onDateChange}
@@ -100,7 +100,7 @@ export default connect((state: StoreState, props: Props) => ({
 const styles = StyleSheet.create({
   container: {
     alignSelf: "stretch",
-    marginBottom: GUTTER / 2,
+    marginBottom: GUTTER,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: BORDER_COLOR,
   },

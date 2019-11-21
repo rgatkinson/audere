@@ -26,7 +26,6 @@ import {
   SECONDARY_COLOR,
   BORDER_COLOR,
   RADIO_INPUT_HEIGHT,
-  FEATHER_SIZE,
 } from "../styles";
 import Text from "./Text";
 import { logFirebaseEvent, AppEvents } from "../../util/tracker";
@@ -202,19 +201,19 @@ const styles = StyleSheet.create({
   helpImage: {
     flex: 1,
     height: undefined,
-    marginVertical: GUTTER / 2,
+    marginBottom: GUTTER / 2,
     width: undefined,
   },
   imageContainer: {
-    height: 200,
+    height: 180,
   },
   radioButton: {
     alignItems: "center",
     borderColor: BORDER_COLOR,
     borderWidth: BORDER_WIDTH,
     borderRadius: RADIO_INPUT_HEIGHT / 2,
-    height: FEATHER_SIZE + GUTTER / 4,
-    width: FEATHER_SIZE + GUTTER / 4,
+    height: RADIO_INPUT_HEIGHT,
+    width: RADIO_INPUT_HEIGHT,
   },
   radioButtonCenter: {
     backgroundColor: SECONDARY_COLOR,
