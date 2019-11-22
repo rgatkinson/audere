@@ -59,7 +59,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
 
   _onBarcodeOneChange = (barcode1: string) => {
     this.setState({
-      barcode1: barcode1.substring(0, BARCODE_CHARS),
+      barcode1: barcode1.replace(/[^0-9a-z]/gi, "").substring(0, BARCODE_CHARS),
     });
   };
 
@@ -71,7 +71,7 @@ class BarcodeEntry extends React.Component<Props & WithNamespaces, State> {
 
   _onBarcodeTwoChange = (barcode2: string) => {
     this.setState({
-      barcode2: barcode2.substring(0, BARCODE_CHARS),
+      barcode2: barcode2.replace(/[^0-9a-z]/gi, "").substring(0, BARCODE_CHARS),
     });
   };
 
