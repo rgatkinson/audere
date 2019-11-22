@@ -145,7 +145,7 @@
     "inContact": "Do you believe you were exposed to the flu in the past week?",
     "publicTransportation": "In the past week, did you take public transportation?",
     "aroundSickChildren": "In the past week, were you around sick children?",
-    "futureStudies": "Are you willing to be contacted for future studies conducted by the same researchers related to this study?",
+    "futureStudies": "Are you willing to be contacted for future related studies conducted by the same researchers?",
     "blueLine": "Do you see a blue line in the middle of the test strip?",
     "pinkLine": "Which image below most closely matches your test strip?"
   },
@@ -166,7 +166,6 @@
     "troubleBreathing": "Increased trouble with breathing",
     "noneOfTheAbove": "None of the above",
     "symptomsSeverity": "Select the level of discomfort you felt at the worst point",
-    "enterCountries": "Enter each country separated by commas",
     "seeExample": "Tap the \"?\" below to see examples"
   },
   "surveyOption": {
@@ -329,9 +328,6 @@
     "yourCode": "**Your code**: {{barcode}}",
     "sorry": "Sorry",
     "invalidBarcode": "{{barcode}} doesn't look like a flu@home kit barcode. Please try again.",
-    "notVerified": "Your barcode was not verified",
-    "pleaseRetry": "Please re-{{action}} your kit bar code (the blue on on the inner lid of the box), being careful not to insert spaces or extra characters",
-    "tryAgain": "Try Again",
     "barcodeRequired": "Please enter your kit's barcode to continue.",
     "dontMatch": "Those barcodes don't match. Please try again.",
     "placeholder": "Enter barcode",
@@ -347,7 +343,7 @@
   },
   "BarcodeContactSupport": {
     "title": "Invalid barcode",
-    "desc": "We're sorry, but the barcode you entered did not match our records. Please [contact support](CONTACTSUPPORT).\n\nIf you feel you made an error, you can re-enter your barcode using the link below:"
+    "desc": "We're sorry, but the barcode you entered did not match our records.\n\n[Re-enter your barcode](PUSHNAVIGATE:ManualEntry)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
   },
   "BarcodeConnectionToServerError": {
     "title": "Connect to verify your barcode",
@@ -355,18 +351,18 @@
   },
   "EmailConfirmation": {
     "title": "Verify your email",
-    "desc": "Now let's confirm that your kit (barcode {{barcode}}) matches your Achievement account.\n\nPlease enter the email address you use for Achievement. Here is a hint:\n\n**{{emailHint}}**"
+    "desc": "Now let's confirm that your kit (barcode {{barcode}}) matches your Achievement account.\n\nEnter the email address you use for Achievement. Here is a hint:\n\n**{{emailHint}}**"
   },
   "EmailError": {
-    "title": "Email could not be verified",
-    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievement account on record.\n\nYou can try to re-enter your email, or if you think you've grabbed the wrong kit, you can scan a different kit barcode. Select an option below to try again.\n\n[Re-enter your email](PUSHNAVIGATE:EmailConfirmation)\n\n[Scan a different kit barcode](PUSHNAVIGATE:ScanInstructions)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
+    "title": "Cannot verify email",
+    "desc": "Your kit barcode {{barcode}} and email address {{enteredEmail}} did not match an Achievement account on record.\n\nYou can re-enter your email, or if you think you've grabbed the wrong kit, you can scan a different kit barcode. Select an option below to try again.\n\n[Re-enter your email](PUSHNAVIGATE:EmailConfirmation)\n\n[Scan a different kit barcode](PUSHNAVIGATE:ScanInstructions)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
   },
   "Unpacking": {
     "title": "Set up your kit box",
     "desc": "Open the kit box.\nPick up the small bag from the Test 1 side of the box.\nRemove the saline vial and tube.\nRemove the stopper from the tube.\nStand up the tube in the small hole."
   },
   "Swab": {
-    "title": "Prepare the Test 1 tube",
+    "title": "Prepare Test 1 tube",
     "desc": "Carefully twist open the saline vial.\nSqueeze the liquid carefully into the tube so that all the liquid gets into the tube."
   },
   "OpenSwab": {
@@ -374,7 +370,7 @@
     "desc": "Remove the nasal swab from the paper wrapper by pulling the two ends of the wrapper apart (like you would to open a band-aid).\nBe careful to only touch the handle, not the tip."
   },
   "Mucus": {
-    "title": "Collect sample from nose",
+    "title": "Swab nose",
     "desc": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
   },
   "SwabInTube": {
@@ -478,9 +474,8 @@
   },
   "ThankYouSurvey": {
     "title": "Please wait for timer",
-    "desc": "Thank you for completing the survey.\n\nYour test strip is still processing. Just wait for the timer to end and the app will direct you to the next steps.",
-    "titleTimerUp": "Timer finished!",
-    "descTimerUp": "Tap \"Continue\" and we'll remove your test strip from the test tube."
+    "desc": "Thank you for completing the survey.\n\nYour test strip is still processing. When the timer ends, the app will direct you to the next step.",
+    "titleTimerUp": "Timer finished!"
   },
   "TestStripReady": {
     "title": "Remove test strip",
@@ -491,18 +486,17 @@
     "desc": "Look at the test strip with the arrows pointing down towards you to answer the following questions."
   },
   "TestStripSurvey2": {
-    "title": "What do you see?",
-    "desc": "Look at the test strip with the arrows pointing down towards you to answer the following questions."
+    "title": "What do you see?"
   },
   "RDTInstructions": {
     "title": "Scan your test strip",
-    "desc": "Next, the app will use your camera to scan your test strip. Please read the instructions below and tap \"Continue\" when ready.",
+    "desc": "Next, the app will use your camera to scan your test strip. Please note the instructions below.",
     "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
     "instructions2": "Hold your {{device}} flat and directly above your test strip.",
-    "desc2": "Please note: If the test strip doesn't scan within {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo of it using the app."
+    "desc2": "If the test strip doesn't scan within {{rdtTimeoutSeconds}} seconds, you will be asked to take a photo of it using the app."
   },
   "NonRDTInstructions": {
-    "title": "Take a photo of test strip",
+    "title": "Take photo of test strip",
     "desc": "Next, we'd like you to take a photo of your test strip using your {{device}}'s camera. The app will access the camera for you.",
     "instructions": "Ensure your test strip is in the indent in the middle of the kit box.",
     "instructions2": "Hold your {{device}} flat and directly above your test strip.",
@@ -541,34 +535,34 @@
   },
   "TestStripConfirmation": {
     "title": "Photo captured",
-    "desc": "Thank you! Your test strip photo was captured successfully.",
+    "desc": "Your test strip photo was captured successfully.",
     "diagnosis": "Your machine overlord has decided your test result is {{ testResult }}."
   },
   "PackUpTest": {
-    "title": "Clean up the first test",
+    "title": "Clean up first test",
     "desc": "Now that you've completed the first test, put the Test 1 tube inside the small bag and set it aside."
   },
   "PrepareUTM": {
     "title": "Begin second test",
-    "desc": "This test has fewer steps than the first one and some steps are different, so please read carefully.",
-    "desc2": "Pick up Test 2 tube (blue top) from the right side of the box.\nHolding it straight so the liquid inside doesn't spill, open the top.\nStand up the tube in the large hole."
+    "desc": "Please note, this test has different steps from the first one.",
+    "desc2": "Pick up the Test 2 tube (blue top) from the right side of the box.\nHolding it straight so the liquid inside doesn't spill, open the top.\nStand up the tube in the large hole."
   },
   "OpenSwabUTM": {
     "title": "Open nasal swab",
     "desc": "Remove the Test 2 nasal swab from the wrapper.\nBe careful to only touch the handle, not the tip."
   },
   "MucusUTM": {
-    "title": "Collect sample from nose",
+    "title": "Swab nose",
     "desc": "Now you'll swab your nose the same way you did in the first test.",
     "desc2": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
   },
   "SwabInTubeUTM": {
     "title": "Put swab in tube",
-    "desc": "Place the swab directly into the large tube.\nScrew the blue top back onto the tube tightly."
+    "desc": "Place the swab directly into the Test 2 tube.\nScrew the blue top back onto the tube tightly."
   },
   "PackUpUTM": {
     "title": "Clean up second test",
-    "desc": "Remove the two bags from the pouch on the kit lid. Put the larger FedEx shipping bag aside.\nPut the test strip, the tube with the blue top, and the small bag containing the small tube inside the Lab Guard specimen bag.\nRemove as much air as possible from the bag, roll it up, and close it using the zip-top closure."
+    "desc": "Remove the two bags from the pouch on the kit lid. Put the larger FedEx shipping bag aside.\nPut the test strip, Test 2 tube, and the small bag containing the Test 1 tube inside the Lab Guard specimen bag.\nRemove as much air as possible from the bag, roll it up, and close it using the zip-top closure."
   },
   "PackUpBox": {
     "title": "Prepare kit return package",
@@ -580,20 +574,21 @@
     "desc2": "[Call FedEx to arrange for a pickup](PUSHNAVIGATE:CallForPickup) from your location\n[Drop off your package](PUSHNAVIGATE:WebsiteForDropoff) at a nearby FedEx office or drop box"
   },
   "CallForPickup": {
-    "title": "Call FedEx to pickup package",
-    "desc": "Call [(800) GO FEDEX](PHONE:8004633339) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below. Please use the responses indicated:",
-    "desc2": "How can I help you? Say \"**schedule a pickup**\"\nTo schedule a pickup say \"**I am using a label**\"\nIs the word \"stamp\" on your label? Say \"**no**\"\nFind the 12-digit tracking number on the bottom of the FedEx shipping bag label",
-    "desc3": "When asked if they have the correct pickup address say \"**no**\"\nYou will be transferred to a FedEx representative who will finish setting up a pickup from your address\nNote the pickup confirmation number provided by FedEx",
+    "title": "Call FedEx for pickup",
+    "desc": "Call [(800) GO FEDEX](PHONE:8004633339) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below:",
+    "desc2": "How can I help you? Say \"**schedule a pickup**\"\nTo schedule a pickup say \"**I am using a label**\"\nIs the word \"stamp\" on your label? Say \"**no**\"\nWhen asked, say the 12-digit tracking number on the bottom of the FedEx shipping label",
+    "desc3": "When asked if they have the correct pickup address say \"**no**\"\nYou will be transferred to a FedEx representative who will finish setting up a pickup from your address",
     "desc4": "[Call (800) GO FEDEX](PHONE:8004633339)",
     "done": "Done scheduling pickup"
   },
   "WebsiteForDropoff": {
     "title": "Drop off your package",
-    "desc": "Use the link below to find a nearby FedEx office or drop box where you can drop off your package.\n\nAfter opening the link, set \"More Filters\" to FedEx Office, FedEx Drop Box, and FedEx Ship Center. The package cannot be dropped off at FedEx retail locations such as Office Depot, Walgreens, Safeway, etc.\n\n[Find a FedEx location](DROPOFFPACKAGE:{{state}}/{{city}})"
+    "desc": "Use the link below to find a nearby FedEx office or drop box where you can drop off your package.\n\nAfter opening the link, set \"More Filters\" to FedEx Office, FedEx Drop Box, and FedEx Ship Center. The package cannot be dropped off at FedEx retail locations such as Office Depot, Walgreens, Safeway, etc.\n\n[Find a FedEx location](DROPOFFPACKAGE:{{state}}/{{city}})",
+    "done": "I will drop off"
   },
   "Thanks": {
     "title": "All done!",
-    "desc": "Thank you for participating in this research study and helping us to find better ways to manage the flu. We hope you feel better soon. If you are concerned about your symptoms, please contact your healthcare provider.\n\n[Search Maps for urgent care clinics nearby](https://www.google.com/maps/search/urgent+care+clinics+{{city}}+{{state}})\n\nLearn more about influenza below with information from the Centers for Disease Control (CDC).",
+    "desc": "Thank you for participating in this research study and helping us find better ways to manage the flu. We hope you feel better soon. If you are concerned about your symptoms, contact your healthcare provider.\n\n[Search Maps for urgent care clinics nearby](https://www.google.com/maps/search/urgent+care+clinics+{{city}}+{{state}})\n\nLearn more about influenza below with information from the Centers for Disease Control (CDC).",
     "fact0": {
       "title": "What are the main differences between a cold and the flu?",
       "description": "Flu and the common cold are both respiratory illnesses, but they are caused by different viruses. Because these two types of illnesses have similar symptoms, it can be difficult to tell the difference between them based on symptoms alone. See [the CDC's page on differences between a cold and the flu](https://www.cdc.gov/flu/symptoms/coldflu.htm) for details."
@@ -627,7 +622,6 @@
     "notEnrolledInStudy": "Tap here if you are not enrolled",
     "contactSupport": "Contact support with questions",
     "CDC": "Centers for Disease Control and Prevention: Antiviral drugs may be an option",
-    "inputManually": "Enter barcode manually",
     "skipTestStripPhoto": "Unable to take a picture? Skip this step",
     "supportBody": "\n\n\n\n[Please describe your issue above this line and include the Installation ID below for a quicker response.] Installation ID: "
   }

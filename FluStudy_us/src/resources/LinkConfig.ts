@@ -89,14 +89,6 @@ export const LinkPropProvider = (LinkComponent: any) =>
 
 export const linkConfig: Map<string, LinkConfig> = new Map<string, LinkConfig>([
   [
-    "inputManually",
-    {
-      action: ({ navigation }) =>
-        navigation.dispatch(StackActions.push({ routeName: "ManualEntry" })),
-      key: "inputManually",
-    },
-  ],
-  [
     "skipTestStripPhoto",
     {
       action: ({ navigation }) =>

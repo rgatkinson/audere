@@ -32,19 +32,3 @@ export function invalidBarcodeShapeAlert(
     ]
   );
 }
-
-export function unverifiedBarcodeAlert(
-  action: string,
-  onPress: () => void = () => {}
-): void {
-  Alert.alert(
-    i18n.t("barcode:notVerified"),
-    i18n.t("barcode:pleaseRetry", { action }),
-    [
-      {
-        text: i18n.t("barcode:tryAgain"),
-        onPress,
-      },
-    ]
-  );
-}

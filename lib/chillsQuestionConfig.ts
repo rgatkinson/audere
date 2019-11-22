@@ -662,7 +662,6 @@ export const WhichCountriesOutsideUSConfig: TextQuestion = {
       answer: "yes",
     },
   ],
-  description: "enterCountries",
   id: "WhichCountriesOutsideUS",
   placeholder: "enterCountries",
   title: "whichCountriesOutsideUS",

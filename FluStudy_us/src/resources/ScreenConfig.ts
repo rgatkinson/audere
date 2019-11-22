@@ -263,7 +263,6 @@ export const Screens: ScreenConfig[] = [
       { tag: MainImage, props: { uri: "contactsupport" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
-      { tag: Links, props: { links: ["inputManually"] } },
     ],
     key: "BarcodeContactSupport",
   },
@@ -698,7 +697,6 @@ export const Screens: ScreenConfig[] = [
             ],
             [
               { tag: Title, props: { center: false, label: "titleTimerUp" } },
-              { tag: ScreenText, props: { label: "descTimerUp" } },
               { tag: ContinueButton, props: { next: "TestStripReady" } },
             ],
           ],
@@ -1089,7 +1087,7 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: ContinueButton,
-        props: { surveyGetNextFn: pendingNavigation },
+        props: { surveyGetNextFn: pendingNavigation, label: "done" },
       },
     ],
     key: "WebsiteForDropoff",
