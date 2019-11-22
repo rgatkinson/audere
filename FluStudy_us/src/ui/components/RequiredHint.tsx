@@ -20,7 +20,6 @@ export default withNamespaces()(RequiredHint);
 
 const styles = StyleSheet.create({
   hintContainer: {
-    alignSelf: "center",
     flexDirection: "row",
     marginBottom: GUTTER,
   },
