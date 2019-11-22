@@ -144,6 +144,26 @@ resource "aws_s3_bucket" "flu_api_reports_bucket" {
 }
 
 // --------------------------------------------------------------------------------
+// Evidation reporting bucket
+
+resource "aws_s3_bucket" "evidation_reports_bucket" {
+  bucket        = "${var.environment}-evidation-reports"
+  force_destroy = true
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+}
+
+// --------------------------------------------------------------------------------
 // FluApi ECS task
 
 data "template_file" "fluapi" {

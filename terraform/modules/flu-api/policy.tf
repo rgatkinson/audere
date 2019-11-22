@@ -58,6 +58,47 @@ data "aws_iam_policy_document" "flu_api_cloudwatch_policy" {
   }
 }
 
+resource "aws_iam_policy" "evidation_s3_policy" {
+  name = "${var.environment}"
+  policy = "${data.aws_iam_policy_document.evidation_s3_policy.json}"
+}
+
+data "aws_iam_policy_document" "evidation_s3_policy" {
+  statement {
+    actions = [
+      "s3:GetBucketLocation",
+      "s3:ListBucket"
+    ]
+
+    principals = {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::251542519377:root"]
+    }
+
+    resources = [
+      "${aws_s3_bucket.evidation_reports_bucket.arn}"
+    ]
+  }
+
+  statement {
+    actions = [
+      "s3:DeleteObject",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:PutObjectAcl"
+    ]
+
+    principals = {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::251542519377:root"]
+    }
+
+    resources = [
+      "${aws_s3_bucket.evidation_reports_bucket.arn}/*"
+    ]
+  }
+}
+
 resource "aws_iam_policy" "flu_api_s3_policy" {
   name = "${local.base_name}-s3-policy"
   policy = "${data.aws_iam_policy_document.flu_api_s3_policy.json}"
