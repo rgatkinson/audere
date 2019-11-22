@@ -52,6 +52,8 @@
 		507F749822BAFC930055CE82 /* flashoff@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 507F749222BAFC930055CE82 /* flashoff@2x.png */; };
 		507F749922BAFC930055CE82 /* flashon@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 507F749322BAFC930055CE82 /* flashon@3x.png */; };
 		50A9E0792362455000439533 /* noseswab.gif in Resources */ = {isa = PBXBuildFile; fileRef = 50A9E0782362454F00439533 /* noseswab.gif */; };
+		50DE16832388A8160071B17F /* colorlogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 50DE167A2388A8150071B17F /* colorlogo@2x.png */; };
+		50DE16842388A8160071B17F /* colorlogo@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 50DE16822388A8150071B17F /* colorlogo@3x.png */; };
 		59109E6C22FA4547001543C8 /* largesplash.png in Resources */ = {isa = PBXBuildFile; fileRef = 59109E6022FA4546001543C8 /* largesplash.png */; };
 		59109E6D22FA4547001543C8 /* largebg.png in Resources */ = {isa = PBXBuildFile; fileRef = 59109E6722FA4546001543C8 /* largebg.png */; };
 		59109E6E22FA4547001543C8 /* splash.png in Resources */ = {isa = PBXBuildFile; fileRef = 59109E6822FA4547001543C8 /* splash.png */; };
@@ -255,6 +257,8 @@
 		507F749222BAFC930055CE82 /* flashoff@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "flashoff@2x.png"; path = "../../../assets/images/flashoff@2x.png"; sourceTree = "<group>"; };
 		507F749322BAFC930055CE82 /* flashon@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "flashon@3x.png"; path = "../../../assets/images/flashon@3x.png"; sourceTree = "<group>"; };
 		50A9E0782362454F00439533 /* noseswab.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = noseswab.gif; path = ../../../assets/images/noseswab.gif; sourceTree = "<group>"; };
+		50DE167A2388A8150071B17F /* colorlogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "colorlogo@2x.png"; path = "../../../assets/images/colorlogo@2x.png"; sourceTree = "<group>"; };
+		50DE16822388A8150071B17F /* colorlogo@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "colorlogo@3x.png"; path = "../../../assets/images/colorlogo@3x.png"; sourceTree = "<group>"; };
 		59109E6022FA4546001543C8 /* largesplash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = largesplash.png; path = ../../../assets/images/largesplash.png; sourceTree = "<group>"; };
 		59109E6722FA4546001543C8 /* largebg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = largebg.png; path = ../../../assets/images/largebg.png; sourceTree = "<group>"; };
 		59109E6822FA4547001543C8 /* splash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = splash.png; path = ../../../assets/images/splash.png; sourceTree = "<group>"; };
@@ -496,6 +500,8 @@
 				218947C72284D31300788F40 /* teststrip2@3x.png */,
 				EAEBD21A22691AA8009815C6 /* app-icon.png */,
 				EAEBD22422691AA9009815C6 /* colorlogo.png */,
+				50DE167A2388A8150071B17F /* colorlogo@2x.png */,
+				50DE16822388A8150071B17F /* colorlogo@3x.png */,
 				502B9E74238369630041C7D5 /* begintest2.png */,
 				502B9E75238369640041C7D5 /* begintest2@2x.png */,
 				502B9E76238369640041C7D5 /* begintest2@3x.png */,
@@ -822,6 +828,7 @@
 				EA01F00D236B81BF00FB903A /* pinklinebelowblueline@3x.png in Resources */,
 				EAEBD29822691AB7009815C6 /* putteststripintube@3x.png in Resources */,
 				505A59842358F23A00A8505F /* bullet_rev@2x.png in Resources */,
+				50DE16842388A8160071B17F /* colorlogo@3x.png in Resources */,
 				502B9E8423836A4D0041C7D5 /* cleanuptest2@2x.png in Resources */,
 				59EDB81C229F0901001B7F12 /* scanbarcode.png in Resources */,
 				502B9E7F238369F20041C7D5 /* putswabintube2@3x.png in Resources */,
@@ -889,6 +896,7 @@
 				EAEBD2B122691AB7009815C6 /* openteststrip@3x.png in Resources */,
 				EAEBD2C922691AB7009815C6 /* openteststrip@2x.png in Resources */,
 				59109E7122FA4547001543C8 /* mediumsplash.png in Resources */,
+				50DE16832388A8160071B17F /* colorlogo@2x.png in Resources */,
 				507F749922BAFC930055CE82 /* flashon@3x.png in Resources */,
 				502B9E07237B93950041C7D5 /* howthishelps@3x.png in Resources */,
 				505A59872358F23A00A8505F /* bullet.png in Resources */,

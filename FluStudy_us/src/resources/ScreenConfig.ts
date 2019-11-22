@@ -376,14 +376,22 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      {
-        tag: MainImage,
-        props: { uri: COLLECT_MUCUS_IMAGE_NAME },
-      },
       { tag: Title },
       {
         tag: BulletPointsComponent,
         props: { label: "desc" },
+      },
+      {
+        tag: MainImage,
+        props: {
+          uri: COLLECT_MUCUS_IMAGE_NAME,
+          imageStyle: { marginTop: 0 },
+          useForChrome: true,
+        },
+      },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc2" },
       },
       {
         tag: ContinueButton,
@@ -979,15 +987,23 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      {
-        tag: MainImage,
-        props: { uri: COLLECT_MUCUS_IMAGE_NAME },
-      },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       {
         tag: BulletPointsComponent,
         props: { label: "desc2" },
+      },
+      {
+        tag: MainImage,
+        props: {
+          uri: COLLECT_MUCUS_IMAGE_NAME,
+          imageStyle: { marginTop: 0 },
+          useForChrome: true,
+        },
+      },
+      {
+        tag: BulletPointsComponent,
+        props: { label: "desc3" },
       },
       {
         tag: ContinueButton,

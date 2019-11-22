@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   },
   backgroundOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(51,51,51, 0.6)",
   },
   feedbackItemIcon: {
     height: 32,

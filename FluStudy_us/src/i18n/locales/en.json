@@ -371,7 +371,8 @@
   },
   "Mucus": {
     "title": "Swab nose",
-    "desc": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
+    "desc": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.",
+    "desc2": "Using medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
   },
   "SwabInTube": {
     "title": "Put swab in tube",
@@ -554,7 +555,8 @@
   "MucusUTM": {
     "title": "Swab nose",
     "desc": "Now you'll swab your nose the same way you did in the first test.",
-    "desc2": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.\nUsing medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
+    "desc2": "Gently insert the **entire** soft tip of the swab into one nostril until you feel a bit of resistance.",
+    "desc3": "Using medium pressure, rub the swab around the inside wall of your nostril four times.\nNext, gently insert the **same swab** into the other nostril and rub it around the same way."
   },
   "SwabInTubeUTM": {
     "title": "Put swab in tube",
