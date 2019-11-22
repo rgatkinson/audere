@@ -39,7 +39,9 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -380,6 +382,10 @@ public class DetectorView extends LinearLayout implements
                         public void run() {
                             try {
                                 IprdAdapter.FrameResult iprdResult = checkIPRDFilter(boxModelBitmap);
+                                saveDebugImage(
+                                    boxModelBitmap,
+                                    ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult
+                                );
                                 Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult);
                                 if (iprdResult == null || iprdResult.isAccepted()) {
                                     // Local interpretation prototype
@@ -433,16 +439,38 @@ public class DetectorView extends LinearLayout implements
             return mappedRecognitions;
         }
 
-        protected String saveImage() {
-            File photo = new File(activity.getFilesDir(), RDT_PHOTO_FILE_NAME);
+        int debugImageCounter = 0;
+        protected String saveDebugImage(Bitmap bitmap, String description) {
+            File debugImages = new File("/sdcard/debug-images");
+            debugImages.mkdirs();
 
-            if (photo.exists()) {
-                photo.delete();
+            int n = debugImageCounter++;
+
+            File descriptionFile = new File(debugImages, "image" + n + ".txt");
+            try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(descriptionFile.getPath()))) {
+                osw.write(description, 0, description.length());
+            } catch (java.io.IOException e) {
+                Log.e(TAG, "Exception in saveDebugImage", e);
+                return null;
             }
 
-            try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(photo.getPath()))) {
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-                return Uri.fromFile(new File(photo.getPath())).toString();
+            File photoFile = new File(debugImages, "image" + n + ".jpeg");
+            return saveImage(photoFile, bitmap);
+        }
+
+        protected String saveImage() {
+            File photo = new File(activity.getFilesDir(), RDT_PHOTO_FILE_NAME);
+            return saveImage(photo, imageBitmap);
+        }
+
+        protected String saveImage(File file, Bitmap bitmap) {
+            if (file.exists()) {
+                file.delete();
+            }
+
+            try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file.getPath()))) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                return Uri.fromFile(new File(file.getPath())).toString();
             } catch (java.io.IOException e) {
                 Log.e(TAG, "Exception in saveImage", e);
                 return null;
@@ -585,7 +613,8 @@ public class DetectorView extends LinearLayout implements
 
     private boolean hasPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return activity.checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED;
+            return activity.checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED
+                && activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         } else {
             return true;
         }
@@ -600,7 +629,14 @@ public class DetectorView extends LinearLayout implements
                         Toast.LENGTH_LONG)
                         .show();
             }
-            activity.requestPermissions(new String[]{PERMISSION_CAMERA}, PERMISSIONS_REQUEST);
+            if (activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(
+                    activity,
+                    "Storage permission is required for this demo",
+                    Toast.LENGTH_LONG)
+                    .show();
+            }
+            activity.requestPermissions(new String[]{PERMISSION_CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST);
         }
     }
 

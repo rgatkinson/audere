@@ -30,7 +30,7 @@ import java.util.List;
 
 public class Utils {
 
-    static String dirpath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/RDT/";
+    static String dirpath = "/sdcard/RDT/";
     static int mImageCount = 0;
 
     static void  CreateDirectory() {
