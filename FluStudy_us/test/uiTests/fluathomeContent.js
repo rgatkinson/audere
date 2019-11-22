@@ -639,7 +639,7 @@ export const content = [
     type: "basic",
     title: strings.WebsiteForDropoff.title,
     button: {
-      name: strings.common.button.continue + " ",
+      name: strings.WebsiteForDropoff.done + " ",
       onClick: "Thanks",
     },
     key: "WebsiteForDropoff",
