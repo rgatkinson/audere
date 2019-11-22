@@ -36,9 +36,17 @@ public class IprdAdapter {
     }
 
     public static class Builder {
-      private RdtAPI.RdtAPIBuilder iprdBuilder = new RdtAPI.RdtAPIBuilder();
+      private RdtAPI.RdtAPIBuilder iprdBuilder;
 
-      private Builder() {}
+      private Builder() {
+        iprdBuilder = new RdtAPI.RdtAPIBuilder();
+        iprdBuilder.setMaxScale((short) 100);
+        iprdBuilder.setMinScale((short) 0);
+        iprdBuilder.setXMin((short) 0);
+        iprdBuilder.setXMax((short) 100);
+        iprdBuilder.setYMin((short) 0);
+        iprdBuilder.setXMax((short) 100);
+      }
 
       public RdtApi build() {
         return new RdtApi(this.iprdBuilder.build());

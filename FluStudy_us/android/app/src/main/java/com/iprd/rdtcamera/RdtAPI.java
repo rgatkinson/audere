@@ -92,7 +92,7 @@ public class RdtAPI {
         this.mSaveInput = b;
     }
     boolean mSaveInput=false;
-    boolean mSetRotation=true;
+    boolean mSetRotation=false;
 
     public long getPostProcessingTime() {
         return mPostProcessingTime;
@@ -110,7 +110,7 @@ public class RdtAPI {
 
     public void setmPlaybackMode(boolean mPlaybackMode) {
         this.mPlaybackMode = mPlaybackMode;
-        setRotation(false);
+        //setRotation(false);
     }
 
     public void setSavePoints(boolean b){
@@ -219,35 +219,70 @@ public class RdtAPI {
     }
 
     private boolean computeDistortion(Mat mat,AcceptanceStatus ret){
-        if(ret.mBoundingBoxWidth*100 > mConfig.mMaxScale*mat.cols()){
-            ret.mScale = TOO_HIGH;
-            Log.d("DistMaxSc",""+ret.mBoundingBoxWidth*100 +">"+ mConfig.mMaxScale*mat.cols());
-            return false;
-        }else if (ret.mBoundingBoxWidth*100 < mConfig.mMinScale*mat.cols()){
-            ret.mScale = TOO_LOW;
-            Log.d("DistMinSc",""+ret.mBoundingBoxWidth*100 +"<"+ mConfig.mMinScale*mat.cols());
-            return false;
-        }else ret.mScale = AcceptanceStatus.GOOD;
+        if(mSetRotation) {
+            if (ret.mBoundingBoxWidth * 100 > mConfig.mMaxScale * mat.cols()) {
+                ret.mScale = TOO_HIGH;
+                Log.d("DistMaxSc", "" + ret.mBoundingBoxWidth * 100 + ">" + mConfig.mMaxScale * mat.cols());
+                return false;
+            } else if (ret.mBoundingBoxWidth * 100 < mConfig.mMinScale * mat.cols()) {
+                ret.mScale = TOO_LOW;
+                Log.d("DistMinSc", "" + ret.mBoundingBoxWidth * 100 + "<" + mConfig.mMinScale * mat.cols());
+                return false;
+            } else ret.mScale = AcceptanceStatus.GOOD;
 
-        if (ret.mBoundingBoxX*100 > mConfig.mXMax*mat.cols()){
-            ret.mDisplacementX = TOO_HIGH;
-            Log.d("DistXMax",""+ret.mBoundingBoxX*100 +">"+ mConfig.mXMax*mat.cols());
-            return false;
-        }else if (ret.mBoundingBoxX*100 < mConfig.mXMin*mat.cols()){
-            ret.mDisplacementX = TOO_LOW;
-            Log.d("DistXMin",""+ret.mBoundingBoxX *100+"<"+ mConfig.mXMin*mat.cols());
-            return false;
-        }else ret.mDisplacementX = GOOD;
+            if (ret.mBoundingBoxX*100 > mConfig.mXMax*mat.cols()){
+                ret.mDisplacementX = TOO_HIGH;
+                Log.d("DistXMax",""+ret.mBoundingBoxX*100 +">"+ mConfig.mXMax*mat.cols());
+                return false;
+            }else if (ret.mBoundingBoxX*100 < mConfig.mXMin*mat.cols()){
+                ret.mDisplacementX = TOO_LOW;
+                Log.d("DistXMin",""+ret.mBoundingBoxX *100+"<"+ mConfig.mXMin*mat.cols());
+                return false;
+            }else ret.mDisplacementX = GOOD;
 
-        if (ret.mBoundingBoxY*100 > mConfig.mYMax*mat.rows()){
-            ret.mDisplacementY = TOO_HIGH;
-            Log.d("DistYMax",""+ret.mBoundingBoxY*100 +">"+ mConfig.mYMax*mat.rows());
-            return false;
-        }else if (ret.mBoundingBoxY*100 < mConfig.mYMin*mat.rows()){
-            ret.mDisplacementY = TOO_LOW;
-            Log.d("DistYMin",""+ret.mBoundingBoxY*100 +"<"+ mConfig.mYMin*mat.rows());
-            return false;
-        }else ret.mDisplacementY = GOOD;
+            if (ret.mBoundingBoxY*100 > mConfig.mYMax*mat.rows()){
+                ret.mDisplacementY = TOO_HIGH;
+                Log.d("DistYMax",""+ret.mBoundingBoxY*100 +">"+ mConfig.mYMax*mat.rows());
+                return false;
+            }else if (ret.mBoundingBoxY*100 < mConfig.mYMin*mat.rows()){
+                ret.mDisplacementY = TOO_LOW;
+                Log.d("DistYMin",""+ret.mBoundingBoxY*100 +"<"+ mConfig.mYMin*mat.rows());
+                return false;
+            }else ret.mDisplacementY = GOOD;
+
+        }else{
+            if (ret.mBoundingBoxHeight * 100 > mConfig.mMaxScale * mat.rows()) {
+                ret.mScale = TOO_HIGH;
+                Log.d("DistMaxSc", "" + ret.mBoundingBoxHeight * 100 + ">" + mConfig.mMaxScale * mat.rows());
+                return false;
+            } else if (ret.mBoundingBoxHeight * 100 < mConfig.mMinScale * mat.rows()) {
+                ret.mScale = TOO_LOW;
+                Log.d("DistMinSc", "" + ret.mBoundingBoxHeight * 100 + "<" + mConfig.mMinScale * mat.rows());
+                return false;
+            } else ret.mScale = AcceptanceStatus.GOOD;
+
+            if (ret.mBoundingBoxX*100 > mConfig.mXMax*mat.rows()){
+                ret.mDisplacementX = TOO_HIGH;
+                Log.d("DistXMax",""+ret.mBoundingBoxX*100 +">"+ mConfig.mXMax*mat.rows());
+                return false;
+            }else if (ret.mBoundingBoxX*100 < mConfig.mXMin*mat.rows()){
+                ret.mDisplacementX = TOO_LOW;
+                Log.d("DistXMin",""+ret.mBoundingBoxX *100+"<"+ mConfig.mXMin*mat.rows());
+                return false;
+            }else ret.mDisplacementX = GOOD;
+
+            if (ret.mBoundingBoxY*100 > mConfig.mYMax*mat.cols()){
+                ret.mDisplacementY = TOO_HIGH;
+                Log.d("DistYMax",""+ret.mBoundingBoxY*100 +">"+ mConfig.mYMax*mat.cols());
+                return false;
+            }else if (ret.mBoundingBoxY*100 < mConfig.mYMin*mat.cols()){
+                ret.mDisplacementY = TOO_LOW;
+                Log.d("DistYMin",""+ret.mBoundingBoxY*100 +"<"+ mConfig.mYMin*mat.cols());
+                return false;
+            }else ret.mDisplacementY = GOOD;
+
+        }
+
         ret.mPerspectiveDistortion= GOOD;
         return true;
     }
@@ -302,6 +337,9 @@ public class RdtAPI {
                 ret.mSteady = TOO_HIGH;
             }
             //process frame
+            if(matinput.width() < matinput.height()) {
+                mSetRotation = true;
+            }
             Rect detectedRoi = null;
             Mat rotatedmat = new Mat();
             if (mSetRotation) rotatedmat = com.iprd.rdtcamera.Utils.rotateFrame(greyMat, -90);
@@ -422,7 +460,7 @@ public class RdtAPI {
                 }
                 float wfactor = 0;
                 float hfactor = 0;
-                if (mPlaybackMode) {
+                if (!mSetRotation) {
                     wfactor = inputmat.cols() / 1280.f;
                     hfactor = inputmat.rows() / 720f;
                 } else {
@@ -435,8 +473,13 @@ public class RdtAPI {
                 }
                 if(mShowPip){
                     synchronized (piplock) {
-                        mPipMat = new Mat(360, 640, inputmat.type());
-                        resize(inputmat, mPipMat, new Size(360, 640));
+                        int w = 360,h = 640;
+                        if(!mSetRotation){
+                            w=640;
+                            h=360;
+                        }
+                        mPipMat = new Mat(w, h, inputmat.type());
+                        resize(inputmat, mPipMat, new Size(w, h));
                     }
                 }
                 if (mSaveInput) SaveMatrix(inputmat, "output");

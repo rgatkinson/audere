@@ -486,8 +486,25 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
+//        int convertN = 1000;
+//        File debugImages = new File("/sdcard/debug-images");
+
         @Override
         protected IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap) {
+//            // IPRD filter expects (width:height) to be 9:16
+//            if (imageWidth > imageHeight) {
+//                final long iprdConverstionStartTimeMs = SystemClock.uptimeMillis();
+//                int n = convertN++;
+//
+//                saveImage(new File(debugImages, "image" + n + "-orig.jpeg"), bitmap);
+//                Matrix matrix = new Matrix();
+//                matrix.postRotate(90);
+//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getHeight(), bitmap.getWidth(), matrix, true);
+//                saveImage(new File(debugImages, "image" + n + "-rotate.jpeg"), bitmap);
+//
+//                Log.i(TAG, "IPRD imgconv: " + (SystemClock.uptimeMillis() - iprdConverstionStartTimeMs) + "ms");
+//            }
+
             final long iprdStartTimeMs = SystemClock.uptimeMillis();
             Trace.beginSection("IPRD Filter");
             IprdAdapter.FrameResult iprdResult = iprdApi == null
