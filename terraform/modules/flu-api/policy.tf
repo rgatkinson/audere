@@ -58,8 +58,8 @@ data "aws_iam_policy_document" "flu_api_cloudwatch_policy" {
   }
 }
 
-resource "aws_iam_policy" "evidation_s3_policy" {
-  name = "${var.environment}"
+resource "aws_s3_bucket_policy" "evidation_s3_policy" {
+  bucket = "${aws_s3_bucket.evidation_reports_bucket.id}"
   policy = "${data.aws_iam_policy_document.evidation_s3_policy.json}"
 }
 

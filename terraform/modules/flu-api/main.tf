@@ -147,7 +147,7 @@ resource "aws_s3_bucket" "flu_api_reports_bucket" {
 // Evidation reporting bucket
 
 resource "aws_s3_bucket" "evidation_reports_bucket" {
-  bucket        = "${var.environment}-evidation-reports"
+  bucket        = "evidation-reports.${var.environment}.auderenow.io"
   force_destroy = true
 
   versioning {
