@@ -6,7 +6,7 @@
 import React, { RefObject } from "react";
 import { ScrollIntoView } from "react-native-scroll-into-view";
 import { connect } from "react-redux";
-import { getAnswer, getAnswerForID } from "../../util/survey";
+import { getAnswer, getAnswerForID, isAnswerInvalid } from "../../util/survey";
 import {
   Action,
   Option,
@@ -128,7 +128,7 @@ class Questions extends React.PureComponent<Props, State> {
         valid &&
         this._evaluateConditional(config) &&
         config.required &&
-        !this._hasAnswer(config)
+        !this._isAnswerValid(config)
       ) {
         this.setState({ triedToProceed: true });
         this._requiredQuestions.get(config.id)!.current!.scrollIntoView();
@@ -141,13 +141,17 @@ class Questions extends React.PureComponent<Props, State> {
     return valid;
   };
 
-  _hasAnswer = (config: SurveyQuestion) => {
+  _isAnswerValid = (config: SurveyQuestion) => {
+    const answer = this.props.answers.get(config.id);
+    if (!answer || answer.isInvalid) {
+      return false;
+    }
     switch (config.type) {
       case SurveyQuestionType.Text:
         return true;
       case SurveyQuestionType.OptionQuestion:
       case SurveyQuestionType.MultiDropdown:
-        const options: Option[] | undefined = this.props.answers.get(config.id);
+        const options: Option[] | undefined = answer.value;
         return options
           ? options.reduce(
               (result: boolean, option: Option) => result || option.selected,
@@ -155,14 +159,13 @@ class Questions extends React.PureComponent<Props, State> {
             )
           : false;
       case SurveyQuestionType.Dropdown:
-        return this.props.answers.get(config.id) != null;
       case SurveyQuestionType.RadioGrid:
       case SurveyQuestionType.ButtonGrid:
       case SurveyQuestionType.DatePicker:
       case SurveyQuestionType.MonthPicker:
       case SurveyQuestionType.TextInput:
       case SurveyQuestionType.ZipCodeInput:
-        return this.props.answers.get(config.id) != null;
+        return answer.value != null;
       default:
         return false;
     }
@@ -170,7 +173,9 @@ class Questions extends React.PureComponent<Props, State> {
 
   _renderQuestion = (config: SurveyQuestion) => {
     const highlighted =
-      config.required && this.state.triedToProceed && !this._hasAnswer(config);
+      config.required &&
+      this.state.triedToProceed &&
+      !this._isAnswerValid(config);
     switch (config.type) {
       case SurveyQuestionType.OptionQuestion:
         return (
@@ -256,7 +261,10 @@ export default connect((state: StoreState, props: Props) => ({
   answers: props.questions
     .map(question => ({
       id: question.id,
-      answer: getAnswer(state, question),
+      answer: {
+        value: getAnswer(state, question),
+        isInvalid: isAnswerInvalid(state, question),
+      },
     }))
     .reduce((map, obj) => {
       map.set(obj.id, obj.answer);

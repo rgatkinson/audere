@@ -26,6 +26,7 @@ export interface SurveyAnswer {
   numberInput?: number;
   selectedButtonKey?: string;
   textInput?: string;
+  isInvalid?: boolean;
   [key: string]: Date | Option[] | boolean | string | number | undefined;
 }
 

@@ -40,14 +40,16 @@ class NumberInputQuestion extends React.Component<
   };
 
   _onEndEditing = (e: any) => {
-    const answer = !!this.state.text
-      ? this.props.minDigits
-        ? this.state.text.padStart(this.props.minDigits, "0")
-        : this.state.text
-      : undefined;
+    const isInvalid =
+      !!this.state.text &&
+      this.props.minDigits &&
+      this.props.minDigits > this.state.text.length
+        ? true
+        : undefined;
+    const answer = !!this.state.text ? this.state.text : undefined;
     this.setState({ text: answer });
     this.props.dispatch(
-      updateAnswer({ textInput: answer }, this.props.question)
+      updateAnswer({ textInput: answer, isInvalid }, this.props.question)
     );
   };
 
