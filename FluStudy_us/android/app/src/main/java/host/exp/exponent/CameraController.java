@@ -304,15 +304,33 @@ public class CameraController {
             return desiredSize;
         }
 
-        // Pick the smallest of those, assuming we found any
-        if (bigEnough.size() > 0) {
-            final Size chosenSize = Collections.min(bigEnough, new CompareSizesByArea());
-            Log.i(TAG, "Chosen size: " + chosenSize.getWidth() + "x" + chosenSize.getHeight());
-            return chosenSize;
-        } else {
-            Log.e(TAG, "Couldn't find any suitable preview size");
+        if (bigEnough.size() == 0) {
+            Log.e(
+                TAG,
+                "Couldn't find any suitable preview size, using "
+                    + choices[0].getWidth() + "x" + choices[0].getHeight()
+            );
             return choices[0];
         }
+
+        // In general we will want the smallest size
+        Collections.sort(bigEnough, new CompareSizesByArea());
+
+        // First try to find one that matches aspect ratio
+        for (final Size option : bigEnough) {
+            if (option.getHeight() * width == option.getWidth() * height) {
+                Log.i(TAG, "Chosen size: " + option.getWidth() + "x" + option.getHeight());
+                return option;
+            }
+        }
+
+        Size chosen = bigEnough.get(0);
+        Log.w(
+            TAG,
+            "Big enough, but could not match aspect ratio, using "
+                + chosen.getWidth() + "x" + chosen.getHeight()
+        );
+        return chosen;
     }
 
     /**

@@ -71,7 +71,7 @@ public class DetectorView extends LinearLayout implements
     private static final float BOX_MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
     private static final float INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API = 0.2f;
     private static final boolean MAINTAIN_ASPECT = false;
-    private static final Size DESIRED_PREVIEW_SIZE = new Size(480, 640);
+    private static final Size DESIRED_PREVIEW_SIZE = new Size(1280, 720);
 
     private static final int PERMISSIONS_REQUEST = 1;
     private static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
@@ -381,7 +381,7 @@ public class DetectorView extends LinearLayout implements
                         @Override
                         public void run() {
                             try {
-                                IprdAdapter.FrameResult iprdResult = checkIPRDFilter(boxModelBitmap);
+                                IprdAdapter.FrameResult iprdResult = checkIPRDFilter(imageBitmap);
                                 saveDebugImage(
                                     boxModelBitmap,
                                     ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult
