@@ -554,7 +554,27 @@ async function verify_db_contents(
         } else if (question.type === "date") {
           // fill in later
         } else if (question.type === "location") {
-          // fill in later
+          const cityQuestion = dbRow.survey.responses[0].item.find(
+            item => item.id === "SpentTimeCity"
+          );
+          expect(cityQuestion.answer[0].valueString).toEqual(
+            inputs[question.name].city
+          );
+
+          const stateQuestion = dbRow.survey.responses[0].item.find(
+            item => item.id === "SpentTimeState"
+          );
+          const answerDb =
+            stateQuestion.answerOptions[stateQuestion.answer[0].valueIndex]
+              .text;
+          expect(answerDb).toEqual(inputs[question.name].state);
+
+          const zipQuestion = dbRow.survey.responses[0].item.find(
+            item => item.id === "SpentTimeZipCode"
+          );
+          expect(zipQuestion.answer[0].valueString).toEqual(
+            inputs[question.name].zip
+          );
         } else {
           const answerDb =
             questionDb.answerOptions[questionDb.answer[0].valueIndex].text;

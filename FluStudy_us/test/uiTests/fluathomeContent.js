@@ -395,8 +395,9 @@ export const content = [
       },
       {
         name: strings.surveyTitle.whichCountriesOutsideUS,
-        type: "select",
-        link: strings.surveyOption.selectCountries,
+        placeholder: strings.surveyPlaceholder.enterCountries,
+        type: "text",
+        dbLocation: "responses",
       },
       {
         name: strings.surveyTitle.spentTimeCity,

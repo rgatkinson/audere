@@ -213,7 +213,7 @@ export async function ios_select(driver, question, inputs) {
   while (!(await driver.hasElementByAccessibilityId(target))) {
     await driver.execute("mobile: selectPickerWheelValue", {
       element: pickerWheel,
-      order: "previous",
+      order: "next",
       offset: 0.1,
     });
   }
@@ -224,9 +224,10 @@ export async function ios_select(driver, question, inputs) {
 //Put text into a text entry box
 export async function text_entry(driver, deviceInfo, question, inputs) {
   if (question.placeholder) {
+    await driver.elementByAccessibilityId(question.placeholder).click(); //focus
     await driver
       .elementByAccessibilityId(question.placeholder)
-      .type(inputs[question.placeholder]);
+      .type(inputs[question.name]);
     if (deviceInfo.PLATFORM == "iOS") {
       await driver.elementByAccessibilityId("Done").click();
     }
@@ -298,11 +299,13 @@ export async function android_date(driver, question, inputs, deviceInfo) {
 
 export async function enter_location(driver, question, inputs, deviceInfo) {
   if (deviceInfo.PLATFORM === "iOS") {
+    await driver.elementByAccessibilityId(question.placeholder1).click();
     await driver
       .elementByAccessibilityId(question.placeholder1)
       .type(inputs[question.name].city);
     await driver.elementByAccessibilityId("Done").click();
     await ios_select(driver, question, inputs);
+    await driver.elementByAccessibilityId(question.placeholder2).click();
     await driver
       .elementByAccessibilityId(question.placeholder2)
       .type(inputs[question.name].zip);

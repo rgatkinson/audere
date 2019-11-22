@@ -31,6 +31,8 @@ export const inputs = {
   [strings.surveyTitle.travelOutsideState.replace("{{state}}", "MA")]: strings
     .surveyButton.yes,
   [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
+  [strings.surveyTitle.whichCountriesOutsideUS]:
+    "Mexico, Costa Rica, Nicaragua",
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton.five,
   [strings.surveyTitle.childrenAgeGroups]: [
     strings.surveyOption.olderThanTwelve,

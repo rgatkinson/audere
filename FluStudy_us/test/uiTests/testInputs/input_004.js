@@ -31,14 +31,12 @@ export const inputs = {
   [strings.surveyTitle.householdTobacco]: strings.surveyButton.yes,
   [strings.surveyTitle.travelOutsideState.replace("{{state}}", "IL")]: strings
     .surveyButton.yes,
-  [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.yes,
-  // [strings.surveyTitle.travelOutsideState.replace("{{state}}", "WA")]: strings
-  //   .surveyButton.no,
-  // [strings.surveyTitle.spentTimeCity]: {
-  //   city: "Charleston",
-  //   state: "WV",
-  //   zip: "25301",
-  // },
+  [strings.surveyTitle.travelOutsideUS]: strings.surveyButton.no,
+  [strings.surveyTitle.spentTimeCity]: {
+    city: "Wheaton",
+    state: "Illinois",
+    zip: "60189",
+  },
   [strings.surveyTitle.peopleInHousehold]: strings.surveyButton.four,
   [strings.surveyTitle.childrenAgeGroups]: [strings.surveyOption.sixToTwelve],
   [strings.surveyTitle.someoneDiagnosed]: strings.surveyButton.dontKnow,
