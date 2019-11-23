@@ -1,1 +1,12 @@
-Home self-test for flu, 2019-2020 flu season
+App for the Achievement "Home Testing of Respiratory Illness" study, 2019-2020 flu season
+
+Help us beat the flu. 
+
+If you started to feel flu-like symptoms, wouldn't it be great if you could test yourself for the flu in the comfort of your own home? We're conducting a research study on the accuracy of a home self-test kit for the flu. Home testing could contribute to early detection, decreased transmission, better care, and fewer doctor's visits and hospital admissions every flu season. 
+
+Your participation in the study helps us gauge how accurately people can test themselves for flu at home. And whether an app paired with a test kit improves accuracy by (1) ensuring users perform the test correctly, (2) using computer vision to read the test strip, and (3) asking questions to predict the user's likelihood of having the flu.
+
+To participate in the study, you must be enrolled in the "Home Testing of Respiratory Illness" study on Evidation Health's  digital platform, Achievement (http://myachievement.com). Study participants should download and use the app only after enrolling in the study, receiving their flu@home test kit, and receiving notice from Achievement directing them to download the app. 
+
+This app supports an investigational research study. It does not provide a diagnosis. It is not intended to, nor should it be used to, replace professional medical advice. 
+

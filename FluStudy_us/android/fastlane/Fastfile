@@ -35,25 +35,16 @@ platform :android do
       track: track,
       json_key: "google_play_key.json",
       skip_upload_images: true,
-      skip_upload_screenshots: true
+      skip_upload_screenshots: true,
+      skip_upload_metadata: true
     )
     slack_announce(
       destination: "Play Store #{track} track",
       build_number: build_number
     )
-    prepare_release_notes(
+    upload_release_notes(
       track: track,
       build_number: build_number
-    )
-    upload_to_play_store(
-      # only upload the metadata, e.g. release notes
-      track: track,
-      json_key: "google_play_key.json",
-      skip_upload_apk: true,
-      skip_upload_aab: true,
-      skip_upload_metadata: false,
-      skip_upload_images: true,
-      skip_upload_screenshots: true
     )
   end
 
@@ -67,6 +58,17 @@ platform :android do
     sh("mkdir -p #{metadata_dir}")
     versions.each do |version|
       sh("echo \"#{whats_new}\" > #{metadata_dir}/#{version}.txt")
+      upload_to_play_store(
+        # only upload the metadata, e.g. release notes
+        track: track,
+        json_key: "google_play_key.json",
+        skip_upload_apk: true,
+        skip_upload_aab: true,
+        skip_upload_metadata: false,
+        skip_upload_images: true,
+        skip_upload_screenshots: true,
+        version_code: version
+      )
     end 
   end
     
