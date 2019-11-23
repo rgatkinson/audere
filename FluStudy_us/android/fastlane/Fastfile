@@ -48,7 +48,7 @@ platform :android do
     )
   end
 
-  lane :prepare_release_notes do |options|
+  lane :upload_release_notes do |options|
     build_number = options[:build_number]
     versions = google_play_track_version_codes(
       track: options[:track]
