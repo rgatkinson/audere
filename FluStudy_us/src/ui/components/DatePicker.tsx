@@ -64,7 +64,11 @@ class DatePicker extends React.Component<Props & WithNamespaces> {
       );
     }
     return (
-      <View style={[styles.container, !!highlighted && HIGHLIGHT_STYLE]}>
+      <View
+        style={[styles.container, !!highlighted && HIGHLIGHT_STYLE]}
+        accessible={true}
+        accessibilityLabel={t("selectDate")}
+      >
         <DatePickerComponent.default
           date={selectedDate}
           mode="date"

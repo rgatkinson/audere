@@ -26,7 +26,7 @@ import {
   choose_checkboxes,
   choose_radio,
   ios_date,
-  anderoid_date,
+  android_date,
   enter_location,
 } from "./util/controls";
 
@@ -417,13 +417,9 @@ async function rdt_screen(
   if (manual_capture_required) {
     console.log("RDT Capture FAILED");
     screens_visited.push(screen_info.key);
-    await driver.sleep(3000); //wait to make sure button can load
-    if (platform == "Android") {
-      await driver.element("id", "android:id/button1").click();
-    }
 
     //prevents the tap from happening before the button appears
-    await driver.sleep(2000);
+    await driver.sleep(5000);
     await new wd.TouchAction(driver)
       .tap({ x: screen_x * 0.5, y: screen_y * 0.95 })
       .perform();
@@ -470,9 +466,11 @@ async function shipping_screen(driver, screen_info, screens_visited) {
   );
   screens_visited.push(screen_info.key);
 
-  const text_elements = await driver.elementsByClassName(
-    "XCUIElementTypeStaticText"
-  );
+  const text_elements =
+    platform === "iOS"
+      ? await driver.elementsByClassName("XCUIElementTypeStaticText")
+      : await driver.elementsByClassName("android.widget.TextView");
+
   const link_to_click = text_elements[text_elements.length - 1];
   const link_to_click_xy = await link_to_click.getLocation();
   await new wd.TouchAction(driver)

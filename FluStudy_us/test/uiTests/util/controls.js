@@ -230,6 +230,8 @@ export async function text_entry(driver, deviceInfo, question, inputs) {
       .type(inputs[question.name]);
     if (deviceInfo.PLATFORM == "iOS") {
       await driver.elementByAccessibilityId("Done").click();
+    } else {
+      await driver.hideDeviceKeyboard();
     }
   } else {
     if (deviceInfo.PLATFORM == "iOS") {
@@ -293,7 +295,11 @@ export async function ios_date(driver, question, inputs, deviceInfo) {
 }
 
 export async function android_date(driver, question, inputs, deviceInfo) {
-  // fill in later
+  await driver.elementByAccessibilityId(question.placeholder).click();
+  await driver.sleep(1000);
+  await new wd.TouchAction(driver)
+    .tap({ x: deviceInfo.SCREEN_X * 0.74, y: deviceInfo.SCREEN_Y * 0.83 })
+    .perform();
   return;
 }
 
