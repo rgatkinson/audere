@@ -10,6 +10,7 @@ import { Timer } from "./Timer";
 import { IdleManager } from "./IdleManager";
 import { UploadQueue, createUploadQueue } from "./FirebaseUploadHelper";
 import { logError, logIfAsyncError } from "../util/AsyncError";
+import { syncPhoto } from "../store/FirebaseStore";
 
 const DEBUG_PHOTO_UPLOADER = process.env.DEBUG_PHOTO_UPLOADER === "true";
 
@@ -190,6 +191,13 @@ export class PhotoUploader {
     } catch (err) {
       this.failedFiles.add(photoId);
     }
+
+    // TODO: the queue should have separate upload/remove operations, and this should go
+    // between so we keep the file around if this fails.
+    await logIfAsyncError("PhotoUploader.handleUploadNext:sync", () =>
+      syncPhoto(photoId)
+    );
+    await idleness();
 
     this.uploadNext();
   }
