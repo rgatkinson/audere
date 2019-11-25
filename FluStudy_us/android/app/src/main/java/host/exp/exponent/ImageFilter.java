@@ -33,7 +33,7 @@ public class ImageFilter {
     private static final String TAG = "ImageFilter";
 
     public static double SHARPNESS_THRESHOLD = 10;
-    public static double HIGH_RES_SHARPNESS_THRESHOLD = 100;
+    public static double HIGH_RES_SHARPNESS_THRESHOLD = 30;
     public static double OVER_EXP_THRESHOLD = 255;
     public static double UNDER_EXP_THRESHOLD = 120;
     public static double OVER_EXP_WHITE_COUNT = 100;
@@ -44,10 +44,6 @@ public class ImageFilter {
 
     public enum ExposureResult {
         UNDER_EXPOSED, NORMAL, OVER_EXPOSED
-    }
-
-    public enum SizeResult {
-        RIGHT_SIZE, LARGE, SMALL, INVALID
     }
 
     public class FilterResult {
@@ -122,7 +118,7 @@ public class ImageFilter {
 
         // Check sharpness
         double sharpness = calculateSharpness(greyMat);
-        Log.d(TAG, String.format("inputMat sharpness: %.2f", sharpness));
+        Log.d(TAG, String.format("inputMat sharpness: %.2f, required: %.2f", sharpness, highResImage ? HIGH_RES_SHARPNESS_THRESHOLD : SHARPNESS_THRESHOLD));
 
         // Release resources
         inputMat.release();

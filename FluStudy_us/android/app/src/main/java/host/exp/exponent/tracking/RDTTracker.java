@@ -5,13 +5,13 @@
 
 package host.exp.exponent.tracking;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.text.TextUtils;
 import android.util.Log;
 
 import host.exp.exponent.env.ImageUtils;
@@ -19,7 +19,7 @@ import host.exp.exponent.tflite.Classifier;
 
 import java.util.List;
 
-public class RDTTracker extends Tracker {
+public class RDTTracker {
     private static final String TAG = "RDTTracker";
 
     private final PointF canvasSize;
@@ -33,13 +33,12 @@ public class RDTTracker extends Tracker {
     public static final float RDT_WIDTH = 5;
     private static final float RDT_TEST_TOP = 51;
     private static final float RDT_TEST_BOTTOM = 61;
-    private static final int TEST_RECOGNIZER_SIZE = TF_OD_API_INPUT_SIZE;
+    private static final int TEST_RECOGNIZER_SIZE = 300;
     public static final float INSTRUCTION_HEIGHT_PERCENT = 0.25f;
     public static final float RDT_HEIGHT_PERCENT = 0.65f;
     public static final int RDT_LOCATION_BUFFER = 128;
 
-    public RDTTracker(final Activity activity, int previewWidth, int previewHeight, final int sensorOrientation, final int screenWidth, final int screenHeight) {
-        super(activity, previewWidth, previewHeight, sensorOrientation, screenWidth, screenHeight);
+    public RDTTracker(int previewWidth, int previewHeight, final int sensorOrientation, final int screenWidth, final int screenHeight) {
         canvasSize = new PointF(screenWidth, screenHeight);
         frameToCanvasMatrix = ImageUtils.getTransformationMatrix(previewWidth, previewHeight,
                 screenWidth, screenHeight, sensorOrientation, false);
@@ -76,8 +75,7 @@ public class RDTTracker extends Tracker {
         return true;
     }
 
-    public synchronized RDTResult extractRDT(final List<Classifier.Recognition> results, final Bitmap previewBitmap) {
-
+    private RDTResult extractRDT(final List<Classifier.Recognition> results, final Bitmap previewBitmap, boolean isHighRes) {
         // TODO: make more strict regarding how good the current results have to be
         final Classifier.Recognition[] findings = this.rdtLocations(results);
 
@@ -92,40 +90,49 @@ public class RDTTracker extends Tracker {
             }
         }
         if (index0 >= index1) {
-            return new RDTResult(null, null, null);
+            return null;
         }
 
-        PointF location0 = this.center(findings[index0].getLocation());
-        PointF location1 = this.center(findings[index1].getLocation());
+        PointF location0 = center(findings[index0].getLocation());
+        PointF location1 = center(findings[index1].getLocation());
 
-        Matrix rdtFromRecognition = this.rdtFromRecognition(index0, location0, index1, location1);
+        Matrix rdtFromRecognition = rdtFromRecognition(index0, location0, index1, location1);
 
         Matrix rdtImageMatrix = new Matrix();
         rdtImageMatrix.preConcat(canvasFromRdt());
         rdtImageMatrix.preConcat(rdtFromRecognition);
 
-        Matrix phase2Matrix = new Matrix();
-        phase2Matrix.preConcat(this.recognizerFromRdt());
-        phase2Matrix.preConcat(rdtFromRecognition);
-
         Matrix outlineToCanvasMatrix = new Matrix();
         rdtFromRecognition.invert(outlineToCanvasMatrix);
         outlineToCanvasMatrix.postConcat(frameToCanvasMatrix);
 
-        float[] outline = this.rdtOutline();
+        float[] outline = rdtOutline();
         outlineToCanvasMatrix.mapPoints(outline);
 
         float scaleToCanvasFromRdt = this.scaleToCanvasFromRdt();
         int rdtCanvasWidth = (int) (RDT_WIDTH * scaleToCanvasFromRdt);
         int rdtCanvasHeight = (int) (RDT_HEIGHT * scaleToCanvasFromRdt);
-        Bitmap rdtBitmap = this.extractBitmap(previewBitmap, rdtCanvasWidth, rdtCanvasHeight, rdtImageMatrix);
+        Bitmap rdtBitmap = extractBitmap(previewBitmap, rdtCanvasWidth, rdtCanvasHeight, rdtImageMatrix);
 
-        Bitmap testBitmap = null;
-        if (rdtInDesiredLocation(outline)) {
-            testBitmap = this.extractBitmap(previewBitmap, TF_OD_API_INPUT_SIZE, TF_OD_API_INPUT_SIZE, phase2Matrix);
+        if (isHighRes) {
+            Matrix phase2Matrix = new Matrix();
+            phase2Matrix.preConcat(testAreaFromRdt());
+            phase2Matrix.preConcat(rdtFromRecognition);
+            Bitmap testAreaBitmap = extractBitmap(previewBitmap, TEST_RECOGNIZER_SIZE, TEST_RECOGNIZER_SIZE, phase2Matrix);
+            return new RDTStillFrameResult(rdtBitmap, outline, testAreaBitmap);
+        } else {
+            return new RDTPreviewResult(rdtBitmap, outline, rdtInDesiredLocation(outline));
         }
+    }
 
-        return new RDTResult(rdtBitmap, testBitmap, outline);
+    public RDTPreviewResult extractRDTFromPreview(final List<Classifier.Recognition> results,
+                                                  final Bitmap previewBitmap) {
+        return (RDTPreviewResult) extractRDT(results, previewBitmap, false);
+    }
+
+    public RDTStillFrameResult extractRDTFromStillFrame(final List<Classifier.Recognition> results,
+                                                        final Bitmap previewBitmap) {
+        return (RDTStillFrameResult) extractRDT(results, previewBitmap, true);
     }
 
     private float scaleToCanvasFromRdt() {
@@ -146,7 +153,7 @@ public class RDTTracker extends Tracker {
         return matrix;
     }
 
-    private static Matrix recognizerFromRdt() {
+    private static Matrix testAreaFromRdt() {
         Matrix matrix = new Matrix();
         matrix.preScale(
                 TEST_RECOGNIZER_SIZE / RDT_WIDTH,
@@ -204,15 +211,42 @@ public class RDTTracker extends Tracker {
         return new PointF((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2);
     }
 
-    public class RDTResult {
+    public abstract class RDTResult {
         public final Bitmap rdtStrip;
-        public final Bitmap testArea;
         public final float[] rdtOutline;
 
-        public RDTResult(Bitmap rdtStrip, Bitmap testArea, float[] rdtOutline) {
+        public RDTResult(Bitmap rdtStrip, float[] rdtOutline) {
             this.rdtStrip = rdtStrip;
-            this.testArea = testArea;
             this.rdtOutline = rdtOutline;
         }
+    }
+
+    public class RDTPreviewResult extends RDTResult {
+        public final boolean centered;
+
+        public RDTPreviewResult(Bitmap rdtStrip, float[] rdtOutline, boolean centered) {
+            super(rdtStrip, rdtOutline);
+            this.centered = centered;
+        }
+    }
+
+    public class RDTStillFrameResult extends RDTResult {
+        public final Bitmap testArea;
+
+        public RDTStillFrameResult(Bitmap rdtStrip, float[] rdtOutline, Bitmap testArea) {
+            super(rdtStrip, rdtOutline);
+            this.testArea = testArea;
+        }
+    }
+
+    public static String getLabel(RDTTracker.TrackedRecognition recognition) {
+        return !TextUtils.isEmpty(recognition.title)
+                ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
+                : String.format("%.2f", (100 * recognition.detectionConfidence));
+    }
+
+    protected static class TrackedRecognition {
+        float detectionConfidence;
+        String title;
     }
 }

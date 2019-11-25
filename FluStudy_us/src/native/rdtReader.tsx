@@ -10,10 +10,6 @@ const NativeRDTReader = requireNativeComponent("RDTReader");
 type InternalRDTCapturedArgs = {
   imageUri: string;
   resultWindowImageUri: string;
-
-  img: string;
-  resultWindowImg: string;
-
   passed: boolean;
   testStripDetected: boolean;
   center: boolean;

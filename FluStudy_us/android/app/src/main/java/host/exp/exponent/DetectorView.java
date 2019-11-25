@@ -75,6 +75,7 @@ public class DetectorView extends LinearLayout implements
     private static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
 
     private static final String RDT_PHOTO_FILE_NAME = "rdt_photo.jpg";
+    private static final String RDT_TEST_AREA_PHOTO_FILE_NAME = "rdt_test_area_photo.jpg";
 
     private Activity activity;
     private DetectorListener detectorListener;
@@ -218,7 +219,7 @@ public class DetectorView extends LinearLayout implements
     private abstract class ImageListener implements ImageReader.OnImageAvailableListener {
         private Runnable imageConverter;
         private Runnable postInferenceCallback;
-        private RDTTracker rdtTracker;
+        protected RDTTracker rdtTracker;
 
         private boolean isProcessingFrame = false;
         private volatile boolean analyzingFrame = false;
@@ -289,7 +290,7 @@ public class DetectorView extends LinearLayout implements
 
             modelToImageTransform = new Matrix();
             imageToModelTransform.invert(modelToImageTransform);
-            rdtTracker = new RDTTracker(activity, imageWidth, imageHeight, sensorOrientation, screenWidth, screenHeight);
+            rdtTracker = new RDTTracker(imageWidth, imageHeight, sensorOrientation, screenWidth, screenHeight);
             if (rgbBytes == null) {
                 rgbBytes = new int[imageWidth * imageHeight];
             }
@@ -397,13 +398,11 @@ public class DetectorView extends LinearLayout implements
 
                                     final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
 
-                                    RDTTracker.RDTResult rdtResult = rdtTracker.extractRDT(mappedRecognitions, imageBitmap);
-
-                                    CaptureResult captureResult = new CaptureResult(rdtResult.testArea != null, rdtResult.rdtOutline);
-
-                                    processResult(iprdResult, captureResult, rdtResult);
+                                    processResult(iprdResult, mappedRecognitions);
 
                                     Trace.endSection(); // Running Process Image
+                                } else {
+                                    Log.d(TAG, "IPRD filter not accepted");
                                 }
                             } finally {
                                 analyzingFrame = false;
@@ -415,8 +414,7 @@ public class DetectorView extends LinearLayout implements
 
         protected abstract void processResult(
             IprdAdapter.FrameResult iprdResult,
-            CaptureResult captureResult,
-            RDTTracker.RDTResult rdtResult
+            List<Classifier.Recognition> mappedRecognitions
         );
 
         protected List<Classifier.Recognition> filterResults(
@@ -436,15 +434,15 @@ public class DetectorView extends LinearLayout implements
             return mappedRecognitions;
         }
 
-        protected String saveImage() {
-            File photo = new File(activity.getFilesDir(), RDT_PHOTO_FILE_NAME);
+        protected String saveImage(Bitmap bitmap, String filename) {
+            File photo = new File(activity.getFilesDir(), filename);
 
             if (photo.exists()) {
                 photo.delete();
             }
 
             try (BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(photo.getPath()))) {
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
                 return Uri.fromFile(new File(photo.getPath())).toString();
             } catch (java.io.IOException e) {
                 Log.e(TAG, "Exception in saveImage", e);
@@ -461,25 +459,29 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
-        protected void processResult(
-            IprdAdapter.FrameResult iprdResult,
-            CaptureResult captureResult,
-            RDTTracker.RDTResult rdtResult
-        ) {
-            ImageFilter.FilterResult filterResult = null;
+        protected void processResult(IprdAdapter.FrameResult iprdResult, List<Classifier.Recognition> mappedRecognitions) {
+            RDTTracker.RDTPreviewResult rdtResult = rdtTracker.extractRDTFromPreview(mappedRecognitions, imageBitmap);
 
-            if (iprdResult.isAccepted() && rdtResult.testArea != null) {
-                filterResult = imageFilter.validateImage(rdtResult.rdtStrip, false);
-                if (!stillCaptureInProgress && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
-                    Log.d(TAG, "Have good preview frame, making single request");
-                    stillCaptureInProgress = true;
-                    cameraController.captureStill();
-                }
+            if (rdtResult == null || rdtResult.rdtOutline == null || rdtResult.rdtStrip == null) {
+                Log.d(TAG, "No RDT found");
+                ImageFilter.FilterResult filterResult = imageFilter.validateImage(imageBitmap, false);
+                detectorListener.onRDTDetected(iprdResult, new CaptureResult(null), null, filterResult);
             } else {
-                filterResult = imageFilter.validateImage(imageBitmap, false);
+                ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, false);
+                if (rdtResult.centered && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
+                    if (!stillCaptureInProgress) {
+                        Log.d(TAG, "Have good preview frame, making single request");
+                        stillCaptureInProgress = true;
+                        cameraController.captureStill();
+                    } else {
+                        Log.d(TAG, "Good preview, still already in progress");
+                    }
+                } else {
+                    Log.d(TAG, "Filter failure. Centered: " + rdtResult.centered + ", sharp: " + filterResult.isSharp() + ", exposure: " + filterResult.exposureResult);
+                }
+                detectorListener.onRDTDetected(iprdResult, new CaptureResult(rdtResult.rdtOutline),
+                        null, filterResult);
             }
-
-            detectorListener.onRDTDetected(iprdResult, captureResult, null, filterResult);
         }
     }
 
@@ -491,16 +493,15 @@ public class DetectorView extends LinearLayout implements
         }
 
         @Override
-        protected void processResult(
-            IprdAdapter.FrameResult iprdResult,
-            CaptureResult captureResult,
-            RDTTracker.RDTResult rdtResult
-        ) {
-            if (iprdResult.isAccepted() && rdtResult.testArea != null) {
+        protected void processResult(IprdAdapter.FrameResult iprdResult, List<Classifier.Recognition> mappedRecognitions) {
+            Log.d(TAG, "Processing still frame");
+            RDTTracker.RDTStillFrameResult rdtResult = rdtTracker.extractRDTFromStillFrame(mappedRecognitions, imageBitmap);
+
+            if (rdtResult != null && rdtResult.testArea != null) {
 
                 ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, true);
 
-                if (filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
+                if (filterResult.isSharp()) {
 
                     Log.d(TAG, "Have good still frame, running inference");
 
@@ -514,17 +515,19 @@ public class DetectorView extends LinearLayout implements
 
                     Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
 
-                    captureResult.imageUri = saveImage();
+                    CaptureResult captureResult = new CaptureResult(rdtResult.rdtOutline);
+                    captureResult.imageUri = saveImage(imageBitmap, RDT_PHOTO_FILE_NAME);
+                    captureResult.resultWindowImageUri = saveImage(rdtResult.testArea, RDT_TEST_AREA_PHOTO_FILE_NAME);
 
                     if (captureResult.imageUri != null) {
                         cameraController.onPause();
                         detectorListener.onRDTDetected(iprdResult, captureResult, interpretationResult, filterResult);
 
                     } else {
-                        Log.d(TAG, "Error saving image, will try again");
+                        Log.d(TAG, "Error saving still frame, will try again");
                     }
                 } else {
-                    Log.d(TAG, "Still frame didn't pass filter");
+                    Log.d(TAG, "Still frame not sharp");
                 }
             } else {
                 Log.d(TAG, "Still frame didn't have rdt test area");
@@ -637,15 +640,14 @@ public class DetectorView extends LinearLayout implements
     }
 
     public class CaptureResult {
-        public final boolean testStripFound;
         public final float[] stripLocation;
         public final int viewportWidth;
         public final int viewportHeight;
 
         public String imageUri;
+        public String resultWindowImageUri;
 
-        public CaptureResult(boolean testStripFound, float[] stripLocation) {
-            this.testStripFound = testStripFound;
+        public CaptureResult(float[] stripLocation) {
             this.stripLocation = stripLocation;
             this.viewportWidth = screenWidth;
             this.viewportHeight = screenHeight;

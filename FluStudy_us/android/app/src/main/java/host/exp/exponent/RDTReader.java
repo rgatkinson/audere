@@ -105,6 +105,10 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
             event.putString("imageUri", captureResult.imageUri);
         }
 
+        if (captureResult.resultWindowImageUri != null) {
+            event.putString("resultWindowImageUri", captureResult.resultWindowImageUri);
+        }
+
         if (captureResult.stripLocation != null) {
             event.putArray("boundary", getLocationArray(captureResult.stripLocation));
         }
@@ -113,7 +117,7 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         dimensions.putInt("width", captureResult.viewportWidth);
         dimensions.putInt("height", captureResult.viewportHeight);
         event.putMap("viewportDimensions", dimensions);
-        event.putBoolean("testStripDetected", captureResult.testStripFound);
+        event.putBoolean("testStripDetected", captureResult.stripLocation != null);
 
         if (filterResult != null) {
             event.putBoolean("sharpness", filterResult.isSharp());

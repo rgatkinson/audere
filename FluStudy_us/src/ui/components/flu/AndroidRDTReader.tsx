@@ -513,6 +513,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     try {
       const photoId = await newUID();
       dispatch(setRDTPhoto(args.imageUri));
+      dispatch(setRDTPhotoHC(args.resultWindowImageUri));
       dispatch(
         setTestStripImg({
           sample_type: "RDTReaderPhotoGUID",

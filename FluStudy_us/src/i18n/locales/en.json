@@ -536,7 +536,7 @@
   },
   "TestStripConfirmation": {
     "title": "Photo captured",
-    "desc": "Your test strip photo was captured successfully.",
+    "desc": "Thank you! Your test strip photo was captured successfully.",
     "diagnosis": "Your machine overlord has decided your test result is {{ testResult }}."
   },
   "PackUpTest": {
