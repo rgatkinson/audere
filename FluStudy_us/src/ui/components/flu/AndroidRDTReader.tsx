@@ -227,7 +227,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     },
     holdSteady: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected,
+        readerResult.testStripDetected && readerResult.isCentered,
       duration: 0,
       action: () =>
         this._addInstructionRequest("holdSteady", "holdSteady", "holdSteady"),
@@ -462,7 +462,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     // Choose the instruction that:
     // - is primary, OR
     // - is the most recently requested, OR
-    // - isn't "holdSteady" (since that's lower priority than any other eligible messages)
     for (let key in this._feedbackInstructionRequests) {
       const instructionRequest = this._feedbackInstructionRequests[key];
       if (
@@ -470,8 +469,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
         instructionRequest.lastRequested &&
         (instructionRequest.primary ||
           !instruction.lastRequested ||
-          instructionRequest.lastRequested > instruction.lastRequested ||
-          (instruction.issue && instruction.issue === "holdSteady"))
+          instructionRequest.lastRequested > instruction.lastRequested)
       ) {
         instruction = instructionRequest;
       }

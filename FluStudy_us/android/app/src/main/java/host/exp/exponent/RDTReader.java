@@ -76,6 +76,9 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
             event.putArray("boundary", getLocationArray(rdtResult.rdtOutline));
         }
 
+        event.putBoolean("isCentered", rdtResult instanceof RDTTracker.RDTStillFrameResult ||
+                ((RDTTracker.RDTPreviewResult) rdtResult).centered);
+
         event.putBoolean("testStripDetected", rdtResult.rdtOutline != null);
     }
 

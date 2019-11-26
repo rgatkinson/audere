@@ -38,7 +38,6 @@ import android.widget.Toast;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
@@ -47,7 +46,6 @@ import java.util.List;
 import host.exp.exponent.customview.AutoFitTextureView;
 import host.exp.exponent.env.ImageUtils;
 import host.exp.exponent.tflite.Classifier;
-import host.exp.exponent.tflite.TFLiteObjectDetectionAPIModel;
 import host.exp.exponent.tracking.InterpretationTracker;
 import host.exp.exponent.tracking.RDTTracker;
 
@@ -57,17 +55,11 @@ public class DetectorView extends LinearLayout implements
 
     private static final String TAG = "DetectorView";
 
-    // Configuration values for the prepackaged SSD model.
-    private static final int TF_OD_API_INPUT_SIZE = 300;
-    private static final boolean TF_OD_API_IS_QUANTIZED = true;
-    private static final String BOX_TF_OD_API_MODEL_FILE = "detect.tflite";
-    private static final String BOX_TF_OD_API_LABELS_FILE = "file:///android_asset/labelmap.txt";
-    private static final String INTERPRETATION_TF_OD_API_MODEL_FILE = "phase2-detect.tflite";
-    private static final String INTERPRETATION_TF_OD_API_LABELS_FILE = "file:///android_asset/phase2-labelmap.txt";
-
     // Minimum detection confidence to track a detection.
     private static final float BOX_MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
     private static final float INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API = 0.2f;
+
+    private static final int TF_OD_API_INPUT_SIZE = 300;
     private static final boolean MAINTAIN_ASPECT = false;
     private static final Size DESIRED_PREVIEW_SIZE = new Size(720, 1280);
 
@@ -78,6 +70,7 @@ public class DetectorView extends LinearLayout implements
     private static final String RDT_TEST_AREA_PHOTO_FILE_NAME = "rdt_test_area_photo.jpg";
 
     private Activity activity;
+    private ResourceLoader resourceLoader;
     private DetectorListener detectorListener;
     private IprdAdapter iprdAdapter;
     private AutoFitTextureView textureView;
@@ -106,45 +99,14 @@ public class DetectorView extends LinearLayout implements
         }
         inflate(context, R.layout.detector_view, this);
         textureView = findViewById(R.id.texture);
-        iprdAdapter = new IprdAdapter(activity);
 
         // TODO: move this to background thread and check that it's ready where needed
+        resourceLoader = new ResourceLoader(context, activity.getAssets());
+        iprdAdapter = new IprdAdapter(resourceLoader.loadIPRDModel());
 
-        try {
-            boxDetector =
-                    TFLiteObjectDetectionAPIModel.create(
-                            activity.getAssets(),
-                            BOX_TF_OD_API_MODEL_FILE,
-                            BOX_TF_OD_API_LABELS_FILE,
-                            TF_OD_API_INPUT_SIZE,
-                            TF_OD_API_IS_QUANTIZED,
-                            "phase 1");
-        } catch (final IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Exception initializing classifier!");
-            Toast toast =
-                    Toast.makeText(
-                            activity.getApplicationContext(), "Phase 1 Detector could not be initialized", Toast.LENGTH_SHORT);
-            toast.show();
-        }
 
-        try {
-            interpretationDetector =
-                    TFLiteObjectDetectionAPIModel.create(
-                            activity.getAssets(),
-                            INTERPRETATION_TF_OD_API_MODEL_FILE,
-                            INTERPRETATION_TF_OD_API_LABELS_FILE,
-                            TF_OD_API_INPUT_SIZE,
-                            TF_OD_API_IS_QUANTIZED,
-                            "phase 2");
-        } catch (final IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Exception initializing classifier!");
-            Toast toast =
-                    Toast.makeText(
-                            activity.getApplicationContext(), "Phase 2 Detector could not be initialized", Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        boxDetector = resourceLoader.loadPhase1Detector();
+        interpretationDetector = resourceLoader.loadPhase2Detector();
 
         if (hasPermission()) {
             initCameraController();
@@ -287,7 +249,7 @@ public class DetectorView extends LinearLayout implements
                 initialize();
             }
 
-            if (!iprdAdapter.ready()) {
+            if (!resourceLoader.openCVReady()) {
                 return;
             }
 
@@ -610,7 +572,7 @@ public class DetectorView extends LinearLayout implements
 
     public synchronized void onResume() {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        iprdAdapter.onResume();
+        resourceLoader.onResume();
         handlerThread = new HandlerThread("inference");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
