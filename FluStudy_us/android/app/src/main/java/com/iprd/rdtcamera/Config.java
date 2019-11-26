@@ -40,12 +40,9 @@ public class Config{
         mMaxFrameTranslationalMagnitude = 100;
         mMax10FrameTranslationalMagnitude = 200;
     }
+
     public void setmMappedByteBuffer(MappedByteBuffer mMappedByteBuffer) {
         this.mMappedByteBuffer = mMappedByteBuffer;
-    }
-
-    public void setmTfliteB(byte[] mTfliteB) {
-        this.mTfliteB = mTfliteB;
     }
 
     public void setmMinBrightness(float mMinBrightness) {
@@ -90,14 +87,5 @@ public class Config{
     public void setmMaxAllowedTranslationY(short mMaxAllowedTranslationY) {
         this.mMaxAllowedTranslationY = mMaxAllowedTranslationY;
     }
-
-    public void setMaxFrameTranslationalMagnitude(short mMaxFrameTranslationalMagnitude) {
-        this.mMaxFrameTranslationalMagnitude = mMaxFrameTranslationalMagnitude;
-    }
-
-    public void setMax10FrameTranslationalMagnitude(short mMax10FrameTranslationalMagnitude) {
-        this.mMax10FrameTranslationalMagnitude = mMax10FrameTranslationalMagnitude;
-    }
-
 }
 

@@ -119,7 +119,7 @@ public class RDTTracker {
             phase2Matrix.preConcat(testAreaFromRdt());
             phase2Matrix.preConcat(rdtFromRecognition);
             Bitmap testAreaBitmap = extractBitmap(previewBitmap, TEST_RECOGNIZER_SIZE, TEST_RECOGNIZER_SIZE, phase2Matrix);
-            return new RDTStillFrameResult(rdtBitmap, outline, testAreaBitmap);
+            return new RDTStillFrameResult(outline, testAreaBitmap);
         } else {
             return new RDTPreviewResult(rdtBitmap, outline, rdtInDesiredLocation(outline));
         }
@@ -212,11 +212,9 @@ public class RDTTracker {
     }
 
     public abstract class RDTResult {
-        public final Bitmap rdtStrip;
         public final float[] rdtOutline;
 
-        public RDTResult(Bitmap rdtStrip, float[] rdtOutline) {
-            this.rdtStrip = rdtStrip;
+        public RDTResult(float[] rdtOutline) {
             this.rdtOutline = rdtOutline;
         }
 
@@ -224,7 +222,6 @@ public class RDTTracker {
         public String toString() {
             return new StringBuilder()
                 .append("Audere RDTResult")
-                .append(" strip=").append(rdtStrip != null)
                 .append(" outline=").append(rdtOutline == null ? 0 : rdtOutline.length)
                 .toString();
         }
@@ -232,9 +229,11 @@ public class RDTTracker {
 
     public class RDTPreviewResult extends RDTResult {
         public final boolean centered;
+        public final Bitmap rdtBitmap;
 
-        public RDTPreviewResult(Bitmap rdtStrip, float[] rdtOutline, boolean centered) {
-            super(rdtStrip, rdtOutline);
+        public RDTPreviewResult(Bitmap rdtBitmap, float[] rdtOutline, boolean centered) {
+            super(rdtOutline);
+            this.rdtBitmap = rdtBitmap;
             this.centered = centered;
         }
     }
@@ -242,8 +241,8 @@ public class RDTTracker {
     public class RDTStillFrameResult extends RDTResult {
         public final Bitmap testArea;
 
-        public RDTStillFrameResult(Bitmap rdtStrip, float[] rdtOutline, Bitmap testArea) {
-            super(rdtStrip, rdtOutline);
+        public RDTStillFrameResult(float[] rdtOutline, Bitmap testArea) {
+            super(rdtOutline);
             this.testArea = testArea;
         }
     }

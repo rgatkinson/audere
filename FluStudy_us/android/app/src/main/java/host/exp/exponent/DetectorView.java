@@ -41,7 +41,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,7 +64,6 @@ public class DetectorView extends LinearLayout implements
     private static final String BOX_TF_OD_API_LABELS_FILE = "file:///android_asset/labelmap.txt";
     private static final String INTERPRETATION_TF_OD_API_MODEL_FILE = "phase2-detect.tflite";
     private static final String INTERPRETATION_TF_OD_API_LABELS_FILE = "file:///android_asset/phase2-labelmap.txt";
-    private static final String IPRD_MODEL_FILE = "iprd.tflite";
 
     // Minimum detection confidence to track a detection.
     private static final float BOX_MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
@@ -81,7 +79,7 @@ public class DetectorView extends LinearLayout implements
 
     private Activity activity;
     private DetectorListener detectorListener;
-    private ImageFilter imageFilter;
+    private IprdAdapter iprdAdapter;
     private AutoFitTextureView textureView;
     private CameraController cameraController;
 
@@ -99,8 +97,6 @@ public class DetectorView extends LinearLayout implements
 
     private volatile boolean stillCaptureInProgress = false;
 
-    private IprdAdapter.RdtApi iprdApi;
-
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (context instanceof Activity) {
@@ -110,27 +106,9 @@ public class DetectorView extends LinearLayout implements
         }
         inflate(context, R.layout.detector_view, this);
         textureView = findViewById(R.id.texture);
-        imageFilter = new ImageFilter(activity);
+        iprdAdapter = new IprdAdapter(activity);
 
         // TODO: move this to background thread and check that it's ready where needed
-
-        try {
-            MappedByteBuffer iprdModel = TFLiteObjectDetectionAPIModel.loadModelFile(
-                activity.getAssets(),
-                IPRD_MODEL_FILE
-            );
-            this.iprdApi = IprdAdapter.RdtApi.builder()
-                .setModel(iprdModel)
-                .build();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Exception initializing filter: " + e.toString());
-            Toast.makeText(
-                activity.getApplicationContext(),
-                "IPRD filter could not be initialized",
-                Toast.LENGTH_SHORT
-            ).show();
-        }
 
         try {
             boxDetector =
@@ -191,7 +169,7 @@ public class DetectorView extends LinearLayout implements
         Log.i(TAG, "Initializing at preview size " + previewSize.getWidth() + ", " + previewSize.getHeight());
         Log.i(TAG, "Initializing at still size " + stillSize.getWidth() + ", " + stillSize.getHeight());
 
-        detectorListener.onRDTCameraReady(supportsTorchMode);
+        detectorListener.onRDTCameraReady(supportsTorchMode, screenWidth, screenHeight);
     }
 
     protected int getScreenOrientation() {
@@ -231,7 +209,7 @@ public class DetectorView extends LinearLayout implements
 
         private int[] rgbBytes = null;
 
-        private Bitmap boxModelBitmap = null;
+        protected Bitmap boxModelBitmap = null;
         private Matrix imageToModelTransform;
         private Matrix modelToImageTransform;
 
@@ -309,7 +287,7 @@ public class DetectorView extends LinearLayout implements
                 initialize();
             }
 
-            if (!imageFilter.ready()) {
+            if (!iprdAdapter.ready()) {
                 return;
             }
 
@@ -364,13 +342,22 @@ public class DetectorView extends LinearLayout implements
             }
         }
 
+        protected List<Classifier.Recognition> runPhaseOne() {
+            // Local interpretation prototype
+            final long boxStartTimeMs = SystemClock.uptimeMillis();
+
+            final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
+            Log.i(TAG, "Phase 1 processing time: " + (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
+
+            return filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
+        }
+
         private void processImage() {
             // No mutex needed as this method is not reentrant.
             if (analyzingFrame) {
                 readyForNextImage();
                 return;
             }
-            Log.d(TAG, ImageListener.this.getClass().getSimpleName() + "analyizingFrame = true");
             analyzingFrame = true;
 
             Trace.beginSection("processImage");
@@ -381,44 +368,17 @@ public class DetectorView extends LinearLayout implements
                     new Runnable() {
                         @Override
                         public void run() {
-                            try {
-                                IprdAdapter.FrameResult iprdResult = checkIPRDFilter(imageBitmap);
-                                saveDebugImage(
-                                    boxModelBitmap,
-                                    ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult
-                                );
-                                Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " iprdResult=" + iprdResult);
-                                if (iprdResult == null || iprdResult.isAccepted()) {
-                                    // Local interpretation prototype
-                                    Trace.beginSection("Running Process Image");
-                                    final long boxStartTimeMs = SystemClock.uptimeMillis();
-
-                                    final List<Classifier.Recognition> results = boxDetector.recognizeImage(boxModelBitmap);
-                                    Log.i(TAG, "Phase 1 processing time: " + (SystemClock.uptimeMillis() - boxStartTimeMs) + "ms");
-
-                                    final List<Classifier.Recognition> mappedRecognitions = filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
-
-                                    processResult(iprdResult, mappedRecognitions);
-
-                                    Trace.endSection(); // Running Process Image
-                                } else {
-                                    Log.d(TAG, "IPRD filter not accepted");
-                                }
-                            } finally {
-                                Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " analyzingFrame = false");
-                                analyzingFrame = false;
-                            }
+                            Trace.beginSection("Running Process Image");
+                            processResult();
+                            Trace.endSection(); // Running Process Image
+                            // Log.d(TAG, ImageListener.this.getClass().getSimpleName() + " analyzingFrame = false");
+                            analyzingFrame = false;
                         }
                     });
             Trace.endSection(); // processPreviewImage
         }
 
-        protected abstract IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap);
-
-        protected abstract void processResult(
-            IprdAdapter.FrameResult iprdResult,
-            List<Classifier.Recognition> mappedRecognitions
-        );
+        protected abstract void processResult();
 
         protected List<Classifier.Recognition> filterResults(
                 float minimumConfidence, List<Classifier.Recognition> results, boolean toPreviewTransform) {
@@ -484,47 +444,55 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
-        @Override
-        protected IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap) {
-            final long iprdStartTimeMs = SystemClock.uptimeMillis();
-            Trace.beginSection("IPRD Filter");
-            IprdAdapter.FrameResult iprdResult = iprdApi == null
-                ? null
-                : iprdApi.checkFrame(bitmap);
-            Trace.endSection();
-            Log.i(TAG, "IPRD processing time: " + (SystemClock.uptimeMillis() - iprdStartTimeMs) + "ms");
-            Log.i(TAG, "  IPRD " + IprdAdapter.FrameResult.str(iprdResult));
+        protected void processResult() {
+            IprdAdapter.Result iprdResult = iprdAdapter.isSteady(imageBitmap);
+            String failureReason = "";
+            RDTTracker.RDTPreviewResult rdtResult = null;
 
-            return iprdResult;
-        }
+            if (iprdResult.isSteady()) {
+                List<Classifier.Recognition> mappedRecognitions = runPhaseOne();
+                rdtResult = rdtTracker.extractRDTFromPreview(mappedRecognitions, imageBitmap);
 
-        protected void processResult(IprdAdapter.FrameResult iprdResult, List<Classifier.Recognition> mappedRecognitions) {
-            RDTTracker.RDTPreviewResult rdtResult = rdtTracker.extractRDTFromPreview(mappedRecognitions, imageBitmap);
-            Log.d(TAG, "Preview rdtResult: " + rdtResult);
-
-            if (rdtResult == null || rdtResult.rdtOutline == null || rdtResult.rdtStrip == null) {
-                ImageFilter.FilterResult filterResult = imageFilter.validateImage(imageBitmap, false);
-                Log.d(TAG, "No RDT preview filter(rdtResult.rdtStrip): " + filterResult);
-                Log.d(TAG, "  stillCaptureInProgress=" + stillCaptureInProgress);
-                detectorListener.onRDTDetected(iprdResult, new CaptureResult(null), null, filterResult);
-            } else {
-                ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, false);
-                Log.d(TAG, "RDT preview filter(rdtResult.rdtStrip): " + filterResult);
-                Log.d(TAG, "  stillCaptureInProgress=" + stillCaptureInProgress);
-                if (rdtResult.centered && filterResult.isSharp() && filterResult.exposureResult.equals(ImageFilter.ExposureResult.NORMAL)) {
-                    if (!stillCaptureInProgress) {
-                        Log.d(TAG, "Have good preview frame, making single request");
-                        stillCaptureInProgress = true;
-                        cameraController.captureStill();
-                    } else {
-                        Log.d(TAG, "Good preview, still already in progress");
-                    }
+                if (rdtResult == null || rdtResult.rdtOutline == null) {
+                    Log.d(TAG, "RDT not found in phase 1");
+                    failureReason = "(Audere) no strip";
                 } else {
-                    Log.d(TAG, "Filter failure. Centered: " + rdtResult.centered + ", sharp: " + filterResult.isSharp() + ", exposure: " + filterResult.exposureResult);
+                    if (rdtResult.centered) {
+                        Log.d(TAG, "RDT found and is centered in phase 1");
+                        iprdAdapter.checkFrame(imageBitmap, iprdResult);
+                        if (iprdResult.isAccepted()) {
+                            if (!stillCaptureInProgress) {
+                                failureReason = "Good frame";
+                                Log.d(TAG, "Have good preview frame, making single request");
+                                stillCaptureInProgress = true;
+                                cameraController.captureStill();
+                            } else {
+                                Log.d(TAG, "Good preview, still already in progress");
+                            }
+                        } else {
+                            Log.d(TAG, "IPRD filter not accepted");
+                            failureReason = "(IPRD) ";
+                            if (!iprdResult.rdtFound()) {
+                                failureReason += "no rdt ";
+                            } else {
+                                if (!iprdResult.isSharp()) {
+                                    failureReason += "not sharp ";
+                                } else if (iprdResult.exposureResult() != IprdAdapter.ExposureResult.NORMAL) {
+                                    failureReason += "bad exposure";
+                                }
+                            }
+                        }
+                    } else {
+                        Log.d(TAG, "RDT found but not centered in phase 1");
+                        failureReason = "(Audere) strip position";
+                    }
                 }
-                detectorListener.onRDTDetected(iprdResult, new CaptureResult(rdtResult.rdtOutline),
-                        null, filterResult);
+            } else {
+                Log.d(TAG, "IPRD filter not steady");
+                failureReason = "(IPRD) not steady";
             }
+
+            detectorListener.onRDTDetected(iprdResult, rdtResult, failureReason);
         }
     }
 
@@ -535,46 +503,33 @@ public class DetectorView extends LinearLayout implements
             super.initialize();
         }
 
-        protected IprdAdapter.FrameResult checkIPRDFilter(Bitmap bitmap) {
-            return null;
-        }
-
         @Override
-        protected void processResult(IprdAdapter.FrameResult iprdResult, List<Classifier.Recognition> mappedRecognitions) {
+        protected void processResult() {
             Log.d(TAG, "Processing still frame");
+            List<Classifier.Recognition> mappedRecognitions = runPhaseOne();
             RDTTracker.RDTStillFrameResult rdtResult = rdtTracker.extractRDTFromStillFrame(mappedRecognitions, imageBitmap);
 
             if (rdtResult != null && rdtResult.testArea != null) {
-                ImageFilter.FilterResult filterResult = imageFilter.validateImage(rdtResult.rdtStrip, true);
-                Log.d(TAG, "Still filter(rdtResult.rdtStrip): " + filterResult);
+                Log.d(TAG, "Have good still frame (extracted test area), running inference");
 
-                if (filterResult.isSharp()) {
+                detectorListener.onRDTInterpreting();
+                final long interpretationStartTimeMs = SystemClock.uptimeMillis();
 
-                    Log.d(TAG, "Have good still frame, running inference");
+                InterpretationResult interpretationResult = InterpretationTracker.interpretResults(filterResults(
+                        INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API,
+                        interpretationDetector.recognizeImage(rdtResult.testArea),
+                        false), rdtResult);
 
-                    detectorListener.onRDTInterpreting();
-                    final long interpretationStartTimeMs = SystemClock.uptimeMillis();
+                Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
 
-                    InterpretationResult interpretationResult = InterpretationTracker.interpretResults(filterResults(
-                            INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API,
-                            interpretationDetector.recognizeImage(rdtResult.testArea),
-                            false));
+                interpretationResult.imageUri = saveImage(imageBitmap, RDT_PHOTO_FILE_NAME);
+                interpretationResult.resultWindowImageUri = saveImage(rdtResult.testArea, RDT_TEST_AREA_PHOTO_FILE_NAME);
 
-                    Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
-
-                    CaptureResult captureResult = new CaptureResult(rdtResult.rdtOutline);
-                    captureResult.imageUri = saveImage(imageBitmap, RDT_PHOTO_FILE_NAME);
-                    captureResult.resultWindowImageUri = saveImage(rdtResult.testArea, RDT_TEST_AREA_PHOTO_FILE_NAME);
-
-                    if (captureResult.imageUri != null) {
-                        cameraController.onPause();
-                        detectorListener.onRDTDetected(iprdResult, captureResult, interpretationResult, filterResult);
-
-                    } else {
-                        Log.d(TAG, "Error saving still frame, will try again");
-                    }
+                if (interpretationResult.imageUri != null) {
+                    cameraController.onPause();
+                    detectorListener.onRDTInterpreted(interpretationResult);
                 } else {
-                    Log.d(TAG, "Still frame not sharp");
+                    Log.d(TAG, "Error saving still frame, will try again");
                 }
             } else {
                 Log.d(TAG, "Still frame didn't have rdt test area");
@@ -655,7 +610,7 @@ public class DetectorView extends LinearLayout implements
 
     public synchronized void onResume() {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        imageFilter.onResume();
+        iprdAdapter.onResume();
         handlerThread = new HandlerThread("inference");
         handlerThread.start();
         handler = new Handler(handlerThread.getLooper());
@@ -694,39 +649,32 @@ public class DetectorView extends LinearLayout implements
         }
     }
 
-    public class CaptureResult {
-        public final float[] stripLocation;
-        public final int viewportWidth;
-        public final int viewportHeight;
-
-        public String imageUri;
-        public String resultWindowImageUri;
-
-        public CaptureResult(float[] stripLocation) {
-            this.stripLocation = stripLocation;
-            this.viewportWidth = screenWidth;
-            this.viewportHeight = screenHeight;
-        }
-    }
-
     public static class InterpretationResult {
+        public final RDTTracker.RDTResult rdtResult;
         public boolean control;
         public boolean testA;
         public boolean testB;
 
+        public String imageUri;
+        public String resultWindowImageUri;
+
         public String toString() {
             return "control: " + control + ", testA: " + testA + ", testB: " + testB;
+        }
+
+        public InterpretationResult(RDTTracker.RDTResult rdtResult) {
+            this.rdtResult = rdtResult;
         }
     }
 
     public interface DetectorListener {
-        void onRDTCameraReady(boolean supportsTorchMode);
+        void onRDTCameraReady(boolean supportsTorchMode, int screenWidth, int screenHeight);
         void onRDTDetected(
-            IprdAdapter.FrameResult iprdResult,
-            CaptureResult captureResult,
-            InterpretationResult interpretationResult,
-            ImageFilter.FilterResult filterResult
+                IprdAdapter.Result iprdResult,
+                RDTTracker.RDTResult rdtResult,
+                String failureReason
         );
+        void onRDTInterpreted(InterpretationResult interpretationResult);
         void onRDTInterpreting();
     }
 }

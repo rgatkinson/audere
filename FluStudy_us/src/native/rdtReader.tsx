@@ -25,7 +25,7 @@ type InternalRDTCapturedArgs = {
   testA: boolean;
   testB: boolean;
   boundary?: { x: number; y: number }[];
-  viewportDimensions?: { width: number; height: number };
+  failureReason: string;
 };
 
 export type RDTCapturedArgs = {
@@ -44,11 +44,13 @@ export type RDTCapturedArgs = {
   testALineFound: boolean;
   testBLineFound: boolean;
   testStripBoundary?: { x: number; y: number }[];
-  viewportDimensions?: { width: number; height: number };
+  failureReason: string;
 };
 
 export type RDTCameraReadyArgs = {
   supportsTorchMode: boolean;
+  screenWidth: number;
+  screenHeight: number;
 };
 
 export type RDTInterpretingArgs = {
@@ -87,7 +89,7 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       testALineFound: capturedArgs.testA,
       testBLineFound: capturedArgs.testB,
       testStripBoundary: capturedArgs.boundary,
-      viewportDimensions: capturedArgs.viewportDimensions,
+      failureReason: capturedArgs.failureReason,
     });
   };
 

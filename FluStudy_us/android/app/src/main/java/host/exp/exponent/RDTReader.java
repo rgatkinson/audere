@@ -17,9 +17,9 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
-public class RDTReader extends LinearLayout implements DetectorView.DetectorListener {
-    private static final String TAG = "RDTReader";
+import host.exp.exponent.tracking.RDTTracker;
 
+public class RDTReader extends LinearLayout implements DetectorView.DetectorListener {
     private Activity mActivity;
     private DetectorView detectorView;
 
@@ -60,73 +60,49 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
     }
 
     @Override
-    public void onRDTCameraReady(boolean supportsTorchMode) {
+    public void onRDTCameraReady(boolean supportsTorchMode, int screenWidth, int screenHeight) {
         WritableMap event = Arguments.createMap();
         event.putBoolean("supportsTorchMode", supportsTorchMode);
+        event.putInt("screenWidth", screenWidth);
+        event.putInt("screenHeight", screenHeight);
         callReactCallback("RDTCameraReady", event);
     }
 
+    private void writeRDTResultArgs(RDTTracker.RDTResult rdtResult, WritableMap event) {
+        if (rdtResult == null) {
+            return;
+        }
+        if (rdtResult.rdtOutline != null) {
+            event.putArray("boundary", getLocationArray(rdtResult.rdtOutline));
+        }
+
+        event.putBoolean("testStripDetected", rdtResult.rdtOutline != null);
+    }
+
     @Override
-    public void onRDTDetected(
-            IprdAdapter.FrameResult iprdFrameResult,
-            DetectorView.CaptureResult captureResult,
-            DetectorView.InterpretationResult interpretationResult,
-            ImageFilter.FilterResult filterResult) {
-        if (interpretationResult == null) {
-            interpretationResult = new DetectorView.InterpretationResult();
-        }
+    public void onRDTInterpreted(DetectorView.InterpretationResult interpretationResult) {
         WritableMap event = Arguments.createMap();
-
-        if (iprdFrameResult != null) {
-            WritableMap iprdResult = Arguments.createMap();
-
-            iprdResult.putInt("sharpness", iprdFrameResult.sharpness);
-            iprdResult.putInt("scale", iprdFrameResult.scale);
-            iprdResult.putInt("brightness", iprdFrameResult.brightness);
-            iprdResult.putInt("perspectiveDistortion", iprdFrameResult.perspectiveDistortion);
-            iprdResult.putInt("xOffset", iprdFrameResult.xOffset);
-            iprdResult.putInt("yOffset", iprdFrameResult.yOffset);
-            iprdResult.putInt("left", iprdFrameResult.left);
-            iprdResult.putInt("top", iprdFrameResult.top);
-            iprdResult.putInt("right", iprdFrameResult.right);
-            iprdResult.putInt("bottom", iprdFrameResult.bottom);
-            iprdResult.putBoolean("foundRDT", iprdFrameResult.foundRDT);
-
-            // Forward constants so we don't have to hard code these outside IPRD code.
-            iprdResult.putInt("NOT_COMPUTED", IprdAdapter.FrameResult.NOT_COMPUTED);
-            iprdResult.putInt("TOO_HIGH", IprdAdapter.FrameResult.TOO_HIGH);
-            iprdResult.putInt("TOO_LOW", IprdAdapter.FrameResult.TOO_LOW);
-            iprdResult.putInt("GOOD", IprdAdapter.FrameResult.GOOD);
-
-            event.putMap("iprdResult", iprdResult);
-        }
-
-        if (captureResult.imageUri != null) {
-            event.putString("imageUri", captureResult.imageUri);
-        }
-
-        if (captureResult.resultWindowImageUri != null) {
-            event.putString("resultWindowImageUri", captureResult.resultWindowImageUri);
-        }
-
-        if (captureResult.stripLocation != null) {
-            event.putArray("boundary", getLocationArray(captureResult.stripLocation));
-        }
-
-        WritableMap dimensions = new WritableNativeMap();
-        dimensions.putInt("width", captureResult.viewportWidth);
-        dimensions.putInt("height", captureResult.viewportHeight);
-        event.putMap("viewportDimensions", dimensions);
-        event.putBoolean("testStripDetected", captureResult.stripLocation != null);
-
-        if (filterResult != null) {
-            event.putBoolean("sharpness", filterResult.isSharp());
-            event.putInt("exposureResult", filterResult.exposureResult.ordinal());
-        }
+        writeRDTResultArgs(interpretationResult.rdtResult, event);
         event.putBoolean("control", interpretationResult.control);
         event.putBoolean("testA", interpretationResult.testA);
         event.putBoolean("testB", interpretationResult.testB);
         event.putBoolean("passed", interpretationResult != null);
+        event.putString("imageUri", interpretationResult.imageUri);
+        event.putString("resultWindowImageUri", interpretationResult.resultWindowImageUri);
+        event.putString("failureReason", "Interpreted");
+        callReactCallback("RDTCaptured", event);
+    }
+
+    @Override
+    public void onRDTDetected(IprdAdapter.Result iprdResult, RDTTracker.RDTResult rdtResult, String failureReason) {
+        WritableMap event = Arguments.createMap();
+
+        writeRDTResultArgs(rdtResult, event);
+        event.putBoolean("isSteady", iprdResult.isSteady());
+        event.putBoolean("sharpness", iprdResult.isSharp());
+        event.putInt("exposureResult", iprdResult.exposureResult().ordinal());
+        event.putString("failureReason", failureReason);
+
         callReactCallback("RDTCaptured", event);
     }
 

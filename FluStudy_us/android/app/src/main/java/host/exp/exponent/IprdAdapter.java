@@ -5,72 +5,183 @@
 
 package host.exp.exponent;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.iprd.rdtcamera.AcceptanceStatus;
 import com.iprd.rdtcamera.RdtAPI;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
+import java.io.IOException;
 import java.nio.MappedByteBuffer;
+
+import host.exp.exponent.tflite.TFLiteObjectDetectionAPIModel;
 
 public class IprdAdapter {
 
   public static final String TAG = "IprdAdapter";
+  private static final String IPRD_MODEL_FILE = "iprd.tflite";
 
-  public static class RdtApi {
-    private RdtAPI iprdApi;
+  private Activity activity;
+  private BaseLoaderCallback loaderCallback;
+  private boolean haveOpenCv = false;
+  private RdtAPI iprdApi;
 
-    private RdtApi(RdtAPI iprdApi) {
-      this.iprdApi = iprdApi;
-//      this.iprdApi.saveInput(true);
-//      this.iprdApi.setSavePoints(true);
-    }
-
-    public FrameResult checkFrame(Bitmap frame) {
-      AcceptanceStatus status = this.iprdApi.checkFrame(frame);
-      return new FrameResult(status);
-    }
-
-    public static Builder builder() {
-      return new Builder();
-    }
-
-    public static class Builder {
-      private RdtAPI.RdtAPIBuilder iprdBuilder;
-
-      private Builder() {
-        iprdBuilder = new RdtAPI.RdtAPIBuilder();
-        iprdBuilder.setMaxScale((short) 100);
-        iprdBuilder.setMinScale((short) 0);
-        iprdBuilder.setXMin((short) 0);
-        iprdBuilder.setXMax((short) 100);
-        iprdBuilder.setYMin((short) 0);
-        iprdBuilder.setXMax((short) 100);
+  public IprdAdapter(Activity activity) {
+    this.activity = activity;
+    loaderCallback = new BaseLoaderCallback(activity) {
+      @Override
+      public void onManagerConnected(int status) {
+        switch (status) {
+          case LoaderCallbackInterface.SUCCESS: {
+            Log.i(TAG, "OpenCV loaded successfully");
+            haveOpenCv = true;
+          }
+          break;
+          default: {
+            super.onManagerConnected(status);
+          }
+          break;
+        }
       }
+    };
 
-      public RdtApi build() {
-        return new RdtApi(this.iprdBuilder.build());
-      }
+    try {
+      MappedByteBuffer iprdModel = TFLiteObjectDetectionAPIModel.loadModelFile(
+              activity.getAssets(),
+              IPRD_MODEL_FILE
+      );
+      this.iprdApi = builder().setModel(iprdModel).build();
+    } catch (IOException e) {
+      e.printStackTrace();
+      Log.e(TAG, "Exception initializing filter: " + e.toString());
+      Toast.makeText(
+              activity.getApplicationContext(),
+              "IPRD filter could not be initialized",
+              Toast.LENGTH_SHORT
+      ).show();
+    }
+  }
 
-      public Builder setModel(MappedByteBuffer model) {
-        this.iprdBuilder.setModel(model);
-        return this;
+  public void onResume() {
+    loadOpenCV(activity, loaderCallback);
+  }
+
+  public static void loadOpenCV(Context context, BaseLoaderCallback mLoaderCallback) {
+    if (!OpenCVLoader.initDebug()) {
+      Log.d(TAG, "Internal OpenCV library not found. Using OpenCV Manager for initialization");
+      OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION, context, mLoaderCallback);
+    } else {
+      Log.d(TAG, "OpenCV library found inside package. Using it!");
+      mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+    }
+  }
+
+  public boolean ready() {
+    return haveOpenCv;
+  }
+
+  public Result isSteady(Bitmap frame) {
+    return new Result(iprdApi.isSteady(frame));
+  }
+
+  public void checkFrame(Bitmap frame, Result iprdResult) {
+    FrameResult frameResult = new FrameResult(this.iprdApi.checkFrame(frame));
+    iprdResult.rdtFound = frameResult.foundRDT;
+    iprdResult.isSharp = frameResult.sharpness == AcceptanceStatus.GOOD;
+    iprdResult.exposureResult = Result.getExposureResult((short) frameResult.brightness);
+  }
+
+  private static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private RdtAPI.RdtAPIBuilder iprdBuilder;
+
+    private Builder() {
+      iprdBuilder = new RdtAPI.RdtAPIBuilder();
+      iprdBuilder.setMaxScale((short) 100);
+      iprdBuilder.setMinScale((short) 0);
+      iprdBuilder.setXMin((short) 0);
+      iprdBuilder.setXMax((short) 100);
+      iprdBuilder.setYMin((short) 0);
+      iprdBuilder.setXMax((short) 100);
+    }
+
+    public RdtAPI build() {
+      return this.iprdBuilder.build();
+    }
+
+    public Builder setModel(MappedByteBuffer model) {
+      this.iprdBuilder.setModel(model);
+      return this;
+    }
+  }
+
+  public enum ExposureResult {
+    UNDER_EXPOSED, NORMAL, OVER_EXPOSED, NOT_CALCULATED;
+  }
+
+  public static class Result {
+    private boolean isSteady;
+    private boolean rdtFound;
+    private boolean isSharp;
+    private ExposureResult exposureResult;
+
+    private Result(boolean isSteady) {
+      this.isSteady = isSteady;
+      this.rdtFound = false;
+      this.isSharp = false;
+      this.exposureResult = ExposureResult.NOT_CALCULATED;
+    }
+
+    public boolean isSteady() {
+      return isSteady;
+    }
+
+    public boolean rdtFound() {
+      return rdtFound;
+    }
+
+    public boolean isSharp() {
+      return isSharp;
+    }
+
+    public ExposureResult exposureResult() {
+      return exposureResult;
+    }
+
+    public boolean isAccepted() {
+      return isSteady && rdtFound && isSharp && exposureResult == ExposureResult.NORMAL;
+    }
+
+    private static ExposureResult getExposureResult(short brightness) {
+      if (brightness == AcceptanceStatus.TOO_HIGH) {
+        return ExposureResult.OVER_EXPOSED;
+      } else if (brightness == AcceptanceStatus.TOO_LOW) {
+        return ExposureResult.UNDER_EXPOSED;
+      } else if (brightness == AcceptanceStatus.GOOD) {
+        return ExposureResult.NORMAL;
+      } else {
+        return ExposureResult.NOT_CALCULATED;
       }
     }
   }
 
-  public static class FrameResult {
-    public static final int NOT_COMPUTED = AcceptanceStatus.NOT_COMPUTED;
-    public static final int TOO_HIGH = AcceptanceStatus.TOO_HIGH;
-    public static final int TOO_LOW = AcceptanceStatus.TOO_LOW;
-    public static final int GOOD = AcceptanceStatus.GOOD;
+  private static class FrameResult {
 
     private FrameResult(AcceptanceStatus status) {
       this.sharpness = status.mSharpness;
       this.scale = status.mScale;
       this.brightness = status.mBrightness;
       this.perspectiveDistortion = status.mPerspectiveDistortion;
-      this.steady = status.mSteady;
       this.xOffset = status.mDisplacementX;
       this.yOffset = status.mDisplacementY;
       this.foundRDT = status.mRDTFound;
@@ -84,7 +195,6 @@ public class IprdAdapter {
     public final int scale;
     public final int brightness;
     public final int perspectiveDistortion;
-    public final int steady;
     public final int xOffset;
     public final int yOffset;
     public final boolean foundRDT;
@@ -93,28 +203,10 @@ public class IprdAdapter {
     public final int right;
     public final int bottom;
 
-    public boolean isAccepted() {
-      return this.foundRDT &&
-          this.steady == GOOD &&
-          this.sharpness == GOOD &&
-          this.scale == GOOD &&
-          this.brightness == GOOD &&
-          this.perspectiveDistortion == GOOD;
-    }
-
-    public static String str(FrameResult result) {
-      if (result == null) {
-        return "null";
-      } else {
-        return result.toString();
-      }
-    }
-
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
       return builder.append("FrameResult:")
-          .append(" steady=").append(this.steady)
           .append(" sharp=").append(this.sharpness)
           .append(" scale=").append(this.scale)
           .append(" bright=").append(this.brightness)

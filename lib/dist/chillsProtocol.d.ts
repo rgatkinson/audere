@@ -126,7 +126,8 @@ export interface RDTReaderResult {
 export declare enum RDTReaderExposureResult {
     UNDER_EXPOSED = 0,
     NORMAL = 1,
-    OVER_EXPOSED = 2
+    OVER_EXPOSED = 2,
+    NOT_CALCULATED = 3
 }
 export declare enum RDTReaderSizeResult {
     RIGHT_SIZE = 0,

@@ -1,10 +1,5 @@
 package com.iprd.rdtcamera;
 
-import android.graphics.Bitmap;
-
-import org.opencv.core.Mat;
-
-
 public class AcceptanceStatus {
     public static final short NOT_COMPUTED = 100;
     public static final short TOO_HIGH = 1;
@@ -20,19 +15,12 @@ public class AcceptanceStatus {
     public boolean mRDTFound;// was an RDT found by the coarse finder
     public short mBoundingBoxX, mBoundingBoxY;
     public short mBoundingBoxWidth, mBoundingBoxHeight;
-    public short mSteady;
 
-    public InformationStatus mInfo;
-    public String GetResult(){
-        String s = mRDTFound?"1":"0"+","+mBoundingBoxX+"x"+mBoundingBoxY+"-"+mBoundingBoxWidth+"x"+mBoundingBoxHeight+","+mBrightness +","+mSharpness+","+mScale
-                +","+mDisplacementX +","+mDisplacementY+","+mPerspectiveDistortion+","+mSteady;
-        return s;
-    }
-    AcceptanceStatus() {
+    public AcceptanceStatus() {
         setDefaultStatus();
     }
 
-    void setDefaultStatus(){
+    private void setDefaultStatus() {
         mRDTFound = false;
         mBrightness = NOT_COMPUTED;
         mSharpness = NOT_COMPUTED;
@@ -40,8 +28,6 @@ public class AcceptanceStatus {
         mDisplacementX = NOT_COMPUTED;
         mDisplacementY = NOT_COMPUTED;
         mPerspectiveDistortion = NOT_COMPUTED;
-        mBoundingBoxX = mBoundingBoxY= mBoundingBoxWidth=mBoundingBoxHeight=-1;
-        mSteady = NOT_COMPUTED;
-        mInfo=new InformationStatus();
+        mBoundingBoxX = mBoundingBoxY = mBoundingBoxWidth = mBoundingBoxHeight= -1;
     }
-};
+}

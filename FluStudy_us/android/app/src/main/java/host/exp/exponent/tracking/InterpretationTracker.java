@@ -19,7 +19,7 @@ public class InterpretationTracker {
     private static final String TAG = "InterpretationTracker";
 
     public static synchronized DetectorView.InterpretationResult interpretResults(
-            final List<Classifier.Recognition> results) {
+            final List<Classifier.Recognition> results, RDTTracker.RDTResult rdtResult) {
         Log.i(TAG, "tracking interpretation result");
 
         Map<String, Double> bestResults = new HashMap();
@@ -43,7 +43,7 @@ public class InterpretationTracker {
         Log.d(TAG, "\n" + allResults.toString());
 
         DetectorView.InterpretationResult interpretationResult =
-                new DetectorView.InterpretationResult();
+                new DetectorView.InterpretationResult(rdtResult);
 
         if (hasLine("control", "notvalid", bestResults)) {
             interpretationResult.control = true;
