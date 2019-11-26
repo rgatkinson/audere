@@ -267,7 +267,13 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: MainImage, props: { uri: "contactsupport" } },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ScreenText,
+        props: {
+          label: "desc",
+          textVariablesFn: getEmailConfirmationTextVariables,
+        },
+      },
     ],
     key: "BarcodeContactSupport",
   },

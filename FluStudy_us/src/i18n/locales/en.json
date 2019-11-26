@@ -343,7 +343,7 @@
   },
   "BarcodeContactSupport": {
     "title": "Invalid barcode",
-    "desc": "We're sorry, but the barcode you entered did not match our records.\n\n[Re-enter your barcode](PUSHNAVIGATE:ManualEntry)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
+    "desc": "We're sorry, but the barcode you entered ({{barcode}}) did not match our records.\n\n[Re-enter barcode](PUSHNAVIGATE:ManualEntry)\n\nIf you are still having trouble, [contact support](CONTACTSUPPORT)."
   },
   "BarcodeConnectionToServerError": {
     "title": "Connect to verify your barcode",
