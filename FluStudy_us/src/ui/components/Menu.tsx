@@ -46,6 +46,7 @@ export const Menu = (props: any) => {
           activeTintColor={SECONDARY_COLOR}
           onItemPress={close}
           inactiveTintColor={SECONDARY_COLOR}
+          labelStyle={{ fontSize: SYSTEM_TEXT }}
           {...items}
         />
       </SafeAreaView>

@@ -183,7 +183,7 @@ export const Screens: ScreenConfig[] = [
         tag: BulletPointsComponent,
         props: {
           label: "desc2",
-          customBulletUri: "bullet_rev",
+          customBulletUri: "bulletsq_rev",
           textStyle: { color: "white" },
         },
       },

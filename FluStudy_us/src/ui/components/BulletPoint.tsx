@@ -20,7 +20,7 @@ interface Props {
 export class BulletPoint extends React.PureComponent<Props> {
   render() {
     const { customBulletUri, content, num, textStyle } = this.props;
-    const bulletUri = customBulletUri || "bullet";
+    const bulletUri = customBulletUri || "bulletsq";
     return (
       <View style={styles.container}>
         {num != null ? (
@@ -125,8 +125,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   bulletImage: {
-    height: REGULAR_TEXT,
-    width: REGULAR_TEXT,
+    height: 8,
+    width: 8,
     marginRight: GUTTER / 2,
     marginTop: CUSTOM_BULLET_OFFSET,
   },
