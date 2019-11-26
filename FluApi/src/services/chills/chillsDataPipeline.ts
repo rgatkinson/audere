@@ -136,7 +136,14 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           c.survey->'rdtInfo'->'rdtReaderResult'->>'testStripBoundary' as rdtreaderresult_teststripboundary,
           c.expert_interpretation,
 
-          s.evidation_id
+          s.evidation_id,
+          s.email,
+          s.birthdate,
+          s.sex,
+          s.city,
+          s.state,
+          s.postal_code,
+          s.ordered_at
         from
           chills_derived.survey_named_array_items c
           left join chills.matched_kits m on c.docid ilike m.identifier || '%'
