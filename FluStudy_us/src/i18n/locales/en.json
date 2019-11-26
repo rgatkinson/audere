@@ -546,7 +546,7 @@
   "PrepareUTM": {
     "title": "Begin second test",
     "desc": "Please note, this test has different steps from the first one.",
-    "desc2": "Pick up the Test 2 tube (blue top) from the right side of the box.\nHolding it straight so the liquid inside doesn't spill, open the top.\nStand up the tube in the large hole."
+    "desc2": "Pick up the Test 2 tube (red top) from the right side of the box.\nHolding it straight so the liquid inside doesn't spill, open the top.\nStand up the tube in the large hole."
   },
   "OpenSwabUTM": {
     "title": "Open nasal swab",
@@ -560,7 +560,7 @@
   },
   "SwabInTubeUTM": {
     "title": "Put swab in tube",
-    "desc": "Place the swab directly into the Test 2 tube.\nScrew the blue top back onto the tube tightly."
+    "desc": "Place the swab directly into the Test 2 tube.\nScrew the red top back onto the tube tightly."
   },
   "PackUpUTM": {
     "title": "Clean up second test",
