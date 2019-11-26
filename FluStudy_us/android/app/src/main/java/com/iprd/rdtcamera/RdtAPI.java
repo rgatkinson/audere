@@ -218,11 +218,13 @@ public class RdtAPI {
 
         processRDT(ret, matInput, greyMatResized, rotated, mTensorFlow);
 
-        computeDistortion(mConfig, rotated, greyMat, ret);
-        Mat imageROI = greyMat.submat(new Rect(ret.mBoundingBoxX, ret.mBoundingBoxY, ret.mBoundingBoxWidth, ret.mBoundingBoxHeight));
+        if (ret.mRDTFound) {
+            computeDistortion(mConfig, rotated, greyMat, ret);
+            Mat imageROI = greyMat.submat(new Rect(ret.mBoundingBoxX, ret.mBoundingBoxY, ret.mBoundingBoxWidth, ret.mBoundingBoxHeight));
+            computeBlur(mConfig, imageROI, ret);
+            computeBrightness(mConfig, imageROI, ret);
+        }
 
-        computeBlur(mConfig, imageROI, ret);
-        computeBrightness(mConfig, imageROI, ret);
         greyMatResized.release();
         greyMat.release();
         matInput.release();
