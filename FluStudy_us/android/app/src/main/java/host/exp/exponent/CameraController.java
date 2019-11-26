@@ -20,6 +20,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.MeteringRectangle;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
 import android.os.Handler;
@@ -46,6 +47,7 @@ public class CameraController {
     private static final String TAG = "CameraController";
     private Activity activity;
     private boolean flashEnabled = false;
+    private boolean isMeteringAreaAFSupported;
 
     /**
      * The camera preview size will be chosen to be the smallest frame by pixel size capable of
@@ -80,6 +82,11 @@ public class CameraController {
      * Camera state: Picture was taken.
      */
     private static final int STATE_PICTURE_TAKEN = 4;
+
+    /**
+     * Camera state: waiting for the focus state to be reset.
+     */
+    private static final int STATE_WAITING_AF_RESET = 5;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -127,6 +134,8 @@ public class CameraController {
     private CaptureRequest previewRequest;
 
     private int state = STATE_PREVIEW;
+    private int focusResets = 0;
+    private final int MAX_FOCUS_RESETS = 5;
 
     /**
      * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
@@ -140,12 +149,21 @@ public class CameraController {
                     // We have nothing to do when the camera preview is working normally.
                     break;
                 }
+                case STATE_WAITING_AF_RESET: {
+                    lockFocus();
+                    break;
+                }
                 case STATE_WAITING_LOCK: {
                     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
                     if (afState == null) {
                         captureStillPicture();
-                    } else if (CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState ||
-                            CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState) {
+                    } else if (CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState &&
+                            focusResets < MAX_FOCUS_RESETS) {
+                        focusResets++;
+                        resetFocus();
+                    } else if ((CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED == afState ||
+                            CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED == afState)) {
+                        focusResets = 0;
                         // CONTROL_AE_STATE can be null on some devices
                         Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
                         if (aeState == null ||
@@ -391,6 +409,7 @@ public class CameraController {
             final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
 
             supportsTorchMode = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+            isMeteringAreaAFSupported = characteristics.get(CameraCharacteristics.CONTROL_MAX_REGIONS_AF) >= 1;
             final StreamConfigurationMap map =
                     characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 
@@ -463,6 +482,11 @@ public class CameraController {
             if (null != previewReader) {
                 previewReader.close();
                 previewReader = null;
+            }
+
+            if (null != stillReader) {
+                stillReader.close();
+                stillReader = null;
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -540,8 +564,9 @@ public class CameraController {
                                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 
 
-                                previewRequestBuilder.set(CaptureRequest.FLASH_MODE,
-                                        flashEnabled ? CaptureRequest.FLASH_MODE_TORCH : CaptureRequest.FLASH_MODE_OFF);
+                                setFlashOnRequestBuilder(previewRequestBuilder);
+
+                                previewRequestBuilder.setTag("PREVIEW");
 
                                 // Finally, we start displaying the camera preview.
                                 previewRequest = previewRequestBuilder.build();
@@ -567,21 +592,55 @@ public class CameraController {
         if (cameraDevice == null) {
             return;
         }
-        lockFocus();
+        resetFocus();
+    }
+
+    private void resetFocus() {
+        Log.d(TAG, "reset focus");
+        try {
+            // Stop existing repeating request
+            captureSession.stopRepeating();
+
+            // Turn off continuous capture mode
+            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+            state = STATE_WAITING_AF_RESET;
+            previewRequestBuilder.setTag("RESET_FOCUS");
+            captureSession.capture(previewRequestBuilder.build(), captureCallback, backgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Lock the focus as the first step for a still image capture.
      */
     private void lockFocus() {
+        Log.d(TAG, "lockfocus");
         try {
-            // This is how to tell the camera to lock focus.
-            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_START);
-            // Tell #mCaptureCallback to wait for the lock.
+            // Add a new AF trigger with focus region
+            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE,
+                    CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
+
+            if (isMeteringAreaAFSupported) {
+                int focusSize = 50;
+                MeteringRectangle focusAreaTouch = new MeteringRectangle(textureView.getWidth() / 2 - focusSize / 2,
+                        textureView.getHeight() / 2 - focusSize / 2,
+                        focusSize,
+                        focusSize,
+                        MeteringRectangle.METERING_WEIGHT_MAX - 1);
+                previewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{ focusAreaTouch });
+            }
+
+            // Tell #captureCallback to wait for the lock.
             state = STATE_WAITING_LOCK;
-            captureSession.capture(previewRequestBuilder.build(), captureCallback,
-                    backgroundHandler);
+            previewRequestBuilder.setTag("LOCK_FOCUS");
+            captureSession.capture(previewRequestBuilder.build(), captureCallback, backgroundHandler);
+
+            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+
+            previewRequestBuilder.setTag("IDLE");
+            captureSession.setRepeatingRequest(previewRequestBuilder.build(), captureCallback, backgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -592,12 +651,14 @@ public class CameraController {
      * we get a response in {@link #captureCallback} from {@link #lockFocus()}.
      */
     private void runPrecaptureSequence() {
+        Log.d(TAG, "Run precapture sequence");
         try {
             // This is how to tell the camera to trigger.
             previewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
                     CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
             // Tell #mCaptureCallback to wait for the precapture sequence to be set.
             state = STATE_WAITING_PRECAPTURE;
+            previewRequestBuilder.setTag("PRE_CAPTURE");
             captureSession.capture(previewRequestBuilder.build(), captureCallback,
                     backgroundHandler);
         } catch (CameraAccessException e) {
@@ -610,6 +671,7 @@ public class CameraController {
      * {@link #captureCallback} from both {@link #lockFocus()}.
      */
     private void captureStillPicture() {
+        Log.d(TAG, "captureStillPicture");
         try {
             if (null == activity || null == cameraDevice) {
                 return;
@@ -619,10 +681,12 @@ public class CameraController {
                     cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
 
             captureBuilder.addTarget(stillReader.getSurface());
+            captureBuilder.addTarget(new Surface(textureView.getSurfaceTexture()));
 
             // Use the same AE and AF modes as the preview.
             captureBuilder.set(CaptureRequest.CONTROL_AF_MODE,
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            setFlashOnRequestBuilder(captureBuilder);
 
             CameraCaptureSession.CaptureCallback captureCallback
                     = new CameraCaptureSession.CaptureCallback() {
@@ -631,12 +695,10 @@ public class CameraController {
                 public void onCaptureCompleted(CameraCaptureSession session,
                                                CaptureRequest request,
                                                TotalCaptureResult result) {
+                    Log.d(TAG, "Still camera captureCallback");
                     unlockFocus();
                 }
             };
-
-            captureSession.stopRepeating();
-            captureSession.abortCaptures();
             captureSession.capture(captureBuilder.build(), captureCallback, backgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -648,14 +710,18 @@ public class CameraController {
      * finished.
      */
     private void unlockFocus() {
+        Log.d(TAG, "unlock focus");
         try {
             // Reset the auto-focus trigger
             previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
                     CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+            previewRequestBuilder.setTag("UNLOCK_FOCUS");
             captureSession.capture(previewRequestBuilder.build(), captureCallback,
                     backgroundHandler);
+
             // After this, the camera will go back to the normal state of preview.
             state = STATE_PREVIEW;
+
             captureSession.setRepeatingRequest(previewRequest, captureCallback,
                     backgroundHandler);
         } catch (CameraAccessException e) {
@@ -714,15 +780,21 @@ public class CameraController {
         }
     }
 
+    private void setFlashOnRequestBuilder(CaptureRequest.Builder requestBuilder) {
+        if (requestBuilder != null) {
+            if (flashEnabled) {
+                requestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+
+            } else {
+                requestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+            }
+        }
+    }
+
     public void setFlashEnabled(boolean flashEnabled) {
         this.flashEnabled = flashEnabled;
         if (previewRequestBuilder != null) {
-            if (flashEnabled) {
-                previewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
-
-            } else {
-                previewRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-            }
+            setFlashOnRequestBuilder(previewRequestBuilder);
             previewRequest = previewRequestBuilder.build();
             try {
                 captureSession.setRepeatingRequest(previewRequest, captureCallback, backgroundHandler);
