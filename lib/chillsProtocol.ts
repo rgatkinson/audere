@@ -178,28 +178,22 @@ export enum EventInfoKind {
 
 export interface RDTInfo {
   rdtReaderResult?: RDTReaderResult;
-  interpreter?: string;
   totalTestStripTime?: number;
   captureTime?: number;
   flashEnabled?: boolean;
-  flashDisabledAutomatically?: boolean;
   rdtTotalTime?: number;
-  resultShown?: string;
-  resultShownExplanation?: string;
 
   // Other RDT reader information can go here:
   //  e.g. time taken to capture, length of time test strip was in solution, etc.
 }
 
 export interface RDTReaderResult {
-  testStripFound: boolean;
+  testStripDetected: boolean;
   testStripBoundary?: { x: number; y: number }[];
   skippedDueToMemWarning?: boolean;
   isCentered?: boolean;
-  sizeResult?: RDTReaderSizeResult;
   isFocused?: boolean;
-  angle?: number;
-  isRightOrientation?: boolean;
+  isSteady?: boolean;
   exposureResult?: RDTReaderExposureResult;
   controlLineFound?: boolean;
   testALineFound?: boolean;
@@ -212,12 +206,4 @@ export enum RDTReaderExposureResult {
   NORMAL,
   OVER_EXPOSED,
   NOT_CALCULATED,
-}
-
-// Must be kept in sync with native RDTReader/ImageProcessor.h
-export enum RDTReaderSizeResult {
-  RIGHT_SIZE,
-  LARGE,
-  SMALL,
-  INVALID,
 }

@@ -37,17 +37,7 @@ export type SurveyAction =
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_RDT_PHOTOHC"; rdtPhotoHCUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
-  | {
-      type: "SET_RDT_CAPTURE_INFO";
-      flashEnabled: boolean;
-      flashDisabledAutomatically: boolean;
-    }
-  | { type: "SET_RDT_INTERPRETATION_SHOWN"; interpreter: string }
-  | {
-      type: "SET_RESULT_SHOWN";
-      resultShown: string;
-      resultShownExplanation: string;
-    };
+  | { type: "SET_RDT_CAPTURE_INFO"; flashEnabled: boolean };
 
 export type SurveyState = {
   csruid?: string;
@@ -252,15 +242,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
         rdtInfo: {
           ...state.rdtInfo,
           flashEnabled: action.flashEnabled,
-          flashDisabledAutomatically: action.flashDisabledAutomatically,
         },
-      };
-
-    case "SET_RDT_INTERPRETATION_SHOWN":
-      return {
-        ...state,
-        rdtInfo: { ...state.rdtInfo, interpreter: action.interpreter },
-        timestamp: new Date().getTime(),
       };
 
     case "SET_WORKFLOW":
@@ -278,15 +260,6 @@ export default function reducer(state = initialState, action: SurveyAction) {
         };
       }
       return state;
-    case "SET_RESULT_SHOWN":
-      return {
-        ...state,
-        rdtInfo: {
-          ...state.rdtInfo,
-          resultShown: action.resultShown,
-          resultShownExplanation: action.resultShownExplanation,
-        },
-      };
 
     default:
       return state;
@@ -423,32 +396,10 @@ export function setRDTReaderResult(
   };
 }
 
-export function setRDTCaptureInfo(
-  flashEnabled: boolean,
-  flashDisabledAutomatically: boolean
-): SurveyAction {
+export function setRDTCaptureInfo(flashEnabled: boolean): SurveyAction {
   return {
     type: "SET_RDT_CAPTURE_INFO",
     flashEnabled,
-    flashDisabledAutomatically,
-  };
-}
-
-export function setRDTInterpretationShown(interpreter: string): SurveyAction {
-  return {
-    type: "SET_RDT_INTERPRETATION_SHOWN",
-    interpreter,
-  };
-}
-
-export function setResultShown(
-  resultShown: string,
-  resultShownExplanation: string
-): SurveyAction {
-  return {
-    type: "SET_RESULT_SHOWN",
-    resultShown,
-    resultShownExplanation,
   };
 }
 

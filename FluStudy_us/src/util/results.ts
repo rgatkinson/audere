@@ -10,7 +10,7 @@ export async function getRdtResult() {
   let testResult = "unknown";
   if (state.survey.rdtInfo && state.survey.rdtInfo.rdtReaderResult) {
     const result = state.survey.rdtInfo.rdtReaderResult;
-    if (!result.testStripFound || !result.controlLineFound) {
+    if (!result.testStripDetected || !result.controlLineFound) {
       testResult = "invalid";
     } else {
       if (!result.testALineFound && !result.testBLineFound) {
