@@ -72,10 +72,7 @@ const styles = StyleSheet.create({
   },
   content: {
     marginBottom: GUTTER,
-  },
-  footer: {
-    alignSelf: "stretch",
-    textAlign: "center",
+    width: "100%",
   },
 });
 

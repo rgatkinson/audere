@@ -9,7 +9,7 @@ import MainImage from "../ui/components/MainImage";
 import ScreenText from "../ui/components/ScreenText";
 import CollapsibleText from "../ui/components/CollapsibleText";
 import Title from "../ui/components/Title";
-import { PRIMARY_COLOR } from "../ui/styles";
+import { GUTTER } from "../ui/styles";
 import { testSupport, callSupport } from "./LinkConfig";
 import Button from "../ui/components/Button";
 import { AppEvents } from "../util/tracker";
@@ -74,30 +74,25 @@ export const MenuScreens: ScreenConfig[] = [
       tag: Button,
       props: {
         enabled: true,
-        primary: false,
+        primary: true,
         label: "emailSupport",
         onPress: testSupport,
         style: {
-          borderWidth: 2,
-          borderColor: PRIMARY_COLOR,
+          marginVertical: GUTTER,
           alignSelf: "center",
         },
-        textStyle: { color: PRIMARY_COLOR },
       },
     },
     {
       tag: Button,
       props: {
         enabled: true,
-        primary: false,
+        primary: true,
         label: "callSupport",
         onPress: callSupport,
         style: {
-          borderWidth: 2,
-          borderColor: PRIMARY_COLOR,
           alignSelf: "center",
         },
-        textStyle: { color: PRIMARY_COLOR },
       },
     },
   ]),

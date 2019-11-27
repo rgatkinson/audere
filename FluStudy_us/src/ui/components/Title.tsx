@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     fontFamily: FONT_NORMAL,
     fontSize: EXTRA_LARGE_TEXT,
     lineHeight: EXTRA_LARGE_TEXT + LINE_HEIGHT_DIFFERENCE / 2,
-    marginTop: GUTTER / 2,
+    marginTop: GUTTER,
     marginBottom: GUTTER,
   },
 });

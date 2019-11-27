@@ -16,8 +16,8 @@ import { Action, setDemo, StoreState } from "../../store";
 import {
   ASPECT_RATIO,
   GUTTER,
-  IMAGE_WIDTH,
   IMAGE_MARGIN,
+  IMAGE_WIDTH,
   SCREEN_MARGIN,
   IMAGE_WIDTH_SQUARE,
 } from "../styles";
@@ -78,7 +78,6 @@ const styles = StyleSheet.create({
     aspectRatio: ASPECT_RATIO,
     height: undefined,
     marginTop: IMAGE_MARGIN,
-    marginBottom: IMAGE_MARGIN / 2,
     resizeMode: "contain",
     width: IMAGE_WIDTH,
   },

@@ -16,9 +16,9 @@ import {
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { Feather } from "@expo/vector-icons";
 import {
-  BORDER_RADIUS,
   BORDER_WIDTH,
-  BUTTON_WIDTH,
+  BUTTON_BORDER_RADIUS,
+  BUTTON_MAX_WIDTH,
   FONT_SEMI_BOLD,
   GUTTER,
   INPUT_HEIGHT,
@@ -88,13 +88,14 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     borderColor: PRIMARY_COLOR,
-    borderRadius: BORDER_RADIUS,
+    borderRadius: BUTTON_BORDER_RADIUS,
     borderWidth: BORDER_WIDTH,
     flexDirection: "row",
     height: INPUT_HEIGHT,
     justifyContent: "center",
     marginBottom: GUTTER * 2,
-    width: BUTTON_WIDTH,
+    width: "100%",
+    maxWidth: BUTTON_MAX_WIDTH,
   },
   check: {
     paddingRight: GUTTER / 2,

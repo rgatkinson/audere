@@ -69,7 +69,7 @@ import AndroidRDTReader from "../ui/components/flu/AndroidRDTReader";
 import BarcodeEntry from "../ui/components/flu/BarcodeEntry";
 import RDTImage from "../ui/components/flu/RDTImage";
 import TestStripCamera from "../ui/components/flu/TestStripCamera";
-import Links from "../ui/components/Links";
+import LinkButton from "../ui/components/LinkButton";
 import MainImage from "../ui/components/MainImage";
 import PendingButton from "../ui/components/PendingButton";
 import Questions from "../ui/components/Questions";
@@ -254,7 +254,10 @@ export const Screens: ScreenConfig[] = [
         validate: true,
         props: { errorScreen: "BarcodeContactSupport" },
       },
-      { tag: MainImage, props: { uri: "scanbarcode" } },
+      {
+        tag: MainImage,
+        props: { uri: "scanbarcode", imageStyle: { marginBottom: GUTTER } },
+      },
       {
         tag: ContinueButton,
         props: { surveyGetNextFn: getBarcodeNextScreen },
@@ -273,6 +276,11 @@ export const Screens: ScreenConfig[] = [
           label: "desc",
           textVariablesFn: getEmailConfirmationTextVariables,
         },
+      },
+      { tag: ContinueButton, props: { label: "reenter", next: "ManualEntry" } },
+      {
+        tag: ScreenText,
+        props: { label: "desc2" },
       },
     ],
     key: "BarcodeContactSupport",
@@ -327,6 +335,22 @@ export const Screens: ScreenConfig[] = [
           label: "desc",
           textVariablesFn: getEmailConfirmationTextVariables,
         },
+      },
+      {
+        tag: ContinueButton,
+        props: {
+          label: "reenter",
+          next: "EmailConfirmation",
+          style: { marginBottom: GUTTER / 2 },
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: { label: "scanAgain", next: "ScanInstructions" },
+      },
+      {
+        tag: ScreenText,
+        props: { label: "desc2" },
       },
     ],
     key: "EmailError",
@@ -793,7 +817,10 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: MainImage,
-        props: { uri: "scanthestrip", imageStyle: { marginTop: 0 } },
+        props: {
+          uri: "scanthestrip",
+          imageStyle: { marginTop: 0, marginBottom: GUTTER },
+        },
       },
       { tag: Divider },
       {
@@ -807,7 +834,10 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: MainImage,
-        props: { uri: "holdphone", imageStyle: { marginTop: 0 } },
+        props: {
+          uri: "holdphone",
+          imageStyle: { marginTop: 0, marginBottom: GUTTER },
+        },
       },
       { tag: Divider },
       { tag: ScreenText, props: { label: "desc2" } },
@@ -838,7 +868,10 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: MainImage,
-        props: { uri: "scanthestrip", imageStyle: { marginTop: 0 } },
+        props: {
+          uri: "scanthestrip",
+          imageStyle: { marginTop: 0, marginBottom: GUTTER },
+        },
       },
       { tag: Divider },
       {
@@ -852,7 +885,10 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: MainImage,
-        props: { uri: "holdphone", imageStyle: { marginTop: 0 } },
+        props: {
+          uri: "holdphone",
+          imageStyle: { marginTop: 0, marginBottom: GUTTER },
+        },
       },
       { tag: Divider },
       {
@@ -1068,8 +1104,16 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
       {
-        tag: BulletPointsComponent,
-        props: { label: "desc2" },
+        tag: ContinueButton,
+        props: {
+          label: "pickup",
+          next: "CallForPickup",
+          style: { marginBottom: GUTTER / 2 },
+        },
+      },
+      {
+        tag: ContinueButton,
+        props: { label: "dropoff", next: "WebsiteForDropoff" },
       },
     ],
     key: "Shipping",
@@ -1084,11 +1128,21 @@ export const Screens: ScreenConfig[] = [
       },
       {
         tag: MainImage,
-        props: { uri: "fedextracking", imageStyle: { marginTop: 0 } },
+        props: {
+          uri: "fedextracking",
+          imageStyle: { marginTop: 0, marginBottom: GUTTER },
+        },
       },
       {
         tag: BulletPointsComponent,
         props: { label: "desc3" },
+      },
+      {
+        tag: LinkButton,
+        props: {
+          label: "callFedEx",
+          style: { alignSelf: "center" },
+        },
       },
       { tag: ScreenText, props: { label: "desc4" } },
       {
@@ -1103,11 +1157,20 @@ export const Screens: ScreenConfig[] = [
       { tag: Title },
       {
         tag: ScreenText,
-        props: { label: "desc", textVariablesFn: getShippingTextVariables },
+        props: { label: "desc" },
       },
       {
+        tag: LinkButton,
+        props: {
+          label: "findLocation",
+          style: { alignSelf: "center" },
+          textVariablesFn: getShippingTextVariables,
+        },
+      },
+      { tag: ScreenText, props: { label: "desc2" } },
+      {
         tag: ContinueButton,
-        props: { surveyGetNextFn: pendingNavigation, label: "done" },
+        props: { surveyGetNextFn: pendingNavigation },
       },
     ],
     key: "WebsiteForDropoff",
