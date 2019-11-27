@@ -1,25 +1,16 @@
 import { Platform, requireNativeComponent } from "react-native";
 import * as React from "react";
-import {
-  RDTReaderExposureResult,
-  RDTReaderSizeResult,
-} from "audere-lib/chillsProtocol";
+import { RDTReaderExposureResult } from "audere-lib/chillsProtocol";
 
 const NativeRDTReader = requireNativeComponent("RDTReader");
 
 type InternalRDTCapturedArgs = {
   imageUri: string;
   resultWindowImageUri: string;
-  passed: boolean;
   testStripDetected: boolean;
   isCentered: boolean;
-  fiducial: boolean;
-  sizeResult: RDTReaderSizeResult;
-  shadow: boolean;
-  target: number;
+  isSteady: boolean;
   sharpness: boolean;
-  orientation: boolean;
-  angle: number;
   exposureResult: RDTReaderExposureResult;
   control: boolean;
   testA: boolean;
@@ -31,14 +22,10 @@ type InternalRDTCapturedArgs = {
 export type RDTCapturedArgs = {
   imageUri: string;
   resultWindowImageUri: string;
-  testStripFound: boolean;
   testStripDetected: boolean;
-  fiducialFound: boolean;
   isCentered: boolean;
-  sizeResult: RDTReaderSizeResult;
   isFocused: boolean;
-  isRightOrientation: boolean;
-  angle: number;
+  isSteady: boolean;
   exposureResult: RDTReaderExposureResult;
   controlLineFound: boolean;
   testALineFound: boolean;
@@ -76,14 +63,10 @@ export class RDTReader extends React.Component<RDTReaderProps> {
     this.props.onRDTCaptured({
       imageUri: capturedArgs.imageUri,
       resultWindowImageUri: capturedArgs.resultWindowImageUri,
-      testStripFound: capturedArgs.passed,
       testStripDetected: capturedArgs.testStripDetected,
       isCentered: capturedArgs.isCentered,
-      fiducialFound: capturedArgs.fiducial,
-      sizeResult: capturedArgs.sizeResult,
       isFocused: capturedArgs.sharpness,
-      angle: capturedArgs.angle,
-      isRightOrientation: capturedArgs.orientation,
+      isSteady: capturedArgs.isSteady,
       exposureResult: capturedArgs.exposureResult,
       controlLineFound: capturedArgs.control,
       testALineFound: capturedArgs.testA,
