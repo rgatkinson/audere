@@ -97,27 +97,21 @@ export declare enum EventInfoKind {
 }
 export interface RDTInfo {
     rdtReaderResult?: RDTReaderResult;
-    interpreter?: string;
     totalTestStripTime?: number;
     captureTime?: number;
     flashEnabled?: boolean;
-    flashDisabledAutomatically?: boolean;
     rdtTotalTime?: number;
-    resultShown?: string;
-    resultShownExplanation?: string;
 }
 export interface RDTReaderResult {
-    testStripFound: boolean;
+    testStripDetected: boolean;
     testStripBoundary?: {
         x: number;
         y: number;
     }[];
     skippedDueToMemWarning?: boolean;
     isCentered?: boolean;
-    sizeResult?: RDTReaderSizeResult;
     isFocused?: boolean;
-    angle?: number;
-    isRightOrientation?: boolean;
+    isSteady?: boolean;
     exposureResult?: RDTReaderExposureResult;
     controlLineFound?: boolean;
     testALineFound?: boolean;
@@ -128,10 +122,4 @@ export declare enum RDTReaderExposureResult {
     NORMAL = 1,
     OVER_EXPOSED = 2,
     NOT_CALCULATED = 3
-}
-export declare enum RDTReaderSizeResult {
-    RIGHT_SIZE = 0,
-    LARGE = 1,
-    SMALL = 2,
-    INVALID = 3
 }

@@ -128,14 +128,12 @@ enum SizeResult {
 interface State {
   spinner: boolean;
   flashEnabled: boolean;
-  flashEnabledAutomatically: boolean;
   fps: number;
   instructionMsg: string;
   appState: string;
   supportsTorchMode: boolean;
   frameImageScale: number;
   showFlashToggle: boolean;
-  stripFound: boolean;
   boundary?: { x: number; y: number }[];
   screenWidth: number;
   screenHeight: number;
@@ -146,13 +144,11 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   state: State = {
     spinner: true,
     flashEnabled: false,
-    flashEnabledAutomatically: false,
     fps: 0,
     instructionMsg: "centerStrip",
     appState: "",
     supportsTorchMode: false,
     frameImageScale: 1,
-    stripFound: false,
     showFlashToggle: false,
     screenWidth: 0,
     screenHeight: 0,
@@ -307,13 +303,12 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
         dispatch(setRDTPhotoHC(""));
         dispatch(
           setRDTReaderResult(
-            this._lastRDTReaderResult || { testStripFound: false }
+            this._lastRDTReaderResult || { testStripDetected: false }
           )
         );
         dispatch(
           setRDTCaptureInfo(
-            this.state.supportsTorchMode && this.state.flashEnabled,
-            this.state.supportsTorchMode && this.state.flashEnabledAutomatically
+            this.state.supportsTorchMode && this.state.flashEnabled
           )
         );
       }
@@ -358,7 +353,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       );
       dispatch(
         setRDTReaderResult({
-          testStripFound: false,
+          testStripDetected: false,
           skippedDueToMemWarning: true,
         })
       );
@@ -495,7 +490,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this.setState({
       spinner: false,
-      stripFound: args.testStripDetected,
       boundary: args.testStripBoundary,
       failureReason: args.failureReason,
     });
@@ -525,8 +519,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(
-          this.state.supportsTorchMode && this.state.flashEnabled,
-          this.state.supportsTorchMode && this.state.flashEnabledAutomatically
+          this.state.supportsTorchMode && this.state.flashEnabled
         )
       );
       navigation.dispatch(StackActions.push({ routeName: next }));
@@ -608,7 +601,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     const { dispatch, navigation, next } = this.props;
     dispatch(
       setRDTReaderResult({
-        testStripFound: true,
+        testStripDetected: true,
         controlLineFound: true,
         testALineFound: false,
         testBLineFound: false,
@@ -622,7 +615,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     const { dispatch, navigation, next } = this.props;
     dispatch(
       setRDTReaderResult({
-        testStripFound: true,
+        testStripDetected: true,
         controlLineFound: true,
         testALineFound: true,
         testBLineFound: false,
@@ -940,7 +933,11 @@ export default connect((state: StoreState) => ({
 
 function rdtCapturedArgsToResult(args: RDTCapturedArgs): RDTReaderResult {
   return {
-    testStripFound: args.testStripFound,
+    testStripDetected: args.testStripDetected,
+    testStripBoundary: args.testStripBoundary,
+    isCentered: args.isCentered,
+    isFocused: args.isFocused,
+    isSteady: args.isSteady,
     exposureResult: args.exposureResult,
     controlLineFound: args.controlLineFound,
     testALineFound: args.testALineFound,
