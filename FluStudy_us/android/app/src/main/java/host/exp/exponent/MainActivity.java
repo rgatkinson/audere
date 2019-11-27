@@ -1,6 +1,7 @@
 package host.exp.exponent;
 
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 
 import com.facebook.react.ReactPackage;
 
@@ -10,6 +11,8 @@ import host.exp.exponent.generated.DetachBuildConstants;
 import host.exp.exponent.experience.DetachActivity;
 
 public class MainActivity extends DetachActivity {
+
+  private ActivityCompat.OnRequestPermissionsResultCallback permissionListener;
 
   @Override
   public String publishedUrl() {
@@ -40,5 +43,19 @@ public class MainActivity extends DetachActivity {
   public Bundle initialProps(Bundle expBundle) {
     // Add extra initialProps here
     return expBundle;
+  }
+
+  public void addPermissionListener(
+          ActivityCompat.OnRequestPermissionsResultCallback permissionListener) {
+    this.permissionListener = permissionListener;
+  }
+
+  @Override
+  public void onRequestPermissionsResult(
+          final int requestCode, final String[] permissions, final int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    if (permissionListener != null) {
+      permissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
   }
 }
