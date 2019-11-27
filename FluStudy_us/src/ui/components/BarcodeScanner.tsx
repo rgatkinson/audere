@@ -187,7 +187,6 @@ class BarcodeScanner extends React.Component<Props & WithNamespaces> {
         <Camera
           style={StyleSheet.absoluteFill}
           onBarCodeScanned={this._onBarCodeScanned}
-          useCamera2Api={true}
         />
         <View style={styles.overlayContainer}>
           <View style={styles.targetBox} />
