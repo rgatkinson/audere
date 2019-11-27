@@ -579,7 +579,7 @@ public class CameraController {
 
                         @Override
                         public void onConfigureFailed(final CameraCaptureSession cameraCaptureSession) {
-                            showToast("Failed");
+                            Log.d(TAG, "Failed to configure capture session");
                         }
                     },
                     null);

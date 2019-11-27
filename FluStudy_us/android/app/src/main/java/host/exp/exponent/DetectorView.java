@@ -33,13 +33,13 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -65,11 +65,13 @@ public class DetectorView extends LinearLayout implements
 
     private static final int PERMISSIONS_REQUEST = 1;
     private static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
+    private static final String READ_STORAGE = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private static final String WRITE_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
     private static final String RDT_PHOTO_FILE_NAME = "rdt_photo.jpg";
     private static final String RDT_TEST_AREA_PHOTO_FILE_NAME = "rdt_test_area_photo.jpg";
 
-    private Activity activity;
+    private MainActivity activity;
     private ResourceLoader resourceLoader;
     private DetectorListener detectorListener;
     private IprdAdapter iprdAdapter;
@@ -92,8 +94,9 @@ public class DetectorView extends LinearLayout implements
 
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        if (context instanceof Activity) {
-            activity = (Activity) context;
+        if (context instanceof MainActivity) {
+            activity = (MainActivity) context;
+            activity.addPermissionListener(this);
         } else {
             throw new Error("DetectorView must be created in an activity");
         }
@@ -103,7 +106,6 @@ public class DetectorView extends LinearLayout implements
         // TODO: move this to background thread and check that it's ready where needed
         resourceLoader = new ResourceLoader(context, activity.getAssets());
         iprdAdapter = new IprdAdapter(resourceLoader.loadIPRDModel());
-
 
         boxDetector = resourceLoader.loadPhase1Detector();
         interpretationDetector = resourceLoader.loadPhase2Detector();
@@ -530,30 +532,23 @@ public class DetectorView extends LinearLayout implements
 
     private boolean hasPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            return activity.checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED
-                && activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-        } else {
-            return true;
+
+            // Only need storage permissions if this is a debug build
+            boolean hasStoragePermission = !activity.isDebug() ||
+                    (activity.checkSelfPermission(WRITE_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                            activity.checkSelfPermission(READ_STORAGE) == PackageManager.PERMISSION_GRANTED);
+
+            return activity.checkSelfPermission(PERMISSION_CAMERA) == PackageManager.PERMISSION_GRANTED && hasStoragePermission;
         }
+        return true;
     }
 
     private void requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (activity.shouldShowRequestPermissionRationale(PERMISSION_CAMERA)) {
-                Toast.makeText(
-                        activity,
-                        "Camera permission is required for this demo",
-                        Toast.LENGTH_LONG)
-                        .show();
-            }
-            if (activity.shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                Toast.makeText(
-                    activity,
-                    "Storage permission is required for this demo",
-                    Toast.LENGTH_LONG)
-                    .show();
-            }
-            activity.requestPermissions(new String[]{PERMISSION_CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSIONS_REQUEST);
+            String[] permissions = activity.isDebug()
+                    ? new String[]{ PERMISSION_CAMERA, WRITE_STORAGE, READ_STORAGE }
+                    : new String[]{ PERMISSION_CAMERA };
+            activity.requestPermissions(permissions, PERMISSIONS_REQUEST);
         }
     }
 
@@ -595,9 +590,9 @@ public class DetectorView extends LinearLayout implements
             final int requestCode, final String[] permissions, final int[] grantResults) {
         Log.i(TAG, "onrequest permission result");
         if (requestCode == PERMISSIONS_REQUEST) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // The storage permissions are special for IPRD -- we may have requested them if
+                // this is a debug build but we won't bother enforcing that they were granted
                 initCameraController();
             } else {
                 requestPermission();
