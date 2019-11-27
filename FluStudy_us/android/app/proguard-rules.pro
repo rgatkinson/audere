@@ -25,6 +25,9 @@
 
 -keep class host.exp.exponent.generated.AppConstants { *; }
 
+##### OpenCV ####
+-keep class org.opencv.** { *; }
+
 ##### Crashlytics #####
 -keepattributes SourceFile,LineNumberTable
 
