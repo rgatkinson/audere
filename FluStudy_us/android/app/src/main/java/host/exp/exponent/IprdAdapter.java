@@ -6,71 +6,117 @@
 package host.exp.exponent;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 import com.iprd.rdtcamera.AcceptanceStatus;
 import com.iprd.rdtcamera.RdtAPI;
 
 import java.nio.MappedByteBuffer;
 
+
 public class IprdAdapter {
 
   public static final String TAG = "IprdAdapter";
+  private RdtAPI iprdApi;
 
-  public static class RdtApi {
-    private RdtAPI iprdApi;
+  public IprdAdapter(MappedByteBuffer iprdModel) {
+    this.iprdApi = builder().setModel(iprdModel).build();
+  }
 
-    private RdtApi(RdtAPI iprdApi) {
-      this.iprdApi = iprdApi;
-//      this.iprdApi.saveInput(true);
-//      this.iprdApi.setSavePoints(true);
+  public Result isSteady(Bitmap frame) {
+    return new Result(iprdApi.isSteady(frame));
+  }
+
+  public void checkFrame(Bitmap frame, Result iprdResult) {
+    FrameResult frameResult = new FrameResult(this.iprdApi.checkFrame(frame));
+    iprdResult.rdtFound = frameResult.foundRDT;
+    iprdResult.isSharp = frameResult.sharpness == AcceptanceStatus.GOOD;
+    iprdResult.exposureResult = Result.getExposureResult((short) frameResult.brightness);
+  }
+
+  private static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private RdtAPI.RdtAPIBuilder iprdBuilder;
+
+    private Builder() {
+      iprdBuilder = new RdtAPI.RdtAPIBuilder();
+      iprdBuilder.setMaxScale((short) 100);
+      iprdBuilder.setMinScale((short) 0);
+      iprdBuilder.setXMin((short) 0);
+      iprdBuilder.setXMax((short) 100);
+      iprdBuilder.setYMin((short) 0);
+      iprdBuilder.setXMax((short) 100);
     }
 
-    public FrameResult checkFrame(Bitmap frame) {
-      AcceptanceStatus status = this.iprdApi.checkFrame(frame);
-      return new FrameResult(status);
+    public RdtAPI build() {
+      return this.iprdBuilder.build();
     }
 
-    public static Builder builder() {
-      return new Builder();
+    public Builder setModel(MappedByteBuffer model) {
+      this.iprdBuilder.setModel(model);
+      return this;
+    }
+  }
+
+  public enum ExposureResult {
+    UNDER_EXPOSED, NORMAL, OVER_EXPOSED, NOT_CALCULATED;
+  }
+
+  public static class Result {
+    private boolean isSteady;
+    private boolean rdtFound;
+    private boolean isSharp;
+    private ExposureResult exposureResult;
+
+    private Result(boolean isSteady) {
+      this.isSteady = isSteady;
+      this.rdtFound = false;
+      this.isSharp = false;
+      this.exposureResult = ExposureResult.NOT_CALCULATED;
     }
 
-    public static class Builder {
-      private RdtAPI.RdtAPIBuilder iprdBuilder;
+    public boolean isSteady() {
+      return isSteady;
+    }
 
-      private Builder() {
-        iprdBuilder = new RdtAPI.RdtAPIBuilder();
-        iprdBuilder.setMaxScale((short) 100);
-        iprdBuilder.setMinScale((short) 0);
-        iprdBuilder.setXMin((short) 0);
-        iprdBuilder.setXMax((short) 100);
-        iprdBuilder.setYMin((short) 0);
-        iprdBuilder.setXMax((short) 100);
-      }
+    public boolean rdtFound() {
+      return rdtFound;
+    }
 
-      public RdtApi build() {
-        return new RdtApi(this.iprdBuilder.build());
-      }
+    public boolean isSharp() {
+      return isSharp;
+    }
 
-      public Builder setModel(MappedByteBuffer model) {
-        this.iprdBuilder.setModel(model);
-        return this;
+    public ExposureResult exposureResult() {
+      return exposureResult;
+    }
+
+    public boolean isAccepted() {
+      return isSteady && rdtFound && isSharp && exposureResult == ExposureResult.NORMAL;
+    }
+
+    private static ExposureResult getExposureResult(short brightness) {
+      if (brightness == AcceptanceStatus.TOO_HIGH) {
+        return ExposureResult.OVER_EXPOSED;
+      } else if (brightness == AcceptanceStatus.TOO_LOW) {
+        return ExposureResult.UNDER_EXPOSED;
+      } else if (brightness == AcceptanceStatus.GOOD) {
+        return ExposureResult.NORMAL;
+      } else {
+        return ExposureResult.NOT_CALCULATED;
       }
     }
   }
 
-  public static class FrameResult {
-    public static final int NOT_COMPUTED = AcceptanceStatus.NOT_COMPUTED;
-    public static final int TOO_HIGH = AcceptanceStatus.TOO_HIGH;
-    public static final int TOO_LOW = AcceptanceStatus.TOO_LOW;
-    public static final int GOOD = AcceptanceStatus.GOOD;
+  private static class FrameResult {
 
     private FrameResult(AcceptanceStatus status) {
       this.sharpness = status.mSharpness;
       this.scale = status.mScale;
       this.brightness = status.mBrightness;
       this.perspectiveDistortion = status.mPerspectiveDistortion;
-      this.steady = status.mSteady;
       this.xOffset = status.mDisplacementX;
       this.yOffset = status.mDisplacementY;
       this.foundRDT = status.mRDTFound;
@@ -84,7 +130,6 @@ public class IprdAdapter {
     public final int scale;
     public final int brightness;
     public final int perspectiveDistortion;
-    public final int steady;
     public final int xOffset;
     public final int yOffset;
     public final boolean foundRDT;
@@ -93,28 +138,10 @@ public class IprdAdapter {
     public final int right;
     public final int bottom;
 
-    public boolean isAccepted() {
-      return this.foundRDT &&
-          this.steady == GOOD &&
-          this.sharpness == GOOD &&
-          this.scale == GOOD &&
-          this.brightness == GOOD &&
-          this.perspectiveDistortion == GOOD;
-    }
-
-    public static String str(FrameResult result) {
-      if (result == null) {
-        return "null";
-      } else {
-        return result.toString();
-      }
-    }
-
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
       return builder.append("FrameResult:")
-          .append(" steady=").append(this.steady)
           .append(" sharp=").append(this.sharpness)
           .append(" scale=").append(this.scale)
           .append(" bright=").append(this.brightness)

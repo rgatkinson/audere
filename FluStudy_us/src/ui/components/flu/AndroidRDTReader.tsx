@@ -137,7 +137,9 @@ interface State {
   showFlashToggle: boolean;
   stripFound: boolean;
   boundary?: { x: number; y: number }[];
-  viewport?: { height: number; width: number };
+  screenWidth: number;
+  screenHeight: number;
+  failureReason: string;
 }
 
 class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
@@ -152,6 +154,9 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     frameImageScale: 1,
     stripFound: false,
     showFlashToggle: false,
+    screenWidth: 0,
+    screenHeight: 0,
+    failureReason: "",
   };
 
   _didFocus: any;
@@ -204,10 +209,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     },
     tooSmall: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        this._getSizeResult(
-          readerResult.testStripBoundary,
-          readerResult.viewportDimensions
-        ) == SizeResult.TOO_SMALL,
+        this._getSizeResult(readerResult.testStripBoundary) ==
+        SizeResult.TOO_SMALL,
       duration: PREDICATE_DURATION_NORMAL,
       action: () => this._addInstructionRequest("size", "tooSmall", "tooSmall"),
       inaction: () => this._removeInstructionRequest("size", "tooSmall"),
@@ -215,10 +218,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     },
     tooBig: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        this._getSizeResult(
-          readerResult.testStripBoundary,
-          readerResult.viewportDimensions
-        ) == SizeResult.TOO_BIG,
+        this._getSizeResult(readerResult.testStripBoundary) ==
+        SizeResult.TOO_BIG,
       duration: PREDICATE_DURATION_NORMAL,
       action: () => this._addInstructionRequest("size", "tooBig", "tooBig"),
       inaction: () => this._removeInstructionRequest("size", "tooBig"),
@@ -226,7 +227,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     },
     holdSteady: {
       predicate: (readerResult: RDTCapturedArgs) =>
-        readerResult.testStripDetected,
+        readerResult.testStripDetected && readerResult.isCentered,
       duration: 0,
       action: () =>
         this._addInstructionRequest("holdSteady", "holdSteady", "holdSteady"),
@@ -374,6 +375,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     this.setState({
       spinner: false,
       supportsTorchMode: args.supportsTorchMode,
+      screenWidth: args.screenWidth,
+      screenHeight: args.screenHeight,
     });
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
@@ -459,7 +462,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     // Choose the instruction that:
     // - is primary, OR
     // - is the most recently requested, OR
-    // - isn't "holdSteady" (since that's lower priority than any other eligible messages)
     for (let key in this._feedbackInstructionRequests) {
       const instructionRequest = this._feedbackInstructionRequests[key];
       if (
@@ -467,8 +469,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
         instructionRequest.lastRequested &&
         (instructionRequest.primary ||
           !instruction.lastRequested ||
-          instructionRequest.lastRequested > instruction.lastRequested ||
-          (instruction.issue && instruction.issue === "holdSteady"))
+          instructionRequest.lastRequested > instruction.lastRequested)
       ) {
         instruction = instructionRequest;
       }
@@ -487,7 +488,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   }
 
   _onRDTInterpreting = (args: RDTInterpretingArgs) => {
-    this.setState({ spinner: true });
+    this.setState({ spinner: true, failureReason: "Interpreting..." });
     this._interpreting = true;
   };
 
@@ -496,7 +497,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       spinner: false,
       stripFound: args.testStripDetected,
       boundary: args.testStripBoundary,
-      viewport: args.viewportDimensions,
+      failureReason: args.failureReason,
     });
     this._updateFeedback(args);
     if (this.props.isDemo) {
@@ -641,16 +642,19 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     };
   };
 
-  _getSizeResult = (
-    boundary?: { x: number; y: number }[],
-    viewport?: { height: number; width: number }
-  ) => {
-    if (boundary == null || viewport == null) {
+  _getSizeResult = (boundary?: { x: number; y: number }[]) => {
+    if (
+      boundary == null ||
+      this.state.screenWidth == 0 ||
+      this.state.screenHeight == 0
+    ) {
       return SizeResult.UNKNOWN;
     }
 
-    const { height, width } = viewport!;
-    const desired = this._getDesiredRdtPosition(height, width);
+    const desired = this._getDesiredRdtPosition(
+      this.state.screenHeight,
+      this.state.screenWidth
+    );
     const current = this._getCurrentRdtPosition(boundary);
 
     if (
@@ -684,14 +688,12 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   };
 
   _getRdtOutline = () => {
-    const { boundary, viewport } = this.state;
-    if (viewport == null) {
+    const { boundary, screenWidth, screenHeight } = this.state;
+    if (screenWidth == 0 || screenHeight == 0) {
       return null;
     }
 
-    const { height, width } = viewport!;
-
-    const desired = this._getDesiredRdtPosition(height, width);
+    const desired = this._getDesiredRdtPosition(screenHeight, screenWidth);
 
     let topLeft, topRight, bottomLeft, bottomRight;
     topLeft = topRight = bottomLeft = bottomRight = "red";
@@ -807,7 +809,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       />,
     ];
 
-    const viewBox = "0 0 " + " " + width + " " + height;
+    const viewBox = "0 0 " + " " + screenWidth + " " + screenHeight;
     return (
       <View style={styles.overlayContainer}>
         <Svg height="100%" width="100%" viewBox={viewBox}>
@@ -900,7 +902,14 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
               ]}
             >
               {isDemo && (
-                <View style={{ backgroundColor: "black" }}>
+                <View
+                  style={{
+                    backgroundColor: "black",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Text content={this.state.failureReason} />
                   <Text content={`FPS: ${this.state.fps.toFixed(2)}`} />
                 </View>
               )}

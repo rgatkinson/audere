@@ -211,6 +211,7 @@ export enum RDTReaderExposureResult {
   UNDER_EXPOSED,
   NORMAL,
   OVER_EXPOSED,
+  NOT_CALCULATED,
 }
 
 // Must be kept in sync with native RDTReader/ImageProcessor.h
