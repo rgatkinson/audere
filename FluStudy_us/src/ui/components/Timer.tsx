@@ -10,7 +10,7 @@ import { connect } from "react-redux";
 import { Action, StoreState } from "../../store";
 import {
   BORDER_RADIUS,
-  BUTTON_WIDTH,
+  BUTTON_MAX_WIDTH,
   GUTTER,
   SECONDARY_COLOR,
   INPUT_HEIGHT,
@@ -170,7 +170,8 @@ class Timer extends React.Component<Props & WithNamespaces> {
             justifyContent: "center",
             marginBottom: GUTTER * 2,
             padding: 0,
-            width: BUTTON_WIDTH,
+            width: "100%",
+            maxWidth: BUTTON_MAX_WIDTH,
           }}
         >
           <Text
