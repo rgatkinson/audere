@@ -596,6 +596,9 @@ public class CameraController {
     }
 
     private void resetFocus() {
+        if (captureSession == null) {
+            return;
+        }
         Log.d(TAG, "reset focus");
         try {
             // Stop existing repeating request
@@ -615,6 +618,9 @@ public class CameraController {
      * Lock the focus as the first step for a still image capture.
      */
     private void lockFocus() {
+        if (captureSession == null) {
+            return;
+        }
         Log.d(TAG, "lockfocus");
         try {
             // Add a new AF trigger with focus region
@@ -629,7 +635,7 @@ public class CameraController {
                         focusSize,
                         focusSize,
                         MeteringRectangle.METERING_WEIGHT_MAX - 1);
-                previewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{ focusAreaTouch });
+                previewRequestBuilder.set(CaptureRequest.CONTROL_AF_REGIONS, new MeteringRectangle[]{focusAreaTouch});
             }
 
             // Tell #captureCallback to wait for the lock.
@@ -651,6 +657,9 @@ public class CameraController {
      * we get a response in {@link #captureCallback} from {@link #lockFocus()}.
      */
     private void runPrecaptureSequence() {
+        if (captureSession == null) {
+            return;
+        }
         Log.d(TAG, "Run precapture sequence");
         try {
             // This is how to tell the camera to trigger.
@@ -673,7 +682,7 @@ public class CameraController {
     private void captureStillPicture() {
         Log.d(TAG, "captureStillPicture");
         try {
-            if (null == activity || null == cameraDevice) {
+            if (null == activity || null == captureSession || null == cameraDevice) {
                 return;
             }
             // This is the CaptureRequest.Builder that we use to take a picture.
@@ -710,6 +719,9 @@ public class CameraController {
      * finished.
      */
     private void unlockFocus() {
+        if (captureSession == null) {
+            return;
+        }
         Log.d(TAG, "unlock focus");
         try {
             // Reset the auto-focus trigger
@@ -792,6 +804,9 @@ public class CameraController {
     }
 
     public void setFlashEnabled(boolean flashEnabled) {
+        if (captureSession == null) {
+            return;
+        }
         this.flashEnabled = flashEnabled;
         if (previewRequestBuilder != null) {
             setFlashOnRequestBuilder(previewRequestBuilder);
