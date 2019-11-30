@@ -632,15 +632,19 @@ export const content = [
     key: "PackUpBox",
   },
   {
-    type: "shipping",
+    type: "basic",
     title: strings.Shipping.title,
+    button: {
+      name: strings.Shipping.dropoff + " ",
+      onClick: "WebsiteForDropoff",
+    },
     key: "Shipping",
   },
   {
     type: "basic",
     title: strings.WebsiteForDropoff.title,
     button: {
-      name: strings.WebsiteForDropoff.done + " ",
+      name: strings.common.button.continue + " ",
       onClick: "Thanks",
     },
     key: "WebsiteForDropoff",

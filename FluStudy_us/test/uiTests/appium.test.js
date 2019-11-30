@@ -158,8 +158,6 @@ async function runThroughApp(models, isDemo) {
         installationId,
         screens_visited
       );
-    } else if (screen_info.type == "shipping") {
-      next_screen = await shipping_screen(driver, screen_info, screens_visited);
     }
     screen_info = next_screen
       ? content.find(screen => screen.key === next_screen)
@@ -458,26 +456,6 @@ async function timer_screen(driver, screen_info, screens_visited, isDemo) {
   }
   await driver.elementByAccessibilityId(screen_info.button.name).click();
   return screen_info.button.onClick;
-}
-
-async function shipping_screen(driver, screen_info, screens_visited) {
-  expect(await driver.hasElementByAccessibilityId(screen_info.title)).toBe(
-    true
-  );
-  screens_visited.push(screen_info.key);
-
-  const text_elements =
-    platform === "iOS"
-      ? await driver.elementsByClassName("XCUIElementTypeStaticText")
-      : await driver.elementsByClassName("android.widget.TextView");
-
-  const link_to_click = text_elements[text_elements.length - 1];
-  const link_to_click_xy = await link_to_click.getLocation();
-  await new wd.TouchAction(driver)
-    .tap({ x: link_to_click_xy.x + 8, y: link_to_click_xy.y + 8 })
-    .perform();
-
-  return "WebsiteForDropoff";
 }
 
 //Check that navigation events and question answers are correctly stored in the databse
