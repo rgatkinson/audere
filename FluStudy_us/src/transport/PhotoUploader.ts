@@ -178,17 +178,27 @@ export class PhotoUploader {
       debug(
         "All pending photos are marked as failed.  Waiting to retry later."
       );
+
+      if (DEBUG_PHOTO_UPLOADER) {
+        debug("pending photo ids:");
+        pendingPhotoIds.forEach(x => debug(`  ${x}`));
+        debug("failed files:");
+        this.failedFiles.forEach(x => debug(`  ${x}`));
+      }
+
       this.failedFiles.clear();
       return;
     }
 
     // Any errors on this file should not affect whether we try uploading other files.
     try {
+      debug(`Uploading ${photoId}`);
       await logIfAsyncError("PhotoUploader.handleUploadNext:upload", () =>
         this.queue.upload(photoId)
       );
       await idleness();
     } catch (err) {
+      debug(`Got error calling upload: ${err}`);
       this.failedFiles.add(photoId);
     }
 

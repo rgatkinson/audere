@@ -86,6 +86,7 @@
 		B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */; };
 		B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047E1F3A684600E91581 /* shell-app-manifest.json */; };
 		B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047F1F3A684600E91581 /* shell-app.bundle */; };
+		E2DA362F238F292600839D8F /* FirebaseStorageUploadModule.mm in Sources */ = {isa = PBXBuildFile; fileRef = E2DA362E238F292500839D8F /* FirebaseStorageUploadModule.mm */; };
 		EA01EFFC236B81B000FB903A /* blueonly@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA01EFF3236B81B000FB903A /* blueonly@3x.png */; };
 		EA01EFFD236B81B000FB903A /* blueonly.png in Resources */ = {isa = PBXBuildFile; fileRef = EA01EFFA236B81B000FB903A /* blueonly.png */; };
 		EA01EFFE236B81B000FB903A /* blueonly@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EA01EFFB236B81B000FB903A /* blueonly@2x.png */; };
@@ -298,6 +299,8 @@
 		B5DB047E1F3A684600E91581 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
 		B5DB047F1F3A684600E91581 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-fluathome.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-fluathome.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E2DA3626238F28F900839D8F /* FirebaseStorageUploadModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirebaseStorageUploadModule.h; sourceTree = "<group>"; };
+		E2DA362E238F292500839D8F /* FirebaseStorageUploadModule.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FirebaseStorageUploadModule.mm; sourceTree = "<group>"; };
 		EA01EFF3236B81B000FB903A /* blueonly@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blueonly@3x.png"; path = "../../../assets/images/blueonly@3x.png"; sourceTree = "<group>"; };
 		EA01EFFA236B81B000FB903A /* blueonly.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = blueonly.png; path = ../../../assets/images/blueonly.png; sourceTree = "<group>"; };
 		EA01EFFB236B81B000FB903A /* blueonly@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "blueonly@2x.png"; path = "../../../assets/images/blueonly@2x.png"; sourceTree = "<group>"; };
@@ -449,6 +452,8 @@
 				21F42D6A228A404F0082B8DA /* RDTView.mm */,
 				21F42D6C228A404F0082B8DA /* RDTViewManager.h */,
 				21F42D6B228A404F0082B8DA /* RDTViewManager.mm */,
+				E2DA3626238F28F900839D8F /* FirebaseStorageUploadModule.h */,
+				E2DA362E238F292500839D8F /* FirebaseStorageUploadModule.mm */,
 				F072CB972284C2C90090E4D0 /* GoogleService-Info.plist */,
 				EA054779220D27CD00AC77FF /* fluathome.entitlements */,
 				B56386471DB9693800A0598C /* AppDelegate.h */,
@@ -1035,6 +1040,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				21F42D66228A3FFB0082B8DA /* ImageProcessor.mm in Sources */,
+				E2DA362F238F292600839D8F /* FirebaseStorageUploadModule.mm in Sources */,
 				21F42D6E228A404F0082B8DA /* RDTView.mm in Sources */,
 				B56386611DB96A5E00A0598C /* main.m in Sources */,
 				B56386491DB9693800A0598C /* AppDelegate.m in Sources */,

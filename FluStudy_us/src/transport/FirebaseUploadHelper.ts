@@ -12,18 +12,7 @@ export interface UploadQueue {
 }
 
 export function createUploadQueue(prefix: string): UploadQueue {
-  if (Platform.OS !== "ios") {
-    return new NativeUploadQueue(prefix);
-  } else {
-    // TODO implement native queue on iOS
-    return {
-      add: async (uid, path) => {},
-      list: async () => {
-        return [];
-      },
-      upload: async uid => {},
-    };
-  }
+  return new NativeUploadQueue(prefix);
 }
 
 class NativeUploadQueue {
