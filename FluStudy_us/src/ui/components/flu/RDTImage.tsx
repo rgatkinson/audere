@@ -6,14 +6,16 @@ import { StoreState } from "../../../store";
 import { GUTTER } from "../../styles";
 
 interface Props {
+  isDemo: boolean;
   rdt: boolean;
+  rdtPhotoHCUri?: string;
   testStripImg?: SampleInfo;
   uri: string;
 }
 
 class RDTImage extends React.PureComponent<Props> {
   render() {
-    const { rdt, testStripImg, uri } = this.props;
+    const { isDemo, rdt, rdtPhotoHCUri, testStripImg, uri } = this.props;
     if (uri == null) {
       return null;
     }
@@ -31,6 +33,12 @@ class RDTImage extends React.PureComponent<Props> {
           style={rdt ? styles.rdt : styles.photo}
           source={{ uri: imageUri }}
         />
+        {isDemo && !!testStripImg && !!rdtPhotoHCUri && (
+          <Image
+            style={styles.hcImage}
+            source={{ uri: rdtPhotoHCUri + "?" + testStripImg.code }}
+          />
+        )}
       </View>
     );
   }
@@ -43,11 +51,15 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     alignSelf: "center",
-    height,
-    width,
-    marginTop: GUTTER * 1.5,
-    marginBottom: GUTTER / 2,
     justifyContent: "center",
+    marginTop: GUTTER * 2,
+    marginBottom: GUTTER,
+  },
+  hcImage: {
+    height: width,
+    resizeMode: "contain",
+    width: width,
+    marginTop: GUTTER * 2,
   },
   photo: {
     height,
@@ -62,7 +74,9 @@ const styles = StyleSheet.create({
 });
 
 export default connect((state: StoreState) => ({
+  isDemo: state.meta.isDemo,
   rdt: !!state.survey.rdtPhotoUri,
+  rdtPhotoHCUri: state.survey.rdtPhotoHCUri,
   uri: !!state.survey.rdtPhotoUri
     ? state.survey.rdtPhotoUri
     : state.survey.photoUri,
