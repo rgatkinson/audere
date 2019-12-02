@@ -1,0 +1,103 @@
+/* 
+ Copyright (c) 2019 by Audere
+
+ Use of this source code is governed by an MIT-style license that
+ can be found in the LICENSE file distributed with this file.
+*/
+body {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 16px;
+  line-height: 1;
+  font-family: "Roboto Condensed", Sans-serif;
+  width: 100%;
+  overflow-x: hidden !important;
+}
+
+.container {
+  max-width: 71.25em;
+  margin: 0 2em;
+}
+
+header,
+footer {
+  float: left;
+  width: 100%;
+  height: 100px;
+}
+
+header {
+  text-align: center;
+  background: #352a6e;
+}
+
+header a {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+header nav {
+  padding: 2em 0;
+}
+
+.logo {
+  height: 50px;
+}
+
+article {
+  padding: 5em 0 2em 0;
+}
+article h1 {
+  font-size: 2.5em;
+  margin: 1.25em 0 0.5em 0;
+  font-weight: 700;
+}
+article h2 {
+  font-size: 2em;
+  margin: 1.25em 0 0.5em 0;
+  font-weight: 700;
+}
+article h3 {
+  font-size: 1.5em;
+  margin: 1.25em 0 0.5em 0;
+  font-weight: 700;
+}
+article h4 {
+  font-size: 1.5em;
+  margin: 1.25em 0 0.5em 0;
+}
+article h5 {
+  font-size: 1em;
+  margin: 1.25em 0 0.5em 0;
+  font-weight: 700;
+}
+
+.bulleted-list li {
+  list-style-type: circle;
+}
+
+.uppercase-alpha-list li {
+  list-style-type: upper-alpha;
+}
+
+.roman-list li {
+  list-style-type: lower-roman;
+}
+
+.lowercase-alpha-list li {
+  list-style-type: lower-alpha;
+}
+
+footer {
+  background: #676777;
+}
+
+footer .logos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  flex-wrap: wrap;
+  padding-top: 25px;
+}
