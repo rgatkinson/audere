@@ -652,12 +652,16 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
     if (
       current.top > desired.top + RDT_BUFFER &&
-      current.bottom < desired.bottom - RDT_BUFFER
+      current.bottom < desired.bottom - RDT_BUFFER &&
+      Math.abs(current.left - desired.left) < RDT_BUFFER &&
+      Math.abs(current.right - desired.right) < RDT_BUFFER
     ) {
       return SizeResult.TOO_SMALL;
     } else if (
       current.top < desired.top - RDT_BUFFER &&
-      current.bottom > desired.bottom + RDT_BUFFER
+      current.bottom > desired.bottom + RDT_BUFFER &&
+      Math.abs(current.left - desired.left) < RDT_BUFFER &&
+      Math.abs(current.right - desired.right) < RDT_BUFFER
     ) {
       return SizeResult.TOO_BIG;
     }
