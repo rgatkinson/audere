@@ -385,18 +385,17 @@
     "startTimer": "Start Timer"
   },
   "FirstTimer": {
-    "title": "Did you know?",
-    "desc": "If you are sick with flu symptoms, CDC recommends that you stay home for at least 24 hours after your fever is gone except to get medical care or for other necessities."
+    "title": "Did you know?"
   },
   "didYouKnow": {
     "source": "Source: ",
     "++tip0": {
-      "description": "You may be able to spread flu to someone else even before you know you are sick. You may be contagious 1 day before symptoms develop and up to 5-7 days after becoming sick.",
+      "description": "You may be able to spread flu to others even before you feel sick. You may be contagious 1 day before, and up to 5-7 days after becoming sick.",
       "source": "CDC website",
       "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
     },
     "++tip1": {
-      "description": "Avoid touching your eyes, nose, or mouth. Germs are often spread when a person touches something that is contaminated with germs and then touches his or her eyes, nose, or mouth.",
+      "description": "Germs are often spread when a person touches something that is contaminated with germs and then touches his or her eyes, nose, or mouth.",
       "source": "CDC website",
       "url": "https://www.cdc.gov/flu/prevent/actions-prevent-flu.htm"
     },
@@ -406,12 +405,12 @@
       "url": "https://www.cdc.gov/antibiotic-use/stewardship-report/outpatient.html"
     },
     "++tip3": {
-      "description": "The most important step in preventing flu is to get a flu vaccination each year. The CDC recommends that you get vaccinated by the end of October each year.",
+      "description": "The most important step in preventing flu is to get a flu vaccination each year. CDC recommends that you get vaccinated by the end of October.",
       "source": "CDC website",
       "url": "https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
     },
     "++tip4": {
-      "description": "There are antiviral drugs that can be used to treat the flu in the first couple days of your illness. You can get them if you have a prescription from a health care provider.",
+      "description": "There are antiviral drugs that can be used to treat the flu in the first couple days of your illness. You can only get them by prescription.",
       "source": "CDC website",
       "url": "https://www.cdc.gov/flu/treatment/whatyoushould.htm"
     },
@@ -421,7 +420,7 @@
       "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
     },
     "++tip6": {
-      "description": "Most experts believe that flu viruses spread mainly by tiny droplets made when people with flu cough, sneeze, or talk. These droplets can land in the mouths or noses of people who are nearby.",
+      "description": "Experts believe that the flu spreads mainly by tiny droplets made when people with flu cough, sneeze, or talk. These droplets can land in the mouths or noses of people nearby.",
       "source": "CDC website",
       "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
     },
@@ -431,12 +430,12 @@
       "url": "https://www.cdc.gov/flu/about/keyfacts.htm"
     },
     "++tip8": {
-      "description": "Everyday preventive actions (like staying away from people who are sick, covering coughs and sneezes, and frequent handwashing) help slow the spread of germs that cause the flu.",
+      "description": "Everyday preventive actions (like staying away from people who are sick, covering coughs and sneezes, and frequent handwashing) help slow the spread of the flu.",
       "source": "CDC website",
       "url": "https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
     },
     "++tip9": {
-      "description": "Seasonal flu activity often begins as early as October and November and can continue to occur as late as May. Flu activity most commonly peaks in the United States between December and February.",
+      "description": "Seasonal flu activity often begins as early as October and November and can continue to occur as late as May. It most commonly peaks in the U.S. between December and February.",
       "source": "CDC website",
       "url": "https://www.cdc.gov/flu/season/faq-flu-season-2019-2020.htm"
     }

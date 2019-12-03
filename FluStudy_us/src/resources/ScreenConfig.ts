@@ -467,7 +467,7 @@ export const Screens: ScreenConfig[] = [
         tag: DidYouKnow,
         props: {
           startTimeConfig: "oneMinuteStartTime",
-          msPerItem: 10 * SECOND_MS,
+          msPerItem: 11 * SECOND_MS,
         },
       },
       {
