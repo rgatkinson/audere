@@ -67,7 +67,6 @@ export class ChillsRDTPhotos {
         survey: {
           isDemo: false,
           samples: {
-            [Op.like]: "%manualEntry%",
             [Op.or]: {
               [Op.like]: "%RDTReaderPhotoGUID%",
               [Op.like]: "%PhotoGUID%",
