@@ -764,9 +764,15 @@ export const Screens: ScreenConfig[] = [
   },
   {
     body: [
-      { tag: MainImage, props: { uri: "lookatteststrip" } },
       { tag: Title },
       { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: MainImage,
+        props: {
+          uri: "lookatteststrip",
+          imageStyle: { marginTop: 0, marginBottom: GUTTER },
+        },
+      },
       {
         tag: Questions,
         props: {

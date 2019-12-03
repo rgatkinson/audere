@@ -643,7 +643,6 @@ export const SpentTimeZipCodeConfig: TextQuestion = {
   ],
   id: "SpentTimeZipCode",
   placeholder: "enterZip",
-  required: true,
   type: SurveyQuestionType.ZipCodeInput,
 };
 

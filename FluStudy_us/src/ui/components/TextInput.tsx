@@ -53,9 +53,7 @@ export default class TextInput extends React.Component<Props> {
         autoCorrect={this.props.autoCorrect}
         autoFocus={this.props.autoFocus}
         editable={this.props.editable}
-        keyboardType={
-          !!this.props.keyboardType ? this.props.keyboardType : "default"
-        }
+        keyboardType={this.props.keyboardType && this.props.keyboardType}
         onEndEditing={this.props.onEndEditing}
         onFocus={this.props.onFocus}
         placeholder={this.props.placeholder}
