@@ -364,7 +364,7 @@
   },
   "Unpacking": {
     "title": "Set up your kit box",
-    "desc": "Open the kit box.\nPick up the small bag from the Test 1 side of the box.\nRemove the saline vial and tube.\nRemove the stopper from the tube.\nStand up the tube in the small hole."
+    "desc": "Open the kit box.\nRemove the two bags from the pouch on the kit lid and set them aside.\nPick up the small bag from the left (Test 1) side of the box.\nRemove the saline vial and tube.\nRemove the stopper from the tube.\nStand up the tube in the small hole."
   },
   "Swab": {
     "title": "Prepare Test 1 tube",
@@ -381,7 +381,7 @@
   },
   "SwabInTube": {
     "title": "Put swab in tube",
-    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around **four times** in the tube.\nTap \"Start timer\" below. The swab needs to stay in the tube for one minute.",
+    "desc": "Place the swab into the tube. Make sure the swab tip is touching the bottom of the tube.\nStir it around **four times** in the tube.\nThe swab needs to **stay in the tube** for one minute.",
     "startTimer": "Start Timer"
   },
   "FirstTimer": {
@@ -484,7 +484,7 @@
   },
   "TestStripReady": {
     "title": "Remove test strip",
-    "desc": "Remove the test strip from the tube.\nPut the grey stopper securely back on the tube.\nPlace the test strip on the indent in the middle of the kit box with the arrows pointing down towards you."
+    "desc": "Remove the test strip from the tube.\nPlace the test strip in the middle of the kit box with the arrows pointing down towards you.\nPut the grey stopper securely back on the tube."
   },
   "TestStripSurvey": {
     "title": "What do you see?",
@@ -568,7 +568,7 @@
   },
   "PackUpUTM": {
     "title": "Clean up second test",
-    "desc": "Remove the two bags from the pouch on the kit lid. Put the larger FedEx shipping bag aside.\nPut the test strip, Test 2 tube, and the small bag containing the Test 1 tube inside the Lab Guard specimen bag.\nRemove as much air as possible from the bag, roll it up, and close it using the zip-top closure."
+    "desc": "Put the test strip, Test 2 tube, and the small bag containing the Test 1 tube inside the Lab Guard specimen bag that you set aside earlier.\nRemove as much air as possible from the bag, roll it up, and close the top."
   },
   "PackUpBox": {
     "title": "Prepare kit return package",
@@ -583,7 +583,7 @@
   "CallForPickup": {
     "title": "Call FedEx for a pickup",
     "desc": "Call [(800) GO FEDEX](PHONE:8004633339) to arrange a pickup from your home or office location. If you leave the package on your doorstep for pickup, try not to leave it in direct sunlight or freezing temperatures.\n\nWhen calling FedEx, the phone system will ask the questions below:",
-    "desc2": "How can I help you? Say \"**schedule a pickup**\"\nTo schedule a pickup say \"**I am using a label**\"\nIs the word \"stamp\" on your label? Say \"**no**\"\nWhen asked, say the 12-digit tracking number on the bottom of the FedEx shipping label",
+    "desc2": "How can I help you? Say \"**schedule a pickup**\"\nDo any packages weigh more than 150 lbs? Say \"**no**\"\nTo schedule a pickup say \"**I am using a label**\"\nIs the word \"stamp\" on your label? Say \"**no**\"\nWhen asked, say the 12-digit tracking number on the bottom of the FedEx shipping label",
     "desc3": "When asked if they have the correct pickup address say \"**no**\"\nYou will be transferred to a FedEx representative who will finish setting up a pickup from your address",
     "callFedEx": "[Call (800) GO FEDEX](PHONE:8004633339)",
     "desc4": "Once your pickup has been scheduled, please continue.",
@@ -593,7 +593,7 @@
     "title": "Find a dropoff location",
     "desc": "Because your package contains medical samples, **you cannot drop it off at FedEx retail locations such as Office Depot, Walgreens, or other similar locations.**\n\nTap the button below to find a nearby FedEx office or drop box.\n\nAfter opening the link, tap \"More Filters\" and narrow the location types to FedEx Office, FedEx Drop Box, and FedEx Ship Center.",
     "findLocation": "[Find a dropoff location](DROPOFFPACKAGE:{{state}}/{{city}})",
-    "desc2": "Once you've found a dropoff location, please continue."
+    "desc2": "Once you've made plans to drop off your package, please continue."
   },
   "Thanks": {
     "title": "All done!",
