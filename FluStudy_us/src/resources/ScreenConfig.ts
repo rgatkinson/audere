@@ -1166,6 +1166,10 @@ export const Screens: ScreenConfig[] = [
         props: { label: "desc" },
       },
       {
+        tag: BulletPointsComponent,
+        props: { label: "desc2" },
+      },
+      {
         tag: LinkButton,
         props: {
           label: "findLocation",
@@ -1173,7 +1177,7 @@ export const Screens: ScreenConfig[] = [
           textVariablesFn: getShippingTextVariables,
         },
       },
-      { tag: ScreenText, props: { label: "desc2" } },
+      { tag: ScreenText, props: { label: "desc3" } },
       {
         tag: ContinueButton,
         props: { surveyGetNextFn: pendingNavigation },

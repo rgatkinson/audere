@@ -4,7 +4,13 @@
 // can be found in the LICENSE file distributed with this file.
 
 import React from "react";
-import { Linking, StyleProp, TextStyle, ViewStyle } from "react-native";
+import {
+  Linking,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  ViewStyle,
+} from "react-native";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import { withNavigation, NavigationScreenProp } from "react-navigation";
 import { connect } from "react-redux";
@@ -12,6 +18,7 @@ import { Action } from "../../store";
 import Button from "./Button";
 import { textActions } from "../../resources/TextConfig";
 import { logFirebaseEvent, AppEvents } from "../../util/tracker";
+import { GUTTER } from "../styles";
 
 interface Props {
   label: string;
@@ -97,12 +104,18 @@ class LinkButton extends React.Component<Props & WithNamespaces, State> {
         enabled={!!linkParams}
         label={label}
         primary={true}
-        style={style}
+        style={[style, styles.linkButton]}
         textStyle={textStyle}
         onPress={this._onPress}
       />
     );
   }
 }
+
+const styles = StyleSheet.create({
+  linkButton: {
+    marginBottom: GUTTER,
+  },
+});
 
 export default connect()(withNavigation(withNamespaces()(LinkButton)));
