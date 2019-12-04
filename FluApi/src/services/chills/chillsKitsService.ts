@@ -129,7 +129,7 @@ export class ChillsKits {
       });
 
       const salt = await generateRandomKey(16);
-      const hash = await pbkdf2(kit.email, salt);
+      const hash = await pbkdf2(kit.email.toLowerCase(), salt);
 
       return {
         email: this.maskEmail(kit.email),

@@ -101,7 +101,7 @@ export async function getEmailConfirmationTextVariables() {
 export async function getEmailConfirmationNextScreen() {
   const state: StoreState = (await getStore()).getState();
   const hash = await NativeModules.Aes.pbkdf2(
-    state.meta.enteredEmail,
+    state.meta.enteredEmail.toLowerCase(),
     state.meta.patientAchievementInfo.emailSalt,
     10000,
     512
