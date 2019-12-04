@@ -252,12 +252,14 @@ export class AsprenClient {
   }
 
   private parseYesNo(input: string): boolean {
-    switch (input) {
-      case "Y":
+    switch (input.toLowerCase()) {
+      case "y":
         return true;
-      case "N":
+      case "n":
         return false;
-      case "B":
+      case "b":
+        return undefined;
+      case "unknown":
         return undefined;
       default:
         throw Error(`Unable to parse boolean yes/no value from ${input}.`);
