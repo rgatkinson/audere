@@ -77,7 +77,7 @@ data "template_file" "metabase" {
     db_pass_key = "metabase-${var.environment}.pass"
     db_user_key = "metabase-${var.environment}.user"
     encryption_secret_key = "metabase-${var.environment}.secret"
-    image = "metabase/metabase:v0.32.9"
+    image = "metabase/metabase:v0.33.6"
     region = "${var.region}"
   }
 }
