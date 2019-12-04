@@ -141,7 +141,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           s.ordered_at
         from
           chills_derived.survey_named_array_items c
-          left join chills.matched_kits m on c.docid ilike m.identifier || '%'
+          left join chills.matched_kits m on coalesce(c.samples_code128, c.samples_code39, c.samples_1, c.samples_2, c.samples_manualentry) = m.barcode and c.docid ilike m.identifier || '%' and m.id = (select max(id) from chills.matched_kits mm where mm.identifier = m.identifier and mm.barcode = m.barcode)
           left join chills.shipped_kits s on m.barcode = s.barcode and s.demo = false
       `,
     }),
