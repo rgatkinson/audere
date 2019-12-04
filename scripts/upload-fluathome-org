@@ -1,0 +1,14 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+FLU_HOME_US="$(cd "$SELF_DIR/../FluStudy_us" && pwd)"
+
+aws s3 sync "$FLU_HOME_US/fluathome.org/" "s3://fluathome.org/" \
+    --grants "read=uri=http://acs.amazonaws.com/groups/global/AllUsers"
+
+echo "Synced content of fluathome.org"
+echo "  Source:      $FLU_HOME_US/fluathome.org/"
+echo "  Detination:  s3://fluathome.org"
+echo "  URL:         http://fluathome.org"
