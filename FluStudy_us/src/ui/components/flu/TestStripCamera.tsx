@@ -187,7 +187,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
         this.setState({ spinner: false });
         navigation.dispatch(StackActions.push({ routeName: next }));
       } catch (e) {
-        Alert.alert("", t("error"), [
+        Alert.alert("", t("error") + "\n\n" + e, [
           { text: t("common:button:ok"), onPress: () => {} },
         ]);
         this.setState({ spinner: false });
