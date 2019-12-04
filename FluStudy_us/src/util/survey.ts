@@ -43,11 +43,3 @@ export function getSelectedButton(
 ): string | undefined {
   return getAnswer(state, question) as string | undefined;
 }
-
-export function isAnswerInvalid(
-  state: StoreState,
-  question: SurveyQuestion
-): boolean | undefined {
-  const response = state.questions[question.id];
-  return response && response!.answer && response!.answer!.isInvalid;
-}

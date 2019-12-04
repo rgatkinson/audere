@@ -6,7 +6,7 @@
 import React, { RefObject } from "react";
 import { ScrollIntoView } from "react-native-scroll-into-view";
 import { connect } from "react-redux";
-import { getAnswer, getAnswerForID, isAnswerInvalid } from "../../util/survey";
+import { getAnswer, getAnswerForID } from "../../util/survey";
 import {
   Action,
   Option,
@@ -51,15 +51,18 @@ interface State {
 }
 
 class Questions extends React.PureComponent<Props, State> {
-  _requiredQuestions: Map<string, RefObject<any>>;
+  _scrollRefs: Map<string, RefObject<any>>;
+  _questionsToValidateRefs: Map<string, RefObject<any>>;
 
   constructor(props: Props) {
     super(props);
     this.state = { textVariables: undefined, triedToProceed: false };
-    this._requiredQuestions = new Map<string, RefObject<any>>();
+    this._scrollRefs = new Map<string, RefObject<any>>();
+    this._questionsToValidateRefs = new Map<string, RefObject<any>>();
     props.questions.map(config => {
-      if (config.required) {
-        this._requiredQuestions.set(config.id, React.createRef());
+      this._scrollRefs.set(config.id, React.createRef());
+      if (config.type === SurveyQuestionType.ZipCodeInput) {
+        this._questionsToValidateRefs.set(config.id, React.createRef());
       }
     });
   }
@@ -127,11 +130,10 @@ class Questions extends React.PureComponent<Props, State> {
       if (
         valid &&
         this._evaluateConditional(config) &&
-        config.required &&
         !this._isAnswerValid(config)
       ) {
         this.setState({ triedToProceed: true });
-        this._requiredQuestions.get(config.id)!.current!.scrollIntoView();
+        this._scrollRefs.get(config.id)!.current!.scrollIntoView();
         valid = false;
       }
     });
@@ -143,15 +145,17 @@ class Questions extends React.PureComponent<Props, State> {
 
   _isAnswerValid = (config: SurveyQuestion) => {
     const answer = this.props.answers.get(config.id);
-    if (!answer || answer.isInvalid) {
-      return false;
+    if (this._questionsToValidateRefs.get(config.id)) {
+      return this._questionsToValidateRefs.get(config.id)!.current!.validate();
+    } else if (!answer) {
+      return !config.required;
     }
     switch (config.type) {
       case SurveyQuestionType.Text:
         return true;
       case SurveyQuestionType.OptionQuestion:
       case SurveyQuestionType.MultiDropdown:
-        const options: Option[] | undefined = answer.value;
+        const options: Option[] | undefined = answer;
         return options
           ? options.reduce(
               (result: boolean, option: Option) => result || option.selected,
@@ -165,7 +169,7 @@ class Questions extends React.PureComponent<Props, State> {
       case SurveyQuestionType.MonthPicker:
       case SurveyQuestionType.TextInput:
       case SurveyQuestionType.ZipCodeInput:
-        return answer.value != null;
+        return answer != null;
       default:
         return false;
     }
@@ -173,9 +177,7 @@ class Questions extends React.PureComponent<Props, State> {
 
   _renderQuestion = (config: SurveyQuestion) => {
     const highlighted =
-      config.required &&
-      this.state.triedToProceed &&
-      !this._isAnswerValid(config);
+      this.state.triedToProceed && !this._isAnswerValid(config);
     switch (config.type) {
       case SurveyQuestionType.OptionQuestion:
         return (
@@ -216,6 +218,7 @@ class Questions extends React.PureComponent<Props, State> {
             maxDigits={5}
             minDigits={5}
             question={config as TextQuestion}
+            customRef={this._questionsToValidateRefs.get(config.id)}
           />
         );
       case SurveyQuestionType.Dropdown:
@@ -240,7 +243,7 @@ class Questions extends React.PureComponent<Props, State> {
   render() {
     return this.props.questions.map(config => {
       if (this._evaluateConditional(config)) {
-        const ref = this._requiredQuestions.get(config.id);
+        const ref = this._scrollRefs.get(config.id);
         return (
           <ScrollIntoView onMount={false} ref={ref} key={config.id}>
             {!!config.title && (
@@ -261,10 +264,7 @@ export default connect((state: StoreState, props: Props) => ({
   answers: props.questions
     .map(question => ({
       id: question.id,
-      answer: {
-        value: getAnswer(state, question),
-        isInvalid: isAnswerInvalid(state, question),
-      },
+      answer: getAnswer(state, question),
     }))
     .reduce((map, obj) => {
       map.set(obj.id, obj.answer);

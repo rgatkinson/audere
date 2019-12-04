@@ -12,6 +12,7 @@ import { getAnswer } from "../../util/survey";
 import { TextQuestion } from "audere-lib/chillsQuestionConfig";
 import { GUTTER, HIGHLIGHT_STYLE } from "../styles";
 import NumberInput from "./NumberInput";
+import { customRef } from "./CustomRef";
 
 interface Props {
   maxDigits?: number;
@@ -40,16 +41,18 @@ class NumberInputQuestion extends React.Component<
   };
 
   _onEndEditing = (e: any) => {
-    const isInvalid =
-      !!this.state.text &&
-      this.props.minDigits &&
-      this.props.minDigits > this.state.text.length
-        ? true
-        : undefined;
     const answer = !!this.state.text ? this.state.text : undefined;
     this.setState({ text: answer });
     this.props.dispatch(
-      updateAnswer({ textInput: answer, isInvalid }, this.props.question)
+      updateAnswer({ textInput: answer }, this.props.question)
+    );
+  };
+
+  validate = (): boolean => {
+    return (
+      (!this.state.text && !this.props.question.required) ||
+      !this.props.minDigits ||
+      (!!this.state.text && this.props.minDigits <= this.state.text.length)
     );
   };
 
@@ -71,7 +74,7 @@ class NumberInputQuestion extends React.Component<
 }
 export default connect((state: StoreState, props: Props) => ({
   answer: getAnswer(state, props.question),
-}))(withNamespaces()(NumberInputQuestion));
+}))(withNamespaces()(customRef(NumberInputQuestion)));
 
 const styles = StyleSheet.create({
   container: {
