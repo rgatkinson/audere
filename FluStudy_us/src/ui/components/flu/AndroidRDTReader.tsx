@@ -507,15 +507,23 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     dispatch(setRDTCaptureTime(true));
     try {
       const photoId = await newUID();
+      const resultPhotoId = await newUID();
       dispatch(setRDTPhoto(args.imageUri));
       dispatch(setRDTPhotoHC(args.resultWindowImageUri));
       dispatch(
-        setTestStripImg({
-          sample_type: "RDTReaderPhotoGUID",
-          code: photoId,
-        })
+        setTestStripImg(
+          {
+            sample_type: "RDTReaderPhotoGUID",
+            code: photoId,
+          },
+          {
+            sample_type: "RDTTestAreaPhotoGUID",
+            code: resultPhotoId,
+          }
+        )
       );
       uploadFile(photoId, args.imageUri);
+      uploadFile(resultPhotoId, args.resultWindowImageUri);
       dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(
