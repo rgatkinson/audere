@@ -94,9 +94,7 @@ export class ChillsRDTPhotos {
         BARCODE_SAMPLE_TYPES.includes(sample.sample_type)
       );
       return {
-        barcode: barcodeSample
-          ? barcodeSample.code
-          : `No barcode found for survey ${survey.id}`,
+        barcode: barcodeSample ? barcodeSample.code : "Missing barcode",
         date: survey.createdAt.toLocaleDateString(),
         time: survey.createdAt.toLocaleTimeString(),
         url: `chillsPhoto?id=${survey.id}`,
