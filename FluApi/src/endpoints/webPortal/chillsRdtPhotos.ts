@@ -40,8 +40,8 @@ const BARCODE_SAMPLE_TYPES = [
   "manualEntry",
   "org.iso.Code128",
   "org.iso.Code39",
-  "1",
-  "2",
+  1,
+  2,
 ];
 
 export class ChillsRDTPhotos {
