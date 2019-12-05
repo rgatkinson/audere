@@ -3,7 +3,10 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+import { Feather } from "@expo/vector-icons";
+import { Camera } from "expo-camera";
 import React from "react";
+import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   Alert,
   AppState,
@@ -14,30 +17,27 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
-import { connect } from "react-redux";
-import { WithNamespaces, withNamespaces } from "react-i18next";
+import DeviceInfo from "react-native-device-info";
+import Spinner from "react-native-loading-spinner-overlay";
 import {
-  withNavigation,
   NavigationScreenProp,
   StackActions,
+  withNavigation,
 } from "react-navigation";
-import { Camera } from "expo-camera";
-import Spinner from "react-native-loading-spinner-overlay";
-import DeviceInfo from "react-native-device-info";
+import { connect } from "react-redux";
 import {
   Action,
-  setTestStripImg,
   setPhoto,
   setShownRDTFailWarning,
+  setTestStripImg,
   StoreState,
+  uploadFile,
 } from "../../../store";
-import { logFirebaseEvent, AppHealthEvents } from "../../../util/tracker";
 import { newUID } from "../../../util/csruid";
-import Text from "../Text";
-import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "../../styles";
-import { uploadFile } from "../../../store";
 import { canUseRdtReader } from "../../../util/fluResults";
+import { AppHealthEvents, logFirebaseEvent } from "../../../util/tracker";
+import { GUTTER, REGULAR_TEXT, SCREEN_MARGIN } from "../../styles";
+import Text from "../Text";
 
 interface Props {
   next: string;
@@ -188,9 +188,13 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
         navigation.dispatch(StackActions.push({ routeName: next }));
       } catch (e) {
         Alert.alert("", t("error") + "\n\n" + e, [
-          { text: t("common:button:ok"), onPress: () => {} },
+          {
+            text: t("common:button:ok"),
+            onPress: () => {
+              this.setState({ spinner: false });
+            },
+          },
         ]);
-        this.setState({ spinner: false });
       }
     }
   };
