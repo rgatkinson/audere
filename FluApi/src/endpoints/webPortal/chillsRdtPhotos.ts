@@ -36,6 +36,14 @@ const INTERPRETATIONS = {
   yesAboveBelowBlue: "Pink lines above and below the blue line",
 };
 
+const BARCODE_SAMPLE_TYPES = [
+  "manualEntry",
+  "org.iso.Code128",
+  "org.iso.Code39",
+  "1",
+  "2",
+];
+
 export class ChillsRDTPhotos {
   constructor(
     sql: SplitSql,
@@ -81,23 +89,28 @@ export class ChillsRDTPhotos {
     });
 
     const title = "flu@home U.S. Photos";
-    const barcodes = surveys.slice(0, PAGE_SIZE).map(survey => ({
-      barcode: survey.survey.samples.find(
-        sample => sample.sample_type === "manualEntry"
-      ).code,
-      date: survey.createdAt.toLocaleDateString(),
-      time: survey.createdAt.toLocaleTimeString(),
-      url: `chillsPhoto?id=${survey.id}`,
-      pii: "Not Reviewed",
-      expert_read: survey.expert_read
-        ? INTERPRETATIONS[survey.expert_read.interpretation]
-        : "Not interpreted",
-      photo_type: survey.survey.samples.find(
-        sample => sample.sample_type === "RDTReaderPhotoGUID"
-      )
-        ? "Automatic Capture"
-        : "Manual Photo",
-    }));
+    const barcodes = surveys.slice(0, PAGE_SIZE).map(survey => {
+      const barcodeSample = survey.survey.samples.find(sample =>
+        BARCODE_SAMPLE_TYPES.includes(sample.sample_type)
+      );
+      return {
+        barcode: barcodeSample
+          ? barcodeSample.code
+          : `No barcode found for survey ${survey.id}`,
+        date: survey.createdAt.toLocaleDateString(),
+        time: survey.createdAt.toLocaleTimeString(),
+        url: `chillsPhoto?id=${survey.id}`,
+        pii: "Not Reviewed",
+        expert_read: survey.expert_read
+          ? INTERPRETATIONS[survey.expert_read.interpretation]
+          : "Not interpreted",
+        photo_type: survey.survey.samples.find(
+          sample => sample.sample_type === "RDTReaderPhotoGUID"
+        )
+          ? "Automatic Capture"
+          : "Manual Photo",
+      };
+    });
 
     const dateSortLink =
       "?" +
