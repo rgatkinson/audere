@@ -32,6 +32,10 @@ variable "auderenow_route53_zone_name" {
   description = "Name for the Route53 hosted zone"
 }
 
+variable "chills_virena_bucket" {
+  description = "ARN for S3 bucket containing Virena reports"
+}
+
 variable "cough_aspren_bucket" {
   description = "ARN for S3 bucket containing ASPREN reports"
 }

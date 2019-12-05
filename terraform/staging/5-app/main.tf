@@ -42,6 +42,7 @@ module "flu_api" {
   auderenow_certificate_arn = "${module.shared.auderenow_certificate_arn}"
   auderenow_route53_zone_id = "${module.shared.auderenow_route53_zone_id}"
   auderenow_route53_zone_name = "${module.shared.auderenow_route53_zone_name}"
+  chills_virena_bucket = "${module.shared.chills_virena_bucket_arn}"
   cough_aspren_bucket = "${module.shared.cough_aspren_bucket_arn}"
   cough_qualtrics_bucket = "${module.shared.cough_follow_ups_bucket_arn}"
   audere_share_bucket = "${data.terraform_remote_state.global.audere_share_arn}"
