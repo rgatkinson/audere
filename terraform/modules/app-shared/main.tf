@@ -81,15 +81,6 @@ module "cough_qualtrics_sftp" {
   user_public_key = "${file("${path.module}/../../../local/sftp-keys/cough.qualtrics.${var.environment}.pub")}"
 }
 
-locals {
-  base_name = "flu-${var.environment}-api"
-}
-
-resource "aws_s3_bucket" "elb_logs" {
-  bucket = "${local.base_name}-elb-logs"
-  force_destroy = true
-}
-
 // --------------------------------------------------------------------------------
 // Virena reporting bucket
 
@@ -104,4 +95,8 @@ resource "aws_s3_bucket" "virena_reports_bucket" {
       }
     }
   }
+}
+
+locals {
+  base_name = "flu-${var.environment}-api"
 }

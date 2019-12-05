@@ -23,6 +23,14 @@ output "chills_aspren_bucket_id" {
   value = "${aws_s3_bucket.virena_reports_bucket.id}"
 }
 
+output "chills_virena_bucket_arn" {
+  value = "${aws_s3_bucket.virena_reports_bucket.arn}"
+}
+
+output "chills_virena_bucket_id" {
+  value = "${aws_s3_bucket.virena_reports_bucket.id}"
+}
+
 output "cough_aspren_bucket_arn" {
   value = "${module.cough_sftp.sftp_bucket_arn}"
 }
