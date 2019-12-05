@@ -15,6 +15,14 @@ output "auderenow_route53_zone_name" {
   value = "${data.aws_route53_zone.auderenow_io.name}"
 }
 
+output "chills_aspren_bucket_arn" {
+  value = "${aws_s3_bucket.virena_reports_bucket.arn}"
+}
+
+output "chills_aspren_bucket_id" {
+  value = "${aws_s3_bucket.virena_reports_bucket.id}"
+}
+
 output "cough_aspren_bucket_arn" {
   value = "${module.cough_sftp.sftp_bucket_arn}"
 }

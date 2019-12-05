@@ -15,7 +15,7 @@ interface MatchKitRequest {
   demo?: boolean;
 }
 
-export class ChillsMatchKits {
+export class ChillsMatchKitsEndpoint {
   private readonly models: ChillsModels;
   private readonly service: ChillsKits;
 

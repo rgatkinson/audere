@@ -39,8 +39,9 @@ import { CoughFollowUpEndpoint } from "./endpoints/coughFollowUpApi";
 import { CoughGiftcardEndpoint } from "./endpoints/coughGiftcardApi";
 import { ChillsEndpoint } from "./endpoints/chillsApi";
 import { ChillsFirebaseAnalyticsEndpoint } from "./endpoints/chillsFirebaseAnalyticsApi";
-import { ChillsMatchKits } from "./endpoints/chillsMatchKits";
-import { ChillsImportKits } from "./endpoints/chillsImportKits";
+import { ChillsMatchKitsEndpoint } from "./endpoints/chillsMatchKitsApi";
+import { ChillsImportKitsEndpoint } from "./endpoints/chillsImportKitsApi";
+import { ChillsVirenaEndpoint } from "./endpoints/chillsVirenaApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -179,7 +180,7 @@ export async function createPublicApp(config: AppConfig) {
     wrap(jsonApi(coughGiftcardApi.checkGiftcardAvailability, "giftcardRequest"))
   );
 
-  const chillsMatchKits = new ChillsMatchKits(sql);
+  const chillsMatchKits = new ChillsMatchKitsEndpoint(sql);
   publicApp.post(
     "/api/chills/matchBarcode",
     stats("chillsMatchKit"),
@@ -394,7 +395,7 @@ export function createInternalApp(config: AppConfig) {
     )
   );
 
-  const chillsKits = new ChillsImportKits(sql);
+  const chillsKits = new ChillsImportKitsEndpoint(sql);
   internalApp.get(
     "/api/import/chillsKits",
     stats("importChillsKits"),
@@ -402,6 +403,19 @@ export function createInternalApp(config: AppConfig) {
       sqlLock.runIfFree(
         "/api/import/chillsKits",
         chillsKits.importKits,
+        jsonNoOp
+      )
+    )
+  );
+
+  const chillsVirena = new ChillsVirenaEndpoint(sql);
+  internalApp.get(
+    "/api/import/chillsVirena",
+    stats("importChillsVirena"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/chillsVirena",
+        chillsVirena.importVirenaData,
         jsonNoOp
       )
     )

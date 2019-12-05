@@ -1,0 +1,3 @@
+{
+  "default": "SofiaSerNum,TestDate,Facility,City,State,Zip,PatientAge,Result1,Result2,OverallResult,County,FacilityDescription\n555,2/1/2019,111,Seattle,WA,98101,,negative,negative,negative,King County,Urgent Care\n555,12/1/2019,111,Seattle,WA,98101,18,negative,negative,negative,King County,Urgent Care\n556,10/10/2019,111,Seattle,WA,98101,45,negative,positive,positive,King County,Urgent Care\n557,8/9/2019,112,Seattle,WA,98101,,negative,negative,negative,King County,Physician Office\n557,9/7/2019,112,Seattle,WA,98101,33,positive,positive,positive,King County,Physician Office"
+}

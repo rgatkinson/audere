@@ -9,6 +9,7 @@ export interface S3Config {
   fluReportsBucket: string;
   asprenReportsBucket: string;
   coughFollowUpBucket: string;
+  virenaRecordsBucket: string;
   fileshareBucket: string;
 }
 
@@ -27,17 +28,20 @@ async function createConfig(secrets: SecretConfig): Promise<S3Config> {
     fluReportsBucket,
     asprenReportsBucket,
     coughFollowUpBucket,
+    virenaRecordsBucket,
     fileshareBucket,
   ] = await Promise.all([
     secrets.get("S3_REPORT_BUCKET"),
     secrets.get("S3_ASPREN_BUCKET"),
     secrets.get("S3_COUGH_FOLLOW_UPS_BUCKET"),
+    secrets.get("S3_VIRENA_BUCKET"),
     secrets.get("S3_FILESHARE_BUCKET"),
   ]);
   return {
     fluReportsBucket,
     asprenReportsBucket,
     coughFollowUpBucket,
+    virenaRecordsBucket,
     fileshareBucket,
   };
 }

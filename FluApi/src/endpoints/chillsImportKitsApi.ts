@@ -18,7 +18,7 @@ import { DataPipelineService } from "../services/data/dataPipelineService";
 import { google, sheets_v4 } from "googleapis";
 import logger from "../util/logger";
 
-export class ChillsImportKits {
+export class ChillsImportKitsEndpoint {
   private readonly config: LazyAsync<ChillsGoogleApisConfig>;
   private readonly googleClient: LazyAsync<EvidationKitClient>;
   private readonly pipeline: ChillsDataPipeline;

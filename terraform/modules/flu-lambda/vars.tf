@@ -3,6 +3,16 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
+variable "chills_virena_bucket_arn" {
+  description = "ARN of bucket where Virena reports are stored"
+  type = "string"
+}
+
+variable "chills_virena_bucket_id" {
+  description = "Name of bucket where Virena reports are stored"
+  type = "string"
+}
+
 variable "cough_aspren_bucket_arn" {
   description = "ARN of bucket where ASPREN reports are stored"
   type = "string"

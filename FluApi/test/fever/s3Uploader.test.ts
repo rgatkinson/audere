@@ -15,6 +15,7 @@ describe("S3 uploader", () => {
     asprenReportsBucket: "not_test_bucket",
     coughFollowUpBucket: "bucket_in_space",
     fileshareBucket: "fileshare_bucket",
+    virenaRecordsBucket: "string",
   };
 
   it("should upload incentive reports", async () => {

@@ -84,3 +84,24 @@ module "cough_qualtrics_sftp" {
 locals {
   base_name = "flu-${var.environment}-api"
 }
+
+resource "aws_s3_bucket" "elb_logs" {
+  bucket = "${local.base_name}-elb-logs"
+  force_destroy = true
+}
+
+// --------------------------------------------------------------------------------
+// Virena reporting bucket
+
+resource "aws_s3_bucket" "virena_reports_bucket" {
+  bucket        = "virena-reports.${var.environment}.auderenow.io"
+  force_destroy = true
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "aws:kms"
+      }
+    }
+  }
+}

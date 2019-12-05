@@ -23,6 +23,8 @@ provider "template" {
 module "flu_lambda" {
   source = "../../modules/flu-lambda"
 
+  chills_virena_bucket_arn = "${data.terraform_remote_state.flu_api.chills_virena_bucket_arn}"
+  chills_virena_bucket_id = "${data.terraform_remote_state.flu_api.chills_virena_bucket_id}"
   cough_aspren_bucket_arn = "${data.terraform_remote_state.flu_api.cough_aspren_bucket_arn}"
   cough_aspren_bucket_id = "${data.terraform_remote_state.flu_api.cough_aspren_bucket_id}"
   cough_follow_ups_bucket_arn = "${data.terraform_remote_state.flu_api.cough_follow_ups_bucket_arn}"

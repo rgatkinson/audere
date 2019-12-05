@@ -11,6 +11,7 @@ import {
   IndigenousStatus,
   PreviousSeasonVaccinationStatus,
 } from "../models/db/cough";
+import { getByKey, searchKey } from "../util/caseInsensitive";
 import { S3Config } from "../util/s3Config";
 import logger from "../util/logger";
 
@@ -98,64 +99,41 @@ export class AsprenClient {
     };
   }
 
-  // Case-insensitive property get
-  private getByKey(key: string, obj: any): any {
-    const casedKey = this.searchKey(key, obj);
-
-    if (casedKey != null) {
-      return obj[casedKey];
-    } else {
-      return undefined;
-    }
-  }
-
   private containsValue(value: string, obj: any): boolean {
     const keys = Object.keys(obj);
     const match = keys.find(k => obj[k] === value);
     return match != null;
   }
 
-  // Case-insensitive search for matching object key
-  private searchKey(key: string, obj: any): string | null {
-    const keys = Object.keys(obj);
-    const match = keys.find(k => k.toLowerCase() == key.toLowerCase());
-
-    if (match == null) {
-      logger.warn(`Key ${key} was not found in passed object`);
-    }
-
-    return match;
-  }
-
   private validRow(row: any): boolean {
     return (
-      this.searchKey("ATSI", row) != null &&
-      this.searchKey("CURRENT_SEASON_VACC", row) != null &&
-      this.searchKey("VACC_PREV_SEASON", row) != null &&
-      this.searchKey("OVERSEAS", row) != null &&
-      this.searchKey("DATE_OF_VACC", row) != null &&
-      this.searchKey("COMORBIDITIES_DESCRIPTION", row) != null &&
-      this.searchKey("SA Pathology Barcode", row) != null &&
-      this.searchKey("Referred", row) != null &&
-      this.searchKey("Dr State", row) != null &&
-      this.searchKey("ADENO_RESULT", row) != null &&
-      this.searchKey("B_PERTUSSIS_RESULT", row) != null &&
-      this.searchKey("FLU_A_RESULT", row) != null &&
-      this.searchKey("FLU_B_RESULT", row) != null &&
-      this.searchKey("H1N1(2009)", row) != null &&
-      this.searchKey("H3N2", row) != null &&
-      this.searchKey("METAPNEUMOVIRUS_RES", row) != null &&
-      this.searchKey("MYCO_PNEUMONIAE_RES", row) != null &&
-      this.searchKey("PARA_1_RESULT", row) != null &&
-      this.searchKey("PARA_2_RESULT", row) != null &&
-      this.searchKey("PARA_3_RESULT", row) != null &&
-      this.searchKey("RHINOVIRUS_RESULT", row) != null &&
-      this.searchKey("RSV_RESULT", row) != null &&
-      this.searchKey("VICTORIA", row) != null &&
-      this.searchKey("YAMAGATA", row) != null &&
-      this.searchKey("DATE_ONSET", row) != null &&
-      this.searchKey("COMORBIDITIES", row) != null &&
-      this.searchKey("HCW_STATUS", row) != null
+      searchKey("ATSI", row) != null &&
+      searchKey("CURRENT_SEASON_VACC", row) != null &&
+      searchKey("VACC_PREV_SEASON", row) != null &&
+      searchKey("OVERSEAS", row) != null &&
+      searchKey("DATE_OF_VACC", row) != null &&
+      searchKey("COMORBIDITIES_DESCRIPTION", row) != null &&
+      searchKey("SA Pathology Barcode", row) != null &&
+      searchKey("Referred", row) != null &&
+      searchKey("Dr State", row) != null &&
+      searchKey("ADENO_RESULT", row) != null &&
+      searchKey("B_PERTUSSIS_RESULT", row) != null &&
+      searchKey("FLU_A_RESULT", row) != null &&
+      searchKey("FLU_B_RESULT", row) != null &&
+      searchKey("H1N1(2009)", row) != null &&
+      searchKey("H3N2", row) != null &&
+      searchKey("METAPNEUMOVIRUS_RES", row) != null &&
+      searchKey("MYCO_PNEUMONIAE_RES", row) != null &&
+      searchKey("PARA_1_RESULT", row) != null &&
+      searchKey("PARA_2_RESULT", row) != null &&
+      searchKey("PARA_3_RESULT", row) != null &&
+      searchKey("RHINOVIRUS_RESULT", row) != null &&
+      searchKey("RSV_RESULT", row) != null &&
+      searchKey("VICTORIA", row) != null &&
+      searchKey("YAMAGATA", row) != null &&
+      searchKey("DATE_ONSET", row) != null &&
+      searchKey("COMORBIDITIES", row) != null &&
+      searchKey("HCW_STATUS", row) != null
     );
   }
 
@@ -165,16 +143,16 @@ export class AsprenClient {
    * @param row Raw file row from an ASPREN report.
    */
   private mapRecord(row: any): AsprenDataAttributes {
-    const atsi = this.getByKey("ATSI", row);
+    const atsi = getByKey("ATSI", row);
     this.validateAtsi(atsi);
 
-    const currentVaccination = this.getByKey("CURRENT_SEASON_VACC", row);
+    const currentVaccination = getByKey("CURRENT_SEASON_VACC", row);
     this.validateCurrentVacc(currentVaccination);
 
-    const previousVaccination = this.getByKey("VACC_PREV_SEASON", row);
+    const previousVaccination = getByKey("VACC_PREV_SEASON", row);
     this.validatePreviousVacc(previousVaccination);
 
-    const overseas = this.getByKey("OVERSEAS", row);
+    const overseas = getByKey("OVERSEAS", row);
     let overseasLocation;
     let overseasIllness;
 
@@ -185,50 +163,43 @@ export class AsprenClient {
       overseasLocation = overseas;
     }
 
-    const vaccinationDate = this.getByKey("DATE_OF_VACC", row);
-    const comorbitiesDescription = this.getByKey(
-      "COMORBIDITIES_DESCRIPTION",
-      row
-    );
+    const vaccinationDate = getByKey("DATE_OF_VACC", row);
+    const comorbitiesDescription = getByKey("COMORBIDITIES_DESCRIPTION", row);
 
     return {
-      barcode: this.getByKey("SA Pathology Barcode", row),
-      encounterDate: this.getByKey("Referred", row),
-      encounterState: this.getByKey("Dr State", row),
-      adenoResult: this.parseZeroOne(this.getByKey("ADENO_RESULT", row)),
-      pertussisResult: this.parseZeroOne(
-        this.getByKey("B_PERTUSSIS_RESULT", row)
-      ),
-      fluAResult: this.parseZeroOne(this.getByKey("FLU_A_RESULT", row)),
-      fluBResult: this.parseZeroOne(this.getByKey("FLU_B_RESULT", row)),
-      h1n1Result: this.parseZeroOne(this.getByKey("H1N1(2009)", row)),
-      h3n2Result: this.parseZeroOne(this.getByKey("H3N2", row)),
+      barcode: getByKey("SA Pathology Barcode", row),
+      encounterDate: getByKey("Referred", row),
+      encounterState: getByKey("Dr State", row),
+      adenoResult: this.parseZeroOne(getByKey("ADENO_RESULT", row)),
+      pertussisResult: this.parseZeroOne(getByKey("B_PERTUSSIS_RESULT", row)),
+      fluAResult: this.parseZeroOne(getByKey("FLU_A_RESULT", row)),
+      fluBResult: this.parseZeroOne(getByKey("FLU_B_RESULT", row)),
+      h1n1Result: this.parseZeroOne(getByKey("H1N1(2009)", row)),
+      h3n2Result: this.parseZeroOne(getByKey("H3N2", row)),
       metapneumovirusResult: this.parseZeroOne(
-        this.getByKey("METAPNEUMOVIRUS_RES", row)
+        getByKey("METAPNEUMOVIRUS_RES", row)
       ),
       mycopneumoniaResult: this.parseZeroOne(
-        this.getByKey("MYCO_PNEUMONIAE_RES", row)
+        getByKey("MYCO_PNEUMONIAE_RES", row)
       ),
-      para1Result: this.parseZeroOne(this.getByKey("PARA_1_RESULT", row)),
-      para2Result: this.parseZeroOne(this.getByKey("PARA_2_RESULT", row)),
-      para3Result: this.parseZeroOne(this.getByKey("PARA_3_RESULT", row)),
-      rhinovirusResult: this.parseZeroOne(
-        this.getByKey("RHINOVIRUS_RESULT", row)
-      ),
-      rsvResult: this.parseZeroOne(this.getByKey("RSV_RESULT", row)),
-      victoriaResult: this.parseZeroOne(this.getByKey("VICTORIA", row)),
-      yamagataResult: this.parseZeroOne(this.getByKey("YAMAGATA", row)),
+      para1Result: this.parseZeroOne(getByKey("PARA_1_RESULT", row)),
+      para2Result: this.parseZeroOne(getByKey("PARA_2_RESULT", row)),
+      para3Result: this.parseZeroOne(getByKey("PARA_3_RESULT", row)),
+      rhinovirusResult: this.parseZeroOne(getByKey("RHINOVIRUS_RESULT", row)),
+      rsvResult: this.parseZeroOne(getByKey("RSV_RESULT", row)),
+      victoriaResult: this.parseZeroOne(getByKey("VICTORIA", row)),
+      yamagataResult: this.parseZeroOne(getByKey("YAMAGATA", row)),
       aboriginalOrIslander: atsi === "B" ? undefined : atsi,
-      dateOnset: this.getByKey("DATE_ONSET", row),
+      dateOnset: getByKey("DATE_ONSET", row),
       currentVaccination:
         currentVaccination === "B" ? undefined : currentVaccination,
       vaccinationDate: vaccinationDate === "B" ? undefined : vaccinationDate,
       previousVaccination:
         previousVaccination === "B" ? undefined : previousVaccination,
-      comorbities: this.parseYesNo(this.getByKey("COMORBIDITIES", row)),
+      comorbities: this.parseYesNo(getByKey("COMORBIDITIES", row)),
       comorbitiesDescription:
         comorbitiesDescription === "B" ? undefined : comorbitiesDescription,
-      healthcareWorkerStatus: this.parseYesNo(this.getByKey("HCW_STATUS", row)),
+      healthcareWorkerStatus: this.parseYesNo(getByKey("HCW_STATUS", row)),
       overseasIllness: overseasIllness,
       overseasLocation: overseasLocation,
     };

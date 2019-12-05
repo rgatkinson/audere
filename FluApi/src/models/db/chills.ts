@@ -17,6 +17,7 @@ import {
   jsonbColumn,
   stringColumn,
   unique,
+  nullable,
 } from "../../util/sql";
 import {
   DeviceInfo,
@@ -43,6 +44,8 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
     photoUploadLog: definePhotoUploadLog(sql),
     shippedKits: defineShippedKits(sql),
     survey: defineSurvey(sql.nonPii),
+    virenaFile: defineVirenaFile(sql),
+    virenaRecord: defineVirenaRecord(sql),
   };
 
   models.survey.hasOne(models.photoUploadLog, {
@@ -51,6 +54,10 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
   });
   models.survey.hasOne(models.expertRead, {
     foreignKey: "surveyId",
+    onDelete: "CASCADE",
+  });
+  models.virenaFile.hasMany(models.virenaRecord, {
+    foreignKey: "file_id",
     onDelete: "CASCADE",
   });
 
@@ -69,6 +76,8 @@ export interface ChillsModels {
   photoUploadLog: Model<PhotoUploadLogAttributes>;
   shippedKits: Model<ShippedKitAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
+  virenaFile: Model<VirenaFileAttributes>;
+  virenaRecord: Model<VirenaRecordAttributes>;
 }
 
 // ---------------------------------------------------------------
@@ -321,6 +330,69 @@ export function defineMatchedKits(sql: SplitSql) {
     {
       barcode: stringColumn(),
       identifier: stringColumn(),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface VirenaFileAttributes {
+  id?: number;
+  key: string;
+  hash: string;
+  loaded: boolean;
+  nextRow?: number;
+}
+export function defineVirenaFile(sql: SplitSql): Model<VirenaFileAttributes> {
+  return defineModel<VirenaFileAttributes>(
+    sql.nonPii,
+    "virena_files",
+    {
+      key: unique(stringColumn()),
+      hash: stringColumn(),
+      loaded: booleanColumn(),
+      nextRow: nullable(integerColumn("next_row")),
+    },
+    { schema }
+  );
+}
+
+export interface VirenaRecordAttributes {
+  fileId?: number;
+  serialNumber: string;
+  testDate: string;
+  facility: string;
+  city: string;
+  state: string;
+  zip: string;
+  patientAge: string;
+  result1: boolean;
+  result2: boolean;
+  overallResult: boolean;
+  county: string;
+  facilityDescription: string;
+}
+export function defineVirenaRecord(
+  sql: SplitSql
+): Model<VirenaRecordAttributes> {
+  return defineModel<VirenaRecordAttributes>(
+    sql.nonPii,
+    "virena_records",
+    {
+      fileId: integerColumn("file_id"),
+      serialNumber: stringColumn("serial_number"),
+      testDate: stringColumn("test_date"),
+      facility: stringColumn(),
+      city: stringColumn(),
+      state: stringColumn(),
+      zip: stringColumn(),
+      patientAge: stringColumn("patient_age"),
+      result1: booleanColumn(),
+      result2: booleanColumn(),
+      overallResult: booleanColumn("overall_result"),
+      county: stringColumn(),
+      facilityDescription: stringColumn("facility_description"),
     },
     { schema }
   );

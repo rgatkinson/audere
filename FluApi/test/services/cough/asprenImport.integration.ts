@@ -3,16 +3,12 @@
 // Use of this source code is governed by an MIT-style license that
 // can be found in the LICENSE file distributed with this file.
 
-import * as XLSX from "xlsx";
-import parse from "csv-parse/lib/sync";
-import { instance, mock, when } from "ts-mockito";
 import asprenReports from "../../resources/asprenExamples.json";
 import { AsprenClient } from "../../../src/external/asprenClient";
 import { AsprenImport } from "../../../src/services/cough/asprenImport";
 import { createSplitSql, SplitSql } from "../../../src/util/sql";
 import { CoughModels, defineCoughModels } from "../../../src/models/db/cough";
-import AWS from "aws-sdk";
-import { ObjectList } from "aws-sdk/clients/s3";
+import { getExcelS3Client } from "../../util/mockS3Client";
 
 describe("import ASPREN reports", () => {
   let sql: SplitSql;
@@ -23,36 +19,6 @@ describe("import ASPREN reports", () => {
       cough.asprenData.destroy({ where: {} }),
       cough.asprenFile.destroy({ where: {} }),
     ]);
-  }
-
-  function getS3Client(list: ObjectList, get: string): AWS.S3 {
-    const s3 = new AWS.S3({ region: "us-west-2" });
-
-    const listRequest = mock(AWS.Request);
-    when(listRequest.promise()).thenResolve({
-      Contents: list,
-      $response: null,
-    });
-    s3.listObjectsV2 = params => {
-      return instance(listRequest);
-    };
-
-    const getRequest = mock(AWS.Request);
-    const wb = XLSX.utils.book_new();
-    const csv = parse(get);
-    const ws = XLSX.utils.aoa_to_sheet(csv);
-    XLSX.utils.book_append_sheet(wb, ws, "Data");
-    const outputBuffer = XLSX.write(wb, { type: "buffer" });
-
-    when(getRequest.promise()).thenResolve({
-      Body: outputBuffer,
-      $response: null,
-    });
-    s3.getObject = params => {
-      return instance(getRequest);
-    };
-
-    return s3;
   }
 
   afterAll(async done => {
@@ -77,6 +43,7 @@ describe("import ASPREN reports", () => {
       asprenReportsBucket: "string",
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
+      virenaRecordsBucket: "string",
     };
     const list = [
       {
@@ -86,7 +53,7 @@ describe("import ASPREN reports", () => {
       },
     ];
 
-    const s3 = getS3Client(list, asprenReports.default);
+    const s3 = getExcelS3Client(list, asprenReports.default);
     const asprenClient = new AsprenClient(s3, s3Config);
     const svc = new AsprenImport(sql, asprenClient);
 
@@ -110,6 +77,7 @@ describe("import ASPREN reports", () => {
       asprenReportsBucket: "string",
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
+      virenaRecordsBucket: "string",
     };
     const list = [
       {
@@ -119,7 +87,7 @@ describe("import ASPREN reports", () => {
       },
     ];
 
-    const s3 = getS3Client(list, asprenReports.default);
+    const s3 = getExcelS3Client(list, asprenReports.default);
     const asprenClient = new AsprenClient(s3, s3Config);
     const svc = new AsprenImport(sql, asprenClient);
 
@@ -140,6 +108,7 @@ describe("import ASPREN reports", () => {
       asprenReportsBucket: "string",
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
+      virenaRecordsBucket: "string",
     };
     const list = [
       {
@@ -149,7 +118,7 @@ describe("import ASPREN reports", () => {
       },
     ];
 
-    const s3 = getS3Client(list, asprenReports.default);
+    const s3 = getExcelS3Client(list, asprenReports.default);
     const asprenClient = new AsprenClient(s3, s3Config);
     const svc = new AsprenImport(sql, asprenClient);
 
