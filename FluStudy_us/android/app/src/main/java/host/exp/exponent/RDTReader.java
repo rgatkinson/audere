@@ -64,11 +64,13 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
     }
 
     @Override
-    public void onRDTCameraReady(boolean supportsTorchMode, int screenWidth, int screenHeight) {
+    public void onRDTCameraReady(boolean supportsTorchMode, int screenWidth, int screenHeight,
+                                 boolean legacyCamera) {
         WritableMap event = Arguments.createMap();
         event.putBoolean("supportsTorchMode", supportsTorchMode);
         event.putInt("screenWidth", screenWidth);
         event.putInt("screenHeight", screenHeight);
+        event.putBoolean("legacyCameraApi", legacyCamera);
         callReactCallback("RDTCameraReady", event);
     }
 

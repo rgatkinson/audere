@@ -44,6 +44,7 @@ export type RDTCameraReadyArgs = {
   supportsTorchMode: boolean;
   screenWidth: number;
   screenHeight: number;
+  legacyCameraApi: boolean;
 };
 
 export type RDTInterpretingArgs = {

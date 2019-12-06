@@ -119,6 +119,7 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           c.survey->'rdtInfo'->>'captureTime' as rdtinfo_lastcapturetime,
           c.survey->'rdtInfo'->>'rdtTotalTime' as rdtinfo_totalcapturetime,
           c.survey->'rdtInfo'->>'flashEnabled' as rdtinfo_flashenabled,
+          c.survey->'rdtInfo'->>'legacyCameraApi' as rdtinfo_legacycameraapi,
           c.survey->'rdtInfo'->'rdtReaderResult'->>'testStripDetected' as rdtreaderresult_teststripdetected,
           c.survey->'rdtInfo'->'rdtReaderResult'->>'skippedDueToMemWarning' as rdtreaderresult_skippedduetomemwarning,
           c.survey->'rdtInfo'->'rdtReaderResult'->>'isCentered' as rdtreaderresult_iscentered,

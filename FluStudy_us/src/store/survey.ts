@@ -37,7 +37,11 @@ export type SurveyAction =
   | { type: "SET_RDT_PHOTO"; rdtPhotoUri: string }
   | { type: "SET_RDT_PHOTOHC"; rdtPhotoHCUri: string }
   | { type: "SET_RDT_READER_RESULT"; rdtReaderResult: RDTReaderResult }
-  | { type: "SET_RDT_CAPTURE_INFO"; flashEnabled: boolean };
+  | {
+      type: "SET_RDT_CAPTURE_INFO";
+      flashEnabled: boolean;
+      legacyCameraApi: boolean;
+    };
 
 export type SurveyState = {
   csruid?: string;
@@ -242,6 +246,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
         rdtInfo: {
           ...state.rdtInfo,
           flashEnabled: action.flashEnabled,
+          legacyCameraApi: action.legacyCameraApi,
         },
       };
 
@@ -396,10 +401,14 @@ export function setRDTReaderResult(
   };
 }
 
-export function setRDTCaptureInfo(flashEnabled: boolean): SurveyAction {
+export function setRDTCaptureInfo(
+  flashEnabled: boolean,
+  legacyCameraApi: boolean
+): SurveyAction {
   return {
     type: "SET_RDT_CAPTURE_INFO",
     flashEnabled,
+    legacyCameraApi,
   };
 }
 
