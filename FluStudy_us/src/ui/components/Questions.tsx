@@ -145,10 +145,13 @@ class Questions extends React.PureComponent<Props, State> {
 
   _isAnswerValid = (config: SurveyQuestion) => {
     const answer = this.props.answers.get(config.id);
-    if (this._questionsToValidateRefs.get(config.id)) {
-      return this._questionsToValidateRefs.get(config.id)!.current!.validate();
-    } else if (!answer) {
-      return !config.required;
+    if (
+      this._questionsToValidateRefs.get(config.id) &&
+      this._questionsToValidateRefs.get(config.id)!.current
+    ) {
+      return this._questionsToValidateRefs.get(config.id)!.current.validate();
+    } else if (!config.required) {
+      return true;
     }
     switch (config.type) {
       case SurveyQuestionType.Text:
