@@ -72,7 +72,7 @@ data "aws_iam_policy_document" "evidation_s3_policy" {
 
     principals = {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::251542519377:root"]
+      identifiers = ["arn:aws:iam::${local.evidation_account}:root"]
     }
 
     resources = [
