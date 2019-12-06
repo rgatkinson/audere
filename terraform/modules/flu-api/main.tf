@@ -12,6 +12,11 @@ locals {
   api_full_domain = "${local.api_subdomain}.auderenow.io"
   base_name = "flu-${var.environment}-api"
   iprd_rdt_reader_subpath = "/IPRD/rdt-reader/"
+  evidation_accounts = {
+    prod = "251542519377"
+    staging = "078755197145"
+  }
+  evidation_account = "${local.evidation_accounts["${var.environment}"]}"
 }
 
 
