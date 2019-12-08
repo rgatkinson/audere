@@ -20,7 +20,7 @@ export class ChillsVirenaEndpoint {
   private readonly service: LazyAsync<ChillsVirenaService>;
   private pipeline: DataPipeline;
 
-  private readonly SEGMENT_SIZE = 50000;
+  private readonly SEGMENT_SIZE = 5000;
 
   constructor(sql: SplitSql) {
     const secrets = new SecretConfig(sql);
