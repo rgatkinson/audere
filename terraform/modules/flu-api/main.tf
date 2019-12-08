@@ -162,10 +162,21 @@ resource "aws_s3_bucket" "evidation_reports_bucket" {
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
+        kms_master_key_id = "${aws_kms_key.evidation_s3.key_id}"
         sse_algorithm = "aws:kms"
       }
     }
   }
+}
+
+resource "aws_kms_key" "evidation_s3" {
+  description = "Key for encrypting Evidation data in S3"
+  policy = "${data.aws_iam_policy_document.evidation_s3_kms_policy.json}"
+}
+
+resource "aws_kms_alias" "evidation_s3" {
+  name = "alias/evidation-s3-${var.environment}"
+  target_key_id = "${aws_kms_key.evidation_s3.key_id}"
 }
 
 // --------------------------------------------------------------------------------

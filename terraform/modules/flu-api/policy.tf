@@ -99,6 +99,36 @@ data "aws_iam_policy_document" "evidation_s3_policy" {
   }
 }
 
+data "aws_iam_policy_document" "evidation_s3_kms_policy" {
+  statement {
+    actions = ["kms:*"]
+
+    principals = {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::475613123583:root"]
+    }
+
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+
+    principals = {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${local.evidation_account}:root"]
+    }
+
+    resources = ["*"]
+  }
+}
+
 resource "aws_iam_policy" "flu_api_s3_policy" {
   name = "${local.base_name}-s3-policy"
   policy = "${data.aws_iam_policy_document.flu_api_s3_policy.json}"
