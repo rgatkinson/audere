@@ -224,12 +224,12 @@ const styles = StyleSheet.create({
     marginHorizontal: -SCREEN_MARGIN,
   },
   helpBox: {
-    height: 200,
+    height: 100,
   },
   instructionsText: {
     paddingHorizontal: GUTTER,
-    paddingTop: GUTTER * 2,
-    marginBottom: GUTTER,
+    paddingTop: GUTTER,
+    marginBottom: -GUTTER,
   },
   overlayText: {
     color: "white",
