@@ -101,7 +101,7 @@ export class AsprenClient {
 
   private containsValue(value: string, obj: any): boolean {
     const keys = Object.keys(obj);
-    const match = keys.find(k => obj[k] === value);
+    const match = keys.find(k => obj[k].toLowerCase() === value.toLowerCase());
     return match != null;
   }
 
@@ -156,9 +156,9 @@ export class AsprenClient {
     let overseasLocation;
     let overseasIllness;
 
-    if (overseas === "N") {
+    if (overseas.toLowerCase() === "n") {
       overseasIllness = false;
-    } else if (overseas !== "B") {
+    } else if (overseas.toLowerCase() !== "b") {
       overseasIllness = true;
       overseasLocation = overseas;
     }
@@ -189,20 +189,38 @@ export class AsprenClient {
       rsvResult: this.parseZeroOne(getByKey("RSV_RESULT", row)),
       victoriaResult: this.parseZeroOne(getByKey("VICTORIA", row)),
       yamagataResult: this.parseZeroOne(getByKey("YAMAGATA", row)),
-      aboriginalOrIslander: atsi === "B" ? undefined : atsi,
+      aboriginalOrIslander: this.isBlank(atsi) ? undefined : atsi,
       dateOnset: getByKey("DATE_ONSET", row),
-      currentVaccination:
-        currentVaccination === "B" ? undefined : currentVaccination,
-      vaccinationDate: vaccinationDate === "B" ? undefined : vaccinationDate,
-      previousVaccination:
-        previousVaccination === "B" ? undefined : previousVaccination,
+      currentVaccination: this.isBlank(currentVaccination)
+        ? undefined
+        : currentVaccination,
+      vaccinationDate: this.isBlank(vaccinationDate)
+        ? undefined
+        : vaccinationDate,
+      previousVaccination: this.isBlank(previousVaccination)
+        ? undefined
+        : previousVaccination,
       comorbities: this.parseYesNo(getByKey("COMORBIDITIES", row)),
-      comorbitiesDescription:
-        comorbitiesDescription === "B" ? undefined : comorbitiesDescription,
+      comorbitiesDescription: this.isBlank(comorbitiesDescription)
+        ? undefined
+        : comorbitiesDescription,
       healthcareWorkerStatus: this.parseYesNo(getByKey("HCW_STATUS", row)),
       overseasIllness: overseasIllness,
       overseasLocation: overseasLocation,
     };
+  }
+
+  private isBlank(value: string): boolean {
+    switch (value.toLowerCase()) {
+      case "":
+        return true;
+      case "b":
+        return true;
+      case "unknown":
+        return true;
+      default:
+        return false;
+    }
   }
 
   private parseZeroOne(input: string): boolean {
@@ -238,14 +256,14 @@ export class AsprenClient {
   }
 
   private validateAtsi(input: string): void {
-    if (input !== "B" && !this.containsValue(input, IndigenousStatus)) {
+    if (!this.isBlank(input) && !this.containsValue(input, IndigenousStatus)) {
       throw Error(`Invalid ATSI value, ${input}.`);
     }
   }
 
   private validateCurrentVacc(input: string): void {
     if (
-      input !== "B" &&
+      !this.isBlank(input) &&
       !this.containsValue(input, CurrentSeasonVaccinationStatus)
     ) {
       throw Error(`Invalid current vaccination status, ${input}.`);
@@ -254,7 +272,7 @@ export class AsprenClient {
 
   private validatePreviousVacc(input: string): void {
     if (
-      input !== "B" &&
+      !this.isBlank(input) &&
       !this.containsValue(input, PreviousSeasonVaccinationStatus)
     ) {
       throw Error(`Invalid previous vaccination status, ${input}.`);
