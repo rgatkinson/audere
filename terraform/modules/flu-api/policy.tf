@@ -83,7 +83,21 @@ data "aws_iam_policy_document" "evidation_s3_policy" {
   statement {
     actions = [
       "s3:DeleteObject",
-      "s3:GetObject",
+      "s3:GetObject"
+    ]
+
+    principals = {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${local.evidation_account}:root"]
+    }
+
+    resources = [
+      "${aws_s3_bucket.evidation_reports_bucket.arn}/*"
+    ]
+  }
+
+  statement {
+    actions = [
       "s3:PutObject",
       "s3:PutObjectAcl"
     ]
