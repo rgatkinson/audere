@@ -30,6 +30,8 @@ import static org.opencv.imgproc.Imgproc.Laplacian;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class RdtAPI {
+    private static final String TAG = "RdtApi";
+
     private Config mConfig;
     private ObjectDetection mTensorFlow;
     private Vector<Mat> mWarpList= new Vector<>();
@@ -154,9 +156,18 @@ public class RdtAPI {
     public boolean isSteady(Bitmap frame) {
         Mat matInput = new Mat();
         Mat greyMat = new Mat();
-        Utils.bitmapToMat(frame, matInput);
-        cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
-        return checkSteadiness(greyMat) == GOOD;
+        boolean result = false;
+        try {
+            Utils.bitmapToMat(frame, matInput);
+            cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
+            result = checkSteadiness(greyMat) == GOOD;
+        } catch (Exception e) {
+            Log.d(TAG, "Exception: " + e.getMessage());
+        } finally {
+            matInput.release();
+            greyMat.release();
+            return result;
+        }
     }
 
     private short checkSteadiness(Mat greyMat) {
@@ -200,36 +211,39 @@ public class RdtAPI {
         Mat matInput = new Mat();
         Mat greyMat = new Mat();
         Mat greyMatResized = new Mat();
+        AcceptanceStatus ret = new AcceptanceStatus();
 
-        AcceptanceStatus ret= new AcceptanceStatus();
-        Utils.bitmapToMat(frame, matInput);
-        cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
+        try {
+            Utils.bitmapToMat(frame, matInput);
+            cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
 
-        boolean rotated = matInput.width() < matInput.height();
+            boolean rotated = matInput.width() < matInput.height();
 
-        Mat rotatedMat = new Mat();
-        if (rotated) {
-            rotatedMat = rotateFrame(greyMat, -90);
+            Mat rotatedMat = new Mat();
+            if (rotated) {
+                rotatedMat = rotateFrame(greyMat, -90);
+            }
+
+            Size sz = new Size(1280, 720);
+
+            Imgproc.resize(rotated ? rotatedMat : greyMat, greyMatResized, sz, 0.0, 0.0, INTER_CUBIC);
+
+            processRDT(ret, matInput, greyMatResized, rotated, mTensorFlow);
+
+            if (ret.mRDTFound) {
+                computeDistortion(mConfig, rotated, greyMat, ret);
+                Mat imageROI = greyMat.submat(new Rect(ret.mBoundingBoxX, ret.mBoundingBoxY, ret.mBoundingBoxWidth, ret.mBoundingBoxHeight));
+                computeBlur(mConfig, imageROI, ret);
+                computeBrightness(mConfig, imageROI, ret);
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception: " + e.getMessage());
+        } finally {
+            greyMatResized.release();
+            greyMat.release();
+            matInput.release();
+            return ret;
         }
-
-        Size sz = new Size(1280, 720);
-
-        Imgproc.resize(rotated ? rotatedMat : greyMat, greyMatResized, sz, 0.0, 0.0, INTER_CUBIC);
-
-        processRDT(ret, matInput, greyMatResized, rotated, mTensorFlow);
-
-        if (ret.mRDTFound) {
-            computeDistortion(mConfig, rotated, greyMat, ret);
-            Mat imageROI = greyMat.submat(new Rect(ret.mBoundingBoxX, ret.mBoundingBoxY, ret.mBoundingBoxWidth, ret.mBoundingBoxHeight));
-            computeBlur(mConfig, imageROI, ret);
-            computeBrightness(mConfig, imageROI, ret);
-        }
-
-        greyMatResized.release();
-        greyMat.release();
-        matInput.release();
-
-        return ret;
     }
 
     private static void processRDT(AcceptanceStatus retStatus, Mat inputMat, Mat resizedGreyMat, boolean setRotation, ObjectDetection tensorFlow) {
