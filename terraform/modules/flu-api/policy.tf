@@ -65,6 +65,20 @@ resource "aws_s3_bucket_policy" "evidation_s3_policy" {
 
 data "aws_iam_policy_document" "evidation_s3_policy" {
   statement {
+    actions = ["s3:*"]
+
+    principals = {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::475613123583:root"]
+    }
+
+    resources = [
+      "${aws_s3_bucket.evidation_reports_bucket.arn}",
+      "${aws_s3_bucket.evidation_reports_bucket.arn}/*"
+    ]
+  }
+
+  statement {
     actions = [
       "s3:GetBucketLocation",
       "s3:ListBucket"
