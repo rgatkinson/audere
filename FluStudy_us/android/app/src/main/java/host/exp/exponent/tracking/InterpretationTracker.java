@@ -5,7 +5,6 @@
 
 package host.exp.exponent.tracking;
 
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -28,7 +27,8 @@ public class InterpretationTracker {
     private static final BorderedText borderedText = new BorderedText(12);
 
     public static synchronized DetectorView.InterpretationResult interpretResults(
-            final List<Classifier.Recognition> results, RDTTracker.RDTStillFrameResult rdtResult) {
+            final List<Classifier.Recognition> results, RDTTracker.RDTStillFrameResult rdtResult,
+            boolean drawResults) {
         Log.i(TAG, "tracking interpretation result");
 
         Map<String, Classifier.Recognition> bestResults = new HashMap();
@@ -58,16 +58,16 @@ public class InterpretationTracker {
 
         if (hasLine("control", "notvalid", bestResults)) {
             interpretationResult.control = true;
-            drawLine(bestResults.get("control"), Color.BLUE);
+            drawLineIf(drawResults, bestResults.get("control"), Color.BLUE);
 
             if (hasLine("a-pos", "a-neg", bestResults)) {
                 interpretationResult.testA = true;
-                drawLine(bestResults.get("a-pos"), Color.RED);
+                drawLineIf(drawResults, bestResults.get("a-pos"), Color.RED);
             }
 
             if (hasLine("b-pos", "b-neg", bestResults)) {
                 interpretationResult.testB = true;
-                drawLine(bestResults.get("b-pos"), Color.RED);
+                drawLineIf(drawResults, bestResults.get("b-pos"), Color.RED);
             }
         }
 
@@ -87,7 +87,10 @@ public class InterpretationTracker {
         return p;
     }
 
-    private static void drawLine(Classifier.Recognition recognition, int color) {
+    private static void drawLineIf(boolean draw, Classifier.Recognition recognition, int color) {
+        if (!draw) {
+            return;
+        }
         paint.setColor(color);
         final RectF trackedPos = new RectF(recognition.getLocation());
         canvas.drawRect(trackedPos.left, trackedPos.top, trackedPos.right, trackedPos.bottom, paint);

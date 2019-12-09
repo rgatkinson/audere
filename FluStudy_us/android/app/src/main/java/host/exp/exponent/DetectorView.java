@@ -482,7 +482,7 @@ public class DetectorView extends LinearLayout implements
                 InterpretationResult interpretationResult = InterpretationTracker.interpretResults(filterResults(
                         INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API,
                         interpretationDetector.recognizeImage(rdtResult.testArea),
-                        false), rdtResult);
+                        false), rdtResult, activity.isDebug());
 
                 Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
 
