@@ -17,7 +17,10 @@ import android.util.Log;
 import host.exp.exponent.env.ImageUtils;
 import host.exp.exponent.tflite.Classifier;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RDTTracker {
     private static final String TAG = "RDTTracker";
@@ -118,8 +121,12 @@ public class RDTTracker {
             Matrix phase2Matrix = new Matrix();
             phase2Matrix.preConcat(testAreaFromRdt());
             phase2Matrix.preConcat(rdtFromRecognition);
-            Bitmap testAreaBitmap = extractBitmap(previewBitmap, TEST_RECOGNIZER_SIZE, TEST_RECOGNIZER_SIZE, phase2Matrix);
-            return new RDTStillFrameResult(outline, testAreaBitmap);
+            Bitmap testAreaBitmap = extractBitmap(previewBitmap, TEST_RECOGNIZER_SIZE,
+                    TEST_RECOGNIZER_SIZE, phase2Matrix);
+            Map<String, String> intermediateResults = getIntermediates(location0, index0, location1,
+                    index1, rdtFromRecognition, rdtImageMatrix, frameToCanvasMatrix,
+                    outlineToCanvasMatrix, outline, phase2Matrix);
+            return new RDTStillFrameResult(outline, testAreaBitmap, results, intermediateResults);
         } else {
             return new RDTPreviewResult(rdtBitmap, outline, rdtInDesiredLocation(outline));
         }
@@ -240,9 +247,15 @@ public class RDTTracker {
 
     public class RDTStillFrameResult extends RDTResult {
         public final Bitmap testArea;
+        public final List<Classifier.Recognition> recognitions;
+        public final Map<String, String> intermediateResults;
 
-        public RDTStillFrameResult(float[] rdtOutline, Bitmap testArea) {
+        public RDTStillFrameResult(float[] rdtOutline, Bitmap testArea,
+                                   List<Classifier.Recognition> recognitions,
+                                   Map<String, String> intermediateResults) {
             super(rdtOutline);
+            this.recognitions = recognitions;
+            this.intermediateResults = intermediateResults;
             this.testArea = testArea;
         }
     }
@@ -256,5 +269,50 @@ public class RDTTracker {
     protected static class TrackedRecognition {
         float detectionConfidence;
         String title;
+    }
+
+    public Map<String, String> getIntermediates(PointF location0, int index0, PointF location1,
+                                                int index1, Matrix rdtFromRecognition,
+                                                Matrix rdtImageMatrix, Matrix frameToCanvasMatrix,
+                                                Matrix outlineToCanvasMatrix, float[] outline,
+                                                Matrix phase2Matrix) {
+        Map<String, String> result = new HashMap<>();
+        if (location0 != null) {
+            result.put("location0", location0.toString());
+        }
+
+        result.put("index0", "" + index0);
+
+        if (location1 != null) {
+            result.put("location1", location1.toString());
+        }
+
+        result.put("index1", "" + index1);
+
+        if (rdtFromRecognition != null) {
+            result.put("rdtFromRecognition", rdtFromRecognition.toString());
+        }
+
+        if (rdtImageMatrix != null) {
+            result.put("rdtImageMatrix", rdtImageMatrix.toString());
+        }
+
+        if (frameToCanvasMatrix != null) {
+            result.put("frameToCanvasMatrix", frameToCanvasMatrix.toString());
+        }
+
+        if (outlineToCanvasMatrix != null) {
+            result.put("outlineToCanvasMatrix", outlineToCanvasMatrix.toString());
+        }
+
+        if (outline != null) {
+            result.put("outline", Arrays.toString(outline));
+        }
+
+        if (phase2Matrix != null) {
+            result.put("phase2Matrix", phase2Matrix.toString());
+        }
+
+        return result;
     }
 }

@@ -17,6 +17,9 @@ type InternalRDTCapturedArgs = {
   testB: boolean;
   boundary?: { x: number; y: number }[];
   failureReason: string;
+  intermediateResults?: { [key: string]: string };
+  phase1Recognitions?: string[];
+  phase2Recognitions?: string[];
 };
 
 export type RDTCapturedArgs = {
@@ -32,6 +35,9 @@ export type RDTCapturedArgs = {
   testBLineFound: boolean;
   testStripBoundary?: { x: number; y: number }[];
   failureReason: string;
+  intermediateResults?: { [key: string]: string };
+  phase1Recognitions?: string[];
+  phase2Recognitions?: string[];
 };
 
 export type RDTCameraReadyArgs = {
@@ -73,6 +79,9 @@ export class RDTReader extends React.Component<RDTReaderProps> {
       testBLineFound: capturedArgs.testB,
       testStripBoundary: capturedArgs.boundary,
       failureReason: capturedArgs.failureReason,
+      intermediateResults: capturedArgs.intermediateResults,
+      phase1Recognitions: capturedArgs.phase1Recognitions,
+      phase2Recognitions: capturedArgs.phase2Recognitions,
     });
   };
 

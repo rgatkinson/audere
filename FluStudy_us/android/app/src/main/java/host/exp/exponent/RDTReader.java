@@ -17,6 +17,10 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
+import java.util.List;
+import java.util.Map;
+
+import host.exp.exponent.tflite.Classifier;
 import host.exp.exponent.tracking.RDTTracker;
 
 public class RDTReader extends LinearLayout implements DetectorView.DetectorListener {
@@ -82,10 +86,36 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         event.putBoolean("testStripDetected", rdtResult.rdtOutline != null);
     }
 
+    private void writeIntermediateResults(RDTTracker.RDTStillFrameResult rdtResult,
+                                          List<Classifier.Recognition> phase2Results,
+                                          WritableMap event) {
+        Map<String, String> intermediateResults = rdtResult.intermediateResults;
+        WritableMap intermediates = Arguments.createMap();
+        for (Map.Entry<String, String> entry : intermediateResults.entrySet()) {
+            intermediates.putString(entry.getKey(), entry.getValue());
+        }
+        event.putMap("intermediateResults", intermediates);
+
+        List<Classifier.Recognition> phase1Results = rdtResult.recognitions;
+        WritableArray phase1Recognitions = Arguments.createArray();
+        for (Classifier.Recognition recognition : phase1Results) {
+            phase1Recognitions.pushString(recognition.toString());
+        }
+        event.putArray("phase1Recognitions", phase1Recognitions);
+
+        WritableArray phase2Recognitions = Arguments.createArray();
+        for (Classifier.Recognition recognition : phase2Results) {
+            phase2Recognitions.pushString(recognition.toString());
+        }
+        event.putArray("phase2Recognitions", phase2Recognitions);
+    }
+
     @Override
     public void onRDTInterpreted(DetectorView.InterpretationResult interpretationResult) {
         WritableMap event = Arguments.createMap();
         writeRDTResultArgs(interpretationResult.rdtResult, event);
+        writeIntermediateResults(interpretationResult.rdtResult, interpretationResult.recognitions,
+                event);
         event.putBoolean("control", interpretationResult.control);
         event.putBoolean("testA", interpretationResult.testA);
         event.putBoolean("testB", interpretationResult.testB);
@@ -96,9 +126,9 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
     }
 
     @Override
-    public void onRDTDetected(IprdAdapter.Result iprdResult, RDTTracker.RDTResult rdtResult, String failureReason) {
+    public void onRDTDetected(IprdAdapter.Result iprdResult, RDTTracker.RDTResult rdtResult,
+                              String failureReason) {
         WritableMap event = Arguments.createMap();
-
         writeRDTResultArgs(rdtResult, event);
         event.putBoolean("isSteady", iprdResult.isSteady());
         event.putBoolean("sharpness", iprdResult.isSharp());

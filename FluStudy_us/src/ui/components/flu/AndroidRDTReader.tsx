@@ -954,6 +954,9 @@ function rdtCapturedArgsToResult(args: RDTCapturedArgs): RDTReaderResult {
     controlLineFound: args.controlLineFound,
     testALineFound: args.testALineFound,
     testBLineFound: args.testBLineFound,
+    intermediateResults: args.intermediateResults,
+    phase1Recognitions: args.phase1Recognitions,
+    phase2Recognitions: args.phase2Recognitions,
   };
 }
 
