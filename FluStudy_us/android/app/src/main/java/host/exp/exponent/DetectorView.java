@@ -131,7 +131,7 @@ public class DetectorView extends LinearLayout implements
         Log.i(TAG, "Initializing at still size " + stillSize);
 
         detectorListener.onRDTCameraReady(supportsTorchMode, screenWidth, screenHeight,
-                cameraController instanceof LegacyRDTCamera);
+                cameraController instanceof CameraApiLegacyController);
     }
 
     protected int getScreenOrientation() {
@@ -211,12 +211,8 @@ public class DetectorView extends LinearLayout implements
             vBuffer.get(vBytes);
         }
 
-        private void updateBitmaps(Bitmap candidateImageBitmap) {
-            if (candidateImageBitmap == null) {
-                imageBitmap.setPixels(getRgbBytes(), 0, imageWidth, 0, 0, imageWidth, imageHeight);
-            } else {
-                imageBitmap = candidateImageBitmap;
-            }
+        private void updateBitmaps() {
+            imageBitmap.setPixels(getRgbBytes(), 0, imageWidth, 0, 0, imageWidth, imageHeight);
             final Canvas canvas = new Canvas(boxModelBitmap);
             canvas.drawBitmap(imageBitmap, imageToModelTransform, null);
             readyForNextImage();
@@ -300,7 +296,7 @@ public class DetectorView extends LinearLayout implements
                                 isProcessingFrame = false;
                             }
                         };
-                processImage(null);
+                processImage();
             } catch (final Exception e) {
                 Log.e(TAG, "Exception in preview onImageAvailable: " + e.toString());
             } finally {
@@ -334,16 +330,19 @@ public class DetectorView extends LinearLayout implements
 
             isProcessingFrame = true;
 
-            if (!isStill) {
-                imageConverter =
-                        new Runnable() {
-                            @Override
-                            public void run() {
+            imageConverter =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isStill) {
+                                Bitmap img = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                img.getPixels(rgbBytes, 0, imageWidth, 0, 0, imageWidth, imageHeight);
+                            } else {
                                 ImageUtils.convertYUV420SPToARGB8888(
                                         bytes, imageWidth, imageHeight, rgbBytes);
                             }
-                        };
-            }
+                        }
+                    };
 
             postInferenceCallback =
                     new Runnable() {
@@ -353,7 +352,8 @@ public class DetectorView extends LinearLayout implements
                             isProcessingFrame = false;
                         }
                     };
-            processImage(isStill ? BitmapFactory.decodeByteArray(bytes, 0, bytes.length) :  null);
+
+            processImage();
         }
 
         protected List<Classifier.Recognition> runPhaseOne() {
@@ -366,7 +366,7 @@ public class DetectorView extends LinearLayout implements
             return filterResults(BOX_MINIMUM_CONFIDENCE_TF_OD_API, results, true);
         }
 
-        private void processImage(Bitmap candidateImageBitmap) {
+        private void processImage() {
             // No mutex needed as this method is not reentrant.
             if (analyzingFrame) {
                 readyForNextImage();
@@ -376,7 +376,7 @@ public class DetectorView extends LinearLayout implements
 
             Trace.beginSection("processImage");
 
-            updateBitmaps(candidateImageBitmap);
+            updateBitmaps();
 
             runInBackground(
                     new Runnable() {
@@ -549,12 +549,14 @@ public class DetectorView extends LinearLayout implements
                 if (interpretationResult.imageUri != null) {
                     cameraController.onPause();
                     detectorListener.onRDTInterpreted(interpretationResult);
+                    return;
                 } else {
                     Log.d(TAG, "Error saving still frame, will try again");
                 }
             } else {
                 Log.d(TAG, "Still frame didn't have rdt test area");
             }
+            cameraController.onResume(); // Legacy camera requires explicit resume, this is a no-op for the camera2 api
             stillCaptureInProgress = false;
         }
 

@@ -1,3 +1,8 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 package host.exp.exponent;
 
 import android.app.Activity;
@@ -11,6 +16,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
@@ -32,9 +38,9 @@ import java.util.concurrent.TimeUnit;
 
 import host.exp.exponent.customview.AutoFitTextureView;
 
-public class RDTCamera extends CameraController {
+public class CameraApi2Controller extends CameraController {
 
-    private static final String TAG = "RDTCamera";
+    private static final String TAG = "CameraApi2Controller";
 
     /** A {@link Semaphore} to prevent the app from exiting before closing the camera. */
     private final Semaphore cameraOpenCloseLock = new Semaphore(1);
@@ -99,6 +105,8 @@ public class RDTCamera extends CameraController {
     private int state = STATE_PREVIEW;
     private int focusResets = 0;
     private final int MAX_FOCUS_RESETS = 5;
+
+    private boolean cameraOpened = false;
     /**
      * A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture.
      */
@@ -175,7 +183,7 @@ public class RDTCamera extends CameraController {
         }
     };
 
-    protected RDTCamera(final Activity activity,
+    protected CameraApi2Controller(final Activity activity,
                         final AutoFitTextureView textureView,
                         final ConnectionCallback callback,
                         final DetectorView.PreviewImageListener imageListener,
@@ -266,11 +274,15 @@ public class RDTCamera extends CameraController {
         closeCamera();
         stopBackgroundThread();
     }
+
     /** Opens the camera specified by cameraId. */
     private void openCamera(final int width, final int height) {
+        if (cameraOpened) {
+            return;
+        }
         setUpCameraOutputs();
         configureTransform(width, height);
-        final android.hardware.camera2.CameraManager manager = (android.hardware.camera2.CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+        final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
             if (!cameraOpenCloseLock.tryAcquire(2500, TimeUnit.MILLISECONDS)) {
                 throw new RuntimeException("Time out waiting to lock camera opening.");
@@ -285,11 +297,13 @@ public class RDTCamera extends CameraController {
         } catch (final InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
         }
+        cameraOpened = true;
     }
 
     /** Closes the current {@link CameraDevice}. */
     private void closeCamera() {
         Log.d(TAG, "close camera");
+        cameraOpened = false;
         try {
             cameraOpenCloseLock.acquire();
             if (null != captureSession) {
@@ -322,7 +336,7 @@ public class RDTCamera extends CameraController {
     /** Sets up member variables related to camera. */
     private void setUpCameraOutputs() {
         boolean supportsTorchMode = false;
-        final android.hardware.camera2.CameraManager manager = (android.hardware.camera2.CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
+        final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
         try {
             final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
             supportsTorchMode = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
@@ -334,11 +348,7 @@ public class RDTCamera extends CameraController {
             // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
             // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
             // garbage capture data.
-            previewSize =
-                    chooseOptimalSize(
-                            map.getOutputSizes(SurfaceTexture.class),
-                            desiredSize.getWidth(),
-                            desiredSize.getHeight());
+            previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class), desiredSize);
             stillSize = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)),
                     new CompareSizesByArea());
 
@@ -589,8 +599,12 @@ public class RDTCamera extends CameraController {
 
     /** Starts a background thread and its {@link Handler}. */
     private void startBackgroundThread() {
-        backgroundThread = new HandlerThread("ImageListener");
-        backgroundThread.start();
+        if (backgroundThread == null) {
+            backgroundThread = new HandlerThread("ImageListener");
+        }
+        if (!backgroundThread.isAlive()) {
+            backgroundThread.start();
+        }
         backgroundHandler = new Handler(backgroundThread.getLooper());
     }
 
@@ -602,7 +616,6 @@ public class RDTCamera extends CameraController {
             backgroundHandler = null;
         }
     }
-
 
     /**
      * Configures the necessary {@link Matrix} transformation to `mTextureView`. This method should be

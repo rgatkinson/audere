@@ -1,3 +1,8 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 package host.exp.exponent;
 
 import android.app.Activity;
@@ -16,8 +21,8 @@ import java.util.List;
 import host.exp.exponent.customview.AutoFitTextureView;
 import host.exp.exponent.env.ImageUtils;
 
-public class LegacyRDTCamera extends CameraController {
-    private static final String TAG = "LegacyCamera";
+public class CameraApiLegacyController extends CameraController {
+    private static final String TAG = "CameraApiLegacy";
 
     private Camera camera;
 
@@ -48,13 +53,14 @@ public class LegacyRDTCamera extends CameraController {
                             sizes[i++] = new Size(size.width, size.height);
                         }
                         Size previewSize =
-                                chooseOptimalSize(sizes, desiredSize.getWidth(), desiredSize.getHeight());
+                                chooseOptimalSize(sizes, desiredSize);
                         parameters.setPreviewSize(previewSize.getWidth(), previewSize.getHeight());
                         camera.setDisplayOrientation(90);
                         camera.setParameters(parameters);
                         camera.setPreviewTexture(texture);
                     } catch (IOException exception) {
                         camera.release();
+                        camera = null;
                     }
 
                     camera.setPreviewCallbackWithBuffer(imageListener);
@@ -62,7 +68,6 @@ public class LegacyRDTCamera extends CameraController {
                     camera.addCallbackBuffer(new byte[ImageUtils.getYUVByteSize(s.height, s.width)]);
 
                     textureView.setAspectRatio(s.height, s.width);
-
                     camera.startPreview();
                 }
 
@@ -82,7 +87,7 @@ public class LegacyRDTCamera extends CameraController {
     /** An additional thread for running tasks that shouldn't block the UI. */
     private HandlerThread backgroundThread;
 
-    protected LegacyRDTCamera(final Activity activity,
+    protected CameraApiLegacyController(final Activity activity,
                      final AutoFitTextureView textureView,
                      final ConnectionCallback callback,
                      final DetectorView.PreviewImageListener imageListener,
@@ -128,8 +133,12 @@ public class LegacyRDTCamera extends CameraController {
 
     /** Starts a background thread and its {@link Handler}. */
     private void startBackgroundThread() {
-        backgroundThread = new HandlerThread("CameraBackground");
-        backgroundThread.start();
+        if (backgroundThread == null) {
+            backgroundThread = new HandlerThread("CameraBackground");
+        }
+        if (!backgroundThread.isAlive()) {
+            backgroundThread.start();
+        }
     }
 
     /** Stops the background thread and its {@link Handler}. */

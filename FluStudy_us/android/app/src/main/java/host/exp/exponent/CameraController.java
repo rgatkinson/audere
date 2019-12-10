@@ -1,3 +1,8 @@
+// Copyright (c) 2019 by Audere
+//
+// Use of this source code is governed by an MIT-style license that
+// can be found in the LICENSE file distributed with this file.
+
 package host.exp.exponent;
 
 import android.app.Activity;
@@ -103,10 +108,10 @@ public abstract class CameraController {
             }
 
             if (useCamera2API) {
-                return new RDTCamera(activity, textureView, callback, imageListener,
+                return new CameraApi2Controller(activity, textureView, callback, imageListener,
                         stillImageListener, desiredSize, selectedCameraID);
             } else {
-                return new LegacyRDTCamera(activity, textureView, callback, imageListener,
+                return new CameraApiLegacyController(activity, textureView, callback, imageListener,
                         stillImageListener, desiredSize, selectedCameraID);
             }
         } catch (CameraAccessException e) {
@@ -154,13 +159,12 @@ public abstract class CameraController {
      * width and height are at least as large as the minimum of both, or an exact match if possible.
      *
      * @param choices The list of sizes that the camera supports for the intended output class
-     * @param width The minimum desired width
-     * @param height The minimum desired height
+     * @param desiredSize The minimum desired Size
      * @return The optimal {@code Size}, or an arbitrary one if none were big enough
      */
-    protected static Size chooseOptimalSize(final Size[] choices, final int width, final int height) {
-        final int minSize = Math.max(Math.min(width, height), MINIMUM_PREVIEW_SIZE);
-        final Size desiredSize = new Size(width, height);
+    protected static Size chooseOptimalSize(final Size[] choices, Size desiredSize) {
+        final int minSize = Math.max(Math.min(desiredSize.getWidth(), desiredSize.getHeight()),
+                MINIMUM_PREVIEW_SIZE);
 
         // Collect the supported resolutions that are at least as big as the preview Surface
         boolean exactSizeFound = false;
@@ -202,7 +206,7 @@ public abstract class CameraController {
 
         // First try to find one that matches aspect ratio
         for (final Size option : bigEnough) {
-            if (option.getHeight() * width == option.getWidth() * height) {
+            if (option.getHeight() * desiredSize.getWidth() == option.getWidth() * desiredSize.getHeight()) {
                 Log.i(TAG, "Matched aspect ratio: " + option.getWidth() + "x" + option.getHeight());
                 return option;
             }
@@ -210,7 +214,7 @@ public abstract class CameraController {
 
         // Second try to find one that matches reversed aspect ratio
         for (final Size option : bigEnough) {
-            if (option.getHeight() * height == option.getWidth() * width) {
+            if (option.getHeight() * desiredSize.getHeight() == option.getWidth() * desiredSize.getWidth()) {
                 Log.i(TAG, "Matched inverse aspect ratio: " + option.getWidth() + "x" + option.getHeight());
                 return option;
             }
