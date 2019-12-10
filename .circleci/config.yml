@@ -346,6 +346,7 @@ jobs:
           name: Bundle install
           command: |
             ls -l vendor/bundle
+            ruby --version
             cd ios
             bundle install --path ../vendor/bundle
       - save_cache:
