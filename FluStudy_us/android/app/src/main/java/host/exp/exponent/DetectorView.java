@@ -10,13 +10,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraCharacteristics;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.params.StreamConfigurationMap;
+import android.hardware.Camera;
 import android.media.Image;
 import android.media.ImageReader;
 import android.net.Uri;
@@ -119,7 +117,8 @@ public class DetectorView extends LinearLayout implements
         this.detectorListener = listener;
     }
 
-    public void onPreviewSizeChosen(final Size previewSize, final Size stillSize, final int rotation, boolean supportsTorchMode) {
+    public void onPreviewSizeChosen(final Size previewSize, final Size stillSize,
+                                    final int rotation, boolean supportsTorchMode) {
         this.previewSize = previewSize;
         this.stillSize = stillSize;
 
@@ -128,10 +127,11 @@ public class DetectorView extends LinearLayout implements
         screenWidth = getWidth();
 
         Log.i(TAG, "Camera orientation relative to screen canvas: " + sensorOrientation);
-        Log.i(TAG, "Initializing at preview size " + previewSize.getWidth() + ", " + previewSize.getHeight());
-        Log.i(TAG, "Initializing at still size " + stillSize.getWidth() + ", " + stillSize.getHeight());
+        Log.i(TAG, "Initializing at preview size " + previewSize);
+        Log.i(TAG, "Initializing at still size " + stillSize);
 
-        detectorListener.onRDTCameraReady(supportsTorchMode, screenWidth, screenHeight);
+        detectorListener.onRDTCameraReady(supportsTorchMode, screenWidth, screenHeight,
+                cameraController instanceof CameraApiLegacyController);
     }
 
     protected int getScreenOrientation() {
@@ -211,7 +211,6 @@ public class DetectorView extends LinearLayout implements
             vBuffer.get(vBytes);
         }
 
-
         private void updateBitmaps() {
             imageBitmap.setPixels(getRgbBytes(), 0, imageWidth, 0, 0, imageWidth, imageHeight);
             final Canvas canvas = new Canvas(boxModelBitmap);
@@ -238,6 +237,7 @@ public class DetectorView extends LinearLayout implements
             initialized = true;
         }
 
+        /** Callback for Camera2 API */
         @Override
         public void onImageAvailable(ImageReader reader) {
             // We need to wait until we have some size from onPreviewSizeChosen
@@ -302,6 +302,58 @@ public class DetectorView extends LinearLayout implements
             } finally {
                 Trace.endSection(); // ImageAvailable
             }
+        }
+
+        /** Callback for android.hardware.Camera API */
+        protected void onFrame(byte[] bytes, Camera camera, boolean isStill) {
+            if (previewSize == null) {
+                Camera.Size currentPreviewSize = camera.getParameters().getPreviewSize();
+                Camera.Size stillFrameSize = camera.getParameters().getPictureSize();
+                onPreviewSizeChosen(
+                        new Size(currentPreviewSize.width, currentPreviewSize.height),
+                        // Legacy camera will use same size for preview as still image
+                        new Size(stillFrameSize.width, stillFrameSize.height),
+                        90, false);
+            }
+
+            if (!initialized) {
+                initialize();
+            }
+
+            if (!resourceLoader.openCVReady()) {
+                return;
+            }
+
+            if (isProcessingFrame) {
+                return;
+            }
+
+            isProcessingFrame = true;
+
+            imageConverter =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            if (isStill) {
+                                Bitmap img = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                img.getPixels(rgbBytes, 0, imageWidth, 0, 0, imageWidth, imageHeight);
+                            } else {
+                                ImageUtils.convertYUV420SPToARGB8888(
+                                        bytes, imageWidth, imageHeight, rgbBytes);
+                            }
+                        }
+                    };
+
+            postInferenceCallback =
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            camera.addCallbackBuffer(bytes);
+                            isProcessingFrame = false;
+                        }
+                    };
+
+            processImage();
         }
 
         protected List<Classifier.Recognition> runPhaseOne() {
@@ -398,7 +450,7 @@ public class DetectorView extends LinearLayout implements
         }
     }
 
-    private class PreviewImageListener extends ImageListener {
+    public class PreviewImageListener extends ImageListener implements Camera.PreviewCallback {
 
         protected void initialize() {
             imageWidth = previewSize.getWidth();
@@ -456,9 +508,16 @@ public class DetectorView extends LinearLayout implements
 
             detectorListener.onRDTDetected(iprdResult, rdtResult, failureReason);
         }
+
+
+        /** Callback for android.hardware.Camera API */
+        @Override
+        public void onPreviewFrame(byte[] bytes, Camera camera) {
+            super.onFrame(bytes, camera, false);
+        }
     }
 
-    private class StillImageListener extends ImageListener {
+    public class StillImageListener extends ImageListener implements Camera.PictureCallback {
         protected void initialize() {
             imageWidth = stillSize.getWidth();
             imageHeight = stillSize.getHeight();
@@ -490,42 +549,21 @@ public class DetectorView extends LinearLayout implements
                 if (interpretationResult.imageUri != null) {
                     cameraController.onPause();
                     detectorListener.onRDTInterpreted(interpretationResult);
+                    return;
                 } else {
                     Log.d(TAG, "Error saving still frame, will try again");
                 }
             } else {
                 Log.d(TAG, "Still frame didn't have rdt test area");
             }
+            cameraController.onResume(); // Legacy camera requires explicit resume, this is a no-op for the camera2 api
             stillCaptureInProgress = false;
         }
-    }
 
-    private String chooseCamera() {
-        final CameraManager manager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
-        try {
-            for (final String cameraId : manager.getCameraIdList()) {
-                final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
-
-                // We don't use a front facing camera in this sample.
-                final Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
-                    continue;
-                }
-
-                final StreamConfigurationMap map =
-                        characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-
-                if (map == null) {
-                    continue;
-                }
-
-                return cameraId;
-            }
-        } catch (CameraAccessException e) {
-            Log.e(TAG, "Not allowed to access camera");
+        @Override
+        public void onPictureTaken(byte[] bytes, Camera camera) {
+            onFrame(bytes, camera, true);
         }
-
-        return null;
     }
 
     private boolean hasPermission() {
@@ -551,8 +589,7 @@ public class DetectorView extends LinearLayout implements
     }
 
     protected void initCameraController() {
-        String cameraId = chooseCamera();
-        cameraController = new CameraController(
+        cameraController = CameraController.getCamera(
                 activity,
                 textureView,
                 this,
@@ -560,7 +597,6 @@ public class DetectorView extends LinearLayout implements
                 new StillImageListener(),
                 getDesiredPreviewFrameSize());
 
-        cameraController.setCamera(cameraId);
     }
 
     public synchronized void onResume() {
@@ -627,7 +663,7 @@ public class DetectorView extends LinearLayout implements
     }
 
     public interface DetectorListener {
-        void onRDTCameraReady(boolean supportsTorchMode, int screenWidth, int screenHeight);
+        void onRDTCameraReady(boolean supportsTorchMode, int screenWidth, int screenHeight, boolean legacyCamera);
         void onRDTDetected(
                 IprdAdapter.Result iprdResult,
                 RDTTracker.RDTResult rdtResult,

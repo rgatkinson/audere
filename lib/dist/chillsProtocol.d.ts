@@ -101,6 +101,7 @@ export interface RDTInfo {
     captureTime?: number;
     flashEnabled?: boolean;
     rdtTotalTime?: number;
+    legacyCameraApi?: boolean;
 }
 export interface RDTReaderResult {
     testStripDetected: boolean;

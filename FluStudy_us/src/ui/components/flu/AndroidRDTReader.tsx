@@ -132,6 +132,7 @@ interface State {
   instructionMsg: string;
   appState: string;
   supportsTorchMode: boolean;
+  legacyCameraApi: boolean;
   frameImageScale: number;
   showFlashToggle: boolean;
   boundary?: { x: number; y: number }[];
@@ -148,6 +149,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     instructionMsg: "centerStrip",
     appState: "",
     supportsTorchMode: false,
+    legacyCameraApi: false,
     frameImageScale: 1,
     showFlashToggle: false,
     screenWidth: 0,
@@ -308,7 +310,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
         );
         dispatch(
           setRDTCaptureInfo(
-            this.state.supportsTorchMode && this.state.flashEnabled
+            this.state.supportsTorchMode && this.state.flashEnabled,
+            this.state.legacyCameraApi
           )
         );
       }
@@ -372,6 +375,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       supportsTorchMode: args.supportsTorchMode,
       screenWidth: args.screenWidth,
       screenHeight: args.screenHeight,
+      legacyCameraApi: args.legacyCameraApi,
     });
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
@@ -527,7 +531,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       dispatch(setRDTReaderResult(rdtCapturedArgsToResult(args)));
       dispatch(
         setRDTCaptureInfo(
-          this.state.supportsTorchMode && this.state.flashEnabled
+          this.state.supportsTorchMode && this.state.flashEnabled,
+          this.state.legacyCameraApi
         )
       );
       navigation.dispatch(StackActions.push({ routeName: next }));
