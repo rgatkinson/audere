@@ -26,6 +26,8 @@ public class RDTTracker {
     private static final String TAG = "RDTTracker";
 
     private final PointF canvasSize;
+    private final PointF previewSize;
+    private final int sensorOrientation;
     private final float[] desiredOutline;
     private final Matrix frameToCanvasMatrix;
 
@@ -43,6 +45,8 @@ public class RDTTracker {
 
     public RDTTracker(int previewWidth, int previewHeight, final int sensorOrientation, final int screenWidth, final int screenHeight) {
         canvasSize = new PointF(screenWidth, screenHeight);
+        previewSize = new PointF(previewWidth, previewHeight);
+        this.sensorOrientation = sensorOrientation;
         frameToCanvasMatrix = ImageUtils.getTransformationMatrix(previewWidth, previewHeight,
                 screenWidth, screenHeight, sensorOrientation, false);
         desiredOutline = getDesiredRdtOutline();
@@ -124,8 +128,8 @@ public class RDTTracker {
             Bitmap testAreaBitmap = extractBitmap(previewBitmap, TEST_RECOGNIZER_SIZE,
                     TEST_RECOGNIZER_SIZE, phase2Matrix);
             Map<String, String> intermediateResults = getIntermediates(location0, index0, location1,
-                    index1, rdtFromRecognition, rdtImageMatrix, frameToCanvasMatrix,
-                    outlineToCanvasMatrix, outline, phase2Matrix);
+                    index1, rdtFromRecognition, rdtImageMatrix, outlineToCanvasMatrix, outline,
+                    phase2Matrix);
             return new RDTStillFrameResult(outline, testAreaBitmap, results, intermediateResults);
         } else {
             return new RDTPreviewResult(rdtBitmap, outline, rdtInDesiredLocation(outline));
@@ -273,9 +277,8 @@ public class RDTTracker {
 
     public Map<String, String> getIntermediates(PointF location0, int index0, PointF location1,
                                                 int index1, Matrix rdtFromRecognition,
-                                                Matrix rdtImageMatrix, Matrix frameToCanvasMatrix,
-                                                Matrix outlineToCanvasMatrix, float[] outline,
-                                                Matrix phase2Matrix) {
+                                                Matrix rdtImageMatrix, Matrix outlineToCanvasMatrix,
+                                                float[] outline, Matrix phase2Matrix) {
         Map<String, String> result = new HashMap<>();
         if (location0 != null) {
             result.put("location0", location0.toString());
@@ -300,6 +303,10 @@ public class RDTTracker {
         if (frameToCanvasMatrix != null) {
             result.put("frameToCanvasMatrix", frameToCanvasMatrix.toString());
         }
+
+        result.put("canvasSize", canvasSize.toString());
+        result.put("previewSize", previewSize.toString());
+        result.put("sensorOrientation", "" + sensorOrientation);
 
         if (outlineToCanvasMatrix != null) {
             result.put("outlineToCanvasMatrix", outlineToCanvasMatrix.toString());
