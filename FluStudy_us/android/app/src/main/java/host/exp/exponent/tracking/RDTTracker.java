@@ -35,7 +35,7 @@ public class RDTTracker {
     private static final float[] RDT_OFFSETS = new float[] { (67 + 78) / 2.0f, (50 + 64) / 2.0f, (30 + 43) / 2.0f, (13 + 18) / 2.0f,
             (1 + 12) / 2.0f, };
     public static final float RDT_HEIGHT = 87;
-    public static final float RDT_WIDTH = 5;
+    public static final float RDT_WIDTH = 4.5f;
     private static final float RDT_TEST_TOP = 51;
     private static final float RDT_TEST_BOTTOM = 61;
     private static final int TEST_RECOGNIZER_SIZE = 300;
