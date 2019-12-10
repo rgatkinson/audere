@@ -91,9 +91,10 @@ export abstract class FluDocumentImport {
     const svc = await this.getService(progress);
 
     await svc.importDocuments(
-      this.writeSurvey,
-      this.writePhoto,
-      this.updateImportProblem,
+      snapshot => this.writeSurvey(snapshot),
+      (snapshot, receiver) => this.writePhoto(snapshot, receiver),
+      (reqId, spec, err, result) =>
+        this.updateImportProblem(reqId, spec, err, result),
       reqId,
       markAsRead,
       result
