@@ -52,7 +52,7 @@ public class InterpretationTracker {
         Log.d(TAG, "\n" + allResults.toString());
 
         DetectorView.InterpretationResult interpretationResult =
-                new DetectorView.InterpretationResult(rdtResult);
+                new DetectorView.InterpretationResult(rdtResult, results);
 
         canvas.setBitmap(rdtResult.testArea);
 

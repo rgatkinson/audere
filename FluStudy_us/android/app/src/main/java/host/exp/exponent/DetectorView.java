@@ -6,7 +6,6 @@
 package host.exp.exponent;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -39,7 +38,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -607,7 +605,7 @@ public class DetectorView extends LinearLayout implements
     }
 
     public static class InterpretationResult {
-        public final RDTTracker.RDTResult rdtResult;
+        public final RDTTracker.RDTStillFrameResult rdtResult;
         public boolean control;
         public boolean testA;
         public boolean testB;
@@ -615,12 +613,16 @@ public class DetectorView extends LinearLayout implements
         public String imageUri;
         public String resultWindowImageUri;
 
+        public final List<Classifier.Recognition> recognitions;
+
         public String toString() {
             return "control: " + control + ", testA: " + testA + ", testB: " + testB;
         }
 
-        public InterpretationResult(RDTTracker.RDTResult rdtResult) {
+        public InterpretationResult(RDTTracker.RDTStillFrameResult rdtResult,
+                                    List<Classifier.Recognition> recognitions) {
             this.rdtResult = rdtResult;
+            this.recognitions = recognitions;
         }
     }
 

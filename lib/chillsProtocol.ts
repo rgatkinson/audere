@@ -198,6 +198,9 @@ export interface RDTReaderResult {
   controlLineFound?: boolean;
   testALineFound?: boolean;
   testBLineFound?: boolean;
+  intermediateResults?: { [key: string]: string };
+  phase1Recognitions?: string[];
+  phase2Recognitions?: string[];
 }
 
 // Must be kept in sync with native RDTReader/ImageProcessor.h

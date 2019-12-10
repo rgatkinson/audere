@@ -116,6 +116,11 @@ export interface RDTReaderResult {
     controlLineFound?: boolean;
     testALineFound?: boolean;
     testBLineFound?: boolean;
+    intermediateResults?: {
+        [key: string]: string;
+    };
+    phase1Recognitions?: string[];
+    phase2Recognitions?: string[];
 }
 export declare enum RDTReaderExposureResult {
     UNDER_EXPOSED = 0,

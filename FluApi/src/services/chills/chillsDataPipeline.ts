@@ -129,6 +129,9 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           c.survey->'rdtInfo'->'rdtReaderResult'->>'testALineFound' as rdtreaderresult_testalinefound,
           c.survey->'rdtInfo'->'rdtReaderResult'->>'testBLineFound' as rdtreaderresult_testblinefound,
           c.survey->'rdtInfo'->'rdtReaderResult'->>'testStripBoundary' as rdtreaderresult_teststripboundary,
+          c.survey->'rdtInfo'->'rdtReaderResult'->>'intermediateResults' as rdtreaderresult_intermediateresults,
+          c.survey->'rdtInfo'->'rdtReaderResult'->>'phase1Recognitions' as rdtreaderresult_phase1recognitions,
+          c.survey->'rdtInfo'->'rdtReaderResult'->>'phase1Recognitions' as rdtreaderresult_phase2recognitions,
           c.expert_interpretation,
 
           s.evidation_id,
