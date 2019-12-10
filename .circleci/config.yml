@@ -340,8 +340,8 @@ jobs:
           name: Fetch CocoaPods Specs
           command: |
             curl https://cocoapods-specs.circleci.com/fetch-cocoapods-repo-from-s3.sh | bash -s cf
-      - restore_cache:
-          key: fluathome-gems-{{ checksum "ios/Gemfile.lock" }}
+      #      - restore_cache:
+      #          key: fluathome-gems-{{ checksum "ios/Gemfile.lock" }}
       - run:
           name: Bundle install
           command: |
