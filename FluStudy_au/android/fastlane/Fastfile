@@ -50,8 +50,9 @@ platform :android do
 
   lane :upload_release_notes do |options|
     build_number = options[:build_number]
+    track = options[:track]
     versions = google_play_track_version_codes(
-      track: options[:track]
+      track: track
     )
     whats_new = "Build #{build_number}"
     metadata_dir="metadata/android/en-AU/changelogs"
