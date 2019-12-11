@@ -194,7 +194,10 @@ class MonthPicker extends React.Component<Props & WithNamespaces, State> {
       throw new Error("Invalid date range given to MonthPicker");
     }
 
-    while (currentYear < endYear || currentMonth <= endMonth) {
+    while (
+      currentYear < endYear ||
+      (currentYear === endYear && currentMonth <= endMonth)
+    ) {
       options.push(monthAsDate(currentYear, currentMonth));
       if (currentMonth < months.length - 1) {
         currentMonth += 1;

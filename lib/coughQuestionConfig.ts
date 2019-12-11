@@ -874,7 +874,7 @@ export const FluShotDateConfig: MonthQuestion = {
     { key: "selectedButtonKey", id: FluShotConfig.id, answer: "yes" },
   ],
   id: "FluShotDate",
-  monthRange: new Date().getMonth(),
+  monthRange: 12,
   title: "fluShotDate",
   type: SurveyQuestionType.DatePicker,
 };
