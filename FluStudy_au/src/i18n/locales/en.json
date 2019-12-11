@@ -197,10 +197,10 @@
     "pinkLine": "Which image below most closely matches your test strip?",
     "numLinesSeen": "How many lines (darker horizontal bars) do you see on your test strip?",
     "TestFeedback": "Do you feel you performed all the steps in the flu test correctly?",
-    "fluShot": "Did you receive an influenza vaccination this year (2019)?",
+    "fluShot": "Did you receive an influenza vaccination in the last year (2019/2020)?",
     "fluShotNationalImmunization": "Did you receive a free influenza vaccination under the National Immunisation Program in 2019?",
     "fluShotNationalImmunizationCondition": "What medical condition(s) do you have that made you eligible for a free influenza vaccination?",
-    "previousSeason": "Did you receive an influenza vaccination last year (2018)?",
+    "previousSeason": "Did you receive an influenza vaccination in 2018?",
     "healthcareWorker": "Are you a healthcare (or aged care) worker (i.e. do you directly work with patients/aged care residents in your job)?",
     "inContact": "In the past week, have you been in contact with a person who seemed to have a cold or flu?",
     "fluShotDate": "What was the approximate date of your influenza vaccination?"
