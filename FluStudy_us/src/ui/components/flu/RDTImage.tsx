@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     width,
   },
   rdt: {
-    height: width,
+    height: height,
     resizeMode: "contain",
     transform: [{ rotate: "90deg" }],
     width: height,
