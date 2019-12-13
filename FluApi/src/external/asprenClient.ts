@@ -165,6 +165,7 @@ export class AsprenClient {
 
     const vaccinationDate = getByKey("DATE_OF_VACC", row);
     const comorbitiesDescription = getByKey("COMORBIDITIES_DESCRIPTION", row);
+    const dateOnset = getByKey("DATE_ONSET", row);
 
     return {
       barcode: getByKey("SA Pathology Barcode", row),
@@ -190,7 +191,7 @@ export class AsprenClient {
       victoriaResult: this.parseZeroOne(getByKey("VICTORIA", row)),
       yamagataResult: this.parseZeroOne(getByKey("YAMAGATA", row)),
       aboriginalOrIslander: this.isBlank(atsi) ? undefined : atsi,
-      dateOnset: getByKey("DATE_ONSET", row),
+      dateOnset: this.isBlank(dateOnset) ? undefined : dateOnset,
       currentVaccination: this.isBlank(currentVaccination)
         ? undefined
         : currentVaccination,
