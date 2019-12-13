@@ -424,7 +424,7 @@ export function createInternalApp(config: AppConfig) {
 
   const chillsSurveillance = new ChillsSurveillanceEndpoint(sql);
   internalApp.get(
-    "/api/impomrt/chillsCDCSurveillance",
+    "/api/import/chillsCDCSurveillance",
     stats("importChillsCDCSurveillance"),
     wrap(
       sqlLock.runIfFree(

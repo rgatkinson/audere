@@ -26,9 +26,10 @@ export class ChillsSurveillanceService {
       logger.info(`Importing clinical report ${clinicalReport.key}...`);
       await this.sql.nonPii.transaction(async t => {
         for (let i = 0; i < clinicalReport.contents.length; i++) {
-          await this.models.clinicalSurveillance.upsert(clinicalReport[i], {
-            transaction: t,
-          });
+          await this.models.clinicalSurveillance.upsert(
+            clinicalReport.contents[i],
+            { transaction: t }
+          );
         }
       });
     }
@@ -39,9 +40,10 @@ export class ChillsSurveillanceService {
       logger.info(`Importing ILINet report ${iliNetReport.key}...`);
       await this.sql.nonPii.transaction(async t => {
         for (let i = 0; i < iliNetReport.contents.length; i++) {
-          await this.models.iliNetSurveillance.upsert(iliNetReport[i], {
-            transaction: t,
-          });
+          await this.models.iliNetSurveillance.upsert(
+            iliNetReport.contents[i],
+            { transaction: t }
+          );
         }
       });
     }
