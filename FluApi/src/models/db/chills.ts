@@ -425,7 +425,8 @@ export function defineClinicalSurveillance(
       specimens: integerColumn("total_specimens"),
       aPositive: integerColumn("total_a"),
       bPositive: integerColumn("total_b"),
-    }
+    },
+    { schema }
   );
 }
 
@@ -440,12 +441,17 @@ export interface ILINetSurveillanceAttributes {
 export function defineILINetSurveillance(
   sql: SplitSql
 ): Model<ILINetSurveillanceAttributes> {
-  return defineModel<ILINetSurveillanceAttributes>(sql.nonPii, "cdc_ilinet", {
-    state: stringColumn(),
-    year: integerColumn(),
-    week: integerColumn(),
-    patients: integerColumn("total_patients"),
-    providers: integerColumn(),
-    positive: integerColumn("total_ili"),
-  });
+  return defineModel<ILINetSurveillanceAttributes>(
+    sql.nonPii,
+    "cdc_ilinet",
+    {
+      state: stringColumn(),
+      year: integerColumn(),
+      week: integerColumn(),
+      patients: integerColumn("total_patients"),
+      providers: integerColumn(),
+      positive: integerColumn("total_ili"),
+    },
+    { schema }
+  );
 }
