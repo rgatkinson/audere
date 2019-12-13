@@ -54,13 +54,18 @@ export class ChillsSurveillanceClient {
   }
 
   private mapClinicalRow(row: any): ClinicalSurveillanceAttributes {
+    const specimens =
+      row["TOTAL SPECIMENS"] === "X" ? 0 : row["TOTAL SPECIMENS"];
+    const aPositive = row["TOTAL A"] === "X" ? 0 : row["TOTAL A"];
+    const bPositive = row["TOTAL B"] === "X" ? 0 : row["TOTAL B"];
+
     return {
       state: row["REGION"],
       year: row["YEAR"],
       week: row["WEEK"],
-      specimens: row["TOTAL SPECIMENS"],
-      aPositive: row["TOTAL A"],
-      bPositive: row["TOTAL B"],
+      specimens,
+      aPositive,
+      bPositive,
     };
   }
 
@@ -92,13 +97,18 @@ export class ChillsSurveillanceClient {
   }
 
   private mapILINetRow(row: any): ILINetSurveillanceAttributes {
+    const patients = row["TOTAL PATIENTS"] === "X" ? 0 : row["TOTAL PATIENTS"];
+    const providers =
+      row["NUM. OF PROVIDERS"] === "X" ? 0 : row["NUM. OF PROVIDERS"];
+    const positive = row["TOTAL PATIENTS"] === "X" ? 0 : row["TOTAL PATIENTS"];
+
     return {
       state: row["REGION"],
       year: row["YEAR"],
       week: row["WEEK"],
-      patients: row["TOTAL PATIENTS"],
-      providers: row["NUM. OF PROVIDERS"],
-      positive: row["TOTAL PATIENTS"],
+      patients,
+      providers,
+      positive,
     };
   }
 
