@@ -100,7 +100,7 @@ export class ChillsSurveillanceClient {
     const patients = row["TOTAL PATIENTS"] === "X" ? 0 : row["TOTAL PATIENTS"];
     const providers =
       row["NUM. OF PROVIDERS"] === "X" ? 0 : row["NUM. OF PROVIDERS"];
-    const positive = row["TOTAL PATIENTS"] === "X" ? 0 : row["TOTAL PATIENTS"];
+    const positive = row["ILITOTAL"] === "X" ? 0 : row["ILITOTAL"];
 
     return {
       state: row["REGION"],
