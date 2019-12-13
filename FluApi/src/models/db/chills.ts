@@ -34,8 +34,10 @@ const schema = "chills";
 export function defineChillsModels(sql: SplitSql): ChillsModels {
   const models: ChillsModels = {
     accessKey: defineAccessKey(sql),
+    clinicalSurveillance: defineClinicalSurveillance(sql),
     expertRead: defineExpertRead(sql),
     firebaseAnalytics: defineFirebaseAnalytics(sql),
+    iliNetSurveillance: defineILINetSurveillance(sql),
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
     matchedKits: defineMatchedKits(sql),
@@ -66,9 +68,11 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
 
 export interface ChillsModels {
   accessKey: Model<AccessKeyAttributes>;
+  clinicalSurveillance: Model<ClinicalSurveillanceAttributes>;
   expertRead: Model<ExpertReadAttributes>;
   firebaseAnalytics: Model<FirebaseAnalyticsAttributes>;
   firebaseAnalyticsTable: Model<FirebaseAnalyticsTableAttributes>;
+  iliNetSurveillance: Model<ILINetSurveillanceAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   matchedKits: Model<MatchedKitAttributes>;
   photo: Model<PhotoAttributes>;
@@ -396,4 +400,52 @@ export function defineVirenaRecord(
     },
     { schema }
   );
+}
+
+// ---------------------------------------------------------------
+
+export interface ClinicalSurveillanceAttributes {
+  state: string;
+  year: number;
+  week: number;
+  specimens: number;
+  aPositive: number;
+  bPositive: number;
+}
+export function defineClinicalSurveillance(
+  sql: SplitSql
+): Model<ClinicalSurveillanceAttributes> {
+  return defineModel<ClinicalSurveillanceAttributes>(
+    sql.nonPii,
+    "cdc_clinical",
+    {
+      state: stringColumn(),
+      year: integerColumn(),
+      week: integerColumn(),
+      specimens: integerColumn("total_specimens"),
+      aPositive: integerColumn("total_a"),
+      bPositive: integerColumn("total_b"),
+    }
+  );
+}
+
+export interface ILINetSurveillanceAttributes {
+  state: string;
+  year: number;
+  week: number;
+  patients: number;
+  providers: number;
+  positive: number;
+}
+export function defineILINetSurveillance(
+  sql: SplitSql
+): Model<ILINetSurveillanceAttributes> {
+  return defineModel<ILINetSurveillanceAttributes>(sql.nonPii, "cdc_ilinet", {
+    state: stringColumn(),
+    year: integerColumn(),
+    week: integerColumn(),
+    patients: integerColumn("total_patients"),
+    providers: integerColumn(),
+    positive: integerColumn("total_ili"),
+  });
 }

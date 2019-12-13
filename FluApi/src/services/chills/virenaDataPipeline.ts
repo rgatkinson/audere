@@ -47,5 +47,35 @@ function getDataNodes(): ManagedSqlNode[] {
           chills.virena_records
       `,
     }),
+    new ManagedMaterializedView({
+      name: "chills_derived.cdc_clinical",
+      deps: [],
+      spec: `
+        select 
+          state,
+          year,
+          week,
+          total_specimens,
+          total_a,
+          total_b
+        from
+          chills.cdc_clinical
+      `,
+    }),
+    new ManagedMaterializedView({
+      name: "chills_derived.cdc_ilinet",
+      deps: [],
+      spec: `
+        select 
+          state,
+          year,
+          week,
+          total_patients,
+          providers,
+          total_ili
+        from
+          chills.cdc_ilinet
+      `,
+    }),
   ];
 }

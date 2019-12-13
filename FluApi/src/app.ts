@@ -42,6 +42,7 @@ import { ChillsFirebaseAnalyticsEndpoint } from "./endpoints/chillsFirebaseAnaly
 import { ChillsMatchKitsEndpoint } from "./endpoints/chillsMatchKitsApi";
 import { ChillsImportKitsEndpoint } from "./endpoints/chillsImportKitsApi";
 import { ChillsVirenaEndpoint } from "./endpoints/chillsVirenaApi";
+import { ChillsSurveillanceEndpoint } from "./endpoints/chillsSurveillanceApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -416,6 +417,19 @@ export function createInternalApp(config: AppConfig) {
       sqlLock.runIfFree(
         "/api/import/chillsVirena",
         chillsVirena.importVirenaData,
+        jsonNoOp
+      )
+    )
+  );
+
+  const chillsSurveillance = new ChillsSurveillanceEndpoint(sql);
+  internalApp.get(
+    "/api/impomrt/chillsCDCSurveillance",
+    stats("importChillsCDCSurveillance"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/chillsCDCSurveillance",
+        chillsSurveillance.import,
         jsonNoOp
       )
     )
