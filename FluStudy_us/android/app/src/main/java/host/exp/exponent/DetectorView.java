@@ -34,10 +34,12 @@ import android.widget.LinearLayout;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import host.exp.exponent.customview.AutoFitTextureView;
 import host.exp.exponent.env.ImageUtils;
@@ -396,7 +398,7 @@ public class DetectorView extends LinearLayout implements
 
         protected List<Classifier.Recognition> filterResults(
                 float minimumConfidence, List<Classifier.Recognition> results, boolean toPreviewTransform) {
-            final List<Classifier.Recognition> mappedRecognitions = new LinkedList<Classifier.Recognition>();
+            final List<Classifier.Recognition> mappedRecognitions = new LinkedList<>();
             for (final Classifier.Recognition result : results) {
                 final RectF location = result.getLocation();
                 if (location != null && result.getConfidence() >= minimumConfidence) {
@@ -414,6 +416,29 @@ public class DetectorView extends LinearLayout implements
         protected String saveImage(Bitmap bitmap, String filename) {
             File photo = new File(activity.getFilesDir(), filename);
             return saveImage(photo, bitmap);
+        }
+
+        protected void saveIntermediateResutls(InterpretationResult interpretationResult) {
+            try {
+                FileWriter out = new FileWriter(new File(activity.getFilesDir(), "intermediate_results.txt"));
+                Map<String, String> intermediateResults = interpretationResult.rdtResult.intermediateResults;
+                for (Map.Entry<String, String> entry : intermediateResults.entrySet()) {
+                    out.write(entry.getKey() + ": " + entry.getValue() + "\n");
+                }
+                List<Classifier.Recognition> phase1Results = interpretationResult.rdtResult.recognitions;
+                out.write("Phase 1 Results\n");
+                for (Classifier.Recognition recognition : phase1Results) {
+                    out.write("    " + recognition.toString() + "\n");
+                }
+
+                out.write("Phase 2 Results\n");
+                for (Classifier.Recognition recognition : interpretationResult.recognitions) {
+                    out.write("    " + recognition.toString() + "\n");
+                }
+                out.close();
+            } catch (Exception e) {
+
+            }
         }
 
         int debugImageCounter = 0;
@@ -545,7 +570,9 @@ public class DetectorView extends LinearLayout implements
 
                 interpretationResult.imageUri = saveImage(imageBitmap, RDT_PHOTO_FILE_NAME);
                 interpretationResult.resultWindowImageUri = saveImage(rdtResult.testArea, RDT_TEST_AREA_PHOTO_FILE_NAME);
-
+                if (activity.isDebug()) {
+                    saveIntermediateResutls(interpretationResult);
+                }
                 if (interpretationResult.imageUri != null) {
                     cameraController.onPause();
                     detectorListener.onRDTInterpreted(interpretationResult);
