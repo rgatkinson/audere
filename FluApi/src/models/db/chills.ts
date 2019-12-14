@@ -426,7 +426,15 @@ export function defineClinicalSurveillance(
       aPositive: integerColumn("total_a"),
       bPositive: integerColumn("total_b"),
     },
-    { schema }
+    {
+      schema,
+      indexes: [
+        {
+          unique: true,
+          fields: ["state", "year", "week"],
+        },
+      ],
+    }
   );
 }
 
@@ -452,6 +460,14 @@ export function defineILINetSurveillance(
       providers: integerColumn(),
       positive: integerColumn("total_ili"),
     },
-    { schema }
+    {
+      schema,
+      indexes: [
+        {
+          unique: true,
+          fields: ["state", "year", "week"],
+        },
+      ],
+    }
   );
 }
