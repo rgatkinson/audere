@@ -36,8 +36,8 @@ public class RDTTracker {
             (1 + 12) / 2.0f, };
     public static final float RDT_HEIGHT = 87;
     public static final float RDT_WIDTH = 4.5f;
-    private static final float RDT_TEST_TOP = 51;
-    private static final float RDT_TEST_BOTTOM = 61;
+    private static final float RDT_TEST_TOP = 49;
+    private static final float RDT_TEST_BOTTOM = 63;
     private static final int TEST_RECOGNIZER_SIZE = 300;
     public static final float INSTRUCTION_HEIGHT_PERCENT = 0.25f;
     public static final float RDT_HEIGHT_PERCENT = 0.65f;
@@ -209,7 +209,8 @@ public class RDTTracker {
         for (final Classifier.Recognition result : results) {
             final String title = result.getTitle();
             for (int i = 0; i < RDT_NAMES.length; i++) {
-                if (RDT_NAMES[i].equals(title)) {
+                if (RDT_NAMES[i].equals(title) && (findings[i] == null ||
+                        findings[i].getConfidence() < result.getConfidence())) {
                     findings[i] = result;
                 }
             }
