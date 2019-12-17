@@ -824,7 +824,7 @@ resource "aws_iam_group_membership" "administrators" {
     "philip",
     "ram",
     "sam",
-    "shawna"
+    "terri"
   ]
 }
 
