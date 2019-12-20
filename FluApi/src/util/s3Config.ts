@@ -11,6 +11,7 @@ export interface S3Config {
   coughFollowUpBucket: string;
   virenaRecordsBucket: string;
   fileshareBucket: string;
+  evidationBucket: string;
 }
 
 let lazy: Promise<S3Config> | null = null;
@@ -30,12 +31,14 @@ async function createConfig(secrets: SecretConfig): Promise<S3Config> {
     coughFollowUpBucket,
     virenaRecordsBucket,
     fileshareBucket,
+    evidationBucket,
   ] = await Promise.all([
     secrets.get("S3_REPORT_BUCKET"),
     secrets.get("S3_ASPREN_BUCKET"),
     secrets.get("S3_COUGH_FOLLOW_UPS_BUCKET"),
     secrets.get("S3_VIRENA_BUCKET"),
     secrets.get("S3_FILESHARE_BUCKET"),
+    secrets.get("S3_EVIDATION_BUCKET"),
   ]);
   return {
     fluReportsBucket,
@@ -43,5 +46,6 @@ async function createConfig(secrets: SecretConfig): Promise<S3Config> {
     coughFollowUpBucket,
     virenaRecordsBucket,
     fileshareBucket,
+    evidationBucket,
   };
 }

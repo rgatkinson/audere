@@ -30,6 +30,8 @@ module "flu_lambda" {
   cough_follow_ups_bucket_arn = "${data.terraform_remote_state.flu_api.cough_follow_ups_bucket_arn}"
   cough_follow_ups_bucket_id = "${data.terraform_remote_state.flu_api.cough_follow_ups_bucket_id}"
   environment = "staging"
+  evidation_bucket_arn = "${data.terraform_remote_state.flu_api.evidation_bucket_arn}"
+  evidation_bucket_id = "${data.terraform_remote_state.flu_api.evidation_bucket_id}"
   fluapi_fqdn = "${data.terraform_remote_state.flu_api.fluapi_internal_fqdn}"
   infra_alerts_sns_topic_arn = "${data.terraform_remote_state.flu_notifier.infra_alerts_sns_topic_arn}"
   internet_egress_sg = "${data.terraform_remote_state.network.internet_egress_sg_id}"

@@ -73,6 +73,7 @@ describe("import follow-up surveys", () => {
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
       virenaRecordsBucket: "string",
+      evidationBucket: "string",
     };
     const list = [
       {
@@ -107,6 +108,7 @@ describe("import follow-up surveys", () => {
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
       virenaRecordsBucket: "string",
+      evidationBucket: "string",
     };
     const list = [
       {
@@ -138,6 +140,7 @@ describe("import follow-up surveys", () => {
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
       virenaRecordsBucket: "string",
+      evidationBucket: "string",
     };
     const list = [
       {

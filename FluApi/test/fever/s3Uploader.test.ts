@@ -16,6 +16,7 @@ describe("S3 uploader", () => {
     coughFollowUpBucket: "bucket_in_space",
     fileshareBucket: "fileshare_bucket",
     virenaRecordsBucket: "string",
+    evidationBucket: "string",
   };
 
   it("should upload incentive reports", async () => {

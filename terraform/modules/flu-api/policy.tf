@@ -163,6 +163,7 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
     ]
 
     resources = [
+      "${aws_s3_bucket.evidation_reports_bucket.arn}/*",
       "${aws_s3_bucket.flu_api_reports_bucket.arn}/*",
       "${var.audere_share_bucket}/*",
       "${var.chills_virena_bucket}/*",
@@ -177,12 +178,32 @@ data "aws_iam_policy_document" "flu_api_s3_policy" {
     ]
 
     resources = [
+      "${aws_s3_bucket.evidation_reports_bucket.arn}",
       "${aws_s3_bucket.flu_api_reports_bucket.arn}",
       "${var.audere_share_bucket}",
       "${var.chills_virena_bucket}",
       "${var.cough_aspren_bucket}",
       "${var.cough_qualtrics_bucket}"
     ]
+  }
+}
+
+data "aws_iam_policy_document" "flu_api_evidation_kms_policy" {
+  statement {
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+
+    principals = {
+      type        = "AWS"
+      identifiers = ["${module.task_role.arn}"]
+    }
+
+    resources = ["${aws_kms_key.evidation_s3.arn}"]
   }
 }
 

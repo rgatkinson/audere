@@ -44,6 +44,7 @@ describe("import Virena data", () => {
     coughFollowUpBucket: "string",
     fileshareBucket: "string",
     virenaRecordsBucket: "string",
+    evidationBucket: "string",
   };
 
   function getDefaultClient() {

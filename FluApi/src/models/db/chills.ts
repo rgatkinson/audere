@@ -13,6 +13,7 @@ import {
   dateColumn,
   defineModel,
   integerColumn,
+  floatColumn,
   jsonColumn,
   jsonbColumn,
   stringColumn,
@@ -41,6 +42,8 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
     firebaseAnalyticsTable: defineFirebaseAnalayticsTable(sql),
     importProblem: defineImportProblem(sql),
     matchedKits: defineMatchedKits(sql),
+    mtlFiles: defineMTLFile(sql),
+    mtlReports: defineMTLReport(sql),
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
     photoUploadLog: definePhotoUploadLog(sql),
@@ -75,6 +78,8 @@ export interface ChillsModels {
   iliNetSurveillance: Model<ILINetSurveillanceAttributes>;
   importProblem: Model<ImportProblemAttributes>;
   matchedKits: Model<MatchedKitAttributes>;
+  mtlFiles: Model<MTLFileAttributes>;
+  mtlReports: Model<MTLReportAttributes>;
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
@@ -469,5 +474,99 @@ export function defineILINetSurveillance(
         },
       ],
     }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface MTLFileAttributes {
+  key: string;
+  hash: string;
+}
+export function defineMTLFile(sql: SplitSql): Model<MTLFileAttributes> {
+  return defineModel<MTLFileAttributes>(
+    sql.nonPii,
+    "mtl_files",
+    {
+      key: unique(stringColumn()),
+      hash: stringColumn(),
+    },
+    { schema }
+  );
+}
+
+export interface MTLReportAttributes {
+  orderId: string;
+  shipped?: boolean;
+  received?: boolean;
+  processed?: boolean;
+  rejected?: boolean;
+  orderNumber?: string;
+  evidationId?: string;
+  outboundBarcode?: string;
+  inboundBarcode?: string;
+  shippedTimestamp?: string;
+  kitRegistrationCode?: string;
+  gender?: string;
+  birthdate?: string;
+  email?: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  zipCode?: string;
+  stripTempStatus?: string;
+  rejectionReason?: string;
+  fluAResult?: boolean;
+  fluAValue?: number;
+  fluASNP?: string;
+  fluAAssayTimestamp?: string;
+  fluBResult?: boolean;
+  fluBValue?: number;
+  fluBSNP?: string;
+  fluBAssayTimestamp?: string;
+  rsvResult?: boolean;
+  rsvValue?: number;
+  rsvSNP?: string;
+  rsvAssayTimestamp?: string;
+}
+export function defineMTLReport(sql: SplitSql): Model<MTLReportAttributes> {
+  return defineModel<MTLReportAttributes>(
+    sql.nonPii,
+    "mtl_reports",
+    {
+      orderId: unique(stringColumn("order_id")),
+      shipped: booleanColumn(),
+      received: booleanColumn(),
+      processed: booleanColumn(),
+      rejected: booleanColumn(),
+      orderNumber: nullable(stringColumn("order_number")),
+      evidationId: nullable(stringColumn("evidation_id")),
+      outboundBarcode: nullable(stringColumn("outbound_barcode")),
+      inboundBarcode: nullable(stringColumn("inbound_barcode")),
+      shippedTimestamp: nullable(stringColumn("shipped_timestamp")),
+      kitRegistrationCode: nullable(stringColumn("kit_registration_code")),
+      gender: nullable(stringColumn("user_gender")),
+      birthdate: nullable(stringColumn("user_birthdate")),
+      email: nullable(stringColumn("user_email")),
+      phone: nullable(stringColumn("user_phone")),
+      firstName: nullable(stringColumn("user_first_name")),
+      lastName: nullable(stringColumn("user_last_name")),
+      zipCode: nullable(stringColumn("user_zip_code")),
+      stripTempStatus: nullable(stringColumn("strip_temp_status")),
+      rejectionReason: nullable(stringColumn("rejection_reason")),
+      fluAResult: nullable(booleanColumn("flu_a_result")),
+      fluAValue: nullable(integerColumn("flu_a_value")),
+      fluASNP: nullable(stringColumn("flu_a_snp")),
+      fluAAssayTimestamp: nullable(stringColumn("flu_a_assay_timestamp")),
+      fluBResult: nullable(booleanColumn("flu_b_result")),
+      fluBValue: nullable(floatColumn("flu_b_value")),
+      fluBSNP: nullable(stringColumn("flu_b_snp")),
+      fluBAssayTimestamp: nullable(stringColumn("flu_b_assay_timestamp")),
+      rsvResult: nullable(booleanColumn("rsv_result")),
+      rsvValue: nullable(floatColumn("rsv_value")),
+      rsvSNP: nullable(stringColumn("rsv_snp")),
+      rsvAssayTimestamp: nullable(stringColumn("rsv_assay_timestamp")),
+    },
+    { schema }
   );
 }

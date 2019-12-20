@@ -38,6 +38,16 @@ variable "environment" {
   type = "string"
 }
 
+variable "evidation_bucket_arn" {
+  description = "ARN of bucket where Evidation reports are stored"
+  type = "string"
+}
+
+variable "evidation_bucket_id" {
+  description = "ID of bucket where Evidation reports are stored"
+  type = "string"
+}
+
 variable "fluapi_fqdn" {
   description = "Fully qualified domain name for FluApi"
   type = "string"

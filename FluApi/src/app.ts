@@ -43,6 +43,7 @@ import { ChillsMatchKitsEndpoint } from "./endpoints/chillsMatchKitsApi";
 import { ChillsImportKitsEndpoint } from "./endpoints/chillsImportKitsApi";
 import { ChillsVirenaEndpoint } from "./endpoints/chillsVirenaApi";
 import { ChillsSurveillanceEndpoint } from "./endpoints/chillsSurveillanceApi";
+import { ChillsMTLEndpoint } from "./endpoints/chillsMTLApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -433,6 +434,13 @@ export function createInternalApp(config: AppConfig) {
         jsonNoOp
       )
     )
+  );
+
+  const chillsMTL = new ChillsMTLEndpoint(sql);
+  internalApp.get(
+    "/api/import/chillsMTL",
+    stats("importChillsMTL"),
+    wrap(sqlLock.runIfFree("/api/import/chillsMTL", chillsMTL.import, jsonNoOp))
   );
 
   return useOuch(internalApp);

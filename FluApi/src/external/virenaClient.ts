@@ -6,19 +6,12 @@
 import * as XLSX from "xlsx";
 import parse from "csv-parse/lib/sync";
 import { VirenaRecordAttributes } from "../models/db/chills";
+import { S3File, S3Records } from "../models/s3File";
 import { getByKey, searchKey, searchKeys } from "../util/caseInsensitive";
 import { S3Config } from "../util/s3Config";
 import logger from "../util/logger";
 
-export interface S3File {
-  key: string;
-  hash: string;
-}
-
-export interface VirenaRecordsFile {
-  file: S3File;
-  records: VirenaRecordAttributes[];
-}
+export type VirenaRecordsFile = S3Records<VirenaRecordAttributes>;
 
 /**
  * Accessor for Virena data.

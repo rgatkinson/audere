@@ -164,5 +164,11 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
         where project = 'chills'
       `,
     }),
+
+    new ManagedView({
+      name: "chills_derived.mtl_reports",
+      deps: [],
+      spec: `select * from chills.mtl_reports`,
+    }),
   ];
 }

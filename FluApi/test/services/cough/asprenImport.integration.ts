@@ -44,6 +44,7 @@ describe("import ASPREN reports", () => {
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
       virenaRecordsBucket: "string",
+      evidationBucket: "string",
     };
     const list = [
       {
@@ -78,6 +79,7 @@ describe("import ASPREN reports", () => {
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
       virenaRecordsBucket: "string",
+      evidationBucket: "string",
     };
     const list = [
       {
@@ -109,6 +111,7 @@ describe("import ASPREN reports", () => {
       coughFollowUpBucket: "string",
       fileshareBucket: "string",
       virenaRecordsBucket: "string",
+      evidationBucket: "string",
     };
     const list = [
       {

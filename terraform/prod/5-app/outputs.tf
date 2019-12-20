@@ -27,6 +27,14 @@ output "cough_follow_ups_bucket_id" {
   value = "${module.shared.cough_follow_ups_bucket_id}"
 }
 
+output "evidation_bucket_arn" {
+  value = "${module.flu_api.evidation_bucket_arn}"
+}
+
+output "evidation_bucket_id" {
+  value = "${module.flu_api.evidation_bucket_id}"
+}
+
 output "fluapi_fqdn" {
   value = "${module.flu_api.fluapi_route53_fqdn}"
 }
