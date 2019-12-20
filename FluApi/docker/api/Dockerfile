@@ -17,8 +17,6 @@ RUN apt-get install --yes \
    postgresql-client \
    rsync
 
-RUN npm install --global yarn
-
 RUN adduser -gecos "Audere Api" --disabled-password api
 RUN mkdir -p /audere/FluApi && chown -R api:api /audere
 USER api
