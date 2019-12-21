@@ -382,7 +382,7 @@ resource "aws_lambda_permission" "chills_mtl_import_s3_invocation" {
   action = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.chills_mtl_import.arn}"
   principal = "s3.amazonaws.com"
-  source_arn = "${var.chills_mtl_bucket_arn}"
+  source_arn = "${var.evidation_bucket_arn}"
 }
 
 resource "aws_cloudwatch_metric_alarm" "chills_mtl_execution_errors" {
@@ -412,7 +412,7 @@ resource "aws_cloudwatch_metric_alarm" "chills_mtl_execution_errors" {
 }
 
 resource "aws_s3_bucket_notification" "chills_mtl_reports_notification" {
-  bucket = "${var.chills_mtl_bucket_id}"
+  bucket = "${var.evidation_bucket_id}"
 
   lambda_function {
     lambda_function_arn = "${aws_lambda_function.chills_mtl_import.arn}"
