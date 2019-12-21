@@ -198,13 +198,13 @@ data "aws_iam_policy_document" "flu_api_evidation_kms_policy" {
       "kms:DescribeKey"
     ]
 
-    principals = {
-      type        = "AWS"
-      identifiers = ["${module.task_role.arn}"]
-    }
-
     resources = ["${aws_kms_key.evidation_s3.arn}"]
   }
+}
+
+resource "aws_iam_policy" "flu_api_evidation_kms_policy" {
+  name = "${local.base_name}-evidation-kms"
+  policy = "${data.aws_iam_policy_document.flu_api_evidation_kms_policy.json}"
 }
 
 resource "aws_iam_policy" "ses_send_email" {
@@ -225,10 +225,11 @@ module "task_role" {
   account = "${var.account}"
   environment = "${var.environment}"
   policies = [
+    "${aws_iam_policy.flu_api_evidation_kms_policy.arn}",
     "${aws_iam_policy.flu_api_s3_policy.arn}",
     "${aws_iam_policy.ses_send_email.arn}"
   ]
-  policy_count = 2
+  policy_count = 3
   region = "${var.region}"
   task_alias = "fluapi"
   ssm_parameters_key_arn = "${var.ssm_parameters_key_arn}"
