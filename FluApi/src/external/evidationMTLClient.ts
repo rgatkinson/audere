@@ -217,9 +217,15 @@ export class EvidationMTLClient {
       };
     } else {
       const observations = data["observations"];
-      const fluA = observations.find(o => o["test_name"] === "Flu A");
-      const fluB = observations.find(o => o["test_name"] === "Flu B");
-      const rsv = observations.find(o => o["test_name"] === "RSV");
+      const fluA = observations.find(o =>
+        this.lowerCaseContains(o["test_name"], "Flu A")
+      );
+      const fluB = observations.find(o =>
+        this.lowerCaseContains(o["test_name"], "Flu B")
+      );
+      const rsv = observations.find(o =>
+        this.lowerCaseContains(o["test_name"], "RSV")
+      );
 
       const update = {
         orderId: status["order_id"].toString(),
@@ -247,6 +253,14 @@ export class EvidationMTLClient {
         fields: Object.keys(update),
       };
     }
+  }
+
+  private lowerCaseContains(o: any, s: string): boolean {
+    if (typeof o !== "string") {
+      throw Error("Cannot compare a type which is not a string");
+    }
+
+    return o.toLowerCase().indexOf(s.toLowerCase()) > -1;
   }
 
   private parseTestResult(result: string): boolean {
