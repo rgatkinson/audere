@@ -26,6 +26,7 @@ export class EvidationMTLClient {
   private readonly config: S3Config;
 
   private readonly validStates = [
+    "kit_received",
     "kit_rejected",
     "kit_shipped",
     "processing",
@@ -107,6 +108,8 @@ export class EvidationMTLClient {
 
   private mapStatusUpdate(status: any): MTLReportUpdate {
     switch (status["order_state"]) {
+      case "kit_received":
+        return this.mapKitReceived(status);
       case "kit_rejected":
         return this.mapKitRejection(status);
       case "kit_shipped":
@@ -118,9 +121,32 @@ export class EvidationMTLClient {
     }
   }
 
+  private mapKitReceived(status: any): MTLReportUpdate {
+    if (status["data"] == null) {
+      throw Error(`Kit received event does not include data fields.`);
+    }
+
+    const data = status["data"];
+
+    if (data["accession_number"] == null) {
+      throw Error(`Invalid Evidation ID in kit received event.`);
+    }
+
+    const update = {
+      orderId: status["order_id"].toString(),
+      received: true,
+      receivedTimestamp: data["received_datetime"],
+    };
+
+    return {
+      update,
+      fields: Object.keys(update),
+    };
+  }
+
   private mapKitRejection(status: any): MTLReportUpdate {
     if (status["data"] == null) {
-      throw Error(`Kit rejectioon even does not include data fields.`);
+      throw Error(`Kit rejection event does not include data fields.`);
     }
 
     const data = status["data"];
@@ -177,7 +203,7 @@ export class EvidationMTLClient {
     const user = status["user"];
     const update = {
       orderId: status["order_id"].toString(),
-      received: true,
+      processing: true,
       gender: user["gender"],
       birthdate: user["birthdate"],
       email: user["email"],

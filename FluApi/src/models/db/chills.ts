@@ -499,6 +499,7 @@ export interface MTLReportAttributes {
   orderId: string;
   shipped?: boolean;
   received?: boolean;
+  processing?: boolean;
   processed?: boolean;
   rejected?: boolean;
   orderNumber?: string;
@@ -506,6 +507,7 @@ export interface MTLReportAttributes {
   outboundBarcode?: string;
   inboundBarcode?: string;
   shippedTimestamp?: string;
+  receivedTimestamp?: string;
   kitRegistrationCode?: string;
   gender?: string;
   birthdate?: string;
@@ -537,6 +539,7 @@ export function defineMTLReport(sql: SplitSql): Model<MTLReportAttributes> {
       orderId: unique(stringColumn("order_id")),
       shipped: booleanColumn(),
       received: booleanColumn(),
+      processing: booleanColumn(),
       processed: booleanColumn(),
       rejected: booleanColumn(),
       orderNumber: nullable(stringColumn("order_number")),
@@ -544,6 +547,7 @@ export function defineMTLReport(sql: SplitSql): Model<MTLReportAttributes> {
       outboundBarcode: nullable(stringColumn("outbound_barcode")),
       inboundBarcode: nullable(stringColumn("inbound_barcode")),
       shippedTimestamp: nullable(stringColumn("shipped_timestamp")),
+      receivedTimestamp: nullable(stringColumn("received_timestamp")),
       kitRegistrationCode: nullable(stringColumn("kit_registration_code")),
       gender: nullable(stringColumn("user_gender")),
       birthdate: nullable(stringColumn("user_birthdate")),
