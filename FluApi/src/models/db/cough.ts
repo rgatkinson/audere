@@ -311,7 +311,7 @@ export function defineAsprenData(sql: SplitSql): Model<AsprenDataAttributes> {
         field: "atsi",
         allowNull: true,
       },
-      dateOnset: stringColumn("date_onset"),
+      dateOnset: nullable(stringColumn("date_onset")),
       currentVaccination: {
         type: Sequelize.STRING,
         field: "current_vaccination",
