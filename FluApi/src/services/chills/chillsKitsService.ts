@@ -11,6 +11,7 @@ import {
 import { generateRandomKey, pbkdf2 } from "../../util/crypto";
 import { SplitSql } from "../../util/sql";
 import { ShippedKit } from "../../external/evidationKitClient";
+import logger from "../../util/logger";
 
 // Referred to as AchievementInfo in the client app
 export interface KitInfo {
@@ -95,10 +96,23 @@ export class ChillsKits {
       merged.push(attributes);
     });
 
+    let succeeded = true;
+
     await this.sql.nonPii.transaction(async t => {
       await this.models.shippedKits.destroy({ where: {}, transaction: t });
-      await this.models.shippedKits.bulkCreate(merged, { transaction: t });
+
+      for (let i = 0; i < kits.length; i++) {
+        try {
+          await this.models.shippedKits.create(merged[i], { transaction: t });
+        } catch (e) {
+          logger.error(`Error importing shipped kit with index ${i}: `, e);
+        }
+      }
     });
+
+    if (!succeeded) {
+      throw Error("Not all shipped kit data was imported successfully");
+    }
   }
 
   /**
