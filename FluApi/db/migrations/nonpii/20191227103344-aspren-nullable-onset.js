@@ -8,6 +8,10 @@ const schema = "cough";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    await queryInterface.sequelize.query(`
+      drop view if exists cough_derived.aspren_data;
+    `);
+
     await queryInterface.changeColumn(
       {
         tableName: "aspren_data",
