@@ -113,6 +113,16 @@ export function namedSampleColumns(): string[] {
         )})::text
       )->>'code' as samples_rdtreaderhcphotoguid
     `,
+    `
+      jsonb_extract_path(
+        survey->'samples',
+        (${selectIndexOfKeyValue(
+          "survey->'samples'",
+          "sample_type",
+          "RDTTestAreaPhotoGUID"
+        )})::text
+      )->>'code' as samples_rdtreadertestareaphotoguid
+    `,
   ];
 }
 
@@ -125,6 +135,7 @@ export function sampleColumns(columnPrefix?: string): string[] {
     `${prefix}samples_photoguid`,
     `${prefix}samples_rdtreaderphotoguid`,
     `${prefix}samples_rdtreaderhcphotoguid`,
+    `${prefix}samples_rdtreadertestareaphotoguid`,
     `coalesce(${prefix}samples_code128, ${prefix}samples_code39, ${prefix}samples_1, ${prefix}samples_2, ${prefix}samples_manualentry) as samples_barcode`,
     `coalesce(${prefix}samples_rdtreaderphotoguid, ${prefix}samples_photoguid) as samples_photo`,
   ];
