@@ -1,0 +1,52 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+umask 077
+SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+staging_BASEURL="https://api.staging.auderenow.io"
+prod_BASEURL="https://api.auderenow.io"
+
+function fail() {
+  echo -e "$*"
+  exit 1
+}
+
+function do_tests() {
+  local target_type="$1"
+  local BASEURL="$2"
+  local TEST_FILE_JSON="$SELF_DIR/fluapi-curl-tests.json"
+  local all_test_urls="$(jq -r ".tests[].url" $TEST_FILE_JSON)"
+  for url in ${all_test_urls}; do 
+    echo -e "${YELLOW}Testing ${url}${NC}"
+    expected_result="$(jq -r ".tests[]|select(.url==\"$url\")|.expected_$target_type" $TEST_FILE_JSON)"
+    actual_result="$(curl --no-progress-meter "${BASEURL}$url")"
+    if [[ "$actual_result" == $expected_result ]]; then
+      echo -e "${GREEN}passed${NC}\n"
+    else 
+      fail "${RED}FAILED${NC}\n${YELLOW}Expected:${NC}\n$expected_result\n${YELLOW}Got:${NC}\n$actual_result\n"
+    fi
+  done
+  return 0
+}
+
+target_type="$1"
+case "$target_type" in 
+  staging|prod) 
+    URL_VAR=${target_type}_BASEURL  
+    echo -e "Starting post-deploy tests against ${!URL_VAR}\n"
+    do_tests "$target_type" "${!URL_VAR}"
+    echo -e "All tests passed"
+    ;;
+  *) 
+    fail "First argument should be 'staging' or 'prod'"    
+    ;;
+esac 
+

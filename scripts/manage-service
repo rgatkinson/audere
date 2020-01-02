@@ -11,9 +11,11 @@ SELF_DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 ACCOUNT="$(aws sts get-caller-identity --output text --query 'Account')"
 REGISTRY="$ACCOUNT.dkr.ecr.us-west-2.amazonaws.com"
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
 function fail() {
-  echo2 "$*"
+  echo 1>&2 -e "$*"
   exit 1
 }
 
@@ -44,10 +46,11 @@ function ecr_publish() {
 }
 
 function ecs_deploy() {
-  local service="$1"
-  local repo_lines="$2"
-  local current_tag="$3"
-  local new_tag="$4"
+  local service_id="$1"
+  local service="$2"
+  local repo_lines="$3"
+  local current_tag="$4"
+  local new_tag="$5"
 
   local repos=()
   while read -r line; do
@@ -71,9 +74,40 @@ function ecs_deploy() {
     fi
   done
 
-  echo "Updating ECS service - '$service'"
   local cluster="$(config_get "cluster.$new_tag")"
-  aws ecs update-service --cluster "$cluster" --service "$service" --force-new-deployment
+  local oldTaskID="$(get_current_running_task "$cluster" "$service_id")"
+  echo "Task ID of '$service_id' prior to update is '$oldTaskID'"
+
+  echo "Updating ECS service - '$service_id'"
+  aws ecs update-service --cluster "$cluster" --service "$service_id" --force-new-deployment
+   
+  local count=1
+  RETRY_INTERVAL=6
+  MAX_RETRIES=20
+  while [[ $count -le $MAX_RETRIES ]]; do
+    sleep $RETRY_INTERVAL
+    local currentTask="$(get_current_running_task "$cluster" "$service_id")"
+    if [[ "$currentTask" != "$oldTaskID" ]]; then 
+      echo "Deploy of update successful"
+      echo "New task ID of '$service_id' is '$currentTask'"
+      break
+    else
+      echo "Waited $(($RETRY_INTERVAL * $count)) seconds for new task to start..."
+      (( count++ )) 
+    fi
+  done
+
+  if [[ $count -gt $MAX_RETRIES ]]; then 
+    fail "${RED}ERROR:${NC} New task not deployed after $(($RETRY_INTERVAL * $MAX_RETRIES)) seconds"
+  else 
+    test_script="$(config_get "\"$service\".\"test\"")"
+    if [[ -n "$test_script" ]]; then 
+      echo "Running post-deploy test script $test_script"
+      if ! "$SELF_DIR/$test_script" "$new_tag" ; then 
+        fail "${RED}ERROR:${NC} Newly deployed $service failed post-deploy tests, possibly needs rollback!!"
+      fi
+    fi
+  fi
 }
 
 function ecr_query_image() {
@@ -90,6 +124,21 @@ function check_service() {
 
   [[ -n "$(config_get "\"$service\"")" ]] \
     || fail "Expected a defined service, got '$service'."
+}
+
+function get_current_running_task() {
+  local cluster="$1"
+  local service="$2"
+  local all_tasks="$(aws ecs list-tasks --cluster "$cluster" --service-name "$service" | jq -r '.taskArns|.[]')"
+  for task in ${all_tasks}; do 
+    local status="$(aws ecs describe-tasks --cluster "$cluster" --tasks "$task" | jq -r '.tasks[0].lastStatus')"
+    if [[ "$status" == "RUNNING" ]]; then 
+      echo "$task"
+      return 0
+    fi
+  done
+  # Didn't find any running tasks
+  return 1  
 }
 
 function config_get() {
@@ -136,7 +185,7 @@ case "$subcommand" in
     echo "Service ID: '$service_id'"
 
     ecr_login
-    ecs_deploy "$service_id" "$repos" "$existing_tag" "$new_tag"
+    ecs_deploy "$service_id" "$service" "$repos" "$existing_tag" "$new_tag"
 
     echo "=================================================="
     echo "Deployed '${service_id}'"

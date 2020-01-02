@@ -7,18 +7,13 @@
   "fluapi": {
     "staging_service": "fluapi-staging",
     "prod_service": "fluapi-prod",
-    "repo": [
-      "fluapi",
-      "nginx"
-    ]
+    "repo": ["fluapi", "nginx"],
+    "test": "test-fluapi-post-deploy"
   },
 
   "iprd-rdt-reader": {
     "staging_service": "iprd-rdt-reader-staging",
     "prod_service": "iprd-rdt-reader-prod",
-    "repo": [
-      "iprd-rdt-reader",
-      "nginx"
-    ]
+    "repo": ["iprd-rdt-reader", "nginx"]
   }
 }
