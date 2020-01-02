@@ -60,7 +60,7 @@ export class CoughRDTPhotos {
         : 0;
     const orderBy = Object.keys(ORDER_OPTIONS).includes(req.query.orderBy)
       ? req.query.orderBy
-      : "date_asc";
+      : "date_desc";
     const order = ORDER_OPTIONS[orderBy];
     const shouldShowPII = await this.authManager.authorize(
       req.user.userid,

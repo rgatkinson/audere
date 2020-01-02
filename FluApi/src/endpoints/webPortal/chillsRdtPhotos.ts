@@ -68,7 +68,7 @@ export class ChillsRDTPhotos {
         : 0;
     const orderBy = Object.keys(ORDER_OPTIONS).includes(req.query.orderBy)
       ? req.query.orderBy
-      : "date_asc";
+      : "date_desc";
     const order = ORDER_OPTIONS[orderBy];
     const surveys = await this.models.survey.findAll({
       where: {
