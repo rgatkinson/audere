@@ -282,6 +282,7 @@ export class EvidationMTLClient {
 
       const update = {
         orderId: status["order_id"].toString(),
+        orderNumber: status["order_number"],
         processed: true,
         evidationId: data["accession_number"],
         stripTempStatus: status["tempstrip_status"],
