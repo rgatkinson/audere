@@ -482,6 +482,8 @@ export function defineILINetSurveillance(
 export interface MTLFileAttributes {
   key: string;
   hash: string;
+  orderId?: string;
+  orderState?: string;
 }
 export function defineMTLFile(sql: SplitSql): Model<MTLFileAttributes> {
   return defineModel<MTLFileAttributes>(
@@ -490,6 +492,8 @@ export function defineMTLFile(sql: SplitSql): Model<MTLFileAttributes> {
     {
       key: unique(stringColumn()),
       hash: stringColumn(),
+      orderId: nullable(stringColumn("order_id")),
+      orderState: nullable(stringColumn("order_state")),
     },
     { schema }
   );

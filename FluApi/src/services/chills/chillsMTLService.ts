@@ -57,11 +57,20 @@ export class ChillsMTLService {
       try {
         const report = await this.client.getMTLReport(file);
         await this.sql.nonPii.transaction(async t => {
-          await this.models.mtlReports.upsert(report.records[0].update, {
+          const update = report.records[0].update;
+          await this.models.mtlReports.upsert(update.report, {
             transaction: t,
-            fields: report.records[0].fields,
+            fields: update.fields,
           });
-          await this.models.mtlFiles.upsert(report.file, { transaction: t });
+
+          await this.models.mtlFiles.upsert(
+            {
+              ...report.file,
+              orderId: update.report.orderId,
+              orderState: report.records[0].status,
+            },
+            { transaction: t }
+          );
         });
       } catch (e) {
         logger.error(

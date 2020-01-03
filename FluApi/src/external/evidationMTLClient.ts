@@ -8,13 +8,19 @@ import { S3File, S3Records } from "../models/s3File";
 import { S3Config } from "../util/s3Config";
 import zlib from "zlib";
 import logger from "../util/logger";
+import { ListObjectsV2Request } from "aws-sdk/clients/s3";
+
+export interface UpdateWithStatus {
+  update: MTLReportUpdate;
+  status: string;
+}
 
 /**
  * Sequelize attributes for upsert. Includes a list of specific fields to update
  * since the underlying model is a coalesce of several separate updates.
  */
 export interface MTLReportUpdate {
-  update: MTLReportAttributes;
+  report: MTLReportAttributes;
   fields: string[];
 }
 
@@ -43,17 +49,33 @@ export class EvidationMTLClient {
    * file hashes to determine whether a particular file has been processed.
    */
   public async listMTLFiles(): Promise<S3File[]> {
-    const listParams = {
+    let list: ListObjectsV2Request = {
       Bucket: this.config.evidationBucket,
       Prefix: "homekit2020/mtl",
     };
 
-    const objects = await this.s3.listObjectsV2(listParams).promise();
-    logger.info(
-      `${objects.Contents.length} MTL keys listed in Evidation bucket.`
-    );
+    let truncated = false;
+    const files = [];
 
-    const files = objects.Contents.filter(o => o.Key.endsWith(".jsonl.gz"));
+    // ListObjects returns up to 1,000 objects so we page through all results
+    do {
+      const objects = await this.s3.listObjectsV2(list).promise();
+      logger.info(
+        `Page of ${objects.Contents.length} MTL keys listed from Evidation bucket.`
+      );
+
+      truncated = objects.IsTruncated;
+      if (truncated) {
+        list.ContinuationToken = objects.NextContinuationToken;
+      }
+
+      const filtered = objects.Contents.filter(o =>
+        o.Key.endsWith(".jsonl.gz")
+      );
+      files.push(...filtered);
+    } while (truncated);
+
+    logger.info(`${files.length} total files listed from Evidation bucket.`);
 
     return files.map(f => {
       return {
@@ -68,7 +90,9 @@ export class EvidationMTLClient {
    *
    * @param file Key and hash of the file to retrieve
    */
-  public async getMTLReport(file: S3File): Promise<S3Records<MTLReportUpdate>> {
+  public async getMTLReport(
+    file: S3File
+  ): Promise<S3Records<UpdateWithStatus>> {
     const getParams = {
       Bucket: this.config.evidationBucket,
       Key: file.key,
@@ -94,8 +118,11 @@ export class EvidationMTLClient {
       );
     }
 
-    const report = this.mapStatusUpdate(update);
-    return { file: file, records: [report] };
+    const output = {
+      update: this.mapStatusUpdate(update),
+      status: update["order_state"],
+    };
+    return { file: file, records: [output] };
   }
 
   private validStatus(status: any): boolean {
@@ -139,7 +166,7 @@ export class EvidationMTLClient {
     };
 
     return {
-      update,
+      report: update,
       fields: Object.keys(update),
     };
   }
@@ -163,7 +190,7 @@ export class EvidationMTLClient {
     };
 
     return {
-      update,
+      report: update,
       fields: Object.keys(update),
     };
   }
@@ -190,7 +217,7 @@ export class EvidationMTLClient {
     };
 
     return {
-      update,
+      report: update,
       fields: Object.keys(update),
     };
   }
@@ -214,7 +241,7 @@ export class EvidationMTLClient {
     };
 
     return {
-      update,
+      report: update,
       fields: Object.keys(update),
     };
   }
@@ -238,7 +265,7 @@ export class EvidationMTLClient {
       };
 
       return {
-        update,
+        report: update,
         fields: Object.keys(update),
       };
     } else {
@@ -275,7 +302,7 @@ export class EvidationMTLClient {
       this.removeNullProperties(update);
 
       return {
-        update,
+        report: update,
         fields: Object.keys(update),
       };
     }
