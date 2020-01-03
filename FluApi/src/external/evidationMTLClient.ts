@@ -286,15 +286,21 @@ export class EvidationMTLClient {
         evidationId: data["accession_number"],
         stripTempStatus: status["tempstrip_status"],
         fluAResult: this.parseTestResult(fluA["result"]),
-        fluAValue: fluA["result_value"],
+        fluAValue: Number.isNaN(+fluA["result_value"])
+          ? undefined
+          : +fluA["result_value"],
         fluASNP: fluA["snp"],
         fluAAssayTimestamp: fluA["assay_datetime"],
         fluBResult: this.parseTestResult(fluB["result"]),
-        fluBValue: fluB["result_value"],
+        fluBValue: Number.isNaN(+fluB["result_value"])
+          ? undefined
+          : +fluB["result_value"],
         fluBSNP: fluB["snp"],
         fluBAssayTimestamp: fluB["assay_datetime"],
         rsvResult: this.parseTestResult(rsv["result"]),
-        rsvValue: rsv["result_value"],
+        rsvValue: Number.isNaN(+rsv["result_value"])
+          ? undefined
+          : +rsv["result_value"],
         rsvSNP: rsv["snp"],
         rsvAssayTimestamp: rsv["assay_datetime"],
       };
