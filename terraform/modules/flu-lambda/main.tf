@@ -8,13 +8,9 @@ locals {
   handler_archive_path = "${path.module}/../../../FluLambda/build/FluLambda.zip"
   slack_archive_path = "../../../local/lambda/cloudwatch-slack.zip"
 
-  // This is 8:30 AM and 1:30 PM local in PST
   // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
-  cron_weekdays_before_9AM_and_1PM_PST = "cron(30 15,19 ? * MON-FRI *)"
-  cron_weekdays_before_1PM_PST = "cron(30 19 ? * MON-FRI *)"
-  cron_weekdays_at_4AM_PST = "cron(0 10 ? * MON-FRI *)"
-  cron_everyday_at_5AM_PST = "cron(0 12 ? * * *)"
-  cron_monday_thursday_before_9AM_PST = "cron(30 15 ? * MON,THU *)"
+  cron_everyday_at_10AM_UTC = "cron(0 10 ? * * *)"
+  cron_everyday_at_12PM_UTC = "cron(0 12 ? * * *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
@@ -114,7 +110,7 @@ module "cough_photo_upload" {
 module "cough_analytics_import" {
   source = "../lambda-cron"
 
-  frequency = "${local.cron_everyday_at_5AM_PST}"
+  frequency = "${local.cron_everyday_at_12PM_UTC}"
   name = "${local.base_name}-cough-analytics-import"
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
@@ -268,7 +264,7 @@ module "chills_firebase_import" {
 module "chills_analytics_import" {
   source = "../lambda-cron"
 
-  frequency = "${local.cron_everyday_at_5AM_PST}"
+  frequency = "${local.cron_everyday_at_12PM_UTC}"
   name = "${local.base_name}-chills-analytics-import"
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
@@ -281,7 +277,7 @@ module "chills_analytics_import" {
 module "chills_kits_import" {
   source = "../lambda-cron"
 
-  frequency = "${local.cron_weekdays_at_4AM_PST}"
+  frequency = "${local.cron_everyday_at_10AM_UTC}"
   name = "${local.base_name}-chills-kits-import"
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
