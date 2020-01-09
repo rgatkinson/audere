@@ -124,7 +124,7 @@ resource "aws_lambda_function" "cough_aspren_import" {
   function_name = "${local.base_name}-cough-aspren-import"
   filename = "${local.handler_archive_path}"
   handler = "handler.cronGet"
-  runtime = "nodejs8.10"
+  runtime = "nodejs12.x"
   source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
   role = "${aws_iam_role.flu_lambda.arn}"
   timeout = 300
@@ -188,7 +188,7 @@ resource "aws_lambda_function" "cough_follow_ups_import" {
   function_name = "${local.base_name}-cough-follow-ups-import"
   filename = "${local.handler_archive_path}"
   handler = "handler.cronGet"
-  runtime = "nodejs8.10"
+  runtime = "nodejs12.x"
   source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
   role = "${aws_iam_role.flu_lambda.arn}"
   timeout = 300
@@ -291,7 +291,7 @@ resource "aws_lambda_function" "chills_virena_import" {
   function_name = "${local.base_name}-chills-virena-import"
   filename = "${local.handler_archive_path}"
   handler = "handler.cronGet"
-  runtime = "nodejs8.10"
+  runtime = "nodejs12.x"
   source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
   role = "${aws_iam_role.flu_lambda.arn}"
   timeout = 300
@@ -356,7 +356,7 @@ resource "aws_lambda_function" "chills_mtl_import" {
   function_name = "${local.base_name}-chills-mtl-import"
   filename = "${local.handler_archive_path}"
   handler = "handler.cronGet"
-  runtime = "nodejs8.10"
+  runtime = "nodejs12.x"
   source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
   role = "${aws_iam_role.flu_lambda.arn}"
   timeout = 300

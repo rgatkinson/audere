@@ -11,7 +11,7 @@ resource "aws_lambda_function" "cron" {
   function_name = "${var.name}"
   filename = "${local.handler_archive_path}"
   handler = "handler.cronGet"
-  runtime = "nodejs8.10"
+  runtime = "nodejs12.x"
   source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
   role = "${var.role_arn}"
   timeout = "${var.timeout}"
