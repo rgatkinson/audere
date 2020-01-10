@@ -324,10 +324,8 @@ public class CameraApi2Controller extends CameraController {
                 stillReader.close();
                 stillReader = null;
             }
-        } catch (CameraAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (final InterruptedException e) {
-            throw new RuntimeException("Interrupted while trying to lock camera closing.", e);
         } finally {
             cameraOpenCloseLock.release();
         }
@@ -419,7 +417,6 @@ public class CameraApi2Controller extends CameraController {
                                         CaptureRequest.CONTROL_AF_MODE,
                                         CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
 
-
                                 setFlashOnRequestBuilder(previewRequestBuilder);
 
                                 previewRequestBuilder.setTag("PREVIEW");
@@ -428,8 +425,10 @@ public class CameraApi2Controller extends CameraController {
                                 previewRequest = previewRequestBuilder.build();
                                 captureSession.setRepeatingRequest(
                                         previewRequest, captureCallback, backgroundHandler);
-                            } catch (final CameraAccessException e) {
+                            } catch (CameraAccessException e) {
                                 Log.e(TAG, e.toString());
+                            } catch (IllegalStateException e) {
+                                e.printStackTrace();
                             }
                         }
 
@@ -466,6 +465,8 @@ public class CameraApi2Controller extends CameraController {
             previewRequestBuilder.setTag("RESET_FOCUS");
             captureSession.capture(previewRequestBuilder.build(), captureCallback, backgroundHandler);
         } catch (CameraAccessException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -505,6 +506,8 @@ public class CameraApi2Controller extends CameraController {
             captureSession.setRepeatingRequest(previewRequestBuilder.build(), captureCallback, backgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
     }
 
@@ -527,6 +530,8 @@ public class CameraApi2Controller extends CameraController {
             captureSession.capture(previewRequestBuilder.build(), captureCallback,
                     backgroundHandler);
         } catch (CameraAccessException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -567,6 +572,8 @@ public class CameraApi2Controller extends CameraController {
             captureSession.capture(captureBuilder.build(), captureCallback, backgroundHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
     }
 
@@ -593,6 +600,8 @@ public class CameraApi2Controller extends CameraController {
             captureSession.setRepeatingRequest(previewRequest, captureCallback,
                     backgroundHandler);
         } catch (CameraAccessException e) {
+            e.printStackTrace();
+        } catch (IllegalStateException e) {
             e.printStackTrace();
         }
     }
@@ -672,6 +681,8 @@ public class CameraApi2Controller extends CameraController {
             try {
                 captureSession.setRepeatingRequest(previewRequest, captureCallback, backgroundHandler);
             } catch (CameraAccessException e) {
+                e.printStackTrace();
+            } catch (IllegalStateException e) {
                 e.printStackTrace();
             }
         }
