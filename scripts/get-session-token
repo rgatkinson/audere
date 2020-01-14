@@ -10,6 +10,7 @@ base="$HOME/.aws/credentials"
 session="${AWS_SHARED_CREDENTIALS_FILE:-}"
 json="$session.json"
 backup="$session.original"
+session_user="${AWS_SESSION_USER:-$USER}"
 
 if [[ -z "$session" ]]; then
   echo 1>&2 "aws-cli-token: please add something like this to your '~/.bashrc':"
@@ -45,7 +46,7 @@ function usage() {
 
 case "$#" in
   0)
-    read -p "Enter AWS 2-factor auth code for '$USER': " auth_code
+    read -p "Enter AWS 2-factor auth code for '$session_user': " auth_code
     ;;
   1)
     if [[ "$1" =~ [0-9][0-9][0-9][0-9][0-9][0-9] ]]; then
@@ -63,7 +64,7 @@ esac
   # Use base only for get-session-token call
   export AWS_SHARED_CREDENTIALS_FILE="$base"
   aws sts get-session-token \
-      --serial-number "arn:aws:iam::475613123583:mfa/$USER" \
+      --serial-number "arn:aws:iam::475613123583:mfa/$session_user" \
       --token-code "$auth_code" \
       > "$json"
 )
