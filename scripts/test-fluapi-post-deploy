@@ -27,7 +27,7 @@ function do_tests() {
   for url in ${all_test_urls}; do 
     echo -e "${YELLOW}Testing ${url}${NC}"
     expected_result="$(jq -r ".tests[]|select(.url==\"$url\")|.expected_$target_type" $TEST_FILE_JSON)"
-    actual_result="$(curl --no-progress-meter "${BASEURL}$url")"
+    actual_result="$(curl -sS "${BASEURL}$url")"
     if [[ "$actual_result" == $expected_result ]]; then
       echo -e "${GREEN}passed${NC}\n"
     else 

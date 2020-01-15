@@ -64,6 +64,14 @@ module.exports = {
       { tableName: "mtl_reports", schema },
       "rsv_snp"
     );
+
+    await queryInterface.sequelize.query(`
+      drop view if exists chills_derived.mtl_reports;
+    `);
+
+    await queryInterface.sequelize.query(`
+      delete from data_pipeline_nodes where name = 'chills_derived.mtl_reports';
+    `);
   },
 
   down: async (queryInterface, Sequelize) => {
