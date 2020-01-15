@@ -227,17 +227,9 @@ export class EvidationMTLClient {
       throw Error(`Kit processing event does not include user data.`);
     }
 
-    const user = status["user"];
     const update = {
       orderId: status["order_id"].toString(),
       processing: true,
-      gender: user["gender"],
-      birthdate: user["birthdate"],
-      email: user["email"],
-      phone: user["phone"],
-      firstName: user["first_name"],
-      lastName: user["last_name"],
-      zipCode: user["zip_code"],
     };
 
     return {
@@ -282,27 +274,23 @@ export class EvidationMTLClient {
 
       const update = {
         orderId: status["order_id"].toString(),
-        orderNumber: status["order_number"],
         processed: true,
         evidationId: data["accession_number"],
-        stripTempStatus: status["tempstrip_status"],
+        stripTempStatus: data["tempstrip_status"],
         fluAResult: this.parseTestResult(fluA["result"]),
         fluAValue: isNaN(+fluA["result_value"])
           ? undefined
           : +fluA["result_value"],
-        fluASNP: fluA["snp"],
         fluAAssayTimestamp: fluA["assay_datetime"],
         fluBResult: this.parseTestResult(fluB["result"]),
         fluBValue: isNaN(+fluB["result_value"])
           ? undefined
           : +fluB["result_value"],
-        fluBSNP: fluB["snp"],
         fluBAssayTimestamp: fluB["assay_datetime"],
         rsvResult: this.parseTestResult(rsv["result"]),
         rsvValue: isNaN(+rsv["result_value"])
           ? undefined
           : +rsv["result_value"],
-        rsvSNP: rsv["snp"],
         rsvAssayTimestamp: rsv["assay_datetime"],
       };
 
