@@ -10,6 +10,14 @@ const schema = "chills";
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    await queryInterface.sequelize.query(`
+      drop view if exists chills_derived.mtl_reports;
+    `);
+
+    await queryInterface.sequelize.query(`
+      delete from data_pipeline_nodes where name = 'chills_derived.mtl_reports';
+    `);
+
     await queryInterface.removeColumn(
       { tableName: "mtl_reports", schema },
       "order_number"
@@ -64,14 +72,6 @@ module.exports = {
       { tableName: "mtl_reports", schema },
       "rsv_snp"
     );
-
-    await queryInterface.sequelize.query(`
-      drop view if exists chills_derived.mtl_reports;
-    `);
-
-    await queryInterface.sequelize.query(`
-      delete from data_pipeline_nodes where name = 'chills_derived.mtl_reports';
-    `);
   },
 
   down: async (queryInterface, Sequelize) => {
