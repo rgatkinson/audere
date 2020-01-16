@@ -45,6 +45,9 @@ export class DataPipelineService {
         pipeline: databasePipeline.id,
       },
     });
+    logger.info(
+      `Refreshing ${nodes.length} nodes from  ${states.length} existing`
+    );
     const statesByName = new Map(states.map(x => tuple2(x.name, x)));
     const nodesByName = new Map(nodes.map(x => tuple2(x.meta.name, x)));
     const hashes = buildHashes(nodesByName);
@@ -53,6 +56,7 @@ export class DataPipelineService {
     for (let state of states) {
       const name = state.name;
       if (!nodesByName.has(name)) {
+        logger.info(`Destroying node ${name}`);
         await runQuery(sql, state.cleanup);
         this.progress();
         await nodeState.destroy({ where: { name } });
