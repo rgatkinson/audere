@@ -11,6 +11,7 @@ locals {
   // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
   cron_everyday_at_10AM_UTC = "cron(0 10 ? * * *)"
   cron_everyday_at_12PM_UTC = "cron(0 12 ? * * *)"
+  cron_saturday_at_10AM_UTC = "cron(0 10 ? * 7 *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
@@ -285,6 +286,19 @@ module "chills_kits_import" {
   subnet_id = "${var.lambda_subnet_id}"
   timeout = 600
   url = "http://${var.fluapi_fqdn}:444/api/import/chillsKits"
+}
+
+module "chills_cdc_surveillance_import" {
+  source = "../lambda-cron"
+
+  frequency = "${local.cron_saturday_at_10AM_UTC}"
+  name = "${local.base_name}-chills-cdc-surveillance-import"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  subnet_id = "${var.lambda_subnet_id}"
+  timeout = 600
+  url = "http://${var.fluapi_fqdn}:444/api/import/chillsCDCSurveillance"
 }
 
 resource "aws_lambda_function" "chills_virena_import" {

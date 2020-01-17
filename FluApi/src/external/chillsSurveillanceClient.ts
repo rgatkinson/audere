@@ -8,37 +8,30 @@ import {
   ClinicalSurveillanceAttributes,
   ILINetSurveillanceAttributes,
 } from "../models/db/chills";
-import { S3Config } from "../util/s3Config";
 import logger from "../util/logger";
 
 export interface SurveillanceFile<T> {
   contents: T[];
-  key: string;
-  hash: string;
 }
 
 export class ChillsSurveillanceClient {
-  private readonly s3: AWS.S3;
-  private readonly config: S3Config;
+  private readonly cdcData: Object;
 
-  constructor(s3: AWS.S3, config: S3Config) {
-    this.s3 = s3;
-    this.config = config;
+  constructor(cdcData: Object) {
+    this.cdcData = cdcData;
   }
 
   public async getLatestClinicalReport(): Promise<
     SurveillanceFile<ClinicalSurveillanceAttributes>
   > {
-    const file = await this.getLatest("clinical");
+    const file = parse(this.cdcData["clinical"], { columns: true });
 
-    if (!this.isValidClinical(file.contents[0])) {
-      throw Error(`Rows from ${file.key} do not contain expected fields.`);
+    if (!this.isValidClinical(file[0])) {
+      throw Error(`Rows from file do not contain expected fields.`);
     }
 
     return {
-      contents: file.contents.map(this.mapClinicalRow),
-      key: file.key,
-      hash: file.hash,
+      contents: file.map(this.mapClinicalRow),
     };
   }
 
@@ -72,16 +65,14 @@ export class ChillsSurveillanceClient {
   public async getLatestILINetReport(): Promise<
     SurveillanceFile<ILINetSurveillanceAttributes>
   > {
-    const file = await this.getLatest("ilinet");
+    const file = parse(this.cdcData["ilinet"], { columns: true });
 
-    if (!this.isValidILINet(file.contents[0])) {
-      throw Error(`Rows from ${file.key} do not contain expected fields.`);
+    if (!this.isValidILINet(file[0])) {
+      throw Error(`Rows from file do not contain expected fields.`);
     }
 
     return {
-      contents: file.contents.map(this.mapILINetRow),
-      key: file.key,
-      hash: file.hash,
+      contents: file.map(this.mapILINetRow),
     };
   }
 
@@ -109,50 +100,6 @@ export class ChillsSurveillanceClient {
       patients,
       providers,
       positive,
-    };
-  }
-
-  private async getLatest(prefix: string): Promise<SurveillanceFile<any[]>> {
-    const listParams = {
-      Bucket: this.config.virenaRecordsBucket,
-      Prefix: `cdc/${prefix}`,
-    };
-
-    const objects = await this.s3.listObjectsV2(listParams).promise();
-    logger.info(`${objects.KeyCount} keys listed in CDC bucket.`);
-
-    const metadata = objects.Contents.reduce((prev, curr) => {
-      if (curr.Key.endsWith(".csv")) {
-        const prevMs = prev.LastModified.getTime();
-        const currMs = curr.LastModified.getTime();
-        return prevMs > currMs ? prev : curr;
-      } else {
-        return prev;
-      }
-    });
-
-    if (metadata == null) {
-      logger.info(`No CSV files found.`);
-      return;
-    }
-
-    logger.info(
-      `${metadata.Key} is the most recent ${prefix} file in the CDC bucket.`
-    );
-
-    const getParams = {
-      Bucket: this.config.virenaRecordsBucket,
-      Key: metadata.Key,
-      IfMatch: metadata.ETag,
-    };
-
-    const object = await this.s3.getObject(getParams).promise();
-    const report = parse(object.Body.toString(), { columns: true });
-
-    return {
-      contents: <any[]>report,
-      key: metadata.Key,
-      hash: metadata.ETag,
     };
   }
 }

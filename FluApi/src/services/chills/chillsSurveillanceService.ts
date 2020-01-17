@@ -9,21 +9,21 @@ import { SplitSql } from "../../util/sql";
 import logger from "../../util/logger";
 
 export class ChillsSurveillanceService {
-  private readonly client: ChillsSurveillanceClient;
+  private readonly data: ChillsSurveillanceClient;
   private readonly models: ChillsModels;
   private readonly sql: SplitSql;
 
-  constructor(sql: SplitSql, client: ChillsSurveillanceClient) {
+  constructor(sql: SplitSql, data: ChillsSurveillanceClient) {
     this.models = defineChillsModels(sql);
     this.sql = sql;
-    this.client = client;
+    this.data = data;
   }
 
   public async import(): Promise<void> {
-    const clinicalReport = await this.client.getLatestClinicalReport();
+    const clinicalReport = await this.data.getLatestClinicalReport();
 
     if (clinicalReport != null) {
-      logger.info(`Importing clinical report ${clinicalReport.key}...`);
+      logger.info("Importing clinical report");
       await this.sql.nonPii.transaction(async t => {
         for (let i = 0; i < clinicalReport.contents.length; i++) {
           await this.models.clinicalSurveillance.upsert(
@@ -34,10 +34,10 @@ export class ChillsSurveillanceService {
       });
     }
 
-    const iliNetReport = await this.client.getLatestILINetReport();
+    const iliNetReport = await this.data.getLatestILINetReport();
 
     if (iliNetReport != null) {
-      logger.info(`Importing ILINet report ${iliNetReport.key}...`);
+      logger.info("Importing ILINet report");
       await this.sql.nonPii.transaction(async t => {
         for (let i = 0; i < iliNetReport.contents.length; i++) {
           await this.models.iliNetSurveillance.upsert(
