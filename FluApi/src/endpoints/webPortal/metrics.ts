@@ -1155,6 +1155,20 @@ export async function getFeverMetrics(
       return "Ordered Kit";
     }
   };
+  const getPart1Sypmtoms = row => {
+    const symptoms = row.survey.responses[0].item.find(
+      item => item.id == "Symptoms" && item.answer.length > 0
+    );
+    if (symptoms) {
+      const symptomsList = [];
+      symptoms.answer.forEach(ans => {
+        symptomsList.push(symptoms.answerOptions[ans.valueIndex].id);
+      });
+      return symptomsList;
+    } else {
+      return [];
+    }
+  };
   const getPart2Sypmtoms = row => {
     const symptoms = row.survey.responses[0].item.find(
       item => item.id == "WhatSymptoms" && item.answer.length > 0
@@ -1187,6 +1201,7 @@ export async function getFeverMetrics(
     const kitOrderTime = getKitOrderTime(row);
     const scanTime = getScanTime(row);
     const surveyCompleteTime = getSurveyCompleteTime(row);
+    const part1Symptoms = getPart1Sypmtoms(row);
     const part2Symptoms = getPart2Sypmtoms(row);
     studyIdData.push({
       age: getAgeRange(row),
@@ -1212,6 +1227,12 @@ export async function getFeverMetrics(
       secondtestfeedback: getTest2Feedback(row),
       redwhenblue: getRedWhenBlueAnswer(row),
       workflow: getWorkflow(row),
+      screening_fever: symptomText(part1Symptoms, "feelingFeverish"),
+      screening_chillsorsweats: symptomText(part1Symptoms, "chillsOrSweats"),
+      screening_cough: symptomText(part1Symptoms, "cough"),
+      screening_fatigue: symptomText(part1Symptoms, "fatigue"),
+      screening_aches: symptomText(part1Symptoms, "muscleOrBodyAches"),
+      screening_none: symptomText(part1Symptoms, "noneOfTheAbove"),
       fever: symptomText(part2Symptoms, "feelingFeverish"),
       chillsorsweats: symptomText(part2Symptoms, "chillsOrSweats"),
       sorethroat: symptomText(part2Symptoms, "soreThroat"),
@@ -1599,7 +1620,7 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       width: 150,
     },
     scantosurveyfinish: {
-      displayName: "Barcode Scan to Survey FInish",
+      displayName: "Barcode Scan to Survey Finish",
       headerStyle: styles.columnHeader,
       width: 150,
     },
@@ -1635,6 +1656,36 @@ export async function getFeverExcelReport(startDate: string, endDate: string) {
       displayName: "Status",
       headerStyle: styles.columnHeader,
       width: 125,
+    },
+    screening_fever: {
+      displayName: "Screening Fever",
+      headerStyle: styles.columnHeader,
+      width: 75,
+    },
+    screening_chillsorsweats: {
+      displayName: "Screening Chills or Sweats",
+      headerStyle: styles.columnHeader,
+      width: 75,
+    },
+    screening_cough: {
+      displayName: "Screening Cough",
+      headerStyle: styles.columnHeader,
+      width: 75,
+    },
+    screening_fatigue: {
+      displayName: "Screening Fatigue",
+      headerStyle: styles.columnHeader,
+      width: 75,
+    },
+    screening_aches: {
+      displayName: "Screening Muscle or Body Aches",
+      headerStyle: styles.columnHeader,
+      width: 75,
+    },
+    screening_none: {
+      displayName: "Screening None",
+      headerStyle: styles.columnHeader,
+      width: 75,
     },
     fever: {
       displayName: "Fever",
