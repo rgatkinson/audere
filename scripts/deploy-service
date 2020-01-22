@@ -1,0 +1,107 @@
+#!/bin/bash
+# Copyright (c) 2019 by Audere
+#
+# Use of this source code is governed by an MIT-style license that
+# can be found in the LICENSE file distributed with this file.
+
+set -euo pipefail
+
+function usage_and_exit() {
+  echo 1>&2 "Usage: deploy-service <name> -e environment [-b] [-c commit]"
+  echo 1>&2 ""
+  echo 1>&2 "<name> = name of the service that is being targeted"
+  echo 1>&2 "-e = environment to target for deploy"
+  echo 1>&2 "-b = also build and publish a new image as part of the deployment (otherwise the )"
+  echo 1>&2 "-c = commit to target for staging deploys"
+  echo 1>&2 ""
+  echo 1>&2 "Example:"
+  echo 1>&2 "    deploy-service fluapi -e prod"
+  echo 1>&2 ""
+  exit 1
+}
+
+if [[ "$#" -lt 3 ]]; then
+  usage_and_exit
+fi
+
+if [[ "${CIRCLE_TOKEN:-}" == "" ]]; then
+  echo 1>&2 "Error: CIRCLE_TOKEN env variable is not set. Set this before running this script."
+  echo 1>&2 "       If you have no API token, get one here: https://circleci.com/account/api"
+  exit 1 
+fi
+
+SERVICE="$1"
+
+shift
+
+BUILD=false
+
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -e)
+      if [[ $2 != "staging" && $2 != "prod" ]]; then
+        echo 1>&2 "Error: Environment must target either staging or prod"
+        echo 1>&2 ""
+        usage_and_exit
+      fi
+      ENVIRONMENT="$2"
+      shift
+      shift
+      ;;
+    -c)
+      COMMIT="$2"
+      shift
+      shift
+      ;;
+    -b)
+      BUILD=true
+      shift
+      ;;
+    *)
+      echo 1>&2 "Error: Encountered unknown argument to deploy-service"
+      echo 1>&2 ""
+      usage_and_exit
+      ;;
+  esac
+done
+
+if [[ "${ENVIRONMENT:-}" == "" ]]; then
+  echo 1>&2 "Error: Environment must be set"
+  echo 1>&2 ""
+  usage_and_exit
+fi
+
+if [[ $ENVIRONMENT == "prod" && "${COMMIT:-}" != "" ]]; then
+  echo 1>&2 "Error: Commit may only be set for staging deployments."
+  echo 1>&2 "       Prod can only promote the existing staging version."
+  echo 1>&2 ""
+  usage_and_exit
+fi
+
+if [[ $ENVIRONMENT == "prod" && $BUILD = true ]]; then
+  echo 1>&2 "Error: Build option may only be set for staging deployments"
+  echo 1>&2 ""
+  usage_and_exit
+fi
+
+if [[ "${COMMIT:-}" == "" ]]; then
+  COMMIT="latest"
+fi
+
+case $BUILD in
+  true)
+    JOB="build_and_deploy_$SERVICE"
+    ;;
+  false)
+    JOB="deploy_${SERVICE}_${ENVIRONMENT}"
+    ;;
+esac
+
+echo "Asking CircleCI to run $JOB"
+curl --user "${CIRCLE_TOKEN}":\
+    -X POST\
+    --header "Content-Type: application/json"\
+    -d '{"build_parameters": {"CIRCLE_JOB": "'$JOB'", "COMMIT": "'$COMMIT'"}}' \
+https://circleci.com/api/v1.1/project/github/AudereNow/audere/tree/master
