@@ -7,6 +7,7 @@ import { ChillsSurveillanceClient } from "../external/chillsSurveillanceClient";
 import { ChillsSurveillanceService } from "../services/chills/chillsSurveillanceService";
 import { DataPipelineService } from "../services/data/dataPipelineService";
 import { DataPipeline } from "../services/data/dataPipeline";
+import { jsonKeepAlive } from "../util/expressApp";
 import { VirenaDataPipeline } from "../services/chills/virenaDataPipeline";
 import { LazyAsync } from "../util/lazyAsync";
 import { SplitSql } from "../util/sql";
@@ -28,16 +29,18 @@ export class ChillsSurveillanceEndpoint {
   }
 
   public import = async (req, res, next) => {
+    const { progress, replyJson } = jsonKeepAlive(res);
+    const pipelineSvc = new DataPipelineService(progress);
+
     const svc = await this.service.get();
     logger.info("Finding CDC reports to import");
-    await svc.import();
+    await svc.import(progress);
 
-    const pipelineSvc = new DataPipelineService();
     logger.info("Refreshing derived schema");
-    pipelineSvc.refresh(this.pipeline);
+    await pipelineSvc.refresh(this.pipeline);
     logger.info("Refresh complete");
 
-    res.json({});
+    replyJson({});
   };
 
   private getCdcData = async () => {

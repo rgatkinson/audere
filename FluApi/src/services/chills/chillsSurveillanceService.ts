@@ -19,7 +19,7 @@ export class ChillsSurveillanceService {
     this.data = data;
   }
 
-  public async import(): Promise<void> {
+  public async import(progress: () => void): Promise<void> {
     const clinicalReport = await this.data.getLatestClinicalReport();
 
     if (clinicalReport != null) {
@@ -30,6 +30,7 @@ export class ChillsSurveillanceService {
             clinicalReport.contents[i],
             { transaction: t }
           );
+          progress();
         }
       });
     }
@@ -44,6 +45,7 @@ export class ChillsSurveillanceService {
             iliNetReport.contents[i],
             { transaction: t }
           );
+          progress();
         }
       });
     }
