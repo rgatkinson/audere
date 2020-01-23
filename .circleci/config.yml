@@ -2,8 +2,6 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
-version: 2
-
 const: &const
   PROD_SERVER: "https://api.auderenow.io/api"
   STAGING_SERVER: "https://api.staging.auderenow.io/api"
@@ -64,89 +62,7 @@ set_firebase_config: &set_firebase_config
     esac
     grep project_id android/app/google-services.json
 
-install_aws_cli: &install_aws_cli
-  name: Install AWS CLI with Pip
-  command: |
-    if which aws > /dev/null; then
-      echo "The AWS CLI is already installed. Skipping."
-      exit 0
-    fi
-    export PIP=$(which pip pip3 | head -1)
-    if [[ -n $PIP ]]; then
-      if which sudo > /dev/null; then
-        sudo $PIP install awscli --upgrade
-      else
-        # This installs the AWS CLI to ~/.local/bin. Make sure that ~/.local/bin is in your $PATH.
-        $PIP install awscli --upgrade --user
-      fi
-    elif [[ $(which unzip curl | wc -l) -eq 2 ]]; then
-      cd
-      curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-      unzip awscli-bundle.zip
-      if which sudo > /dev/null; then
-        sudo ~/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
-      else
-        # This installs the AWS CLI to the default location (~/.local/lib/aws) and create a symbolic link (symlink) at ~/bin/aws. Make sure that ~/bin is in your $PATH.
-        awscli-bundle/install -b ~/bin/aws
-      fi
-      rm -rf awscli-bundle*
-      cd -
-    else
-      echo "Unable to install AWS CLI. Please install pip."
-      exit 1
-    fi
-
-install_fluapi: &install_fluapi
-  name: Server Yarn Install
-  command: |
-    cd FluApi
-    yarn install --frozen-lockfile
-    ls node_modules
-    if [[ -e package-lock.json ]]; then
-      echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
-      echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
-      false
-    fi
-
-setup_fluapi_database: &setup_fluapi_database
-  name: Create Test Databases
-  command: |
-    sudo apt-get update
-    sudo apt-get install -y postgresql-client
-    # Wait up to a minute for port 5432 to open
-    for i in $(seq 60); do (! nc -z localhost 5432) && sleep 1 || break; done
-    psql "$TEST_DATABASE_URL" <<EOF
-      CREATE DATABASE test_pii;
-      CREATE DATABASE test_nonpii;
-    EOF
-
-build_test_fluapi: &build_test_fluapi
-  name: Server Tests
-  command: |
-    sudo apt-get install -y rsync
-    cd FluApi
-    (
-      echo PII_DATABASE_URL="$TEST_PII_DATABASE_URL"
-      echo NONPII_DATABASE_URL="$TEST_NONPII_DATABASE_URL"
-      echo POSTGIS_DATABASE_URL="$TEST_NONPII_DATABASE_URL"
-      echo EXPORT_HASH_SECRET=secret
-      echo HUTCH_BASE_URL=https://seattleflu.org/
-      echo HUTCH_USER=user
-      echo HUTCH_PASSWORD=password
-      echo SMARTYSTREETS_BASE_URL=https://smartystreets.com/
-      echo SMARTYSTREETS_AUTH_ID=12345
-      echo SMARTYSTREETS_AUTH_TOKEN=67890
-      echo S3_REPORT_BUCKET=test.bucket
-      echo S3_ASPREN_BUCKET=test.bucket
-      echo S3_FILESHARE_BUCKET=test.fileshare.bucket
-    ) > .env
-    yarn setup
-    yarn "migration:postgis"
-    yarn typecheck
-    yarn build
-    yarn test
-    yarn test-integration
-
+version: 2
 jobs:
   build:
     <<: *defaults
@@ -214,9 +130,54 @@ jobs:
           paths:
             - FluStudy_au/android/openCVLibrary341-contrib
             - FluStudy_au/android/app/src/main/jniLibs
-      - run: *install_fluapi
-      - run: *setup_fluapi_database
-      - run: *build_test_fluapi
+      - run:
+          name: Server Yarn Install
+          command: |
+            cd FluApi
+            yarn install --frozen-lockfile
+            ls node_modules
+            if [[ -e package-lock.json ]]; then
+              echo "Unexpected 'package-lock.json'.  Use 'yarn install' instead of 'npm install'."
+              echo "To fix, 'git rm package-lock.jon', 'yarn install', and 'git add yarn-lock.json'."
+              false
+            fi
+      - run:
+          name: Create Test Databases
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y postgresql-client
+            # Wait up to a minute for port 5432 to open
+            for i in $(seq 60); do (! nc -z localhost 5432) && sleep 1 || break; done
+            psql "$TEST_DATABASE_URL" <<EOF
+              CREATE DATABASE test_pii;
+              CREATE DATABASE test_nonpii;
+            EOF
+      - run:
+          name: Server Tests
+          command: |
+            sudo apt-get install -y rsync
+            cd FluApi
+            (
+              echo PII_DATABASE_URL="$TEST_PII_DATABASE_URL"
+              echo NONPII_DATABASE_URL="$TEST_NONPII_DATABASE_URL"
+              echo POSTGIS_DATABASE_URL="$TEST_NONPII_DATABASE_URL"
+              echo EXPORT_HASH_SECRET=secret
+              echo HUTCH_BASE_URL=https://seattleflu.org/
+              echo HUTCH_USER=user
+              echo HUTCH_PASSWORD=password
+              echo SMARTYSTREETS_BASE_URL=https://smartystreets.com/
+              echo SMARTYSTREETS_AUTH_ID=12345
+              echo SMARTYSTREETS_AUTH_TOKEN=67890
+              echo S3_REPORT_BUCKET=test.bucket
+              echo S3_ASPREN_BUCKET=test.bucket
+              echo S3_FILESHARE_BUCKET=test.fileshare.bucket
+            ) > .env
+            yarn setup
+            yarn "migration:postgis"
+            yarn typecheck
+            yarn build
+            yarn test
+            yarn test-integration
       - run:
           name: FluLambda Yarn Install
           command: |
@@ -344,56 +305,6 @@ jobs:
           key: server-node-cache-{{ checksum "FluApi/package.json" }}
           paths:
             - FluApi/node_modules
-
-  build_and_deploy_fluapi:
-    <<: *defaults
-    steps:
-      - checkout:
-          path: ~/repo
-      - run:
-          name: Checkout Specific Commit
-          command: |
-            if [[ "${COMMIT:-}" != "" ] && [ $COMMIT != "latest" ]]; then
-              git checkout $COMMIT
-            fi
-      - run: *install_fluapi
-      - run: *setup_fluapi_database
-      - run: *build_test_fluapi
-      - run: *install_aws_cli
-      - setup_remote_docker
-      - run:
-          name: Publish Server Image
-          command: |
-            export TAG=$(git rev-parse HEAD)
-            docker build -t fluapi:$TAG -f FluApi/docker/api/Dockerfile .
-            scripts/manage-service publish fluapi $TAG
-      - run:
-          name: Deploy Staging Server
-          command: |
-            scripts/manage-service stage fluapi $TAG
-
-  deploy_fluapi_staging:
-    <<: *defaults
-    steps:
-      - checkout:
-          path: ~/repo
-      - run: *install_aws_cli
-      - run:
-          name: Deploy Staging Server
-          command: |
-            export TAG="${COMMIT:-$(git rev-parse HEAD)}"
-            scripts/manage-service stage fluapi $TAG
-
-  deploy_fluapi_prod:
-    <<: *defaults
-    steps:
-      - checkout:
-          path: ~/repo
-      - run: *install_aws_cli
-      - run:
-        name: Deploy Prod Server
-        command: |
-          scripts/manage-service prod fluapi
 
   build_deploy_fluathome: &build_deploy_fluathome
     environment:
