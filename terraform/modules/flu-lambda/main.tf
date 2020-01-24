@@ -374,6 +374,7 @@ resource "aws_lambda_function" "chills_mtl_import" {
   source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
   role = "${aws_iam_role.flu_lambda.arn}"
   timeout = 300
+  reserved_concurrent_executions = 1
 
   environment {
     variables = {
