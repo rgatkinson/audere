@@ -373,6 +373,7 @@ jobs:
       - run:
           name: Deploy Staging Server
           command: |
+            export TAG=$(git rev-parse HEAD)
             scripts/manage-service stage fluapi $TAG
 
   deploy_fluapi_staging:
