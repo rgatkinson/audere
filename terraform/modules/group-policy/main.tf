@@ -106,6 +106,23 @@ resource "aws_iam_policy" "datascientist_access" {
 // https://docs.aws.amazon.com/sagemaker/latest/dg/sms-getting-started-step1.html
 data "aws_iam_policy_document" "datascientist_access" {
 
+  statement {
+    sid = "AllowIndividualUserToViewAndManageTheirOwnMFA"
+
+    actions = [
+      "iam:CreateVirtualMFADevice",
+      "iam:DeleteVirtualMFADevice",
+      "iam:EnableMFADevice",
+      "iam:ListMFADevices",
+      "iam:ResyncMFADevice",
+    ]
+
+    resources = [
+      "arn:aws:iam::*:mfa/$${aws:username}",
+      "arn:aws:iam::*:user/$${aws:username}",
+    ]
+  }
+
   // s3 photoset access
   statement {
     actions = [
@@ -119,6 +136,7 @@ data "aws_iam_policy_document" "datascientist_access" {
     resources = [
       "arn:aws:s3:::sagemaker.auderenow.io/*",
       "arn:aws:s3:::uw-photoset.auderenow.io/public/*",
+      "arn:aws:s3:::cv-*.auderenow.io",
       "arn:aws:s3:::cv-*.auderenow.io/*",
     ]
 
@@ -126,6 +144,12 @@ data "aws_iam_policy_document" "datascientist_access" {
       test     = "Bool"
       variable = "aws:SecureTransport"
       values   = ["true"]
+    }
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
     }
   }
 
@@ -174,6 +198,12 @@ data "aws_iam_policy_document" "datascientist_access" {
       variable = "aws:SecureTransport"
       values   = ["true"]
     }
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
   }
 
   statement {
@@ -186,6 +216,18 @@ data "aws_iam_policy_document" "datascientist_access" {
       "arn:aws:codecommit:*:*:*SageMaker*",
       "arn:aws:codecommit:*:*:*Sagemaker*"
     ]
+
+    condition = {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["true"]
+    }
+
+    condition = {
+      test     = "${local.mfa_condition_test}"
+      variable = "${local.mfa_condition_variable}"
+      values   = ["${local.mfa_condition_value}"]
+    }
   }
 }
 
