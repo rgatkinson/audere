@@ -6,10 +6,15 @@
   "scripts": {
     "build": "tsc",
     "lint": "prettier --list-different '*.ts'",
-    "lint-fix": "prettier --write '*.ts'"
+    "lint-fix": "prettier --write '*.ts'",
+    "test-encrypt": "jest --testPathPattern=./DataProtection"
   },
   "devDependencies": {
+    "@types/jest": "^24.9.0",
+    "@types/node": "^13.1.8",
+    "jest": "^24.9.0",
     "prettier": "^1.16.1",
+    "ts-jest": "^24.3.0",
     "typescript": "^3.0.3"
   }
 }
