@@ -67,7 +67,7 @@ export class ChillsMatchKitsEndpoint {
     if (match != null) {
       res.json(match);
     } else {
-      res.sendStatus(404);
+      res.status(404).json({ message: "barcodeNotFound" });
     }
   };
 }
