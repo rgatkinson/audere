@@ -87,7 +87,7 @@ function ecs_deploy() {
    
   local count=1
   RETRY_INTERVAL=6
-  MAX_RETRIES=20
+  MAX_RETRIES=50
   while [[ $count -le $MAX_RETRIES ]]; do
     sleep $RETRY_INTERVAL
     local currentTask="$(get_current_running_task "$cluster" "$service_id")"
