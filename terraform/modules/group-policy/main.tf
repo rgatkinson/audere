@@ -38,6 +38,23 @@ data "aws_iam_policy_document" "administrator_access" {
       values   = ["${local.mfa_condition_value}"]
     }
   }
+
+  statement {
+    sid = "AllowIndividualUserToViewAndManageTheirOwnMFA"
+
+    actions = [
+      "iam:CreateVirtualMFADevice",
+      "iam:DeleteVirtualMFADevice",
+      "iam:EnableMFADevice",
+      "iam:ListMFADevices",
+      "iam:ResyncMFADevice",
+    ]
+
+    resources = [
+      "arn:aws:iam::*:mfa/$${aws:username}",
+      "arn:aws:iam::*:user/$${aws:username}",
+    ]
+  }
 }
 
 // --------------------------------------------------------------------------------
@@ -76,31 +93,99 @@ resource "aws_iam_group_policy_attachment" "datascientist_job" {
   policy_arn = "arn:aws:iam::aws:policy/job-function/DataScientist"
 }
 
-resource "aws_iam_group_policy_attachment" "datascientist_groundtruth" {
+resource "aws_iam_group_policy_attachment" "datascientist_access" {
   group      = "${aws_iam_group.datascientists.name}"
-  policy_arn = "${aws_iam_policy.datascientist_groundtruth.arn}"
+  policy_arn = "${aws_iam_policy.datascientist_access.arn}"
 }
 
-resource "aws_iam_policy" "datascientist_groundtruth" {
-  name = "AudereDataScientistGroundTruth"
-  policy = "${data.aws_iam_policy_document.datascientist_groundtruth.json}"
+resource "aws_iam_policy" "datascientist_access" {
+  name = "AudereDataScientistAccess"
+  policy = "${data.aws_iam_policy_document.datascientist_access.json}"
 }
 
 // https://docs.aws.amazon.com/sagemaker/latest/dg/sms-getting-started-step1.html
-data "aws_iam_policy_document" "datascientist_groundtruth" {
+data "aws_iam_policy_document" "datascientist_access" {
+
+  // s3 photoset access
   statement {
     actions = [
-      "cognito-idp:CreateGroup",
-      "cognito-idp:CreateUserPool",
-      "cognito-idp:CreateUserPoolDomain",
-      "cognito-idp:AdminCreateUser",
-      "cognito-idp:CreateUserPoolClient",
-      "cognito-idp:AdminAddUserToGroup",
-      "cognito-idp:DescribeUserPoolClient",
-      "cognito-idp:DescribeUserPool",
-      "cognito-idp:UpdateUserPool"
-    ],
+      "s3:CreateBucket",
+      "s3:ListBucket",
+      "s3:GetBucketLocation",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [
+      "arn:aws:s3:::sagemaker.auderenow.io/*",
+      "arn:aws:s3:::uw-photoset.auderenow.io/public/*",
+      "arn:aws:s3:::cv-*.auderenow.io/*",
+    ]
+
+    condition = {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["true"]
+    }
+  }
+
+  // https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html
+  // Putting s3 actions in separate statement above to limit buckets.
+  statement {
+    actions = [
+      "sagemaker:*",
+      "ecr:GetAuthorizationToken",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:SetRepositoryPolicy",
+      "ecr:CompleteLayerUpload",
+      "ecr:BatchDeleteImage",
+      "ecr:UploadLayerPart",
+      "ecr:DeleteRepositoryPolicy",
+      "ecr:InitiateLayerUpload",
+      "ecr:DeleteRepository",
+      "ecr:PutImage",
+      "ecr:CreateRepository",
+      "cloudwatch:PutMetricData",
+      "cloudwatch:GetMetricData",
+      "cloudwatch:GetMetricStatistics",
+      "cloudwatch:ListMetrics",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+      "logs:GetLogEvents",
+      "robomaker:CreateSimulationApplication",
+      "robomaker:DescribeSimulationApplication",
+      "robomaker:DeleteSimulationApplication",
+      "robomaker:CreateSimulationJob",
+      "robomaker:DescribeSimulationJob",
+      "robomaker:CancelSimulationJob",
+      "ec2:CreateVpcEndpoint",
+      "ec2:DescribeRouteTables",
+      "fsx:DescribeFileSystem",
+      "elasticfilesystem:DescribeMountTargets"
+    ]
     resources = ["*"]
+
+    condition = {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["true"]
+    }
+  }
+
+  statement {
+    actions = [
+      "codecommit:GitPull",
+      "codecommit:GitPush",
+    ],
+    resources = [
+      "arn:aws:codecommit:*:*:*sagemaker*",
+      "arn:aws:codecommit:*:*:*SageMaker*",
+      "arn:aws:codecommit:*:*:*Sagemaker*"
+    ]
   }
 }
 
@@ -791,6 +876,11 @@ data "aws_iam_user" "jenny" {
 
 }
 
+data "aws_iam_user" "lessw" {
+  user_name = "lessw"
+
+}
+
 data "aws_iam_user" "mmarucheck" {
   user_name = "mmarucheck"
 }
@@ -813,6 +903,10 @@ data "aws_iam_user" "sam" {
 
 data "aws_iam_user" "terri" {
   user_name = "terri"
+}
+
+data "aws_iam_user" "yongshao" {
+  user_name = "yongshao"
 }
 
 // --------------------------------------------------------------------------------
@@ -839,15 +933,18 @@ resource "aws_iam_group_membership" "committers" {
   group = "${aws_iam_group.committers.name}"
 
   users = [
+    "akr",
     "billy",
     "jay",
     "jenny",
+    "lessw",
     "mmarucheck",
     "philip",
     "ram",
     "rob",
     "sam",
     "terri",
+    "yongshao",
   ]
 }
 
@@ -866,8 +963,10 @@ resource "aws_iam_group_membership" "datascientists" {
 
   users = [
     "jenny",
+    "lessw",
     "mmarucheck",
     "sam",
+    "yongshao",
   ]
 }
 
