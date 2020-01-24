@@ -374,7 +374,7 @@ jobs:
           name: Deploy Staging Server
           command: |
             export TAG=$(git rev-parse HEAD)
-            scripts/manage-service stage fluapi $TAG
+            scripts/manage-service stage fluapi fluapi:$TAG
 
   deploy_fluapi_staging:
     working_directory: ~/repo
@@ -389,7 +389,7 @@ jobs:
           name: Deploy Staging Server
           command: |
             export TAG="${COMMIT:-$(git rev-parse HEAD)}"
-            scripts/manage-service stage fluapi $TAG
+            scripts/manage-service stage fluapi fluapi:$TAG
 
   deploy_fluapi_prod:
     working_directory: ~/repo

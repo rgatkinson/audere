@@ -22,7 +22,8 @@ function fail() {
 function ecr_login() {
   echo "=================================================="
   echo "Logging in to ECR"
-  if [[ $ECR_NO_TOKEN == true ]]; then
+  use_token=${ECR_NO_TOKEN:-false}
+  if [[ $use_token == true ]]; then
     $(aws ecr get-login --no-include-email)
   else
     "$SELF_DIR/ecr-login"
@@ -53,8 +54,14 @@ function ecs_deploy() {
   local service_id="$1"
   local service="$2"
   local repo_lines="$3"
-  local current_tag="$4"
+  local default_tag="$4"
   local new_tag="$5"
+
+  shift
+  shift
+  shift
+  shift
+  shift
 
   local repos=()
   while read -r line; do
@@ -63,6 +70,18 @@ function ecs_deploy() {
 
   echo "=================================================="
   for repo in "${repos[@]}"; do
+    local current_tag="$default_tag"
+
+    # Check for specific tags passed in the the form repo:tag
+    if [ $# -ne 0 ]; then
+      local current_tags=("$@")
+      for tag in "${current_tags[@]}"; do
+        if [[ $tag =~ ^$repo: ]]; then
+          current_tag="$(cut -d':' -f2 <<<$tag)"
+        fi
+      done
+    fi
+
     local current_digest="$(ecr_image_digest "$repo" "$current_tag")"
     if [[ -z "$current_digest" ]]; then
       fail "$repo:$current_tag does not have a valid manifest - did you forget to publish?"
@@ -175,13 +194,15 @@ case "$subcommand" in
 
   stage | prod)
     service="$1"
+    shift
+
     check_service $service
     repos="$(config_get_list "\"$service\".repo")"
     echo "Repos: '$repos'"
 
     case "$subcommand" in
-      stage) existing_tag="${2:-latest}";  new_tag="staging";;
-      prod)  existing_tag="${2:-staging}"; new_tag="prod";;
+      stage) default_tag="latest"; new_tag="staging";;
+      prod)  default_tag="staging"; new_tag="prod";;
       *) fail "internal error '$subcommand'";;
     esac
 
@@ -189,7 +210,7 @@ case "$subcommand" in
     echo "Service ID: '$service_id'"
 
     ecr_login
-    ecs_deploy "$service_id" "$service" "$repos" "$existing_tag" "$new_tag"
+    ecs_deploy "$service_id" "$service" "$repos" "$default_tag" "$new_tag" "$@"
 
     echo "=================================================="
     echo "Deployed '${service_id}'"
