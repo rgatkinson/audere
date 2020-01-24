@@ -774,6 +774,10 @@ data "aws_iam_policy_document" "security_audit" {
 // --------------------------------------------------------------------------------
 // Users with managed AWS privileges
 
+data "aws_iam_user" "akr" {
+  user_name = "akr"
+}
+
 data "aws_iam_user" "billy" {
   user_name = "billy"
 }
@@ -819,7 +823,9 @@ resource "aws_iam_group_membership" "administrators" {
   group = "${aws_iam_group.administrators.name}"
 
   users = [
+    "akr",
     "billy",
+    "jenny",
     "mmarucheck",
     "philip",
     "ram",
@@ -870,7 +876,9 @@ resource "aws_iam_group_membership" "infrastructurers" {
   group = "${aws_iam_group.infrastructurers.name}"
 
   users = [
+    "akr",
     "billy",
+    "jenny",
     "mmarucheck",
     "ram",
     "sam",

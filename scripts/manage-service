@@ -22,7 +22,11 @@ function fail() {
 function ecr_login() {
   echo "=================================================="
   echo "Logging in to ECR"
-  "$SELF_DIR/ecr-login"
+  if [[ $ECR_NO_TOKEN == true ]]; then
+    $(aws ecr get-login --no-include-email)
+  else
+    "$SELF_DIR/ecr-login"
+  fi
 }
 
 function ecr_publish() {

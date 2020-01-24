@@ -123,10 +123,15 @@ resource "aws_kms_alias" "ssm_parameters" {
 }
 
 // --------------------------------------------------------------------------------
-// ECR image push user
+// ECR image push & ECS deploy user
 
 resource "aws_iam_user" "ecr_push" {
   name = "ecr-push"
+}
+
+resource "aws_iam_user_policy_attachment" "ecs_manage" {
+  user       = "${aws_iam_user.ecr_push.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerServiceFullAccess"
 }
 
 resource "aws_iam_user_policy_attachment" "ecr_push" {
