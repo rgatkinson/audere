@@ -180,9 +180,9 @@ test("(un)applyEncryptionPolicy() should correctly handle arrays nested at vario
     {
       encryptionPolicy: EncryptionPolicy.MustEncrypt,
       b: [1, 2, 3],
-      c: "foo"
+      c: "foo",
     },
-    [4, 5, 6]
+    [4, 5, 6],
   ];
   const roundtrippedObj = unapplyEncryptionPolicy(applyEncryptionPolicy(obj));
   expect(roundtrippedObj).toStrictEqual(obj);

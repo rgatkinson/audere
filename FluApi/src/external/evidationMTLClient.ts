@@ -47,8 +47,13 @@ export class EvidationMTLClient {
   /**
    * Lists files in the MTL directory from the environment bucket, including the
    * file hashes to determine whether a particular file has been processed.
+   *
+   * Only lists files created in the last 5 days.
    */
   public async listMTLFiles(): Promise<S3File[]> {
+    const lookback = new Date();
+    lookback.setDate(lookback.getDate() - 3);
+
     let list: ListObjectsV2Request = {
       Bucket: this.config.evidationBucket,
       Prefix: "homekit2020/mtl",
@@ -69,8 +74,10 @@ export class EvidationMTLClient {
         list.ContinuationToken = objects.NextContinuationToken;
       }
 
-      const filtered = objects.Contents.filter(o =>
-        o.Key.endsWith(".jsonl.gz")
+      const filtered = objects.Contents.filter(
+        o =>
+          o.Key.endsWith(".jsonl.gz") &&
+          o.LastModified.getTime() >= lookback.getTime()
       );
       files.push(...filtered);
     } while (truncated);
