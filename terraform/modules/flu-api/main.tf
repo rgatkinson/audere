@@ -71,6 +71,32 @@ resource "aws_lb_target_group" "flu_api" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "flu_api_public_unhealthy_hosts" {
+  alarm_name = "${local.base_name}-public-unhealthy-hosts"
+  alarm_description = "Unhealthy host for FluApi public"
+
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = "1"
+  metric_name = "UnHealthyHostCount"
+  namespace = "AWS/ApplicationELB"
+  period = "60"
+  statistic = "Maximum"
+  threshold = "0"
+  treat_missing_data = "ignore"
+
+  alarm_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+  ok_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  dimensions {
+    LoadBalancerName = "${aws_lb.flu_api_lb.name}"
+    TargetGroup = "${aws_lb_target_group.flu_api.name}"
+  }
+}
+
 resource "aws_lb_listener" "flu_api_listener" {
   load_balancer_arn = "${aws_lb.flu_api_lb.id}"
   port = 443
@@ -118,6 +144,32 @@ resource "aws_lb_target_group" "flu_api_internal" {
     path = "/api"
     port = "444"
     protocol = "HTTP"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "flu_api_internal_unhealthy_hosts" {
+  alarm_name = "${local.base_name}-internal-unhealthy-hosts"
+  alarm_description = "Unhealthy host for FluApi internal"
+
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = "1"
+  metric_name = "UnHealthyHostCount"
+  namespace = "AWS/ApplicationELB"
+  period = "60"
+  statistic = "Maximum"
+  threshold = "0"
+  treat_missing_data = "ignore"
+
+  alarm_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+  ok_actions = [
+    "${var.infra_alerts_sns_topic_arn}"
+  ]
+
+  dimensions {
+    LoadBalancerName = "${aws_lb.flu_api_internal_lb.name}"
+    TargetGroup = "${aws_lb_target_group.flu_api_internal.name}"
   }
 }
 
