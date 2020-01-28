@@ -19,21 +19,71 @@ function fail() {
   exit 1
 }
 
-function do_tests() {
-  local target_type="$1"
-  local BASEURL="$2"
-  local TEST_FILE_JSON="$SELF_DIR/fluapi-curl-tests.json"
-  local all_test_urls="$(jq -r ".tests[].url" $TEST_FILE_JSON)"
-  for url in ${all_test_urls}; do 
-    echo -e "${YELLOW}Testing ${url}${NC}"
-    expected_result="$(jq -r ".tests[]|select(.url==\"$url\")|.expected_$target_type" $TEST_FILE_JSON)"
-    actual_result="$(curl -sS "${BASEURL}$url")"
-    if [[ "$actual_result" == $expected_result ]]; then
-      echo -e "${GREEN}passed${NC}\n"
-    else 
-      fail "${RED}FAILED${NC}\n${YELLOW}Expected:${NC}\n$expected_result\n${YELLOW}Got:${NC}\n$actual_result\n"
-    fi
-  done
+function print_test_outcome() {
+  local actual="$1"
+  local expected="$2"
+  if [[ "$actual" == $expected ]]; then
+    echo -e "${GREEN}passed${NC}\n"
+  else 
+    fail "${RED}FAILED${NC}\n${YELLOW}Expected:${NC}\n$expected\n${YELLOW}Got:${NC}\n$actual\n"
+  fi
+}
+
+function do_api_test() {
+  local base_url="$1"
+  echo -e "${YELLOW}Testing /api${NC}"
+  actual_result="$(curl -sS "${base_url}/api")"
+  expected_result="{\"Status\":\"OK\"}"
+  print_test_outcome "${actual_result}" "${expected_result}"
+  return 0
+}
+
+function do_about_test() {
+  local base_url="$1"
+  echo -e "${YELLOW}Testing /about${NC}"
+  actual_result="$(curl -sS "${base_url}/about")"
+  expected_result="{\"name\":\"nodejs-web-service\"*"
+  print_test_outcome "${actual_result}" "${expected_result}"
+  return 0
+}
+
+function do_bad_url_test() {
+  local base_url="$1"
+  echo -e "${YELLOW}Testing /foobarfakeurl${NC}"
+  actual_result="$(curl -sS "${base_url}/foobarfakeurl")"
+  expected_result="*Cannot GET /foobarfakeurl</pre>*"
+  print_test_outcome "${actual_result}" "${expected_result}"
+  return 0
+}
+
+function do_chills_barcode_test() {
+  local base_url="$1"
+  echo -e "${YELLOW}Testing /api/chills/matchBarcode${NC}"
+  data="{\"barcode\":\"$CHILLS_TEST_BARCODE\",\"id\":\"$CHILLS_TEST_DOCID\",\"secret\":\"SECRET_KEY\",\"demo\":\"true\"}"
+  if [[ $base_url == $staging_BASEURL ]]; then
+    data=${data//"SECRET_KEY"/$STAGING_SECRET_KEY}
+  else
+    data=${data//"SECRET_KEY"/$PROD_SECRET_KEY}
+  fi
+  actual_result="$(curl -X POST -H "Content-Type: application/json" -d "${data}" -sS "$base_url"/api/chills/matchBarcode)"
+  expected_result="{\"email\":\"t**t@auderenow.org\",\"emailHash\":*"
+  print_test_outcome "${actual_result}" "${expected_result}"
+  return 0
+}
+
+function do_cough_giftcard_test() {
+  local base_url="$1"
+  echo -e "${YELLOW}Testing /api/cough/giftcardAvailable${NC}"
+  if [[ $base_url == $staging_BASEURL ]]; then
+    data="giftcardRequest=\\{\"secret\":\"SECRET_KEY\",\"denomination\":25,\"isDemo\":false,\"docId\":\"$COUGH_TEST_STAGING_DOCID\",\"barcode\":\"$COUGH_TEST_BARCODE\"\\}"
+    data=${data//"SECRET_KEY"/$STAGING_SECRET_KEY}
+  else
+    data="giftcardRequest=\\{\"secret\":\"SECRET_KEY\",\"denomination\":20,\"isDemo\":false,\"docId\":\"$COUGH_TEST_PROD_DOCID\",\"barcode\":\"$COUGH_TEST_BARCODE\"\\}"
+    data=${data//"SECRET_KEY"/$PROD_SECRET_KEY}
+  fi
+  actual_result="$(curl -sS "$base_url"/api/cough/giftcardAvailable?"$data")"
+  expected_result="{\"giftcardAvailable\":true}"
+  print_test_outcome "${actual_result}" "${expected_result}"
   return 0
 }
 
@@ -42,7 +92,11 @@ case "$target_type" in
   staging|prod) 
     URL_VAR=${target_type}_BASEURL  
     echo -e "Starting post-deploy tests against ${!URL_VAR}\n"
-    do_tests "$target_type" "${!URL_VAR}"
+    do_api_test "${!URL_VAR}"
+    do_about_test "${!URL_VAR}"
+    do_bad_url_test "${!URL_VAR}"
+    do_chills_barcode_test "${!URL_VAR}"
+    do_cough_giftcard_test "${!URL_VAR}"
     echo -e "All tests passed"
     ;;
   *) 
