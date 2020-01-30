@@ -5,7 +5,7 @@
 
 locals {
   base_name = "notifier-${var.environment}"
-  slack_archive_path = "../../../local/notifier/cloudwatch-slack.zip"
+  slack_archive_path = "../../../local/notifier/release.zip"
 }
 
 resource "aws_sns_topic" "infra_alerts" {
@@ -50,14 +50,14 @@ resource "aws_lambda_permission" "sns_slack_lambda_permission" {
 resource "aws_lambda_function" "slack_forwarder" {
   function_name = "${local.base_name}-slack-forwarder"
   filename = "${local.slack_archive_path}"
-  handler = "index.handler"
-  runtime = "nodejs8.10"
+  handler = "src/index.handler"
+  runtime = "nodejs10.x"
   source_code_hash = "${base64sha256(file("${local.slack_archive_path}"))}"
   role = "${aws_iam_role.slack_notifier.arn}"
 
   environment {
     variables = {
-      KMS_ENCRYPTED_HOOK_URL = "${data.aws_ssm_parameter.slack_hook_url.value}"
+      SLACK_HOOK_URL = "${data.aws_ssm_parameter.slack_hook_url.value}"
     }
   }
 }

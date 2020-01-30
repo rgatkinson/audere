@@ -15,16 +15,12 @@ function echorun() {
 }
 
 function package_slack_lambda() {
-  curl -L https://github.com/assertible/lambda-cloudwatch-slack/archive/v0.3.0.zip --output v0.3.0.zip
-  local checksum="cce7a34e561c4d7f5598a69146cd0a0642cb43e9c664c7d081857d843c4cfef5"
-  if ! shasum -a 256 -c <<< "${checksum} *v0.3.0.zip"; then
-    echo "lambda-cloudwatch-slack checksum failed"
+  curl -L https://github.com/arabold/aws-to-slack/releases/download/1.3.0/release.zip --output release.zip
+  local checksum="c95bf872942225d1d3d05d43044c5b9aec84d195da1e24a14153efbfe125cda3"
+  if ! shasum -a 256 -c <<< "${checksum} *release.zip"; then
+    echo "aws-to-slack checksum failed"
     exit 1
   fi
-  unzip v0.3.0.zip
-  cd lambda-cloudwatch-slack-0.3.0
-  npm install
-  zip -r ../cloudwatch-slack.zip *
 }
 
 readonly DIR_="$SELF_DIR/../../../local/notifier"
