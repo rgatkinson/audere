@@ -15,6 +15,8 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 function fail() {
+  circle_url=${CIRCLE_BUILD_URL:-N/A}
+  curl -X POST --data-urlencode "payload={\"text\": \"Deploy FAILED\nCircle Build URL: $circle_url\", \"icon_emoji\": \":interrobang:\"}" $INFRA_SLACK_WEBHOOK
   echo 1>&2 -e "$*"
   exit 1
 }
@@ -184,6 +186,8 @@ case "$subcommand" in
     repo="$1"
     tag="${2:-latest}"
 
+    username=${CIRCLE_USERNAME:-$(whoami)}
+    curl -X POST --data-urlencode "payload={\"text\": \"$username is deploying $repo $tag\", \"icon_emoji\": \":large_blue_circle:\"}" $INFRA_SLACK_WEBHOOK
     ecr_login
     ecr_publish "$repo" "$tag"
 
@@ -212,6 +216,8 @@ case "$subcommand" in
     ecr_login
     ecs_deploy "$service_id" "$service" "$repos" "$default_tag" "$new_tag" "$@"
 
+    commit = $(default_commit)
+    curl -X POST --data-urlencode "payload={\"text\": \"Deploy succeeded!\nService: $service\nCommit: $commit\", \"icon_emoji\": \":large_blue_circle:\"}" $INFRA_SLACK_WEBHOOK
     echo "=================================================="
     echo "Deployed '${service_id}'"
     echo "=================================================="
