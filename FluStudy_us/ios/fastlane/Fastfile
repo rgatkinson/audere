@@ -81,7 +81,7 @@ platform :ios do
         refresh_certificates: false
       )
     end
-    changelog = changelog_from_git_commits(
+    changelist = changelog_from_git_commits(
       # http://git-scm.com/docs/pretty-formats
       # - <short hash> <commit title>
       pretty: "- %h %s",
@@ -97,7 +97,7 @@ platform :ios do
     )
     slack_announce(
       destination: "TestFlight", 
-      changelog: changelog
+      changelist: changelist
     )
     git_tag
   end
@@ -121,7 +121,7 @@ platform :ios do
     version = get_version_number
     build = get_build_number
     destination = options[:destination]
-    changelog = options[:changelog]
+    changelist = options[:changelist]
     lasttag = Helper.backticks("git describe --match \"chills_v1\\.0\\.*\" --abbrev=0 --tags")
     ENV["SLACK_URL"] = ENV["SLACK_WEBHOOK"]
     slack(
@@ -131,7 +131,7 @@ platform :ios do
         "Built by" => ENV["CIRCLE_USERNAME"],
         "Description" => ENV["BUILD_DESCRIPTION"],
         "Release Type" => ENV["EXPO_RELEASE_CHANNEL"],
-        "Changelog since #{lasttag}" => changelog,
+        "Changelog since #{lasttag}" => changelist,
         "Build log" => ENV["CIRCLE_BUILD_URL"]
       }
     )
