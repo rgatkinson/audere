@@ -73,6 +73,14 @@ const photoUploader = new PhotoUploader({
   collection: photoCollectionName(),
 });
 
+export function uploadPreview(
+  uid: string,
+  filepath: string,
+  previewFrameIndex: number
+) {
+  return photoUploader.enqueuePreviewContents(uid, filepath, previewFrameIndex);
+}
+
 export function uploadFile(uid: string, filepath: string) {
   return photoUploader.enqueueFileContents(uid, filepath);
 }

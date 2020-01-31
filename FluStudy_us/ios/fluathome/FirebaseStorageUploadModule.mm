@@ -65,6 +65,22 @@ RCT_REMAP_METHOD(add,
     resolve(nil);
 }
 
+RCT_REMAP_METHOD(deleteFile,
+                 uriString:(NSString *)uriString
+                 addWithResolver:(RCTPromiseResolveBlock)resolve
+                 rejecter:(RCTPromiseRejectBlock)reject) {
+    RCTLogInfo(@"deleteFile uri=%@", uriString);
+    NSError *error = nil;
+
+    [self->fileManager removeItemAtPath:uriString error:&error];
+    if (error != nil) {
+        reject(@"", @"", error);
+        return;
+    }
+
+    resolve(nil);
+}
+
 RCT_REMAP_METHOD(list,
                  queue:(NSString *)queue
                  addWithResolver:(RCTPromiseResolveBlock)resolve

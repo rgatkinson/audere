@@ -11,6 +11,7 @@ import { IdleManager } from "./IdleManager";
 import { UploadQueue, createUploadQueue } from "./FirebaseUploadHelper";
 import { logError, logIfAsyncError } from "../util/AsyncError";
 import { syncPhoto } from "../store/FirebaseStore";
+import { getRemoteConfig } from "../util/remoteConfig";
 
 const DEBUG_PHOTO_UPLOADER = process.env.DEBUG_PHOTO_UPLOADER === "true";
 
@@ -24,6 +25,7 @@ interface EnqueueFileContentsEvent {
   type: "EnqueueFileContents";
   photoId: string;
   filepath: string;
+  removeOriginal: boolean;
 }
 
 interface UploadNextEvent {
@@ -76,13 +78,41 @@ export class PhotoUploader {
     await this.idle.waitForIdle(ms);
   }
 
+  public enqueuePreviewContents(
+    photoId: string,
+    filepath: string,
+    frameIndex: number
+  ): void {
+    const sampleRate = getRemoteConfig("previewFramesSampleRate");
+    if (sampleRate > 0 && frameIndex % sampleRate == 0) {
+      const argSummary = `enqueuePreviewContents '${photoId}' path='${filepath}'`;
+      debug(argSummary);
+      if (!photoId.length || !filepath.length) {
+        throw logError("enqueuePreviewContents.args", new Error(argSummary));
+      }
+      this.fireEvent({
+        type: "EnqueueFileContents",
+        photoId,
+        filepath,
+        removeOriginal: true,
+      });
+    } else {
+      this.queue.deleteFile(filepath);
+    }
+  }
+
   public enqueueFileContents(photoId: string, filepath: string): void {
     const argSummary = `enqueueFileContents '${photoId}' path='${filepath}'`;
     debug(argSummary);
     if (!photoId.length || !filepath.length) {
       throw logError("enqueueFileContents.args", new Error(argSummary));
     }
-    this.fireEvent({ type: "EnqueueFileContents", photoId, filepath });
+    this.fireEvent({
+      type: "EnqueueFileContents",
+      photoId,
+      filepath,
+      removeOriginal: false,
+    });
   }
 
   private onConnectionChange(connected: boolean) {
@@ -138,7 +168,12 @@ export class PhotoUploader {
   ): Promise<void> {
     await logIfAsyncError(
       "PhotoUploader.handleEnqueueFileContents:queue.add",
-      () => this.queue.add(enqueue.photoId, enqueue.filepath)
+      () =>
+        this.queue.add(
+          enqueue.photoId,
+          enqueue.filepath,
+          enqueue.removeOriginal
+        )
     );
     await idleness();
     this.uploadNext();

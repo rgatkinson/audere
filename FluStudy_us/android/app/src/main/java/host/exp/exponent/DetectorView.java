@@ -68,6 +68,7 @@ public class DetectorView extends LinearLayout implements
 
     private static final String RDT_PHOTO_FILE_NAME = "rdt_photo.jpg";
     private static final String RDT_TEST_AREA_PHOTO_FILE_NAME = "rdt_test_area_photo.jpg";
+    private static final String RDT_PREVIEW_FILE_NAME = "rdt_preview.jpg";
 
     private MainActivity activity;
     private ResourceLoader resourceLoader;
@@ -89,6 +90,7 @@ public class DetectorView extends LinearLayout implements
     private int screenWidth;
 
     private volatile boolean stillCaptureInProgress = false;
+    private volatile int previewFrameIndex = 0;
 
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -103,7 +105,7 @@ public class DetectorView extends LinearLayout implements
 
         // TODO: move this to background thread and check that it's ready where needed
         resourceLoader = new ResourceLoader(context, activity.getAssets());
-        iprdAdapter = new IprdAdapter(resourceLoader.loadIPRDModel());
+        iprdAdapter = new IprdAdapter();
 
         boxDetector = resourceLoader.loadPhase1Detector();
         interpretationDetector = resourceLoader.loadPhase2Detector();
@@ -498,10 +500,10 @@ public class DetectorView extends LinearLayout implements
                 } else {
                     if (rdtResult.centered) {
                         Log.d(TAG, "RDT found and is centered in phase 1");
-                        iprdAdapter.checkFrame(imageBitmap, iprdResult);
+                        iprdAdapter.checkFrame(imageBitmap, iprdResult, rdtResult.rdtBitmap);
                         if (iprdResult.isAccepted()) {
+                            failureReason = "Good frame";
                             if (!stillCaptureInProgress) {
-                                failureReason = "Good frame";
                                 Log.d(TAG, "Have good preview frame, making single request");
                                 stillCaptureInProgress = true;
                                 cameraController.captureStill();
@@ -511,14 +513,12 @@ public class DetectorView extends LinearLayout implements
                         } else {
                             Log.d(TAG, "IPRD filter not accepted");
                             failureReason = "(IPRD) ";
-                            if (!iprdResult.rdtFound()) {
-                                failureReason += "no rdt ";
-                            } else {
-                                if (!iprdResult.isSharp()) {
-                                    failureReason += "not sharp ";
-                                } else if (iprdResult.exposureResult() != IprdAdapter.ExposureResult.NORMAL) {
-                                    failureReason += "bad exposure";
-                                }
+                            if (!iprdResult.isSharp()) {
+                                Log.d(TAG, "Not sharp with sharpness metric " + iprdResult.getSharpnessRaw());
+                                failureReason += "not sharp ";
+                            }
+                            if (iprdResult.exposureResult() != IprdAdapter.ExposureResult.NORMAL) {
+                                failureReason += "bad exposure";
                             }
                         }
                     } else {
@@ -531,7 +531,9 @@ public class DetectorView extends LinearLayout implements
                 failureReason = "(IPRD) not steady";
             }
 
-            detectorListener.onRDTDetected(iprdResult, rdtResult, failureReason);
+            String previewUri = saveImage(imageBitmap, SystemClock.currentThreadTimeMillis() + "_" + RDT_PREVIEW_FILE_NAME);
+            previewFrameIndex += 1;
+            detectorListener.onRDTDetected(iprdResult, rdtResult, previewUri, previewFrameIndex, failureReason);
         }
 
 
@@ -694,6 +696,7 @@ public class DetectorView extends LinearLayout implements
         void onRDTDetected(
                 IprdAdapter.Result iprdResult,
                 RDTTracker.RDTResult rdtResult,
+                String previewUri, int previewFrameIndex,
                 String failureReason
         );
         void onRDTInterpreted(InterpretationResult interpretationResult);

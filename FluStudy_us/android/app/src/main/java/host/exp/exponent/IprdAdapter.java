@@ -10,25 +10,22 @@ import android.graphics.Bitmap;
 import com.iprd.rdtcamera.AcceptanceStatus;
 import com.iprd.rdtcamera.RdtAPI;
 
-import java.nio.MappedByteBuffer;
-
-
 public class IprdAdapter {
 
   public static final String TAG = "IprdAdapter";
   private RdtAPI iprdApi;
 
-  public IprdAdapter(MappedByteBuffer iprdModel) {
-    this.iprdApi = builder().setModel(iprdModel).build();
+  public IprdAdapter() {
+    this.iprdApi = builder().build();
   }
 
   public Result isSteady(Bitmap frame) {
     return new Result(iprdApi.isSteady(frame));
   }
 
-  public void checkFrame(Bitmap frame, Result iprdResult) {
-    FrameResult frameResult = new FrameResult(this.iprdApi.checkFrame(frame));
-    iprdResult.rdtFound = frameResult.foundRDT;
+  public void checkFrame(Bitmap frame, Result iprdResult, Bitmap rdt) {
+    FrameResult frameResult = new FrameResult(this.iprdApi.checkFrame(frame, rdt));
+    iprdResult.sharpnessRaw = frameResult.sharpnessMetric;
     iprdResult.isSharp = frameResult.sharpness == AcceptanceStatus.GOOD;
     iprdResult.exposureResult = Result.getExposureResult((short) frameResult.brightness);
   }
@@ -42,21 +39,10 @@ public class IprdAdapter {
 
     private Builder() {
       iprdBuilder = new RdtAPI.RdtAPIBuilder();
-      iprdBuilder.setMaxScale((short) 100);
-      iprdBuilder.setMinScale((short) 0);
-      iprdBuilder.setXMin((short) 0);
-      iprdBuilder.setXMax((short) 100);
-      iprdBuilder.setYMin((short) 0);
-      iprdBuilder.setXMax((short) 100);
     }
 
     public RdtAPI build() {
       return this.iprdBuilder.build();
-    }
-
-    public Builder setModel(MappedByteBuffer model) {
-      this.iprdBuilder.setModel(model);
-      return this;
     }
   }
 
@@ -66,14 +52,14 @@ public class IprdAdapter {
 
   public static class Result {
     private boolean isSteady;
-    private boolean rdtFound;
     private boolean isSharp;
+    private double sharpnessRaw;
     private ExposureResult exposureResult;
 
     private Result(boolean isSteady) {
       this.isSteady = isSteady;
-      this.rdtFound = false;
       this.isSharp = false;
+      this.sharpnessRaw = 0;
       this.exposureResult = ExposureResult.NOT_CALCULATED;
     }
 
@@ -81,12 +67,12 @@ public class IprdAdapter {
       return isSteady;
     }
 
-    public boolean rdtFound() {
-      return rdtFound;
-    }
-
     public boolean isSharp() {
       return isSharp;
+    }
+
+    public double getSharpnessRaw() {
+      return sharpnessRaw;
     }
 
     public ExposureResult exposureResult() {
@@ -94,7 +80,7 @@ public class IprdAdapter {
     }
 
     public boolean isAccepted() {
-      return isSteady && rdtFound && isSharp && exposureResult == ExposureResult.NORMAL;
+      return isSteady && isSharp && exposureResult == ExposureResult.NORMAL;
     }
 
     private static ExposureResult getExposureResult(short brightness) {
@@ -116,38 +102,23 @@ public class IprdAdapter {
       this.sharpness = status.mSharpness;
       this.scale = status.mScale;
       this.brightness = status.mBrightness;
-      this.perspectiveDistortion = status.mPerspectiveDistortion;
-      this.xOffset = status.mDisplacementX;
-      this.yOffset = status.mDisplacementY;
-      this.foundRDT = status.mRDTFound;
-      this.left = status.mBoundingBoxX;
-      this.top = status.mBoundingBoxY;
-      this.right = this.left + status.mBoundingBoxWidth;
-      this.bottom = this.top + status.mBoundingBoxHeight;
+      this.sharpnessMetric = status.mSharpnessMetric;
     }
 
+    public final double sharpnessMetric;
     public final int sharpness;
     public final int scale;
     public final int brightness;
-    public final int perspectiveDistortion;
-    public final int xOffset;
-    public final int yOffset;
-    public final boolean foundRDT;
-    public final int left;
-    public final int top;
-    public final int right;
-    public final int bottom;
 
     @Override
     public String toString() {
       StringBuilder builder = new StringBuilder();
       return builder.append("FrameResult:")
-          .append(" sharp=").append(this.sharpness)
-          .append(" scale=").append(this.scale)
-          .append(" bright=").append(this.brightness)
-          .append(" perspec=").append(this.perspectiveDistortion)
-          .append(" rdt=").append(this.foundRDT)
-          .toString();
+              .append(" sharp=").append(this.sharpness)
+              .append(" sharpness=").append(this.sharpnessMetric)
+              .append(" scale=").append(this.scale)
+              .append(" bright=").append(this.brightness)
+              .toString();
     }
   }
 }

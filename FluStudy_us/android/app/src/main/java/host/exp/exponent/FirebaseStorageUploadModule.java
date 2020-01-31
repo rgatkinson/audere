@@ -51,7 +51,7 @@ public class FirebaseStorageUploadModule extends ReactContextBaseJavaModule {
   // This will copy the file on disk.  Results are undefined if the file is
   // modified before the Promise is completed.
   @ReactMethod
-  public void add(String queue, String uid, String uriString, Promise promise) {
+  public void add(String queue, String uid, String uriString, boolean removeOriginal, Promise promise) {
 //    Log.d(TAG, "add(queue='"+queue+"', uid='"+uid+"', uri='"+uriString+"')");
 
     Uri uri = Uri.parse(uriString);
@@ -75,10 +75,33 @@ public class FirebaseStorageUploadModule extends ReactContextBaseJavaModule {
       File from = new File(filepath);
       File to = new File(q, uid);
       copy(new File(filepath), to);
-//      Log.d(TAG, "Copied '"+from.getAbsolutePath()+"' to '"+to.getAbsolutePath()+"'");
+      Log.d(TAG, "Copied '"+from.getAbsolutePath()+"' to '"+to.getAbsolutePath()+"'");
       promise.resolve(null);
+      if (removeOriginal) {
+        from.delete();
+        Log.d(TAG, "Delete original: " + filepath);
+      }
     } catch (Exception e) {
       Log.e(TAG, "add failure", e);
+      promise.reject(e);
+    }
+  }
+
+  @ReactMethod
+  public void deleteFile(String uriString, Promise promise) {
+    Log.d(TAG, "deleteFile(uri='"+uriString+"')");
+
+    Uri uri = Uri.parse(uriString);
+
+    String filepath = uri.getPath();
+
+    try {
+      File file = new File(filepath);
+      file.delete();
+      Log.d(TAG, "Deleted file: " + filepath);
+      promise.resolve(null);
+    } catch (Exception e) {
+      Log.e(TAG, "delete failure", e);
       promise.reject(e);
     }
   }
@@ -123,7 +146,7 @@ public class FirebaseStorageUploadModule extends ReactContextBaseJavaModule {
 
   private void cleanupUpload(File file, Promise promise) {
     boolean result = file.delete();
-//    Log.d(TAG, "cleanup '"+file.getAbsolutePath()+"' success="+result);
+    Log.d(TAG, "cleanup '"+file.getAbsolutePath()+"' success="+result);
     promise.resolve(null);
   }
 

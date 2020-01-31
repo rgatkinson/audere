@@ -249,6 +249,16 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
     rdtInfo: state.survey.rdtInfo,
   };
 
+  if (!!survey.previewSeries) {
+    pouch.previewSeries = [];
+    let i;
+    for (i = 0; i < survey.previewSeries.length; i++) {
+      pouch.previewSeries.push({
+        series: survey.previewSeries[i],
+      });
+    }
+  }
+
   if (!!survey.kitBarcode) {
     pouch.samples.push(survey.kitBarcode);
   }

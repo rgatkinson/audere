@@ -117,6 +117,8 @@ class FakeQueue implements UploadQueue {
     this.log.push(addSuccess(uid, filepath));
   }
 
+  async deleteFile(filepath: string): Promise<void> {}
+
   async list(): Promise<string[]> {
     return [...this.pending];
   }

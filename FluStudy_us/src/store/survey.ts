@@ -15,6 +15,7 @@ import {
 import { onCSRUIDEstablished } from "../util/tracker";
 
 export type SurveyAction =
+  | { type: "APPEND_PREVIEW_SERIES"; series: RDTReaderResult[] }
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
@@ -47,6 +48,7 @@ export type SurveyState = {
   csruid?: string;
   email?: string;
   events: EventInfo[];
+  previewSeries?: RDTReaderResult[][];
   invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
   oneMinuteStartTime?: number;
@@ -65,6 +67,7 @@ export type SurveyState = {
   [key: string]:
     | boolean
     | string
+    | RDTReaderResult[][]
     | EventInfo[]
     | SampleInfo[]
     | SampleInfo
@@ -88,6 +91,12 @@ const initialState: SurveyState = {
 
 export default function reducer(state = initialState, action: SurveyAction) {
   switch (action.type) {
+    case "APPEND_PREVIEW_SERIES":
+      return {
+        ...state,
+        previewSeries: pushPreviewSeries(state, action.series),
+        timestamp: new Date().getTime(),
+      };
     case "APPEND_EVENT":
       return {
         ...state,
@@ -271,6 +280,13 @@ export default function reducer(state = initialState, action: SurveyAction) {
   }
 }
 
+export function appendPreviewSeries(series: RDTReaderResult[]): SurveyAction {
+  return {
+    type: "APPEND_PREVIEW_SERIES",
+    series,
+  };
+}
+
 export function appendEvent(kind: EventInfoKind, event: string): SurveyAction {
   return {
     type: "APPEND_EVENT",
@@ -420,6 +436,16 @@ function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {
     refId,
   });
   return newEvents;
+}
+
+function pushPreviewSeries(
+  state: SurveyState,
+  previewSeries: RDTReaderResult[]
+) {
+  let newSeries =
+    state.previewSeries == null ? [] : state.previewSeries.slice(0);
+  newSeries.push(previewSeries);
+  return newSeries;
 }
 
 function pushInvalidBarcode(state: SurveyState, barcode: SampleInfo) {
