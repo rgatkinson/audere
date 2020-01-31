@@ -6,11 +6,14 @@ const NativeRDTReader = requireNativeComponent("RDTReader");
 
 type InternalRDTCapturedArgs = {
   imageUri: string;
+  previewUri: string;
+  previewFrameIndex: number;
   resultWindowImageUri: string;
   testStripDetected: boolean;
   isCentered: boolean;
   isSteady: boolean;
   sharpness: boolean;
+  sharpnessRaw: number;
   exposureResult: RDTReaderExposureResult;
   control: boolean;
   testA: boolean;
@@ -24,10 +27,13 @@ type InternalRDTCapturedArgs = {
 
 export type RDTCapturedArgs = {
   imageUri: string;
+  previewUri: string;
+  previewFrameIndex: number;
   resultWindowImageUri: string;
   testStripDetected: boolean;
   isCentered: boolean;
   isFocused: boolean;
+  sharpnessRaw: number;
   isSteady: boolean;
   exposureResult: RDTReaderExposureResult;
   controlLineFound: boolean;
@@ -69,10 +75,13 @@ export class RDTReader extends React.Component<RDTReaderProps> {
     const capturedArgs: InternalRDTCapturedArgs = event.nativeEvent;
     this.props.onRDTCaptured({
       imageUri: capturedArgs.imageUri,
+      previewUri: capturedArgs.previewUri,
+      previewFrameIndex: capturedArgs.previewFrameIndex,
       resultWindowImageUri: capturedArgs.resultWindowImageUri,
       testStripDetected: capturedArgs.testStripDetected,
       isCentered: capturedArgs.isCentered,
       isFocused: capturedArgs.sharpness,
+      sharpnessRaw: capturedArgs.sharpnessRaw,
       isSteady: capturedArgs.isSteady,
       exposureResult: capturedArgs.exposureResult,
       controlLineFound: capturedArgs.control,

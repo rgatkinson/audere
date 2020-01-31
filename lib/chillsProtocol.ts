@@ -110,6 +110,10 @@ export interface SurveyDocument extends ProtocolDocumentBase {
 
 export type SurveyInfo = SurveyNonPIIInfo;
 
+export interface PreviewSeries {
+  series: RDTReaderResult[];
+}
+
 export interface SurveyNonPIIInfo extends CommonInfo {
   samples: SampleInfo[];
 
@@ -119,6 +123,8 @@ export interface SurveyNonPIIInfo extends CommonInfo {
   responses: ResponseInfo[];
 
   rdtInfo?: RDTInfo;
+
+  previewSeries?: PreviewSeries[];
 }
 
 export interface PushNotificationState {
@@ -189,12 +195,19 @@ export interface RDTInfo {
 }
 
 export interface RDTReaderResult {
+  uiMessage?: string;
+  failureReason?: string;
+  previewSampleRate?: number;
+  previewFrameIndex?: number;
+  previewPhotoId?: string;
+  photoUploaded?: boolean;
   testStripDetected: boolean;
   testStripBoundary?: { x: number; y: number }[];
   skippedDueToMemWarning?: boolean;
   isCentered?: boolean;
   isFocused?: boolean;
   isSteady?: boolean;
+  sharpnessRaw?: number;
   exposureResult?: RDTReaderExposureResult;
   controlLineFound?: boolean;
   testALineFound?: boolean;

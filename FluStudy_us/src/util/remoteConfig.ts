@@ -12,6 +12,7 @@ interface RemoteConfig {
   advanceRDTCaptureOnMemoryWarning: boolean;
   showRDTInterpretation: string;
   rdtTimeoutSeconds: number;
+  previewFramesSampleRate: number;
   [key: string]: boolean | number | string[] | string;
 }
 
@@ -26,6 +27,7 @@ const DEFAULT_CONFIGS: RemoteConfig = {
   advanceRDTCaptureOnMemoryWarning: false,
   showRDTInterpretation: "",
   rdtTimeoutSeconds: 30,
+  previewFramesSampleRate: 0,
 };
 
 // Values you put into here will always be applied on top of remote config

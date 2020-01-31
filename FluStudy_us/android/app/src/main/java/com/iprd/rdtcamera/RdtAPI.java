@@ -4,62 +4,51 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.nio.MappedByteBuffer;
 import java.util.Vector;
 
 import static com.iprd.rdtcamera.AcceptanceStatus.GOOD;
 import static com.iprd.rdtcamera.AcceptanceStatus.TOO_HIGH;
 import static com.iprd.rdtcamera.AcceptanceStatus.TOO_LOW;
-import static com.iprd.rdtcamera.ImageRegistration.computeMotion;
-import static com.iprd.rdtcamera.Utils.rotateFrame;
-import static com.iprd.rdtcamera.Utils.rotateRect;
-import static org.opencv.core.Core.BORDER_REFLECT101;
-import static org.opencv.core.Core.mean;
-import static org.opencv.core.Core.meanStdDev;
-import static org.opencv.core.CvType.CV_16S;
-import static org.opencv.imgproc.Imgproc.INTER_CUBIC;
-import static org.opencv.imgproc.Imgproc.Laplacian;
-import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class RdtAPI {
     private static final String TAG = "RdtApi";
 
     private Config mConfig;
-    private ObjectDetection mTensorFlow;
     private Vector<Mat> mWarpList= new Vector<>();
+    private ImageRegistration mImageRegistration;
     public Config getConfig() {
         return mConfig;
     }
 
     private static boolean computeBlur(Config config, Mat greyImage, AcceptanceStatus ret) {
         Mat laplacian = new Mat();
-        Laplacian(greyImage, laplacian, CV_16S, 3, 1, 0, BORDER_REFLECT101);
+        Imgproc.Laplacian(greyImage, laplacian, CvType.CV_16S, 3, 1, 0, Core.BORDER_REFLECT101);
         MatOfDouble median = new MatOfDouble();
         MatOfDouble std = new MatOfDouble();
-        meanStdDev(laplacian, median, std);
+        Core.meanStdDev(laplacian, median, std);
         // Release resources
         laplacian.release();
-        double sharpness =(float) std.get(0,0)[0]*std.get(0,0)[0];
+        ret.mSharpnessMetric = std.get(0,0)[0]*std.get(0,0)[0];
 
-        if (sharpness < config.mMinSharpness){
+        if (ret.mSharpnessMetric < config.mMinSharpness){
             ret.mSharpness = TOO_LOW;
             return false;
         }
-        Log.d("Sharpness",""+sharpness);
+        Log.d("Sharpness",ret.mSharpnessMetric + " (min: " + config.mMinSharpness + ")");
         ret.mSharpness = AcceptanceStatus.GOOD;
         return true;
     }
 
     private static boolean computeBrightness(Config config, Mat grey, AcceptanceStatus ret) {
-        Scalar tempVal = mean(grey);
+        Scalar tempVal = Core.mean(grey);
         double brightness = tempVal.val[0];
         if (brightness > config.mMaxBrightness) {
             ret.mBrightness = TOO_HIGH;
@@ -73,93 +62,13 @@ public class RdtAPI {
         return true;
     }
 
-    private static boolean computeDistortion(Config config, boolean rotated, Mat mat, AcceptanceStatus ret){
-        if (rotated) {
-            if (ret.mBoundingBoxWidth * 100 > config.mMaxScale * mat.cols()) {
-                ret.mScale = TOO_HIGH;
-                Log.d("DistMaxSc", "" + ret.mBoundingBoxWidth * 100 + ">" + config.mMaxScale * mat.cols());
-                return false;
-            } else if (ret.mBoundingBoxWidth * 100 < config.mMinScale * mat.cols()) {
-                ret.mScale = TOO_LOW;
-                Log.d("DistMinSc", "" + ret.mBoundingBoxWidth * 100 + "<" + config.mMinScale * mat.cols());
-                return false;
-            } else {
-                ret.mScale = AcceptanceStatus.GOOD;
-            }
-
-            if (ret.mBoundingBoxX * 100 > config.mXMax * mat.cols()) {
-                ret.mDisplacementX = TOO_HIGH;
-                Log.d("DistXMax","" + ret.mBoundingBoxX * 100 + ">" + config.mXMax * mat.cols());
-                return false;
-            } else if (ret.mBoundingBoxX * 100 < config.mXMin * mat.cols()) {
-                ret.mDisplacementX = TOO_LOW;
-                Log.d("DistXMin","" + ret.mBoundingBoxX * 100 + "<" + config.mXMin * mat.cols());
-                return false;
-            } else {
-                ret.mDisplacementX = GOOD;
-            }
-
-            if (ret.mBoundingBoxY * 100 > config.mYMax * mat.rows()) {
-                ret.mDisplacementY = TOO_HIGH;
-                Log.d("DistYMax","" + ret.mBoundingBoxY * 100 + ">" + config.mYMax * mat.rows());
-                return false;
-            } else if (ret.mBoundingBoxY * 100 < config.mYMin * mat.rows()) {
-                ret.mDisplacementY = TOO_LOW;
-                Log.d("DistYMin","" + ret.mBoundingBoxY * 100 + "<" + config.mYMin * mat.rows());
-                return false;
-            } else {
-                ret.mDisplacementY = GOOD;
-            }
-
-        } else {
-            if (ret.mBoundingBoxHeight * 100 > config.mMaxScale * mat.rows()) {
-                ret.mScale = TOO_HIGH;
-                Log.d("DistMaxSc", "" + ret.mBoundingBoxHeight * 100 + ">" + config.mMaxScale * mat.rows());
-                return false;
-            } else if (ret.mBoundingBoxHeight * 100 < config.mMinScale * mat.rows()) {
-                ret.mScale = TOO_LOW;
-                Log.d("DistMinSc", "" + ret.mBoundingBoxHeight * 100 + "<" + config.mMinScale * mat.rows());
-                return false;
-            } else {
-                ret.mScale = AcceptanceStatus.GOOD;
-            }
-
-            if (ret.mBoundingBoxX * 100 > config.mXMax * mat.rows()) {
-                ret.mDisplacementX = TOO_HIGH;
-                Log.d("DistXMax","" + ret.mBoundingBoxX * 100 + ">" + config.mXMax * mat.rows());
-                return false;
-            } else if (ret.mBoundingBoxX * 100 < config.mXMin * mat.rows()){
-                ret.mDisplacementX = TOO_LOW;
-                Log.d("DistXMin","" + ret.mBoundingBoxX * 100 + "<" + config.mXMin * mat.rows());
-                return false;
-            } else {
-                ret.mDisplacementX = GOOD;
-            }
-
-            if (ret.mBoundingBoxY * 100 > config.mYMax * mat.cols()) {
-                ret.mDisplacementY = TOO_HIGH;
-                Log.d("DistYMax","" + ret.mBoundingBoxY * 100 + ">" + config.mYMax * mat.cols());
-                return false;
-            } else if (ret.mBoundingBoxY * 100 < config.mYMin * mat.cols()) {
-                ret.mDisplacementY = TOO_LOW;
-                Log.d("DistYMin","" + ret.mBoundingBoxY * 100 + "<" + config.mYMin * mat.cols());
-                return false;
-            } else {
-                ret.mDisplacementY = GOOD;
-            }
-        }
-
-        ret.mPerspectiveDistortion= GOOD;
-        return true;
-    }
-
     public boolean isSteady(Bitmap frame) {
         Mat matInput = new Mat();
         Mat greyMat = new Mat();
         boolean result = false;
         try {
             Utils.bitmapToMat(frame, matInput);
-            cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
+            Imgproc.cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
             result = checkSteadiness(greyMat) == GOOD;
         } catch (Exception e) {
             Log.d(TAG, "Exception: " + e.getMessage());
@@ -172,10 +81,10 @@ public class RdtAPI {
 
     private short checkSteadiness(Mat greyMat) {
         Mat warp;
-        warp = computeMotion(greyMat);
+        warp = mImageRegistration.computeMotion(greyMat);
         mWarpList.add(warp.clone());
 
-        if(mWarpList.size() > 11){
+        if (mWarpList.size() > 11){
             mWarpList.remove(0);
         }
         //Lets Check Motion now.
@@ -207,78 +116,29 @@ public class RdtAPI {
         return result;
     }
 
-    public AcceptanceStatus checkFrame(Bitmap frame) {
+    public AcceptanceStatus checkFrame(Bitmap frame, Bitmap rdt) {
         Mat matInput = new Mat();
         Mat greyMat = new Mat();
-        Mat greyMatResized = new Mat();
         AcceptanceStatus ret = new AcceptanceStatus();
 
         try {
-            Utils.bitmapToMat(frame, matInput);
-            cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
+            Utils.bitmapToMat(rdt, matInput);
+            Imgproc.cvtColor(matInput, greyMat, Imgproc.COLOR_RGBA2GRAY);
 
-            boolean rotated = matInput.width() < matInput.height();
-
-            Mat rotatedMat = new Mat();
-            if (rotated) {
-                rotatedMat = rotateFrame(greyMat, -90);
-            }
-
-            Size sz = new Size(1280, 720);
-
-            Imgproc.resize(rotated ? rotatedMat : greyMat, greyMatResized, sz, 0.0, 0.0, INTER_CUBIC);
-
-            processRDT(ret, matInput, greyMatResized, rotated, mTensorFlow);
-
-            if (ret.mRDTFound) {
-                computeDistortion(mConfig, rotated, greyMat, ret);
-                Mat imageROI = greyMat.submat(new Rect(ret.mBoundingBoxX, ret.mBoundingBoxY, ret.mBoundingBoxWidth, ret.mBoundingBoxHeight));
-                computeBlur(mConfig, imageROI, ret);
-                computeBrightness(mConfig, imageROI, ret);
-            }
+            computeBlur(mConfig, greyMat, ret);
+            computeBrightness(mConfig, greyMat, ret);
         } catch (Exception e) {
             Log.d(TAG, "Exception: " + e.getMessage());
         } finally {
-            greyMatResized.release();
             greyMat.release();
             matInput.release();
             return ret;
         }
     }
 
-    private static void processRDT(AcceptanceStatus retStatus, Mat inputMat, Mat resizedGreyMat, boolean setRotation, ObjectDetection tensorFlow) {
-        final long updateTimeSt = System.currentTimeMillis();
-        Boolean[] rdtFound = new Boolean[]{ new Boolean(false) };
-        Rect detectedRoi = tensorFlow.update(resizedGreyMat, rdtFound);
-
-        retStatus.mRDTFound = rdtFound[0].booleanValue();
-        if (retStatus.mRDTFound) {
-            float wFactor, hFactor;
-            if (setRotation) {
-                detectedRoi = rotateRect(resizedGreyMat, detectedRoi, -90);
-                wFactor = inputMat.cols() / 720.0f;
-                hFactor = inputMat.rows() / 1280f;
-            } else {
-                wFactor = inputMat.cols() / 1280.f;
-                hFactor = inputMat.rows() / 720f;
-            }
-            retStatus.mBoundingBoxX = (short) (detectedRoi.x * wFactor);
-            retStatus.mBoundingBoxY = (short) (detectedRoi.y * hFactor);
-            retStatus.mBoundingBoxWidth = (short) (detectedRoi.width * wFactor);
-            retStatus.mBoundingBoxHeight = (short) (detectedRoi.height * hFactor);
-        }
-
-        Log.i("Process RDT Time ", ""+(System.currentTimeMillis()-updateTimeSt));
-    }
-
     private RdtAPI(RdtAPIBuilder rdtAPIBuilder) {
         this.mConfig = rdtAPIBuilder.mConfig;
-        if (this.mConfig.mMappedByteBuffer != null) {
-            this.mTensorFlow = new ObjectDetection(this.mConfig.mMappedByteBuffer);
-        }
-        if (this.mConfig.mTfliteB != null) {
-            this.mTensorFlow = new ObjectDetection(this.mConfig.mTfliteB);
-        }
+        mImageRegistration = new ImageRegistration();
     }
 
     public static class RdtAPIBuilder {
@@ -288,59 +148,8 @@ public class RdtAPI {
             mConfig = new Config();
         }
 
-        public RdtAPIBuilder setModel(MappedByteBuffer model){
-            mConfig.setmMappedByteBuffer(model);
-            return this;
-        }
-
         public RdtAPI build() {
-            RdtAPI rdtAPI =  new RdtAPI(this);
-            return rdtAPI;
-        }
-
-        public RdtAPIBuilder setMinBrightness(float mMinBrightness) {
-            mConfig.setmMinBrightness(mMinBrightness);
-            return this;
-        }
-
-        public RdtAPIBuilder setMaxBrightness(float mMaxBrightness) {
-            mConfig.setmMaxBrightness(mMaxBrightness);
-            return this;
-        }
-
-        public RdtAPIBuilder setMinSharpness(float mMinSharpness) {
-            mConfig.setmMinSharpness(mMinSharpness);
-            return this;
-        }
-
-        public RdtAPIBuilder setYMax(short mYMax) {
-            mConfig.setmYMax(mYMax);
-            return this;
-        }
-
-        public RdtAPIBuilder setYMin(short mYMin) {
-            mConfig.setmYMin(mYMin);
-            return this;
-        }
-
-        public RdtAPIBuilder setXMax(short mXMax) {
-            mConfig.setmXMax(mXMax);
-            return this;
-        }
-
-        public RdtAPIBuilder setXMin(short mXMin) {
-            mConfig.setmXMin(mXMin);
-            return this;
-        }
-
-        public RdtAPIBuilder setMinScale(short mMinScale) {
-            mConfig.setmMinScale(mMinScale);
-            return this;
-        }
-
-        public RdtAPIBuilder setMaxScale(short mMaxScale) {
-            mConfig.setmMaxScale(mMaxScale);
-            return this;
+            return new RdtAPI(this);
         }
     }
 }

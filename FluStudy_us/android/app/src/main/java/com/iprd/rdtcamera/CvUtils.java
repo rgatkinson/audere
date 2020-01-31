@@ -2,12 +2,11 @@ package com.iprd.rdtcamera;
 
 import android.util.Log;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-
-import static org.opencv.core.CvType.CV_8UC4;
-import static org.opencv.imgproc.Imgproc.line;
+import org.opencv.imgproc.Imgproc;
 
 public class CvUtils {
 
@@ -53,10 +52,10 @@ public class CvUtils {
         Log.d("MotionVector", r + "[" + Math.toDegrees(angleRadian) + "]");
 
         if (m == null) {
-            m = new Mat(200, 200, CV_8UC4);
+            m = new Mat(200, 200, CvType.CV_8UC4);
             m.setTo(new Scalar(0));
         }
-        line(m, new Point(100,100), new Point(x1, y1), s,5);
+        Imgproc.line(m, new Point(100,100), new Point(x1, y1), s,5);
         Point mVector = new Point(r, Math.toDegrees(angleRadian));
         return new MotionResult(mVector, m);
     }

@@ -10,7 +10,6 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
 
 import host.exp.exponent.tflite.Classifier;
 import host.exp.exponent.tflite.TFLiteObjectDetectionAPIModel;
@@ -30,7 +29,6 @@ public class ResourceLoader {
     private static final String INTERPRETATION_TF_OD_API_LABELS_FILE = "file:///android_asset/phase2-labelmap.txt";
     private static final int TF_OD_API_INPUT_SIZE = 300;
     private static final boolean TF_OD_API_IS_QUANTIZED = true;
-    private static final String IPRD_MODEL_FILE = "iprd.tflite";
 
     public ResourceLoader(Context context, final AssetManager assetManager) {
         applicationContext = context.getApplicationContext();
@@ -69,24 +67,6 @@ public class ResourceLoader {
 
     public boolean openCVReady() {
         return haveOpenCv;
-    }
-
-    public MappedByteBuffer loadIPRDModel() {
-        try {
-            return TFLiteObjectDetectionAPIModel.loadModelFile(
-                    applicationContext.getAssets(),
-                    IPRD_MODEL_FILE
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e(TAG, "Exception initializing filter: " + e.toString());
-            Toast.makeText(
-                    applicationContext,
-                    "IPRD filter could not be initialized",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
-        return null;
     }
 
     public Classifier loadPhase1Detector() {

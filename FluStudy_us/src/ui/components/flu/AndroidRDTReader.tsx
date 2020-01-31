@@ -24,6 +24,7 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { WithNamespaces, withNamespaces } from "react-i18next";
 import {
   Action,
+  appendPreviewSeries,
   setTestStripImg,
   setRDTStartTime,
   setRDTCaptureInfo,
@@ -59,7 +60,7 @@ import {
   SMALL_TEXT,
   THICK_BORDER_WIDTH,
 } from "../../styles";
-import { uploadFile } from "../../../store";
+import { uploadFile, uploadPreview } from "../../../store";
 import {
   logFirebaseEvent,
   AppEvents,
@@ -170,6 +171,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   _instructionLastUpdate: number = 0;
   _lastRDTReaderResult?: RDTReaderResult;
   _interpreting: boolean = false;
+  _previewFrames: RDTReaderResult[] = [];
   _rdtRect: any = null;
 
   _feedbackChecks: { [key: string]: FeedbackCheck } = {
@@ -268,6 +270,14 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
+  _saveAndClearPreviewFrames() {
+    const { dispatch } = this.props;
+    if (this._previewFrames.length > 0) {
+      dispatch(appendPreviewSeries(this._previewFrames));
+      this._previewFrames = [];
+    }
+  }
+
   _handleDidFocus = () => {
     if (!this._alertShown) {
       const { navigation, t } = this.props;
@@ -298,6 +308,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   };
 
   _startCamera = () => {
+    this._saveAndClearPreviewFrames();
     this._setTimer();
     if (this.props.isDemo && !this._fpsCounterInterval) {
       this._fpsCounterInterval = global.setInterval(
@@ -315,6 +326,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       clearInterval(this._fpsCounterInterval);
       this._fpsCounterInterval = null;
     }
+    this._saveAndClearPreviewFrames();
   };
 
   _setTimer() {
@@ -360,6 +372,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
   _handleAppStateChange = async (nextAppState: string) => {
     this.setState({ appState: nextAppState });
+    this._setTimer();
+    this._saveAndClearPreviewFrames();
   };
 
   _handleMemoryWarning = () => {
@@ -524,6 +538,30 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     this._interpreting = true;
   };
 
+  _logPreviewFrameData = async (args: RDTCapturedArgs) => {
+    const rdtResult = rdtCapturedArgsToResult(args);
+
+    const sampleRate = getRemoteConfig("previewFramesSampleRate");
+    rdtResult.photoUploaded =
+      sampleRate > 0 && args.previewFrameIndex % sampleRate == 0;
+    rdtResult.previewSampleRate = sampleRate;
+    rdtResult.uiMessage = this.state.instructionMsg;
+
+    const uid = await newUID();
+    rdtResult.previewPhotoId = "preview_" + uid;
+
+    // Call uploadPreview regardless of sample rate result because this method
+    // also manages clean up of the local file system
+    uploadPreview(
+      rdtResult.previewPhotoId,
+      args.previewUri,
+      args.previewFrameIndex
+    );
+
+    this._lastRDTReaderResult = rdtResult;
+    this._previewFrames.push(rdtResult);
+  };
+
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this.setState({
       spinner: false,
@@ -536,7 +574,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     }
 
     if (!args.imageUri) {
-      this._lastRDTReaderResult = rdtCapturedArgsToResult(args);
+      await this._logPreviewFrameData(args);
       return;
     }
 
@@ -985,10 +1023,13 @@ export default connect((state: StoreState) => ({
 
 function rdtCapturedArgsToResult(args: RDTCapturedArgs): RDTReaderResult {
   return {
+    failureReason: args.failureReason,
+    previewFrameIndex: args.previewFrameIndex,
     testStripDetected: args.testStripDetected,
     testStripBoundary: args.testStripBoundary,
     isCentered: args.isCentered,
     isFocused: args.isFocused,
+    sharpnessRaw: args.sharpnessRaw,
     isSteady: args.isSteady,
     exposureResult: args.exposureResult,
     controlLineFound: args.controlLineFound,

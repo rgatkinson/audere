@@ -129,13 +129,16 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
 
     @Override
     public void onRDTDetected(IprdAdapter.Result iprdResult, RDTTracker.RDTResult rdtResult,
-                              String failureReason) {
+                              String previewUri, int previewFrameIndex, String failureReason) {
         WritableMap event = Arguments.createMap();
         writeRDTResultArgs(rdtResult, event);
         event.putBoolean("isSteady", iprdResult.isSteady());
         event.putBoolean("sharpness", iprdResult.isSharp());
+        event.putDouble("sharpnessRaw", iprdResult.getSharpnessRaw());
         event.putInt("exposureResult", iprdResult.exposureResult().ordinal());
         event.putString("failureReason", failureReason);
+        event.putString("previewUri", previewUri);
+        event.putInt("previewFrameIndex", previewFrameIndex);
 
         callReactCallback("RDTCaptured", event);
     }

@@ -6,7 +6,8 @@
 import { Platform, NativeModules } from "react-native";
 
 export interface UploadQueue {
-  add(uid: string, path: string): Promise<void>;
+  add(uid: string, path: string, removeOriginal: boolean): Promise<void>;
+  deleteFile(path: string): Promise<void>;
   list(): Promise<string[]>;
   upload(uid: string): Promise<void>;
 }
@@ -22,12 +23,21 @@ class NativeUploadQueue {
     this.prefix = prefix;
   }
 
-  public async add(uid: string, path: string): Promise<void> {
+  public async add(
+    uid: string,
+    path: string,
+    removeOriginal: boolean
+  ): Promise<void> {
     return NativeModules.FirebaseStorageUploadModule.add(
       this.prefix,
       uid,
-      path
+      path,
+      removeOriginal
     );
+  }
+
+  public async deleteFile(path: string): Promise<void> {
+    return NativeModules.FirebaseStorageUploadModule.deleteFile(path);
   }
 
   public async list(): Promise<string[]> {
