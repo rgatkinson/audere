@@ -39,7 +39,7 @@ android {
     manifestPlaceholders = [
       'appAuthRedirectScheme': 'host.exp.exponent'
     ]
-    minSdkVersion 21
+    minSdkVersion 22
   }
 
   dexOptions {
