@@ -320,7 +320,7 @@ module "chills_mtl_import" {
   source = "../lambda-cron"
 
   frequency = "${local.cron_everyday_at_2AM_and_2PM_UTC}"
-  name = "${local.base_name}-chills-mtl-import"
+  name = "${local.base_name}-chills-mtl-cron-import"
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
   security_group_ids = ["${var.internal_elb_access_sg}"]
