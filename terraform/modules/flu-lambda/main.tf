@@ -13,6 +13,7 @@ locals {
   cron_everyday_at_12PM_UTC = "cron(0 12 ? * * *)"
   cron_saturday_at_10AM_UTC = "cron(0 10 ? * 7 *)"
   cron_everyday_at_11PM_UTC = "cron(0 23 ? * * *)"
+  cron_everyday_at_2AM_and_2PM_UTC = "cron(0 2,14 ? * * *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
@@ -315,6 +316,19 @@ module "chills_triggers_import" {
   url = "http://${var.fluapi_fqdn}:444/api/import/chillsTriggers"
 }
 
+module "chills_mtl_import" {
+  source = "../lambda-cron"
+
+  frequency = "${local.cron_everyday_at_2AM_and_2PM_UTC}"
+  name = "${local.base_name}-chills-mtl-import"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  subnet_id = "${var.lambda_subnet_id}"
+  timeout = 600
+  url = "http://${var.fluapi_fqdn}:444/api/import/chillsMTL"
+}
+
 resource "aws_lambda_function" "chills_virena_import" {
   function_name = "${local.base_name}-chills-virena-import"
   filename = "${local.handler_archive_path}"
@@ -377,71 +391,5 @@ resource "aws_s3_bucket_notification" "chills_virena_reports_notification" {
     lambda_function_arn = "${aws_lambda_function.chills_virena_import.arn}"
     events = ["s3:ObjectCreated:*"]
     filter_prefix = "virena/"
-  }
-}
-
-resource "aws_lambda_function" "chills_mtl_import" {
-  function_name = "${local.base_name}-chills-mtl-import"
-  filename = "${local.handler_archive_path}"
-  handler = "handler.cronGet"
-  runtime = "nodejs12.x"
-  source_code_hash = "${base64sha256(file("${local.handler_archive_path}"))}"
-  role = "${aws_iam_role.flu_lambda.arn}"
-  timeout = 300
-  reserved_concurrent_executions = 1
-
-  environment {
-    variables = {
-      TARGET_URL = "http://${var.fluapi_fqdn}:444/api/import/chillsMTL"
-      TIMEOUT = 300000
-    }
-  }
-
-  vpc_config {
-    subnet_ids = ["${var.lambda_subnet_id}"]
-    security_group_ids = ["${var.internal_elb_access_sg}"]
-  }
-}
-
-resource "aws_lambda_permission" "chills_mtl_import_s3_invocation" {
-  action = "lambda:InvokeFunction"
-  function_name = "${aws_lambda_function.chills_mtl_import.arn}"
-  principal = "s3.amazonaws.com"
-  source_arn = "${var.evidation_bucket_arn}"
-}
-
-resource "aws_cloudwatch_metric_alarm" "chills_mtl_execution_errors" {
-  alarm_name = "${local.base_name}-chills-mtl-import-execution-errors"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = "1"
-  metric_name = "Errors"
-  namespace = "AWS/Lambda"
-  period = "60"
-  statistic = "Maximum"
-  threshold = "1"
-  treat_missing_data = "ignore"
-  alarm_description = "This monitors ${local.base_name}-chills-mtl-import execution failures"
-
-  alarm_actions = [
-    "${var.infra_alerts_sns_topic_arn}"
-  ]
-
-  ok_actions = [
-    "${var.infra_alerts_sns_topic_arn}"
-  ]
-
-  dimensions {
-    FunctionName = "${aws_lambda_function.chills_mtl_import.function_name}"
-    Resource = "${aws_lambda_function.chills_mtl_import.function_name}"
-  }
-}
-
-resource "aws_s3_bucket_notification" "chills_mtl_reports_notification" {
-  bucket = "${var.evidation_bucket_id}"
-
-  lambda_function {
-    lambda_function_arn = "${aws_lambda_function.chills_mtl_import.arn}"
-    events = ["s3:ObjectCreated:*"]
-    filter_prefix = "homekit2020/mtl/"
   }
 }
