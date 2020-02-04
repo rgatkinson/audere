@@ -197,5 +197,18 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           chills.mtl_reports
       `,
     }),
+
+    new ManagedView({
+      name: "chills_derived.evidation_triggers",
+      deps: [],
+      spec: `
+        select
+          k.barcode,
+          t.trigger_date
+        from
+          chills.evidation_triggers t
+          join chills.shipped_kits k on t.evidation_id = k.evidation_id
+      `,
+    }),
   ];
 }

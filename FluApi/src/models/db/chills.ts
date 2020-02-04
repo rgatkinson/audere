@@ -49,6 +49,7 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
     photoUploadLog: definePhotoUploadLog(sql),
     shippedKits: defineShippedKits(sql),
     survey: defineSurvey(sql.nonPii),
+    triggers: defineEvidationTrigger(sql),
     virenaFile: defineVirenaFile(sql),
     virenaRecord: defineVirenaRecord(sql),
   };
@@ -85,6 +86,7 @@ export interface ChillsModels {
   photoUploadLog: Model<PhotoUploadLogAttributes>;
   shippedKits: Model<ShippedKitAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
+  triggers: Model<EvidationTriggerAttributes>;
   virenaFile: Model<VirenaFileAttributes>;
   virenaRecord: Model<VirenaRecordAttributes>;
 }
@@ -552,6 +554,26 @@ export function defineMTLReport(sql: SplitSql): Model<MTLReportAttributes> {
       rsvResult: nullable(booleanColumn("rsv_result")),
       rsvValue: nullable(floatColumn("rsv_value")),
       rsvAssayTimestamp: nullable(stringColumn("rsv_assay_timestamp")),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface EvidationTriggerAttributes {
+  evidationId: string;
+  triggerDate: string;
+}
+export function defineEvidationTrigger(
+  sql: SplitSql
+): Model<EvidationTriggerAttributes> {
+  return defineModel<EvidationTriggerAttributes>(
+    sql.nonPii,
+    "evidation_triggers",
+    {
+      evidationId: unique(stringColumn("evidation_id")),
+      triggerDate: stringColumn("trigger_date"),
     },
     { schema }
   );

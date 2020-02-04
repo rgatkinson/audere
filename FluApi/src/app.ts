@@ -44,6 +44,7 @@ import { ChillsImportKitsEndpoint } from "./endpoints/chillsImportKitsApi";
 import { ChillsVirenaEndpoint } from "./endpoints/chillsVirenaApi";
 import { ChillsSurveillanceEndpoint } from "./endpoints/chillsSurveillanceApi";
 import { ChillsMTLEndpoint } from "./endpoints/chillsMTLApi";
+import { ChillsTriggersEndpoint } from "./endpoints/chillsTriggersApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -431,6 +432,19 @@ export function createInternalApp(config: AppConfig) {
       sqlLock.runIfFree(
         "/api/import/chillsCDCSurveillance",
         chillsSurveillance.import,
+        jsonNoOp
+      )
+    )
+  );
+
+  const chillsTriggers = new ChillsTriggersEndpoint(sql);
+  internalApp.get(
+    "/api/import/chillsTriggers",
+    stats("importChillsTriggers"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/chillsTriggers",
+        chillsTriggers.importTriggers,
         jsonNoOp
       )
     )

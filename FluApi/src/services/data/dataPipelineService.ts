@@ -46,7 +46,7 @@ export class DataPipelineService {
       },
     });
     logger.info(
-      `Refreshing ${nodes.length} nodes from  ${states.length} existing`
+      `Refreshing ${nodes.length} nodes from ${states.length} existing`
     );
     const statesByName = new Map(states.map(x => tuple2(x.name, x)));
     const nodesByName = new Map(nodes.map(x => tuple2(x.meta.name, x)));

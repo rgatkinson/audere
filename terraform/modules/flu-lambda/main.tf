@@ -12,6 +12,7 @@ locals {
   cron_everyday_at_10AM_UTC = "cron(0 10 ? * * *)"
   cron_everyday_at_12PM_UTC = "cron(0 12 ? * * *)"
   cron_saturday_at_10AM_UTC = "cron(0 10 ? * 7 *)"
+  cron_everyday_at_11PM_UTC = "cron(0 23 ? * * *)"
 }
 
 resource "aws_iam_role" "flu_lambda" {
@@ -299,6 +300,19 @@ module "chills_cdc_surveillance_import" {
   subnet_id = "${var.lambda_subnet_id}"
   timeout = 600
   url = "http://${var.fluapi_fqdn}:444/api/import/chillsCDCSurveillance"
+}
+
+module "chills_triggers_import" {
+  source = "../lambda-cron"
+
+  frequency = "${local.cron_everyday_at_11PM_UTC}"
+  name = "${local.base_name}-chills-triggers-import"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  subnet_id = "${var.lambda_subnet_id}"
+  timeout = 600
+  url = "http://${var.fluapi_fqdn}:444/api/import/chillsTriggers"
 }
 
 resource "aws_lambda_function" "chills_virena_import" {
