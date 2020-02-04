@@ -12,6 +12,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { connect } from "react-redux";
 import {
@@ -127,6 +128,7 @@ enum SizeResult {
 
 interface State {
   spinner: boolean;
+  showCamera: boolean;
   flashEnabled: boolean;
   fps: number;
   instructionMsg: string;
@@ -143,7 +145,8 @@ interface State {
 
 class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   state: State = {
-    spinner: true,
+    spinner: false,
+    showCamera: false,
     flashEnabled: false,
     fps: 0,
     instructionMsg: "centerStrip",
@@ -157,6 +160,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     failureReason: "",
   };
 
+  _alertShown: boolean = false;
   _didFocus: any;
   _willBlur: any;
   _timer: NodeJS.Timeout | null | undefined;
@@ -265,6 +269,35 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   }
 
   _handleDidFocus = () => {
+    if (!this._alertShown) {
+      const { navigation, t } = this.props;
+      this._alertShown = true;
+      Alert.alert(
+        t("alertTitle"),
+        t("alertDesc"),
+        [
+          {
+            text: t("goBack"),
+            onPress: () => {
+              navigation.dispatch(StackActions.pop({ n: 1 }));
+            },
+          },
+          {
+            text: t("start"),
+            onPress: () => {
+              this.setState({ spinner: true, showCamera: true });
+              this._startCamera();
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } else if (this.state.showCamera) {
+      this._startCamera();
+    }
+  };
+
+  _startCamera = () => {
     this._setTimer();
     if (this.props.isDemo && !this._fpsCounterInterval) {
       this._fpsCounterInterval = global.setInterval(
@@ -869,18 +902,20 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
       <View style={styles.container}>
         <StatusBar hidden={true} />
         <Spinner visible={this.state.spinner} />
-        <RDTReaderComponent
-          style={styles.camera}
-          onRDTCaptured={this._onRDTCaptured}
-          onRDTCameraReady={this._cameraReady}
-          onRDTInterpreting={this._onRDTInterpreting}
-          enabled={isFocused}
-          showDefaultViewfinder={false}
-          demoMode={isDemo}
-          flashEnabled={this.state.flashEnabled}
-          frameImageScale={1}
-          appState={this.state.appState}
-        />
+        {this.state.showCamera && (
+          <RDTReaderComponent
+            style={styles.camera}
+            onRDTCaptured={this._onRDTCaptured}
+            onRDTCameraReady={this._cameraReady}
+            onRDTInterpreting={this._onRDTInterpreting}
+            enabled={isFocused}
+            showDefaultViewfinder={false}
+            demoMode={isDemo}
+            flashEnabled={this.state.flashEnabled}
+            frameImageScale={1}
+            appState={this.state.appState}
+          />
+        )}
         <View style={styles.overlayContainer}>
           <View style={{ flex: 1 }}>
             <View
