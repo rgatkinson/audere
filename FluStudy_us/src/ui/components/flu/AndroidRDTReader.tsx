@@ -60,7 +60,7 @@ import {
   SMALL_TEXT,
   THICK_BORDER_WIDTH,
 } from "../../styles";
-import { uploadFile, uploadPreview } from "../../../store";
+import { uploadFile, deleteFile } from "../../../store";
 import {
   logFirebaseEvent,
   AppEvents,
@@ -170,6 +170,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   _instructionTimer: NodeJS.Timeout | null | undefined;
   _instructionLastUpdate: number = 0;
   _lastRDTReaderResult?: RDTReaderResult;
+  _lastPreviewSaved: number = 0;
   _interpreting: boolean = false;
   _previewFrames: RDTReaderResult[] = [];
   _rdtRect: any = null;
@@ -542,21 +543,22 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     const rdtResult = rdtCapturedArgsToResult(args);
 
     const sampleRate = getRemoteConfig("previewFramesSampleRate");
-    rdtResult.photoUploaded =
-      sampleRate > 0 && args.previewFrameIndex % sampleRate == 0;
+    const now = Date.now();
+    const upload = sampleRate > 0 && now - this._lastPreviewSaved >= sampleRate;
+
+    rdtResult.photoUploaded = upload;
     rdtResult.previewSampleRate = sampleRate;
     rdtResult.uiMessage = this.state.instructionMsg;
 
     const uid = await newUID();
     rdtResult.previewPhotoId = "preview_" + uid;
 
-    // Call uploadPreview regardless of sample rate result because this method
-    // also manages clean up of the local file system
-    uploadPreview(
-      rdtResult.previewPhotoId,
-      args.previewUri,
-      args.previewFrameIndex
-    );
+    if (upload) {
+      uploadFile(rdtResult.previewPhotoId, args.previewUri, true);
+      this._lastPreviewSaved = now;
+    } else {
+      deleteFile(args.previewUri);
+    }
 
     this._lastRDTReaderResult = rdtResult;
     this._previewFrames.push(rdtResult);

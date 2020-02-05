@@ -24,6 +24,10 @@ import { default as questions, QuestionsAction } from "./questions";
 import { StoreState } from "./StoreState";
 import { default as survey, SurveyAction } from "./survey";
 import { uploaderMiddleware } from "./uploader";
+import {
+  UploadQueue,
+  createUploadQueue,
+} from "../transport/FirebaseUploadHelper";
 
 export * from "./meta";
 export * from "./questions";
@@ -69,20 +73,19 @@ export function getStore(): Promise<Store> {
   return (storePromise = getStoreImpl());
 }
 
-const photoUploader = new PhotoUploader({
-  collection: photoCollectionName(),
-});
+const uploadQueue = createUploadQueue(photoCollectionName());
+const photoUploader = new PhotoUploader({ queue: uploadQueue });
 
-export function uploadPreview(
-  uid: string,
-  filepath: string,
-  previewFrameIndex: number
-) {
-  return photoUploader.enqueuePreviewContents(uid, filepath, previewFrameIndex);
+export function deleteFile(filepath: string) {
+  return uploadQueue.deleteFile(filepath);
 }
 
-export function uploadFile(uid: string, filepath: string) {
-  return photoUploader.enqueueFileContents(uid, filepath);
+export function uploadFile(
+  uid: string,
+  filepath: string,
+  removeOriginal: boolean = false
+) {
+  return photoUploader.enqueueFileContents(uid, filepath, removeOriginal);
 }
 
 export async function hasPendingPhotos() {

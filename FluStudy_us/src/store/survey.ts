@@ -442,10 +442,7 @@ function pushPreviewSeries(
   state: SurveyState,
   previewSeries: RDTReaderResult[]
 ) {
-  let newSeries =
-    state.previewSeries == null ? [] : state.previewSeries.slice(0);
-  newSeries.push(previewSeries);
-  return newSeries;
+  return [...(state.previewSeries || []), previewSeries];
 }
 
 function pushInvalidBarcode(state: SurveyState, barcode: SampleInfo) {

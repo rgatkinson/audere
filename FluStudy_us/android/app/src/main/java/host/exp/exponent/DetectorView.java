@@ -531,7 +531,7 @@ public class DetectorView extends LinearLayout implements
                 failureReason = "(IPRD) not steady";
             }
 
-            String previewUri = saveImage(imageBitmap, SystemClock.currentThreadTimeMillis() + "_" + RDT_PREVIEW_FILE_NAME);
+            String previewUri = saveImage(imageBitmap, previewFrameIndex + "_" + SystemClock.elapsedRealtime() + "_" + RDT_PREVIEW_FILE_NAME);
             previewFrameIndex += 1;
             detectorListener.onRDTDetected(iprdResult, rdtResult, previewUri, previewFrameIndex, failureReason);
         }

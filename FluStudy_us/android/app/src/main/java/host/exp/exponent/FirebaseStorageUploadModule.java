@@ -76,11 +76,11 @@ public class FirebaseStorageUploadModule extends ReactContextBaseJavaModule {
       File to = new File(q, uid);
       copy(new File(filepath), to);
       Log.d(TAG, "Copied '"+from.getAbsolutePath()+"' to '"+to.getAbsolutePath()+"'");
-      promise.resolve(null);
       if (removeOriginal) {
         from.delete();
         Log.d(TAG, "Delete original: " + filepath);
       }
+      promise.resolve(null);
     } catch (Exception e) {
       Log.e(TAG, "add failure", e);
       promise.reject(e);

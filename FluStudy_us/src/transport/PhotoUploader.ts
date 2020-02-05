@@ -78,30 +78,11 @@ export class PhotoUploader {
     await this.idle.waitForIdle(ms);
   }
 
-  public enqueuePreviewContents(
+  public enqueueFileContents(
     photoId: string,
     filepath: string,
-    frameIndex: number
+    removeOriginal: boolean = false
   ): void {
-    const sampleRate = getRemoteConfig("previewFramesSampleRate");
-    if (sampleRate > 0 && frameIndex % sampleRate == 0) {
-      const argSummary = `enqueuePreviewContents '${photoId}' path='${filepath}'`;
-      debug(argSummary);
-      if (!photoId.length || !filepath.length) {
-        throw logError("enqueuePreviewContents.args", new Error(argSummary));
-      }
-      this.fireEvent({
-        type: "EnqueueFileContents",
-        photoId,
-        filepath,
-        removeOriginal: true,
-      });
-    } else {
-      this.queue.deleteFile(filepath);
-    }
-  }
-
-  public enqueueFileContents(photoId: string, filepath: string): void {
     const argSummary = `enqueueFileContents '${photoId}' path='${filepath}'`;
     debug(argSummary);
     if (!photoId.length || !filepath.length) {
@@ -111,7 +92,7 @@ export class PhotoUploader {
       type: "EnqueueFileContents",
       photoId,
       filepath,
-      removeOriginal: false,
+      removeOriginal,
     });
   }
 
