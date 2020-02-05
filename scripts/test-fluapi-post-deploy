@@ -38,11 +38,21 @@ function do_api_test() {
   return 0
 }
 
-function do_about_test() {
+function do_version_test() {
   local base_url="$1"
   echo -e "${YELLOW}Testing /about${NC}"
   actual_result="$(curl -sS "${base_url}/about")"
-  expected_result="{\"name\":\"nodejs-web-service\"*"
+  aws_ecr=$(aws ecr describe-images --repository-name fluapi --image-ids imageTag=staging)
+  image_details="$(echo $aws_ecr | jq -r ".imageDetails[]|.imageTags")"
+  for tag in $image_details; do
+    if [[ $tag =~ ^\"([A-Za-z0-9]{40})\" ]]; then
+        commit=${BASH_REMATCH[1]}
+    fi
+  done
+  if [[ -z "$commit" ]]; then
+    fail "Could not find commit in ECR image details"
+  fi
+  expected_result="*\"hash\":\"$commit\"}"
   print_test_outcome "${actual_result}" "${expected_result}"
   return 0
 }
@@ -93,7 +103,7 @@ case "$target_type" in
     URL_VAR=${target_type}_BASEURL  
     echo -e "Starting post-deploy tests against ${!URL_VAR}\n"
     do_api_test "${!URL_VAR}"
-    do_about_test "${!URL_VAR}"
+    do_version_test "${!URL_VAR}"
     do_bad_url_test "${!URL_VAR}"
     do_chills_barcode_test "${!URL_VAR}"
     do_cough_giftcard_test "${!URL_VAR}"
