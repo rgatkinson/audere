@@ -550,10 +550,9 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     rdtResult.previewSampleRate = sampleRate;
     rdtResult.uiMessage = this.state.instructionMsg;
 
-    const uid = await newUID();
-    rdtResult.previewPhotoId = "preview_" + uid;
-
     if (upload) {
+      const uid = await newUID();
+      rdtResult.previewPhotoId = "preview_" + uid;
       uploadFile(rdtResult.previewPhotoId, args.previewUri, true);
       this._lastPreviewSaved = now;
     } else {
