@@ -13,10 +13,10 @@ ACCOUNT="$(aws sts get-caller-identity --output text --query 'Account')"
 REGISTRY="$ACCOUNT.dkr.ecr.us-west-2.amazonaws.com"
 RED='\033[0;31m'
 NC='\033[0m' # No Color
+CIRCLE_URL=${CIRCLE_BUILD_URL:-N/A}
 
 function fail() {
-  circle_url=${CIRCLE_BUILD_URL:-N/A}
-  curl -X POST --data-urlencode "payload={\"text\": \"Deploy FAILED\nCircle Build URL: $circle_url\", \"icon_emoji\": \":interrobang:\"}" $INFRA_SLACK_WEBHOOK
+  curl -X POST --data-urlencode "payload={\"text\": \"Deploy FAILED\nCircleCI Build URL: $CIRCLE_URL\", \"icon_emoji\": \":interrobang:\"}" $INFRA_SLACK_WEBHOOK
   echo 1>&2 -e "$*"
   exit 1
 }
@@ -99,9 +99,23 @@ function ecs_deploy() {
     fi
   done
 
+  # Loosely check for a commit
+  aws_ecr=$(aws ecr describe-images --repository-name fluapi --image-ids imageTag=$new_tag)
+  image_details="$(echo $aws_ecr | jq -r ".imageDetails[]|.imageTags")"
+  for tag in $image_details; do
+    if [[ $tag =~ ^\"([A-Za-z0-9]{40})\" ]]; then
+        commit=${BASH_REMATCH[1]}
+    fi
+  done
+  if [[ -z "$commit" ]]; then
+    commit="n/a"
+  fi
+
+  username=${CIRCLE_USERNAME:-$(whoami)}
+  curl -X POST --data-urlencode "payload={\"text\": \"$username is deploying $service to $new_tag\nCommit: $commit\nCircleCI Build URL: $CIRCLE_URL\", \"icon_emoji\": \":large_blue_circle:\"}" $INFRA_SLACK_WEBHOOK
+
   local cluster="$(config_get "cluster.$new_tag")"
-  local oldTaskID="$(get_current_running_task "$cluster" "$service_id")"
-  echo "Task ID of '$service_id' prior to update is '$oldTaskID'"
+  local startTime=$(date +%s)
 
   echo "Updating ECS service - '$service_id'"
   aws ecs update-service --cluster "$cluster" --service "$service_id" --force-new-deployment
@@ -111,10 +125,9 @@ function ecs_deploy() {
   MAX_RETRIES=50
   while [[ $count -le $MAX_RETRIES ]]; do
     sleep $RETRY_INTERVAL
-    local currentTask="$(get_current_running_task "$cluster" "$service_id")"
-    if [[ "$currentTask" != "$oldTaskID" ]]; then 
+    local stable=$(aws ecs describe-services --cluster $cluster --service $service_id --query "services[].events[?to_string(createdAt) > '$startTime' && to_string(contains(message, 'reached a steady state')) == 'true'].id" --output text)
+    if [[ $? == 0 && -n "$stable" ]]; then 
       echo "Deploy of update successful"
-      echo "New task ID of '$service_id' is '$currentTask'"
       break
     else
       echo "Waited $(($RETRY_INTERVAL * $count)) seconds for new task to start..."
@@ -128,9 +141,10 @@ function ecs_deploy() {
     test_script="$(config_get "\"$service\".\"test\"")"
     if [[ -n "$test_script" ]]; then 
       echo "Running post-deploy test script $test_script"
-      if ! "$SELF_DIR/$test_script" "$new_tag" ; then 
+      if ! "$SELF_DIR/$test_script" "$new_tag" "$commit" ; then 
         fail "${RED}ERROR:${NC} Newly deployed $service failed post-deploy tests, possibly needs rollback!!"
       fi
+      curl -X POST --data-urlencode "payload={\"text\": \"$username successfully deployed $service to $new_tag\nCommit: $commit\nCircleCI Build URL: $CIRCLE_URL\", \"icon_emoji\": \":large_blue_circle:\"}" $INFRA_SLACK_WEBHOOK
     fi
   fi
 }
@@ -151,32 +165,12 @@ function check_service() {
     || fail "Expected a defined service, got '$service'."
 }
 
-function get_current_running_task() {
-  local cluster="$1"
-  local service="$2"
-  local all_tasks="$(aws ecs list-tasks --cluster "$cluster" --service-name "$service" | jq -r '.taskArns|.[]')"
-  for task in ${all_tasks}; do 
-    local status="$(aws ecs describe-tasks --cluster "$cluster" --tasks "$task" | jq -r '.tasks[0].lastStatus')"
-    if [[ "$status" == "RUNNING" ]]; then 
-      echo "$task"
-      return 0
-    fi
-  done
-  # Didn't find any running tasks
-  return 1  
-}
-
 function config_get() {
   jqraw ".$1 // empty" "$SELF_DIR/service-registry.json"
 }
 
 function config_get_list() {
   jqraw -c ".$1[]" "$SELF_DIR/service-registry.json"
-}
-
-function default_commit() {
-  cd "$SELF_DIR"
-  git rev-parse HEAD
 }
 
 subcommand="$1"
@@ -186,8 +180,6 @@ case "$subcommand" in
     repo="$1"
     tag="${2:-latest}"
 
-    username=${CIRCLE_USERNAME:-$(whoami)}
-    curl -X POST --data-urlencode "payload={\"text\": \"$username is deploying $repo $tag\", \"icon_emoji\": \":large_blue_circle:\"}" $INFRA_SLACK_WEBHOOK
     ecr_login
     ecr_publish "$repo" "$tag"
 
@@ -216,8 +208,6 @@ case "$subcommand" in
     ecr_login
     ecs_deploy "$service_id" "$service" "$repos" "$default_tag" "$new_tag" "$@"
 
-    commit = $(default_commit)
-    curl -X POST --data-urlencode "payload={\"text\": \"Deploy succeeded!\nService: $service\nCommit: $commit\", \"icon_emoji\": \":large_blue_circle:\"}" $INFRA_SLACK_WEBHOOK
     echo "=================================================="
     echo "Deployed '${service_id}'"
     echo "=================================================="

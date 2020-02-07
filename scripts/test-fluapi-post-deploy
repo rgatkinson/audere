@@ -31,7 +31,7 @@ function print_test_outcome() {
 
 function do_api_test() {
   local base_url="$1"
-  echo -e "${YELLOW}Testing /api${NC}"
+  echo -e "${YELLOW}[$(date -Iseconds)] Testing /api${NC}"
   actual_result="$(curl -sS "${base_url}/api")"
   expected_result="{\"Status\":\"OK\"}"
   print_test_outcome "${actual_result}" "${expected_result}"
@@ -40,26 +40,20 @@ function do_api_test() {
 
 function do_version_test() {
   local base_url="$1"
-  echo -e "${YELLOW}Testing /about${NC}"
-  actual_result="$(curl -sS "${base_url}/about")"
-  aws_ecr=$(aws ecr describe-images --repository-name fluapi --image-ids imageTag=staging)
-  image_details="$(echo $aws_ecr | jq -r ".imageDetails[]|.imageTags")"
-  for tag in $image_details; do
-    if [[ $tag =~ ^\"([A-Za-z0-9]{40})\" ]]; then
-        commit=${BASH_REMATCH[1]}
-    fi
-  done
-  if [[ -z "$commit" ]]; then
+  local version="$2"
+  echo -e "${YELLOW}[$(date -Iseconds)] Testing /about${NC}"
+  if [[ $version == "n/a" ]]; then
     fail "Could not find commit in ECR image details"
   fi
-  expected_result="*\"hash\":\"$commit\"}"
+  actual_result="$(curl -sS "${base_url}/about")"
+  expected_result="*\"hash\":\"$version\"}"
   print_test_outcome "${actual_result}" "${expected_result}"
   return 0
 }
 
 function do_bad_url_test() {
   local base_url="$1"
-  echo -e "${YELLOW}Testing /foobarfakeurl${NC}"
+  echo -e "${YELLOW}[$(date -Iseconds)] Testing /foobarfakeurl${NC}"
   actual_result="$(curl -sS "${base_url}/foobarfakeurl")"
   expected_result="*Cannot GET /foobarfakeurl</pre>*"
   print_test_outcome "${actual_result}" "${expected_result}"
@@ -68,7 +62,7 @@ function do_bad_url_test() {
 
 function do_chills_barcode_test() {
   local base_url="$1"
-  echo -e "${YELLOW}Testing /api/chills/matchBarcode${NC}"
+  echo -e "${YELLOW}[$(date -Iseconds)] Testing /api/chills/matchBarcode${NC}"
   data="{\"barcode\":\"$CHILLS_TEST_BARCODE\",\"id\":\"$CHILLS_TEST_DOCID\",\"secret\":\"SECRET_KEY\",\"demo\":\"true\"}"
   if [[ $base_url == $staging_BASEURL ]]; then
     data=${data//"SECRET_KEY"/$STAGING_SECRET_KEY}
@@ -83,7 +77,7 @@ function do_chills_barcode_test() {
 
 function do_cough_giftcard_test() {
   local base_url="$1"
-  echo -e "${YELLOW}Testing /api/cough/giftcardAvailable${NC}"
+  echo -e "${YELLOW}[$(date -Iseconds)] Testing /api/cough/giftcardAvailable${NC}"
   if [[ $base_url == $staging_BASEURL ]]; then
     data="giftcardRequest=\\{\"secret\":\"SECRET_KEY\",\"denomination\":25,\"isDemo\":false,\"docId\":\"$COUGH_TEST_STAGING_DOCID\",\"barcode\":\"$COUGH_TEST_BARCODE\"\\}"
     data=${data//"SECRET_KEY"/$STAGING_SECRET_KEY}
@@ -98,12 +92,13 @@ function do_cough_giftcard_test() {
 }
 
 target_type="$1"
+commit="$2"
 case "$target_type" in 
   staging|prod) 
     URL_VAR=${target_type}_BASEURL  
     echo -e "Starting post-deploy tests against ${!URL_VAR}\n"
     do_api_test "${!URL_VAR}"
-    do_version_test "${!URL_VAR}"
+    do_version_test "${!URL_VAR}" "$commit"
     do_bad_url_test "${!URL_VAR}"
     do_chills_barcode_test "${!URL_VAR}"
     do_cough_giftcard_test "${!URL_VAR}"
