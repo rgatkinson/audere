@@ -12,7 +12,7 @@ locals {
   cron_everyday_at_10AM_UTC = "cron(0 10 ? * * *)"
   cron_everyday_at_12PM_UTC = "cron(0 12 ? * * *)"
   cron_saturday_at_10AM_UTC = "cron(0 10 ? * 7 *)"
-  cron_everyday_at_11PM_UTC = "cron(0 23 ? * * *)"
+  cron_everyday_at_3AM_UTC = "cron(0 3 ? * * *)"
   cron_everyday_at_2AM_and_2PM_UTC = "cron(0 2,14 ? * * *)"
 }
 
@@ -306,7 +306,7 @@ module "chills_cdc_surveillance_import" {
 module "chills_triggers_import" {
   source = "../lambda-cron"
 
-  frequency = "${local.cron_everyday_at_11PM_UTC}"
+  frequency = "${local.cron_everyday_at_3AM_UTC}"
   name = "${local.base_name}-chills-triggers-import"
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
