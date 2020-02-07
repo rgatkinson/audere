@@ -86,6 +86,7 @@ import {
   SMALL_TEXT,
 } from "../ui/styles";
 import {
+  getCapturedScreenTextVariables,
   getPinkWhenBlueNextScreen,
   getTestStripSurveyNextScreen,
   logFluResult,
@@ -947,7 +948,13 @@ export const Screens: ScreenConfig[] = [
     body: [
       { tag: RDTImage },
       { tag: Title },
-      { tag: ScreenText, props: { label: "desc" } },
+      {
+        tag: ScreenText,
+        props: {
+          label: "desc",
+          textVariablesFn: getCapturedScreenTextVariables,
+        },
+      },
       {
         tag: ScreenText,
         props: {

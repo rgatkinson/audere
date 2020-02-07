@@ -6,8 +6,9 @@
 import { Platform } from "react-native";
 import DeviceInfo from "react-native-device-info";
 import { logFirebaseEvent, FunnelEvents } from "./tracker";
-import { getStore } from "../store";
+import { getStore, StoreState } from "../store";
 import { getSelectedButton } from "./survey";
+import i18n from "i18next";
 import {
   BlueLineConfig,
   PinkWhenBlueConfig,
@@ -57,4 +58,21 @@ export async function logFluResult() {
     });
   }
   _previousPinkAnswer = pinkAnswer;
+}
+
+async function didScanMultiple() {
+  const state: StoreState = (await getStore()).getState();
+  const screenJustPrior = state.survey.events.slice(-2, -1)[0].refId || "";
+  return (
+    screenJustPrior === "AndroidRDTReader" &&
+    getRemoteConfig("previewFramesSampleRate") > 0
+  );
+}
+
+export async function getCapturedScreenTextVariables() {
+  return {
+    desc: didScanMultiple()
+      ? i18n.t("TestStripConfirmation:descScanned")
+      : i18n.t("TestStripConfirmation:descManual"),
+  };
 }
