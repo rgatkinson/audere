@@ -12,6 +12,7 @@
   "devDependencies": {
     "@types/jest": "^24.9.0",
     "@types/node": "^13.1.8",
+    "hybrid-crypto-js": "^0.2.2",
     "jest": "^24.9.0",
     "prettier": "^1.16.1",
     "ts-jest": "^24.3.0",
