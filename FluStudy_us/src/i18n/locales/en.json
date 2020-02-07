@@ -543,8 +543,10 @@
     "off": "OFF"
   },
   "TestStripConfirmation": {
-    "title": "Photo captured",
-    "desc": "Your test strip photo was captured successfully.",
+    "title": "Test strip captured",
+    "desc": "{{desc}}",
+    "descManual": "Your test strip photo was captured successfully.",
+    "descScanned": "Your test strip was scanned successfully.",
     "diagnosis": "[Demo Mode only] Your test result is {{ testResult }}."
   },
   "PackUpTest": {
