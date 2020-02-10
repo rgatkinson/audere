@@ -312,13 +312,13 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
   _startRecordingFrames = () => {
     this.setState({ processFrames: true });
+    this._setTimer();
     const { dispatch } = this.props;
     dispatch(setRDTStartTime());
   };
 
   _handleDidFocus = () => {
     this._saveAndClearPreviewFrames();
-    this._setTimer();
     if (this.props.isDemo && !this._fpsCounterInterval) {
       this._fpsCounterInterval = global.setInterval(
         this._updateFPSCounter,
