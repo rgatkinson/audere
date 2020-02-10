@@ -42,6 +42,7 @@ RCT_REMAP_METHOD(add,
                  queue:(NSString *)queue
                  uid:(NSString *)uid
                  uriString:(NSString *)uriString
+                 removeOriginal:(BOOL)removeOriginal
                  addWithResolver:(RCTPromiseResolveBlock)resolve
                  rejecter:(RCTPromiseRejectBlock)reject) {
     RCTLogInfo(@"add queue=%@ uid=%@ uri=%@", queue, uid, uriString);
@@ -60,6 +61,10 @@ RCT_REMAP_METHOD(add,
     if (error != nil) {
         reject(@"", @"", error);
         return;
+    }
+    
+    if (removeOriginal) {
+        [self->fileManager removeItemAtPath:uriString error:&error];
     }
 
     resolve(nil);
