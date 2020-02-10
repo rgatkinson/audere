@@ -71,7 +71,7 @@ async function didScanMultiple() {
 
 export async function getCapturedScreenTextVariables() {
   return {
-    desc: didScanMultiple()
+    desc: (await didScanMultiple())
       ? i18n.t("TestStripConfirmation:descScanned")
       : i18n.t("TestStripConfirmation:descManual"),
   };

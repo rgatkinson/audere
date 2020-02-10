@@ -145,9 +145,11 @@ interface State {
 }
 
 class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
+  _sampleRate: number = getRemoteConfig("previewFramesSampleRate");
+
   state: State = {
-    spinner: false,
-    showCamera: false,
+    spinner: this._sampleRate === 0,
+    showCamera: this._sampleRate === 0,
     flashEnabled: false,
     fps: 0,
     instructionMsg: "centerStrip",
@@ -280,7 +282,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   }
 
   _handleDidFocus = () => {
-    if (!this._alertShown) {
+    if (!this._alertShown && this._sampleRate > 0) {
       const { navigation, t } = this.props;
       this._alertShown = true;
       Alert.alert(
@@ -542,12 +544,12 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   _logPreviewFrameData = async (args: RDTCapturedArgs) => {
     const rdtResult = rdtCapturedArgsToResult(args);
 
-    const sampleRate = getRemoteConfig("previewFramesSampleRate");
     const now = Date.now();
-    const upload = sampleRate > 0 && now - this._lastPreviewSaved >= sampleRate;
+    const upload =
+      this._sampleRate > 0 && now - this._lastPreviewSaved >= this._sampleRate;
 
     rdtResult.photoUploaded = upload;
-    rdtResult.previewSampleRate = sampleRate;
+    rdtResult.previewSampleRate = this._sampleRate;
     rdtResult.uiMessage = this.state.instructionMsg;
 
     if (upload) {
