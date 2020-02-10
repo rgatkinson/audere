@@ -92,6 +92,8 @@ public class DetectorView extends LinearLayout implements
     private volatile boolean stillCaptureInProgress = false;
     private volatile int previewFrameIndex = 0;
 
+    private boolean processFrames = false;
+
     public DetectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (context instanceof MainActivity) {
@@ -115,6 +117,10 @@ public class DetectorView extends LinearLayout implements
         } else {
             requestPermission();
         }
+    }
+
+    public void setProcessFrames(boolean processFrames) {
+        this.processFrames = processFrames;
     }
 
     public void setDetectorListener(DetectorListener listener) {
@@ -372,7 +378,7 @@ public class DetectorView extends LinearLayout implements
 
         private void processImage() {
             // No mutex needed as this method is not reentrant.
-            if (analyzingFrame) {
+            if (analyzingFrame || !processFrames) {
                 readyForNextImage();
                 return;
             }

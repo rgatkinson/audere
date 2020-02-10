@@ -26,10 +26,12 @@ import host.exp.exponent.tracking.RDTTracker;
 public class RDTReader extends LinearLayout implements DetectorView.DetectorListener {
     private Activity mActivity;
     private DetectorView detectorView;
+    private boolean processFrames;
 
     public RDTReader(Context context, Activity activity) {
         super(context);
         mActivity = activity;
+        processFrames = false;
     }
 
     public void enable() {
@@ -41,6 +43,7 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
 
                 detectorView = findViewById(R.id.detector_view);
                 detectorView.setDetectorListener(self);
+                detectorView.setProcessFrames(self.processFrames);
                 requestLayout();
             }
         });
@@ -193,6 +196,15 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
     public void setFlashEnabled(boolean flashEnabled) {
         if (detectorView != null) {
             detectorView.setFlashEnabled(flashEnabled);
+        }
+    }
+
+    public void setProcessFrames(boolean processFrames) {
+        // Can't guarantee call order for the RN prop variables, so we'll store a local
+        // copy to initialize the detectorView with if it gets created later
+        this.processFrames = processFrames;
+        if (detectorView != null) {
+            detectorView.setProcessFrames(processFrames);
         }
     }
 }
