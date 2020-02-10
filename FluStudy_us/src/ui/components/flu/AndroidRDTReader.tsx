@@ -128,8 +128,9 @@ enum SizeResult {
 }
 
 interface State {
-  spinner: boolean;
-  showCamera: boolean;
+  processFrames: boolean;
+  cameraReady: boolean;
+  rdtInterpreting: boolean;
   flashEnabled: boolean;
   fps: number;
   instructionMsg: string;
@@ -148,8 +149,9 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   _sampleRate: number = getRemoteConfig("previewFramesSampleRate");
 
   state: State = {
-    spinner: this._sampleRate === 0,
-    showCamera: this._sampleRate === 0,
+    processFrames: this._sampleRate === 0,
+    cameraReady: false,
+    rdtInterpreting: false,
     flashEnabled: false,
     fps: 0,
     instructionMsg: "centerStrip",
@@ -173,7 +175,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   _instructionLastUpdate: number = 0;
   _lastRDTReaderResult?: RDTReaderResult;
   _lastPreviewSaved: number = 0;
-  _interpreting: boolean = false;
   _previewFrames: RDTReaderResult[] = [];
   _rdtRect: any = null;
 
@@ -281,10 +282,9 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     }
   }
 
-  _handleDidFocus = () => {
+  _showRecordingAlert = () => {
     if (!this._alertShown && this._sampleRate > 0) {
       const { navigation, t } = this.props;
-      this._alertShown = true;
       Alert.alert(
         t("alertTitle"),
         t("alertDesc"),
@@ -298,19 +298,25 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
           {
             text: t("start"),
             onPress: () => {
-              this.setState({ spinner: true, showCamera: true });
-              this._startCamera();
+              this._alertShown = true;
+              this._startRecordingFrames();
             },
           },
         ],
         { cancelable: false }
       );
-    } else if (this.state.showCamera) {
-      this._startCamera();
+    } else {
+      this._startRecordingFrames();
     }
   };
 
-  _startCamera = () => {
+  _startRecordingFrames = () => {
+    this.setState({ processFrames: true });
+    const { dispatch } = this.props;
+    dispatch(setRDTStartTime());
+  };
+
+  _handleDidFocus = () => {
     this._saveAndClearPreviewFrames();
     this._setTimer();
     if (this.props.isDemo && !this._fpsCounterInterval) {
@@ -319,7 +325,6 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
         1000
       );
     }
-    this._interpreting = false;
   };
 
   _handleWillBlur = () => {
@@ -337,7 +342,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     // Timeout after 30 seconds
     this._timer = global.setTimeout(() => {
       const { dispatch, fallback, isFocused, navigation } = this.props;
-      if (!this._interpreting && isFocused) {
+      if (!this.state.rdtInterpreting && isFocused) {
         logFirebaseEvent(AppEvents.RDT_TIMEOUT);
         dispatch(setRDTCaptureTime(false));
         dispatch(setShownRDTFailWarning(false));
@@ -415,20 +420,23 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
   componentWillReceiveProps(nextProps: Props) {
     if (!this.props.isFocused && nextProps.isFocused) {
-      this.setState({ spinner: true, flashEnabled: false });
+      this.setState({
+        cameraReady: false,
+        flashEnabled: false,
+        rdtInterpreting: false,
+      });
     }
   }
 
   _cameraReady = (args: RDTCameraReadyArgs) => {
     this.setState({
-      spinner: false,
+      cameraReady: true,
       supportsTorchMode: args.supportsTorchMode,
       screenWidth: args.screenWidth,
       screenHeight: args.screenHeight,
       legacyCameraApi: args.legacyCameraApi,
     });
-    const { dispatch } = this.props;
-    dispatch(setRDTStartTime());
+    this._showRecordingAlert();
   };
 
   _addInstructionRequest(
@@ -537,8 +545,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
   }
 
   _onRDTInterpreting = (args: RDTInterpretingArgs) => {
-    this.setState({ spinner: true, failureReason: "Interpreting..." });
-    this._interpreting = true;
+    this.setState({ rdtInterpreting: true, failureReason: "Interpreting..." });
   };
 
   _logPreviewFrameData = async (args: RDTCapturedArgs) => {
@@ -567,7 +574,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
 
   _onRDTCaptured = async (args: RDTCapturedArgs) => {
     this.setState({
-      spinner: false,
+      rdtInterpreting: false,
       boundary: args.testStripBoundary,
       failureReason: args.failureReason,
     });
@@ -942,21 +949,22 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     return (
       <View style={styles.container}>
         <StatusBar hidden={true} />
-        <Spinner visible={this.state.spinner} />
-        {this.state.showCamera && (
-          <RDTReaderComponent
-            style={styles.camera}
-            onRDTCaptured={this._onRDTCaptured}
-            onRDTCameraReady={this._cameraReady}
-            onRDTInterpreting={this._onRDTInterpreting}
-            enabled={isFocused}
-            showDefaultViewfinder={false}
-            demoMode={isDemo}
-            flashEnabled={this.state.flashEnabled}
-            frameImageScale={1}
-            appState={this.state.appState}
-          />
-        )}
+        <Spinner
+          visible={!this.state.cameraReady || this.state.rdtInterpreting}
+        />
+        <RDTReaderComponent
+          style={styles.camera}
+          onRDTCaptured={this._onRDTCaptured}
+          onRDTCameraReady={this._cameraReady}
+          onRDTInterpreting={this._onRDTInterpreting}
+          enabled={isFocused}
+          showDefaultViewfinder={false}
+          demoMode={isDemo}
+          flashEnabled={this.state.flashEnabled}
+          frameImageScale={1}
+          appState={this.state.appState}
+          processFrames={this.state.processFrames}
+        />
         <View style={styles.overlayContainer}>
           <View style={{ flex: 1 }}>
             <View

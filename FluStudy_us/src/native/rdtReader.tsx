@@ -67,6 +67,7 @@ type RDTReaderProps = {
   showDefaultViewfinder?: boolean;
   frameImageScale: number;
   appState: string;
+  processFrames: boolean;
   style: any;
 };
 

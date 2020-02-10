@@ -65,4 +65,9 @@ public class RDTReaderManager extends SimpleViewManager<RDTReader> {
             view.onPause();
         }
     }
+
+    @ReactProp(name = "processFrames")
+    public void setDoAnalysis(RDTReader view, boolean processFrames) {
+        view.setProcessFrames(processFrames);
+    }
 }
