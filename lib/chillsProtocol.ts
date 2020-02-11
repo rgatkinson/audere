@@ -92,6 +92,7 @@ export interface CommonInfo {
   isDemo: boolean;
   marketingProperties?: any;
   events: EventInfo[];
+  previewSeries?: PreviewSeries[];
   pushNotificationState?: PushNotificationState;
   workflow: WorkflowInfo;
 
