@@ -81,12 +81,6 @@ platform :ios do
         refresh_certificates: false
       )
     end
-    changelist = changelog_from_git_commits(
-      # http://git-scm.com/docs/pretty-formats
-      # - <short hash> <commit title>
-      pretty: "- %h %s",
-      tag_match_pattern: "chills_v1\.0\.*"
-    )
     build_app(
       scheme: "fluathome Production",
       include_bitcode: true,
@@ -94,7 +88,12 @@ platform :ios do
     )
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
-      changelog: ""
+    )
+    changelist = changelog_from_git_commits(
+      # http://git-scm.com/docs/pretty-formats
+      # - <short hash> <commit title>
+      pretty: "- %h %s",
+      tag_match_pattern: "chills_v1\.0\.*"
     )
     slack_announce(
       destination: "TestFlight", 
