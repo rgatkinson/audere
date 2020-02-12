@@ -15,7 +15,7 @@ import {
 import { onCSRUIDEstablished } from "../util/tracker";
 
 export type SurveyAction =
-  | { type: "APPEND_PREVIEW_SERIES"; series: RDTReaderResult[] }
+  | { type: "APPEND_PREVIEW_SERIES"; filename: string }
   | { type: "APPEND_EVENT"; kind: EventInfoKind; event: string }
   | { type: "APPEND_INVALID_BARCODE"; barcode: SampleInfo }
   | { type: "SET_KIT_BARCODE"; kitBarcode: SampleInfo }
@@ -48,7 +48,7 @@ export type SurveyState = {
   csruid?: string;
   email?: string;
   events: EventInfo[];
-  previewSeries?: RDTReaderResult[][];
+  previewSeries?: string[];
   invalidBarcodes?: SampleInfo[];
   kitBarcode?: SampleInfo;
   oneMinuteStartTime?: number;
@@ -67,7 +67,7 @@ export type SurveyState = {
   [key: string]:
     | boolean
     | string
-    | RDTReaderResult[][]
+    | string[]
     | EventInfo[]
     | SampleInfo[]
     | SampleInfo
@@ -94,7 +94,7 @@ export default function reducer(state = initialState, action: SurveyAction) {
     case "APPEND_PREVIEW_SERIES":
       return {
         ...state,
-        previewSeries: pushPreviewSeries(state, action.series),
+        previewSeries: pushPreviewSeries(state, action.filename),
         timestamp: new Date().getTime(),
       };
     case "APPEND_EVENT":
@@ -280,10 +280,10 @@ export default function reducer(state = initialState, action: SurveyAction) {
   }
 }
 
-export function appendPreviewSeries(series: RDTReaderResult[]): SurveyAction {
+export function appendPreviewSeries(filename: string): SurveyAction {
   return {
     type: "APPEND_PREVIEW_SERIES",
-    series,
+    filename,
   };
 }
 
@@ -438,11 +438,8 @@ function pushEvent(state: SurveyState, kind: EventInfoKind, refId: string) {
   return newEvents;
 }
 
-function pushPreviewSeries(
-  state: SurveyState,
-  previewSeries: RDTReaderResult[]
-) {
-  return [...(state.previewSeries || []), previewSeries];
+function pushPreviewSeries(state: SurveyState, filename: string) {
+  return [...(state.previewSeries || []), filename];
 }
 
 function pushInvalidBarcode(state: SurveyState, barcode: SampleInfo) {

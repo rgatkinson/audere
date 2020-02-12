@@ -41,7 +41,7 @@ export interface CommonInfo {
     isDemo: boolean;
     marketingProperties?: any;
     events: EventInfo[];
-    previewSeries?: PreviewSeries[];
+    previewSeries?: string[];
     pushNotificationState?: PushNotificationState;
     workflow: WorkflowInfo;
     gender?: PatientInfoGender;
@@ -52,15 +52,12 @@ export interface SurveyDocument extends ProtocolDocumentBase {
     survey: SurveyInfo;
 }
 export declare type SurveyInfo = SurveyNonPIIInfo;
-export interface PreviewSeries {
-    series: RDTReaderResult[];
-}
 export interface SurveyNonPIIInfo extends CommonInfo {
     samples: SampleInfo[];
     invalidBarcodes?: SampleInfo[];
     responses: ResponseInfo[];
     rdtInfo?: RDTInfo;
-    previewSeries?: PreviewSeries[];
+    previewSeries?: string[];
 }
 export interface PushNotificationState {
     showedSystemPrompt: boolean;

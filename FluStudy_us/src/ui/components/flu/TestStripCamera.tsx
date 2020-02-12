@@ -172,7 +172,7 @@ class TestStripCamera extends React.Component<Props & WithNamespaces> {
           orientation: "portrait",
           fixOrientation: true,
         });
-        const photoId = await newUID();
+        const photoId = (await newUID()) + ".jpeg";
 
         uploadFile(photoId, photo.uri);
 

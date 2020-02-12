@@ -22,6 +22,7 @@ import {
 } from "react-navigation";
 import Spinner from "react-native-loading-spinner-overlay";
 import { WithNamespaces, withNamespaces } from "react-i18next";
+import * as FileSystem from "expo-file-system";
 import {
   Action,
   appendPreviewSeries,
@@ -274,13 +275,19 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     AppState.removeEventListener("change", this._handleAppStateChange);
   }
 
-  _saveAndClearPreviewFrames() {
-    const { dispatch } = this.props;
+  _saveAndClearPreviewFrames = async () => {
     if (this._previewFrames.length > 0) {
-      dispatch(appendPreviewSeries(this._previewFrames));
+      const filename = "preview_info_" + (await newUID()) + ".json";
+      const path = FileSystem.documentDirectory + filename;
+      await FileSystem.writeAsStringAsync(
+        path,
+        JSON.stringify(this._previewFrames)
+      );
+      uploadFile(filename, path, true);
+      this.props.dispatch(appendPreviewSeries(filename));
       this._previewFrames = [];
     }
-  }
+  };
 
   _showRecordingAlert = () => {
     if (!this._alertShown && this._sampleRate > 0) {
@@ -378,7 +385,7 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     }
   }
 
-  _handleAppStateChange = async (nextAppState: string) => {
+  _handleAppStateChange = (nextAppState: string) => {
     this.setState({ appState: nextAppState });
     this._setTimer();
     this._saveAndClearPreviewFrames();
@@ -560,8 +567,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     rdtResult.uiMessage = this.state.instructionMsg;
 
     if (upload) {
-      const uid = await newUID();
-      rdtResult.previewPhotoId = "preview_" + uid;
+      const previewPhotoId = "preview_" + (await newUID()) + ".jpeg";
+      rdtResult.previewPhotoId = previewPhotoId;
       uploadFile(rdtResult.previewPhotoId, args.previewUri, true);
       this._lastPreviewSaved = now;
     } else {
@@ -591,8 +598,8 @@ class AndroidRDTReader extends React.Component<Props & WithNamespaces, State> {
     const { dispatch, navigation, next } = this.props;
     dispatch(setRDTCaptureTime(true));
     try {
-      const photoId = await newUID();
-      const testAreaPhotoId = await newUID();
+      const photoId = (await newUID()) + ".jpeg";
+      const testAreaPhotoId = "test_area_" + (await newUID()) + ".jpeg";
       dispatch(setRDTPhoto(args.imageUri));
       dispatch(setRDTPhotoHC(args.resultWindowImageUri));
       dispatch(

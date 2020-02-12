@@ -250,7 +250,7 @@ export function redux_to_pouch(state: StoreState): SurveyInfo {
   };
 
   if (!!survey.previewSeries) {
-    pouch.previewSeries = survey.previewSeries.map(series => ({ series }));
+    pouch.previewSeries = survey.previewSeries;
   }
 
   if (!!survey.kitBarcode) {

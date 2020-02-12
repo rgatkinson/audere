@@ -92,7 +92,7 @@ export interface CommonInfo {
   isDemo: boolean;
   marketingProperties?: any;
   events: EventInfo[];
-  previewSeries?: PreviewSeries[];
+  previewSeries?: string[];
   pushNotificationState?: PushNotificationState;
   workflow: WorkflowInfo;
 
@@ -111,10 +111,6 @@ export interface SurveyDocument extends ProtocolDocumentBase {
 
 export type SurveyInfo = SurveyNonPIIInfo;
 
-export interface PreviewSeries {
-  series: RDTReaderResult[];
-}
-
 export interface SurveyNonPIIInfo extends CommonInfo {
   samples: SampleInfo[];
 
@@ -125,7 +121,7 @@ export interface SurveyNonPIIInfo extends CommonInfo {
 
   rdtInfo?: RDTInfo;
 
-  previewSeries?: PreviewSeries[];
+  previewSeries?: string[];
 }
 
 export interface PushNotificationState {

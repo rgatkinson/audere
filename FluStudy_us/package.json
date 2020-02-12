@@ -72,6 +72,7 @@
     "expo-ads-facebook": "~7.0.0",
     "expo-barcode-scanner": "~7.0.0",
     "expo-camera": "~7.0.0",
+    "expo-file-system": "~7.0.0",
     "expo-localization": "~7.0.0",
     "expo-secure-store": "~7.0.0",
     "expokit": "35.0.4",
