@@ -32,15 +32,15 @@ export class EvidationTriggersClient {
       includeGridData: true,
     });
 
-    const sheet = spreadsheet.data.sheets[0];
+    const sheet = spreadsheet.data.sheets[1];
     const data = sheet.data[0];
 
     const kits = data.rowData
-      .slice(1)
-      .filter(row => row.values[1].formattedValue != null)
+      .slice(2)
+      .filter(row => row.values[4].formattedValue != null)
       .map(row => {
         const evidationId = row.values[0].formattedValue;
-        const triggerDate = row.values[1].formattedValue;
+        const triggerDate = row.values[4].formattedValue;
 
         return {
           evidationId,
