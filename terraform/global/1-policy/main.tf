@@ -158,3 +158,30 @@ resource "aws_iam_user_policy_attachment" "create_ecr_repository_attachment" {
   user       = "${aws_iam_user.ecr_push.name}"
   policy_arn = "${aws_iam_policy.create_ecr_repository_policy.arn}"
 }
+
+resource "aws_ecr_repository" "fluapi_ecr_repo" {
+  name = "fluapi"
+}
+
+resource "aws_ecr_lifecycle_policy" "fluapi_ecr_repo_policy" {
+  repository = "${aws_ecr_repository.fluapi_ecr_repo.name}"
+
+  policy = <<EOF
+{
+    "rules": [
+        {
+            "rulePriority": 1,
+            "description": "Expire older images when image count is more than 100",
+            "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 100
+            },
+            "action": {
+                "type": "expire"
+            }
+        }
+    ]
+}
+EOF
+}
