@@ -11,6 +11,7 @@ resource "aws_db_instance" "fludb_pii" {
   availability_zone = "${var.pii_availability_zone}"
   backup_retention_period = 35
   backup_window = "10:00-10:59"
+  ca_cert_identifier = "rds-ca-2019"
   copy_tags_to_snapshot = true
   deletion_protection = true
   engine = "postgres"
@@ -47,6 +48,7 @@ resource "aws_db_instance" "fludb_nonpii" {
   availability_zone = "${var.availability_zone}"
   backup_retention_period = 35
   backup_window = "10:00-10:59"
+  ca_cert_identifier = "rds-ca-2019"
   copy_tags_to_snapshot = true
   deletion_protection = true
   engine = "postgres"
@@ -83,6 +85,7 @@ resource "aws_db_instance" "fludb_postgis" {
   availability_zone = "${var.availability_zone}"
   backup_retention_period = 5
   backup_window = "10:00-10:59"
+  ca_cert_identifier = "rds-ca-2019"
   copy_tags_to_snapshot = true
   deletion_protection = true
   engine = "postgres"
@@ -111,6 +114,7 @@ resource "aws_db_instance" "metabase" {
   availability_zone = "${var.availability_zone}"
   backup_retention_period = 5
   backup_window = "10:00-10:59"
+  ca_cert_identifier = "rds-ca-2019"
   copy_tags_to_snapshot = true
   deletion_protection = true
   engine = "postgres"

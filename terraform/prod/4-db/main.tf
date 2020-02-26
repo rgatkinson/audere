@@ -27,7 +27,7 @@ module "vpc_cidr" {
 }
 
 provider "aws" {
-  version = "~> 1.50"
+  version = "~> 2.37"
   region = "us-west-2"
 }
 
