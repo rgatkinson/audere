@@ -212,5 +212,36 @@ function getNonPiiDataNodes(): ManagedSqlNode[] {
           join chills.shipped_kits k on t.evidation_id = k.evidation_id
       `,
     }),
+
+    new ManagedView({
+      name: "chills_derived.rdt_preview_frames",
+      deps: [],
+      spec: `
+        select
+          docid,
+          series_index,
+          frame_index,
+          preview_sample_rate,
+          ui_message,
+          failure_reason,
+          photo_uploaded,
+          preview_photo_id,
+          is_focused,
+          is_steady,
+          is_centered,
+          test_strip_detected,
+          control_line_found,
+          test_a_line_found,
+          test_b_line_found,
+          ssharpness_raw,
+          exposure_result,
+          phase_1_recognitions,
+          phase_2_recognitions,
+          intermediate_results,
+          test_strip_boundary
+        from
+          chills.rdt_preview_frames
+      `,
+    }),
   ];
 }

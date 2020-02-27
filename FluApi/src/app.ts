@@ -45,6 +45,7 @@ import { ChillsVirenaEndpoint } from "./endpoints/chillsVirenaApi";
 import { ChillsSurveillanceEndpoint } from "./endpoints/chillsSurveillanceApi";
 import { ChillsMTLEndpoint } from "./endpoints/chillsMTLApi";
 import { ChillsTriggersEndpoint } from "./endpoints/chillsTriggersApi";
+import { ChillsRDTPreviewEndpoint } from "./endpoints/chillsRDTPreviewApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -455,6 +456,19 @@ export function createInternalApp(config: AppConfig) {
     "/api/import/chillsMTL",
     stats("importChillsMTL"),
     wrap(sqlLock.runIfFree("/api/import/chillsMTL", chillsMTL.import, jsonNoOp))
+  );
+
+  const chillsRDTPreview = new ChillsRDTPreviewEndpoint(sql);
+  internalApp.get(
+    "/api/import/chillsRDTPreview",
+    stats("importRDTPreview"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/chillsRDTPreview",
+        chillsRDTPreview.importRDTPreview,
+        jsonNoOp
+      )
+    )
   );
 
   return useOuch(internalApp);

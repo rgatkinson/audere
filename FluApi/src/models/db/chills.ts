@@ -47,6 +47,7 @@ export function defineChillsModels(sql: SplitSql): ChillsModels {
     photo: definePhoto(sql),
     photoReplacementLog: definePhotoReplacementLog(sql),
     photoUploadLog: definePhotoUploadLog(sql),
+    rdtPreview: defineRDTPreview(sql),
     shippedKits: defineShippedKits(sql),
     survey: defineSurvey(sql.nonPii),
     triggers: defineEvidationTrigger(sql),
@@ -84,6 +85,7 @@ export interface ChillsModels {
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
+  rdtPreview: Model<ChillsRDTPreviewAttributes>;
   shippedKits: Model<ShippedKitAttributes>;
   survey: Model<SurveyAttributes<SurveyNonPIIInfo>>;
   triggers: Model<EvidationTriggerAttributes>;
@@ -574,6 +576,64 @@ export function defineEvidationTrigger(
     {
       evidationId: unique(stringColumn("evidation_id")),
       triggerDate: stringColumn("trigger_date"),
+    },
+    { schema }
+  );
+}
+
+// ---------------------------------------------------------------
+
+export interface ChillsRDTPreviewAttributes {
+  docId: string;
+  seriesIndex: number;
+  frameIndex: number;
+  previewSampleRate: number;
+  uiMessage: string;
+  failureReason: string;
+  photoUploaded: boolean;
+  previewPhotoId: string;
+  isFocused: boolean;
+  isSteady: boolean;
+  isCentered: boolean;
+  testStripDetected: boolean;
+  controlLineFound: boolean;
+  testALineFound: boolean;
+  testBLineFound: boolean;
+  sharpnessRaw: number;
+  exposureResult: number;
+  phase1Recognitions: string;
+  phase2Recognitions: string;
+  intermediateResults: string;
+  testStripBoundary: string;
+}
+export function defineRDTPreview(
+  sql: SplitSql
+): Model<ChillsRDTPreviewAttributes> {
+  return defineModel<ChillsRDTPreviewAttributes>(
+    sql.nonPii,
+    "rdt_preview_frames",
+    {
+      docId: stringColumn("docid"),
+      seriesIndex: integerColumn("series_index"),
+      frameIndex: integerColumn("frame_index"),
+      previewSampleRate: integerColumn("preview_sample_rate"),
+      uiMessage: nullable(stringColumn("ui_message")),
+      failureReason: nullable(stringColumn("failure_reason")),
+      photoUploaded: nullable(booleanColumn("photo_uploaded")),
+      previewPhotoId: nullable(stringColumn("preview_photo_id")),
+      isFocused: nullable(booleanColumn("is_focused")),
+      isSteady: nullable(booleanColumn("is_steady")),
+      isCentered: nullable(booleanColumn("is_centered")),
+      testStripDetected: nullable(booleanColumn("test_strip_detected")),
+      controlLineFound: nullable(booleanColumn("control_line_found")),
+      testALineFound: nullable(booleanColumn("test_a_line_found")),
+      testBLineFound: nullable(booleanColumn("test_b_line_found")),
+      sharpnessRaw: nullable(floatColumn("ssharpness_raw")),
+      exposureResult: nullable(integerColumn("exposure_result")),
+      phase1Recognitions: nullable(stringColumn("phase_1_recognitions")),
+      phase2Recognitions: nullable(stringColumn("phase_2_recognitions")),
+      intermediateResults: nullable(stringColumn("intermediate_results")),
+      testStripBoundary: nullable(stringColumn("test_strip_boundary")),
     },
     { schema }
   );
