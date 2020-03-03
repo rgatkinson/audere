@@ -585,6 +585,7 @@ export function defineEvidationTrigger(
 
 export interface ChillsRDTPreviewAttributes {
   docId: string;
+  photo: string;
   seriesIndex: number;
   frameIndex: number;
   previewSampleRate: number;
@@ -614,6 +615,7 @@ export function defineRDTPreview(
     "rdt_preview_frames",
     {
       docId: stringColumn("docid"),
+      photo: stringColumn("photo"),
       seriesIndex: integerColumn("series_index"),
       frameIndex: integerColumn("frame_index"),
       previewSampleRate: integerColumn("preview_sample_rate"),

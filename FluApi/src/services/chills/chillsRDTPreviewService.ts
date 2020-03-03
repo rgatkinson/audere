@@ -7,18 +7,15 @@ import { ChillsModels, defineChillsModels } from "../../models/db/chills";
 import { SplitSql } from "../../util/sql";
 import { RDTPreview } from "../../external/chillsRDTPreviewClient";
 import logger from "../../util/logger";
-import sequelize = require("sequelize");
 
 /**
  * Data access for rdt preview data collected in the Chills project
  */
 export class ChillsRDTPreview {
   private readonly models: ChillsModels;
-  private readonly sql: SplitSql;
 
   constructor(sql: SplitSql) {
     this.models = defineChillsModels(sql);
-    this.sql = sql;
   }
 
   /**
@@ -26,20 +23,12 @@ export class ChillsRDTPreview {
    *
    * @param rdtPreview List of rdt preview series
    */
-  public async importRDTPreviews(rdt_previews: RDTPreview[]): Promise<void> {
-    await this.models.rdtPreview.destroy({
-      where: {
-        docId: {
-          [sequelize.Op.not]: rdt_previews.map(r => r.docId),
-        },
-      },
-    });
-
+  public async importRDTPreviews(rdtPreviews: RDTPreview[]): Promise<void> {
     let succeeded = true;
 
-    for (let i = 0; i < rdt_previews.length; i++) {
+    for (let i = 0; i < rdtPreviews.length; i++) {
       try {
-        await this.models.rdtPreview.upsert(rdt_previews[i]);
+        await this.models.rdtPreview.upsert(rdtPreviews[i]);
       } catch (e) {
         succeeded = false;
         logger.error(`Error importing rdt preview series with index ${i}: `, e);

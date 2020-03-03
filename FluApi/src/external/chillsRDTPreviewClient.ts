@@ -8,6 +8,7 @@ import { SplitSql } from "../util/sql";
 
 export interface RDTPreview {
   docId: string;
+  photo: string;
   seriesIndex: number;
   frameIndex: number;
   previewSampleRate: number;
@@ -30,6 +31,12 @@ export interface RDTPreview {
   testStripBoundary: string;
 }
 
+export interface SeriesPreview {
+  docId: string;
+  photoId: string;
+  seriesIndex: number;
+}
+
 /**
  * Client for interacting with Evidation-owned Google sheet for trigger dates.
  */
@@ -42,42 +49,59 @@ export class ChillsRDTPreviewClient {
     this.sql = sql;
   }
 
-  public async getRDTPreviewData(): Promise<RDTPreview[]> {
-    const surveys_with_rdt_previews = await this.models.survey
-      .findAll()
-      .filter(survey => typeof survey.survey.previewSeries !== "undefined");
-    const rdt_photos = await this.models.photo.findAll();
+  public async getRDTPreviewPhotos(): Promise<SeriesPreview[]> {
+    const rows = await this.sql.nonPii.query(
+      `
+        select
+          s.docid as docid,
+          ss.value as photo,
+          ss.ordinality
+        from
+          chills.current_surveys s,
+          jsonb_array_elements_text(s.survey->'previewSeries') with ordinality ss
+          left join chills.rdt_preview_frames r on ss.value = r.photo
+        where
+          ss.value like 'preview_info%'
+          and ss.value like '%.json'
+          and r.docid is null
+        `
+    );
 
-    const preview_frames = [];
-    surveys_with_rdt_previews.forEach(survey => {
-      const docid = survey.docId;
+    return rows[0].map(row => {
+      return {
+        docId: row.docid,
+        photoId: row.photo,
+        seriesIndex: row.ordinality,
+      };
+    });
+  }
 
-      // go through each capture attempt recorded in the survey, find the associated
-      // photo in storage, and process the frame data
-      for (
-        let series_index = 0;
-        series_index < survey.survey.previewSeries.length;
-        series_index++
-      ) {
-        const series = rdt_photos.find(
-          photo =>
-            photo.photo.photoId === survey.survey.previewSeries[series_index] &&
-            photo.photo.photoId.slice(0, 12) === "preview_info"
-        );
-        if (series) {
-          const frames = JSON.parse(
-            Buffer.from(series.photo.jpegBase64, "base64").toString()
-          );
-          frames.forEach(frame =>
-            preview_frames.push({ docid, series_index, frame })
-          );
-        }
-      }
+  public async getRDTPreviewData(
+    preview: SeriesPreview
+  ): Promise<RDTPreview[]> {
+    const rdtPhoto = await this.models.photo.findOne({
+      where: {
+        docid: preview.photoId,
+      },
     });
 
-    const rdt_preview_series_data = preview_frames.map(row => {
+    let previewFrames = [];
+    const frames = JSON.parse(
+      Buffer.from(rdtPhoto.photo.jpegBase64, "base64").toString()
+    );
+    frames.forEach(frame =>
+      previewFrames.push({
+        docid: preview.docId,
+        photo: preview.photoId,
+        seriesIndex: preview.seriesIndex,
+        frame,
+      })
+    );
+
+    const seriesData = previewFrames.map(row => {
       const docId = row.docid;
-      const seriesIndex = row.series_index;
+      const photo = row.photo;
+      const seriesIndex = row.seriesIndex;
       const frameIndex = row.frame.previewFrameIndex;
       const previewSampleRate = row.frame.previewSampleRate;
       const uiMessage = row.frame.uiMessage;
@@ -109,6 +133,7 @@ export class ChillsRDTPreviewClient {
 
       return {
         docId,
+        photo,
         seriesIndex,
         frameIndex,
         previewSampleRate,
@@ -132,6 +157,6 @@ export class ChillsRDTPreviewClient {
       };
     });
 
-    return rdt_preview_series_data;
+    return seriesData;
   }
 }

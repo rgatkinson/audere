@@ -5,8 +5,6 @@
 
 import { ChillsRDTPreview } from "../services/chills/chillsRDTPreviewService";
 import { ChillsRDTPreviewClient } from "../external/chillsRDTPreviewClient";
-import { LazyAsync } from "../util/lazyAsync";
-import { SecretConfig } from "../util/secretsConfig";
 import { SplitSql } from "../util/sql";
 import { jsonKeepAlive } from "../util/expressApp";
 import { ChillsDataPipeline } from "../services/chills/chillsDataPipeline";
@@ -19,7 +17,6 @@ export class ChillsRDTPreviewEndpoint {
   private readonly service: ChillsRDTPreview;
 
   constructor(sql: SplitSql) {
-    const secrets = new SecretConfig(sql);
     this.client = new ChillsRDTPreviewClient(sql);
     this.pipeline = new ChillsDataPipeline(sql.nonPii);
     this.service = new ChillsRDTPreview(sql);
@@ -31,11 +28,15 @@ export class ChillsRDTPreviewEndpoint {
 
     logger.info("Finding RDT preview series for import");
 
-    const rdt_previews = await this.client.getRDTPreviewData();
-    logger.info(`${rdt_previews.length} rdt preview frames found for import`);
+    const photos = await this.client.getRDTPreviewPhotos();
+    logger.info(`${photos.length} rdt preview frames found for import`);
 
-    await this.service.importRDTPreviews(rdt_previews);
-    logger.info(`Updated rdt preview series data`);
+    for (let i = 0; i < photos.length; i++) {
+      const photo = photos[i];
+      const data = await this.client.getRDTPreviewData(photo);
+      await this.service.importRDTPreviews(data);
+      logger.info(`Updated rdt preview series data`);
+    }
 
     // refresh pipeline
     logger.info("Refreshing derived schema");

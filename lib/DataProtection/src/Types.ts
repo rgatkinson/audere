@@ -29,14 +29,14 @@ export namespace DataProtectionError {
 }
 
 export interface EncryptedObject {
-  keyId: string,
-  dataProtectionPolicy: DataProtectionPolicy,
-  payload: any
+  keyId: string;
+  dataProtectionPolicy: DataProtectionPolicy;
+  payload: any;
 }
 
 export interface PolicyActions {
-  encryptObject?: (any) => EncryptedObject,
-  decryptObject?: (EncryptedObject) => any,
+  encryptObject?: (any) => EncryptedObject;
+  decryptObject?: (EncryptedObject) => any;
 }
 
 export interface PublicKey {
