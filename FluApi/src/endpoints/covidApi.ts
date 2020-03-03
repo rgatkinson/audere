@@ -29,7 +29,7 @@ import {
 import { FluDocumentImport } from "./fluDocumentImport";
 import logger from "../util/logger";
 
-export class CoughEndpoint extends FluDocumentImport {
+export class CovidEndpoint extends FluDocumentImport {
   private readonly models: CoughModels;
 
   constructor(sql: SplitSql) {
@@ -45,29 +45,6 @@ export class CoughEndpoint extends FluDocumentImport {
       throw new Error("Unexpected survey document schema");
     }
     await this.models.survey.upsert(doc);
-  };
-
-  protected writePhoto = async (
-    snapshot: DocumentSnapshot,
-    receiver: FirebaseReceiver
-  ) => {
-    const doc = snapshot.data() as PhotoDocument;
-    if (doc.schemaId !== 1 || doc.documentType !== DocumentType.Photo) {
-      throw new Error("Unexpected photo document schema");
-    }
-
-    const jpegBuffer = await receiver.download(doc.photo.photoId);
-    const jpegBase64 = jpegBuffer.toString("base64");
-
-    await this.models.photo.upsert({
-      docId: doc.docId,
-      device: doc.device,
-      photo: {
-        timestamp: doc.photo.timestamp,
-        photoId: doc.photo.photoId,
-        jpegBase64,
-      },
-    });
   };
 
   protected async updateImportProblem(
