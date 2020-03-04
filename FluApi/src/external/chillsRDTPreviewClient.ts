@@ -60,10 +60,12 @@ export class ChillsRDTPreviewClient {
           chills.current_surveys s,
           jsonb_array_elements_text(s.survey->'previewSeries') with ordinality ss
           left join chills.rdt_preview_frames r on ss.value = r.photo
+          left join chills.photos p on ss.value = p.docid
         where
           ss.value like 'preview_info%'
           and ss.value like '%.json'
           and r.docid is null
+          and p.docid is not null
         `
     );
 
