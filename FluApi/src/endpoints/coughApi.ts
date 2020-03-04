@@ -5,11 +5,7 @@
 
 import { Op } from "sequelize";
 import { SplitSql } from "../util/sql";
-import {
-  CoughModels,
-  defineCoughModels,
-  ImportProblemAttributes,
-} from "../models/db/cough";
+import { CoughModels, defineCoughModels } from "../models/db/cough";
 import { FirebaseReceiver } from "../external/firebase";
 import {
   DocumentType,
@@ -18,15 +14,12 @@ import {
 } from "audere-lib/dist/coughProtocol";
 import { CoughDataPipeline } from "../services/cough/coughDataPipeline";
 import { DataPipelineService } from "../services/data/dataPipelineService";
+import { DocumentSnapshot } from "../services/firebaseDocumentService";
 import {
   Base64Sample,
-  DocumentSnapshot,
-  ImportError,
-  ImportResult,
-  ImportSpec,
+  FluDocumentImport,
   PhotoUploadResult,
-} from "../services/firebaseDocumentService";
-import { FluDocumentImport } from "./fluDocumentImport";
+} from "./fluDocumentImport";
 import logger from "../util/logger";
 
 export class CoughEndpoint extends FluDocumentImport {
@@ -69,34 +62,6 @@ export class CoughEndpoint extends FluDocumentImport {
       },
     });
   };
-
-  protected async updateImportProblem(
-    reqId: string,
-    spec: ImportSpec,
-    err: Error,
-    result: ImportResult
-  ): Promise<number> {
-    logger.error(
-      `${reqId} CoughEndpoint import failed for '${spec.id}' in '${spec.collection}': ${err.message}`
-    );
-
-    const firebaseCollection = spec.collection;
-    const firebaseId = spec.id;
-    const existing = await this.models.importProblem.findOne({
-      where: { firebaseCollection, firebaseId },
-    });
-
-    const problem = {
-      id: existing == null ? undefined : existing.id,
-      firebaseCollection,
-      firebaseId,
-      attempts: existing == null ? 1 : existing.attempts + 1,
-      lastError: err.message,
-    };
-    result.errors.push(asImportError(problem));
-    await this.models.importProblem.upsert(problem);
-    return problem.attempts;
-  }
 
   protected async getPhotoSamples(): Promise<Base64Sample[]> {
     const surveys = await this.models.survey.findAll({
@@ -188,13 +153,4 @@ export class CoughEndpoint extends FluDocumentImport {
     }
     logger.info(`${reqId}: leave updateDerivedTables`);
   }
-}
-
-function asImportError(problem: ImportProblemAttributes): ImportError {
-  return {
-    collection: problem.firebaseCollection,
-    id: problem.firebaseId,
-    error: problem.lastError,
-    attempts: problem.attempts,
-  };
 }

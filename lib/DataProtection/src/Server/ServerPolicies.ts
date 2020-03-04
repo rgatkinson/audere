@@ -5,11 +5,7 @@
 
 import { Crypt } from "hybrid-crypto-js";
 
-import {
-  EncryptedObject,
-  KeyPair,
-  PolicyActions,
-} from "../Types";
+import { EncryptedObject, KeyPair, PolicyActions } from "../Types";
 import { fetchKeyPair } from "./ServerKeyManagement";
 
 export class ServerPolicyActions implements PolicyActions {

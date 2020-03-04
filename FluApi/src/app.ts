@@ -46,6 +46,7 @@ import { ChillsSurveillanceEndpoint } from "./endpoints/chillsSurveillanceApi";
 import { ChillsMTLEndpoint } from "./endpoints/chillsMTLApi";
 import { ChillsTriggersEndpoint } from "./endpoints/chillsTriggersApi";
 import { ChillsRDTPreviewEndpoint } from "./endpoints/chillsRDTPreviewApi";
+import { CovidEndpoint } from "./endpoints/covidApi";
 
 const buildInfo = require("../static/buildInfo.json");
 
@@ -466,6 +467,19 @@ export function createInternalApp(config: AppConfig) {
       sqlLock.runIfFree(
         "/api/import/chillsRDTPreview",
         chillsRDTPreview.importRDTPreview,
+        jsonNoOp
+      )
+    )
+  );
+
+  const covidApi = new CovidEndpoint(sql);
+  internalApp.get(
+    "/api/import/covidDocuments",
+    stats("importCovidDocuments"),
+    wrap(
+      sqlLock.runIfFree(
+        "/api/import/covidDocuments",
+        covidApi.importDocuments,
         jsonNoOp
       )
     )

@@ -4,7 +4,8 @@
 // can be found in the LICENSE file distributed with this file.
 
 import { FirebaseReceiver } from "../external/firebase";
-import { S3Uploader } from "../external/s3Uploader";
+import { ImportProblem } from "../models/importProblem";
+import { Model } from "../util/sql";
 import logger from "../util/logger";
 
 export type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
@@ -12,116 +13,10 @@ export type DocumentSnapshot = FirebaseFirestore.DocumentSnapshot;
 // We import every hour, try importing for up to one day before giving up.
 const MAX_IMPORT_ATTEMPTS = 24;
 
-const DEFAULT_SURVEY_COLLECTION = "surveys";
-const DEFAULT_PHOTO_COLLECTION = "photos";
-
-export function getSurveyCollection(): string {
-  return process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
-}
-
-export function getPhotoCollection(): string {
-  return process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
-}
-
 export class FirebaseDocumentService {
-  private readonly firebaseSurveys: FirebaseReceiver;
-  private readonly firebasePhotos: FirebaseReceiver;
-  private readonly s3Uploader: S3Uploader;
-  private readonly progress: () => void;
+  private readonly importProblems: Model<ImportProblem>;
 
-  constructor(
-    firebaseSurveys: FirebaseReceiver,
-    firebasePhotos: FirebaseReceiver,
-    s3Uploader: S3Uploader,
-    progress: () => void
-  ) {
-    this.firebaseSurveys = firebaseSurveys;
-    this.firebasePhotos = firebasePhotos;
-    this.s3Uploader = s3Uploader;
-    this.progress = progress;
-  }
-
-  public async importDocuments(
-    writeSurvey: (
-      snapshot: DocumentSnapshot,
-      receiver: FirebaseReceiver
-    ) => Promise<void>,
-    writePhoto: (
-      snapshot: DocumentSnapshot,
-      receiver: FirebaseReceiver
-    ) => Promise<void>,
-    updateImportProblem: (
-      reqId: string,
-      spec: ImportSpec,
-      err: Error,
-      result: ImportResult
-    ) => Promise<number>,
-    reqId: string,
-    markAsRead: boolean,
-    result: ImportResult
-  ): Promise<ImportResult> {
-    logger.info(`${reqId}: enter importDocuments`);
-
-    await this.importItems(
-      this.progress,
-      reqId,
-      markAsRead,
-      getSurveyCollection(),
-      writeSurvey,
-      updateImportProblem,
-      this.firebaseSurveys,
-      result
-    );
-    await this.importItems(
-      this.progress,
-      reqId,
-      markAsRead,
-      getPhotoCollection(),
-      writePhoto,
-      updateImportProblem,
-      this.firebasePhotos,
-      result
-    );
-    logger.info(
-      `${reqId}: leave importDocuments\n${JSON.stringify(result, null, 2)}`
-    );
-
-    return result;
-  }
-
-  public async uploadPhotos(
-    base64samples: Base64Sample[],
-    rdtPhotosSecret: string
-  ): Promise<PhotoUploadResult[]> {
-    const results = await Promise.all(
-      base64samples.map(async sample => {
-        try {
-          await this.uploadPhoto(sample, rdtPhotosSecret);
-        } catch (e) {
-          console.error(e);
-          return null;
-        }
-        return { surveyId: sample.code };
-      })
-    );
-
-    return results;
-  }
-
-  private async uploadPhoto(
-    sample: Base64Sample,
-    rdtPhotosSecret: string
-  ): Promise<void> {
-    await this.s3Uploader.writeRDTPhoto(
-      rdtPhotosSecret,
-      "cough",
-      `${sample.code}_${sample.sampleSuffix}.png`,
-      Buffer.from(sample.photo, "base64")
-    );
-  }
-
-  private async importItems(
-    progress: () => void,
+  protected async importItems(
     reqId: string,
     markAsRead: boolean,
     collection: string,
@@ -129,14 +24,9 @@ export class FirebaseDocumentService {
       snapshot: DocumentSnapshot,
       receiver: FirebaseReceiver
     ) => Promise<void>,
-    updateImportProblem: (
-      reqId: string,
-      spec: ImportSpec,
-      err: Error,
-      result: ImportResult
-    ) => Promise<number>,
     firebase: FirebaseReceiver,
-    result: ImportResult
+    result: ImportResult,
+    progress: () => void
   ) {
     const updates = await this.updatesWithRetry(firebase);
 
@@ -147,7 +37,7 @@ export class FirebaseDocumentService {
       try {
         snapshot = await firebase.read(spec.id);
       } catch (err) {
-        await updateImportProblem(reqId, spec, err, result);
+        await this.updateImportProblem(reqId, spec, err, result);
       }
 
       if (snapshot != null) {
@@ -158,7 +48,12 @@ export class FirebaseDocumentService {
           }
           result.successes.push(spec);
         } catch (err) {
-          const attempts = await updateImportProblem(reqId, spec, err, result);
+          const attempts = await this.updateImportProblem(
+            reqId,
+            spec,
+            err,
+            result
+          );
           if (markAsRead && attempts >= MAX_IMPORT_ATTEMPTS) {
             await firebase.markAsRead(snapshot);
           }
@@ -185,16 +80,43 @@ export class FirebaseDocumentService {
     }
     return await firebase.updates();
   }
-}
 
-export interface Base64Sample {
-  code: string;
-  photo: string;
-  sampleSuffix: string;
-}
+  private async updateImportProblem(
+    reqId: string,
+    spec: ImportSpec,
+    err: Error,
+    result: ImportResult
+  ): Promise<number> {
+    logger.error(
+      `${reqId} import failed for '${spec.id}' in '${spec.collection}': ${err.message}`
+    );
 
-export interface PhotoUploadResult {
-  surveyId: string;
+    const firebaseCollection = spec.collection;
+    const firebaseId = spec.id;
+    const existing = await this.importProblems.findOne({
+      where: { firebaseCollection, firebaseId },
+    });
+
+    const problem = {
+      id: existing == null ? undefined : existing.id,
+      firebaseCollection,
+      firebaseId,
+      attempts: existing == null ? 1 : existing.attempts + 1,
+      lastError: err.message,
+    };
+    result.errors.push(this.asImportError(problem));
+    await this.importProblems.upsert(problem);
+    return problem.attempts;
+  }
+
+  private asImportError(problem: ImportProblem): ImportError {
+    return {
+      collection: problem.firebaseCollection,
+      id: problem.firebaseId,
+      error: problem.lastError,
+      attempts: problem.attempts,
+    };
+  }
 }
 
 export interface ImportResult {

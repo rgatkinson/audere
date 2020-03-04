@@ -29,6 +29,7 @@ import {
   FirebaseAnalyticsAttributes,
   FirebaseAnalyticsTableAttributes,
 } from "./firebaseAnalytics";
+import { ImportProblem } from "../importProblem";
 
 const schema = "cough";
 
@@ -77,7 +78,7 @@ export interface CoughModels {
   followUpSurveyFile: Model<FollowUpSurveyFileAttributes>;
   followUpSurvey: Model<FollowUpSurveyAttributes>;
   giftcard: Model<GiftcardAttributes>;
-  importProblem: Model<ImportProblemAttributes>;
+  importProblem: Model<ImportProblem>;
   photo: Model<PhotoAttributes>;
   photoReplacementLog: Model<PhotoReplacementLogAttributes>;
   photoUploadLog: Model<PhotoUploadLogAttributes>;
@@ -116,17 +117,8 @@ export function defineAccessKey(sql: SplitSql): Model<AccessKeyAttributes> {
 
 // ---------------------------------------------------------------
 
-export interface ImportProblemAttributes {
-  id?: string;
-  firebaseId: string;
-  firebaseCollection: string;
-  attempts: number;
-  lastError: string;
-}
-export function defineImportProblem(
-  sql: SplitSql
-): Model<ImportProblemAttributes> {
-  return defineModel<ImportProblemAttributes>(
+export function defineImportProblem(sql: SplitSql): Model<ImportProblem> {
+  return defineModel<ImportProblem>(
     sql.nonPii,
     "import_problems",
     {

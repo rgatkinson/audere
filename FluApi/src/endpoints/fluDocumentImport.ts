@@ -15,14 +15,8 @@ import {
   requestId,
 } from "../util/expressApp";
 import {
-  getPhotoCollection,
-  getSurveyCollection,
-  Base64Sample,
   DocumentSnapshot,
   FirebaseDocumentService,
-  ImportResult,
-  ImportSpec,
-  PhotoUploadResult,
 } from "../services/firebaseDocumentService";
 import { SecretConfig } from "../util/secretsConfig";
 import { getS3Config } from "../util/s3Config";
@@ -30,7 +24,18 @@ import { S3Uploader } from "../external/s3Uploader";
 import { LazyAsync } from "../util/lazyAsync";
 import logger from "../util/logger";
 
-export abstract class FluDocumentImport {
+const DEFAULT_SURVEY_COLLECTION = "surveys";
+const DEFAULT_PHOTO_COLLECTION = "photos";
+
+export function getSurveyCollection(): string {
+  return process.env.FIRESTORE_SURVEY_COLLECTION || DEFAULT_SURVEY_COLLECTION;
+}
+
+export function getPhotoCollection(): string {
+  return process.env.FIRESTORE_PHOTO_COLLECTION || DEFAULT_PHOTO_COLLECTION;
+}
+
+export abstract class FluDocumentImport extends FirebaseDocumentService {
   protected readonly sql: SplitSql;
   protected readonly secrets: SecretConfig;
   private s3Uploader: LazyAsync<S3Uploader>;
@@ -45,6 +50,8 @@ export abstract class FluDocumentImport {
   ) => Promise<void>;
 
   constructor(sql: SplitSql, credentials: string) {
+    super();
+
     this.sql = sql;
     this.secrets = new SecretConfig(sql);
     this.s3Uploader = new LazyAsync(async () => {
@@ -64,17 +71,6 @@ export abstract class FluDocumentImport {
     );
   }
 
-  protected async getService(
-    progress: () => void
-  ): Promise<FirebaseDocumentService> {
-    return new FirebaseDocumentService(
-      this.firebaseSurveys,
-      this.firebasePhotos,
-      await this.s3Uploader.get(),
-      progress
-    );
-  }
-
   public importDocuments = async (req, res, next) => {
     const reqId = requestId(req);
     const markAsRead = booleanQueryParameter(req, "markAsRead", true);
@@ -88,40 +84,33 @@ export abstract class FluDocumentImport {
     };
 
     const { progress, replyJson } = jsonKeepAlive(res);
-    const svc = await this.getService(progress);
 
-    await svc.importDocuments(
-      snapshot => this.writeSurvey(snapshot),
-      (snapshot, receiver) => this.writePhoto(snapshot, receiver),
-      (reqId, spec, err, result) =>
-        this.updateImportProblem(reqId, spec, err, result),
+    await this.importItems(
       reqId,
       markAsRead,
-      result
+      getSurveyCollection(),
+      this.writeSurvey,
+      this.firebaseSurveys,
+      result,
+      progress
+    );
+    await this.importItems(
+      reqId,
+      markAsRead,
+      getPhotoCollection(),
+      this.writePhoto,
+      this.firebasePhotos,
+      result,
+      progress
+    );
+    logger.info(
+      `${reqId}: leave importDocuments\n${JSON.stringify(result, null, 2)}`
     );
 
     await this.updateDerived(progress, reqId);
 
     replyJson(result);
   };
-
-  public uploadPhotos = async (req, res, next) => {
-    const rdtPhotosSecret = await this.secrets.getOrCreate(this.photosSecret);
-    const samples = await this.getPhotoSamples();
-
-    const { progress, replyJson } = jsonKeepAlive(res);
-    const svc = await this.getService(progress);
-
-    const results = await svc.uploadPhotos(samples, rdtPhotosSecret);
-    await this.logPhotoUploadResults(results);
-
-    res.json({
-      success: results.filter(result => result !== null).length,
-      error: results.filter(result => result === null).length,
-    });
-  };
-
-  protected abstract getPhotoSamples(): Promise<Base64Sample[]>;
 
   public updateDerivedTables = async (req, res, next) => {
     const reqId = requestId(req);
@@ -130,19 +119,60 @@ export abstract class FluDocumentImport {
     replyJson({});
   };
 
+  public uploadPhotos = async (req, res, next) => {
+    const rdtPhotosSecret = await this.secrets.getOrCreate(this.photosSecret);
+    const samples = await this.getPhotoSamples();
+
+    const results = await Promise.all(
+      samples.map(async sample => {
+        try {
+          await this.uploadPhoto(sample, rdtPhotosSecret);
+        } catch (e) {
+          console.error(e);
+          return null;
+        }
+        return { surveyId: sample.code };
+      })
+    );
+    await this.logPhotoUploadResults(results);
+
+    res.json({
+      success: results.filter(result => result !== null).length,
+      error: results.filter(result => result === null).length,
+    });
+  };
+
+  private async uploadPhoto(
+    sample: Base64Sample,
+    rdtPhotosSecret: string
+  ): Promise<void> {
+    const svc = await this.s3Uploader.get();
+    await svc.writeRDTPhoto(
+      rdtPhotosSecret,
+      "cough",
+      `${sample.code}_${sample.sampleSuffix}.png`,
+      Buffer.from(sample.photo, "base64")
+    );
+  }
+
+  protected abstract getPhotoSamples(): Promise<Base64Sample[]>;
+
   protected abstract logPhotoUploadResults(
     result: PhotoUploadResult[]
   ): Promise<void>;
-
-  protected abstract updateImportProblem(
-    reqId: string,
-    spec: ImportSpec,
-    err: Error,
-    result: ImportResult
-  ): Promise<number>;
 
   protected abstract updateDerived(
     progress: () => void,
     reqId: string
   ): Promise<void>;
+}
+
+export interface Base64Sample {
+  code: string;
+  photo: string;
+  sampleSuffix: string;
+}
+
+export interface PhotoUploadResult {
+  surveyId: string;
 }

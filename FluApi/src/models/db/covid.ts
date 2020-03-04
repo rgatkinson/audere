@@ -34,14 +34,18 @@ const schema = "chills";
 
 export function defineCovidModels(sql: SplitSql): CovidModels {
   const models: CovidModels = {
-    surveys: null,
+    importProblem: defineImportProblem(sql),
+    survey: defineSurvey(sql),
+    workflowEvents: defineWorkflowEvent(sql),
   };
 
   return models;
 }
 
 export interface CovidModels {
-  surveys: Model<string>;
+  importProblem: Model<ImportProblemAttributes>;
+  survey: Model<SurveyAttributes>;
+  workflowEvents: Model<WorkflowEventAttributes>;
 }
 
 // ---------------------------------------------------------------
@@ -56,6 +60,29 @@ export enum EditableTableType {
 
 // ---------------------------------------------------------------
 
+export interface ImportProblemAttributes {
+  id?: string;
+  firebaseId: string;
+  firebaseCollection: string;
+  attempts: number;
+  lastError: string;
+}
+export function defineImportProblem(
+  sql: SplitSql
+): Model<ImportProblemAttributes> {
+  return defineModel<ImportProblemAttributes>(
+    sql.nonPii,
+    "import_problems",
+    {
+      firebaseId: stringColumn("firebase_id"),
+      firebaseCollection: stringColumn("firebase_collection"),
+      attempts: integerColumn(),
+      lastError: stringColumn("last_error"),
+    },
+    { schema }
+  );
+}
+
 export interface SurveyAttributes {
   survey: string;
 }
@@ -65,6 +92,22 @@ export function defineSurvey(sql: SplitSql): Model<SurveyAttributes> {
     "surveys",
     {
       survey: stringColumn(),
+    },
+    { schema }
+  );
+}
+
+export interface WorkflowEventAttributes {
+  event: string;
+}
+export function defineWorkflowEvent(
+  sql: SplitSql
+): Model<WorkflowEventAttributes> {
+  return defineModel<WorkflowEventAttributes>(
+    sql.nonPii,
+    "workflow_events",
+    {
+      event: stringColumn(),
     },
     { schema }
   );

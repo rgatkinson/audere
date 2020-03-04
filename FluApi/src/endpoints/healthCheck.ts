@@ -9,7 +9,7 @@ import {
   connectorFromSqlSecrets,
   FirebaseReceiver,
 } from "../external/firebase";
-import { getPhotoCollection } from "../services/firebaseDocumentService";
+import { getPhotoCollection } from "../endpoints/fluDocumentImport";
 import logger from "../util/logger";
 
 export class ServerHealth {
