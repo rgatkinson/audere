@@ -20,17 +20,8 @@ import {
   unique,
   nullable,
 } from "../../util/sql";
-import {
-  DeviceInfo,
-  PhotoDbInfo,
-  SurveyNonPIIInfo,
-} from "audere-lib/dist/chillsProtocol";
-import {
-  FirebaseAnalyticsAttributes,
-  FirebaseAnalyticsTableAttributes,
-} from "./firebaseAnalytics";
 
-const schema = "chills";
+const schema = "covid";
 
 export function defineCovidModels(sql: SplitSql): CovidModels {
   const models: CovidModels = {
