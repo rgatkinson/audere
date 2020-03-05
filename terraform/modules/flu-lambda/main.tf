@@ -316,6 +316,19 @@ module "chills_triggers_import" {
   url = "http://${var.fluapi_fqdn}:444/api/import/chillsTriggers"
 }
 
+module "chills_rdt_preview_import" {
+  source = "../lambda-cron"
+
+  frequency = "${local.cron_everyday_at_12PM_UTC}"
+  name = "${local.base_name}-chills-rdt-preview-import"
+  notification_topic = "${var.infra_alerts_sns_topic_arn}"
+  role_arn = "${aws_iam_role.flu_lambda.arn}"
+  security_group_ids = ["${var.internal_elb_access_sg}"]
+  subnet_id = "${var.lambda_subnet_id}"
+  timeout = 600
+  url = "http://${var.fluapi_fqdn}:444/api/import/chillsRDTPreview"
+}
+
 module "chills_mtl_import" {
   source = "../lambda-cron"
 
