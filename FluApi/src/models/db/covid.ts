@@ -98,6 +98,7 @@ export function defineSurvey(sql: SplitSql): Model<SurveyAttributes> {
 }
 
 export interface WorkflowEventAttributes {
+  id?: string;
   eventType: string;
   token: string;
   timestamp: string;
