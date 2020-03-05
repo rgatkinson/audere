@@ -5,7 +5,7 @@
 
 "use strict";
 
-const { baseColumns, column } = require("../../util");
+const { baseColumns, column, unique } = require("../../util");
 const schema = "covid";
 
 module.exports = {
