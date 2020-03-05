@@ -16,6 +16,9 @@ module.exports = {
       "surveys",
       {
         ...baseColumns(Sequelize),
+        uid: unique(column(Sequelize.STRING)),
+        phone: column(Sequelize.STRING),
+        body: column(Sequelize.JSONB),
       },
       { schema }
     );
@@ -24,6 +27,9 @@ module.exports = {
       "workflow_events",
       {
         ...baseColumns(Sequelize),
+        token: column(Sequelize.STRING),
+        timestamp: column(Sequelize.STRING),
+        eventType: column(Sequelize.STRING),
       },
       { schema }
     );
@@ -35,7 +41,7 @@ module.exports = {
         firebase_id: column(Sequelize.STRING),
         firebase_collection: column(Sequelize.STRING),
         attempts: column(Sequelize.INTEGER),
-        last_error: column(Sequelize.TEXT)
+        last_error: column(Sequelize.TEXT),
       },
       { schema }
     );
