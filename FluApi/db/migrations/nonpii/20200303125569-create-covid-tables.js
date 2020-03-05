@@ -29,7 +29,7 @@ module.exports = {
         ...baseColumns(Sequelize),
         token: column(Sequelize.STRING),
         timestamp: column(Sequelize.STRING),
-        eventType: column(Sequelize.STRING),
+        event_type: column(Sequelize.STRING),
       },
       { schema }
     );

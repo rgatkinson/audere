@@ -84,21 +84,32 @@ export function defineImportProblem(
 }
 
 export interface SurveyAttributes {
+  id?: string;
+  uid: string;
+  phone: string;
   survey: string;
+  updatedAt?: Date;
+  createdAt?: Date;
 }
 export function defineSurvey(sql: SplitSql): Model<SurveyAttributes> {
   return defineModel<SurveyAttributes>(
     sql.nonPii,
     "surveys",
     {
-      survey: stringColumn(),
+      uid: unique(stringColumn()),
+      phone: stringColumn(),
+      survey: jsonColumn("body"),
+      updatedAt: dateColumn(),
+      createdAt: dateColumn(),
     },
     { schema }
   );
 }
 
 export interface WorkflowEventAttributes {
-  event: string;
+  eventType: string;
+  token: string;
+  timestamp: string;
 }
 export function defineWorkflowEvent(
   sql: SplitSql
@@ -107,7 +118,9 @@ export function defineWorkflowEvent(
     sql.nonPii,
     "workflow_events",
     {
-      event: stringColumn(),
+      eventType: stringColumn(),
+      token: stringColumn(),
+      timestamp: stringColumn(),
     },
     { schema }
   );
