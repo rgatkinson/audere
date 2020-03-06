@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "external",
+    "internal",
+    "shared"
+  ],
+  "version": "independent",
+  "npmClient": "yarn",
+  "userWorkspaces": true
+}
