@@ -10,6 +10,7 @@ locals {
 
   // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html
   cron_everyday_at_10AM_UTC = "cron(0 10 ? * * *)"
+  cron_everyday_at_11AM_UTC = "cron(0 11 ? * * *)"
   cron_everyday_at_12PM_UTC = "cron(0 12 ? * * *)"
   cron_saturday_at_10AM_UTC = "cron(0 10 ? * 7 *)"
   cron_everyday_at_3AM_UTC = "cron(0 3 ? * * *)"
@@ -319,7 +320,7 @@ module "chills_triggers_import" {
 module "chills_rdt_preview_import" {
   source = "../lambda-cron"
 
-  frequency = "${local.cron_everyday_at_12PM_UTC}"
+  frequency = "${local.cron_everyday_at_11AM_UTC}"
   name = "${local.base_name}-chills-rdt-preview-import"
   notification_topic = "${var.infra_alerts_sns_topic_arn}"
   role_arn = "${aws_iam_role.flu_lambda.arn}"
