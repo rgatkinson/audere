@@ -92,7 +92,7 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
     }
 
     private void writeIntermediateResults(RDTTracker.RDTStillFrameResult rdtResult,
-                                          List<Classifier.Recognition> phase2Results,
+                                          Classifier.Recognition phase2Result,
                                           WritableMap event) {
         Map<String, String> intermediateResults = rdtResult.intermediateResults;
         WritableMap intermediates = Arguments.createMap();
@@ -108,22 +108,15 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         }
         event.putArray("phase1Recognitions", phase1Recognitions);
 
-        WritableArray phase2Recognitions = Arguments.createArray();
-        for (Classifier.Recognition recognition : phase2Results) {
-            phase2Recognitions.pushString(recognition.toString());
-        }
-        event.putArray("phase2Recognitions", phase2Recognitions);
+        event.putString("phase2Recognition", phase2Result.toString());
     }
 
     @Override
     public void onRDTInterpreted(DetectorView.InterpretationResult interpretationResult) {
         WritableMap event = Arguments.createMap();
         writeRDTResultArgs(interpretationResult.rdtResult, event);
-        writeIntermediateResults(interpretationResult.rdtResult, interpretationResult.recognitions,
+        writeIntermediateResults(interpretationResult.rdtResult, interpretationResult.recognition,
                 event);
-        event.putBoolean("control", interpretationResult.control);
-        event.putBoolean("testA", interpretationResult.testA);
-        event.putBoolean("testB", interpretationResult.testB);
         event.putString("imageUri", interpretationResult.imageUri);
         event.putString("resultWindowImageUri", interpretationResult.resultWindowImageUri);
         event.putString("failureReason", "Interpreted");

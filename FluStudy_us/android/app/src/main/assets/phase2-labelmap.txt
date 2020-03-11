@@ -1,7 +1,5 @@
-???
-control
-a-pos
-a-neg
-b-pos
-b-neg
-notvalid
+Both
+Flu-A
+Flu-B
+Invalid
+Negative

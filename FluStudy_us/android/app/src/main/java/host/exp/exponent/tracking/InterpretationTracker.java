@@ -27,52 +27,17 @@ public class InterpretationTracker {
     private static final BorderedText borderedText = new BorderedText(12);
 
     public static synchronized DetectorView.InterpretationResult interpretResults(
-            final List<Classifier.Recognition> results, RDTTracker.RDTStillFrameResult rdtResult,
+            final Classifier.Recognition result, RDTTracker.RDTStillFrameResult rdtResult,
             boolean drawResults) {
         Log.i(TAG, "tracking interpretation result");
 
-        Map<String, Classifier.Recognition> bestResults = new HashMap();
-
-        StringBuilder allResults = new StringBuilder("\nResults:\n");
-
-        for (final Classifier.Recognition result : results) {
-            if (result.getLocation() == null) {
-                continue;
-            }
-            allResults.append("   " + getLabel(result) + "\n");
-
-            String label = result.getTitle();
-            if (!bestResults.containsKey(label) ||
-                    bestResults.get(label).getConfidence() < result.getConfidence()) {
-                bestResults.put(label, result);
-            }
-        }
-
-        Log.d(TAG, "All results");
-        Log.d(TAG, "\n" + allResults.toString());
-
         DetectorView.InterpretationResult interpretationResult =
-                new DetectorView.InterpretationResult(rdtResult, results);
+                new DetectorView.InterpretationResult(rdtResult, result);
 
         canvas.setBitmap(rdtResult.testArea);
+        drawLabel(drawResults, result, Color.RED);
 
-        if (hasLine("control", "notvalid", bestResults)) {
-            interpretationResult.control = true;
-            drawLineIf(drawResults, bestResults.get("control"), Color.BLUE);
-
-            if (hasLine("a-pos", "a-neg", bestResults)) {
-                interpretationResult.testA = true;
-                drawLineIf(drawResults, bestResults.get("a-pos"), Color.RED);
-            }
-
-            if (hasLine("b-pos", "b-neg", bestResults)) {
-                interpretationResult.testB = true;
-                drawLineIf(drawResults, bestResults.get("b-pos"), Color.RED);
-            }
-        }
-
-        Log.d(TAG, "Interpretation results\n");
-        Log.d(TAG, interpretationResult.toString());
+        Log.d(TAG, "Interpretation result: " +  getLabel(result));
 
         return interpretationResult;
     }
@@ -87,16 +52,14 @@ public class InterpretationTracker {
         return p;
     }
 
-    private static void drawLineIf(boolean draw, Classifier.Recognition recognition, int color) {
+    private static void drawLabel(boolean draw, Classifier.Recognition recognition, int color) {
         if (!draw) {
             return;
         }
         paint.setColor(color);
-        final RectF trackedPos = new RectF(recognition.getLocation());
-        canvas.drawRect(trackedPos.left, trackedPos.top, trackedPos.right, trackedPos.bottom, paint);
-        borderedText.drawText(canvas, trackedPos.left, trackedPos.top, getLabel(recognition), paint);
-
+        borderedText.drawText(canvas, 5, 5, getLabel(recognition), paint);
     }
+
     public static String getLabel(Classifier.Recognition rec) {
         return !TextUtils.isEmpty(rec.getTitle())
                 ? String.format("%s %.2f", rec.getTitle(), (100 * rec.getConfidence()))

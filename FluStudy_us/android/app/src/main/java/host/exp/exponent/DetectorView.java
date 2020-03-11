@@ -440,9 +440,8 @@ public class DetectorView extends LinearLayout implements
                 }
 
                 out.write("Phase 2 Results\n");
-                for (Classifier.Recognition recognition : interpretationResult.recognitions) {
-                    out.write("    " + recognition.toString() + "\n");
-                }
+                out.write("    " + interpretationResult.recognition.toString() + "\n");
+
                 out.close();
             } catch (Exception e) {
 
@@ -569,24 +568,30 @@ public class DetectorView extends LinearLayout implements
                 detectorListener.onRDTInterpreting();
                 final long interpretationStartTimeMs = SystemClock.uptimeMillis();
 
-                InterpretationResult interpretationResult = InterpretationTracker.interpretResults(filterResults(
-                        INTERPRETATION_MINIMUM_CONFIDENCE_TF_OD_API,
-                        interpretationDetector.recognizeImage(rdtResult.testArea),
-                        false), rdtResult, activity.isDebug());
+                List<Classifier.Recognition> phase2ResultList = interpretationDetector.recognizeImage(rdtResult.testArea);
 
-                Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
+                if (phase2ResultList.size() > 0) {
+                    Classifier.Recognition phase2Result = phase2ResultList.get(0);
+                    InterpretationResult interpretationResult = InterpretationTracker.interpretResults(
+                            phase2Result,
+                            rdtResult, activity.isDebug());
 
-                interpretationResult.imageUri = saveImage(imageBitmap, RDT_PHOTO_FILE_NAME);
-                interpretationResult.resultWindowImageUri = saveImage(rdtResult.testArea, RDT_TEST_AREA_PHOTO_FILE_NAME);
-                if (activity.isDebug()) {
-                    saveIntermediateResutls(interpretationResult);
-                }
-                if (interpretationResult.imageUri != null) {
-                    cameraController.onPause();
-                    detectorListener.onRDTInterpreted(interpretationResult);
-                    return;
+                    Log.i(TAG, "Phase 2 processing time: " + (SystemClock.uptimeMillis() - interpretationStartTimeMs) + "ms");
+
+                    interpretationResult.imageUri = saveImage(imageBitmap, RDT_PHOTO_FILE_NAME);
+                    interpretationResult.resultWindowImageUri = saveImage(rdtResult.testArea, RDT_TEST_AREA_PHOTO_FILE_NAME);
+                    if (activity.isDebug()) {
+                        saveIntermediateResutls(interpretationResult);
+                    }
+                    if (interpretationResult.imageUri != null) {
+                        cameraController.onPause();
+                        detectorListener.onRDTInterpreted(interpretationResult);
+                        return;
+                    } else {
+                        Log.d(TAG, "Error saving still frame, will try again");
+                    }
                 } else {
-                    Log.d(TAG, "Error saving still frame, will try again");
+                    Log.d(TAG, "No phase 2 classification result");
                 }
             } else {
                 Log.d(TAG, "Still frame didn't have rdt test area");
@@ -677,23 +682,16 @@ public class DetectorView extends LinearLayout implements
 
     public static class InterpretationResult {
         public final RDTTracker.RDTStillFrameResult rdtResult;
-        public boolean control;
-        public boolean testA;
-        public boolean testB;
 
         public String imageUri;
         public String resultWindowImageUri;
 
-        public final List<Classifier.Recognition> recognitions;
-
-        public String toString() {
-            return "control: " + control + ", testA: " + testA + ", testB: " + testB;
-        }
+        public final Classifier.Recognition recognition;
 
         public InterpretationResult(RDTTracker.RDTStillFrameResult rdtResult,
-                                    List<Classifier.Recognition> recognitions) {
+                                    Classifier.Recognition recognition) {
             this.rdtResult = rdtResult;
-            this.recognitions = recognitions;
+            this.recognition = recognition;
         }
     }
 

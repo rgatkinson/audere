@@ -12,6 +12,8 @@ import android.graphics.RectF;
 import android.os.Trace;
 import android.util.Log;
 
+import org.tensorflow.lite.Interpreter;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,29 +28,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import org.tensorflow.lite.Interpreter;
 
 /**
  * Wrapper for frozen detection models trained using the Tensorflow Object Detection API:
  * github.com/tensorflow/models/tree/master/research/object_detection
  */
-public class TFLiteObjectDetectionAPIModel implements Classifier {
+public class TFLiteObjectDetectionAPIModel extends TFLiteBaseModel {
 
-    private static final String TAG = "TFLiteObjectDetectionAPIModel";
+    private static final String TAG = "TFLiteBaseModel";
 
     // Only return this many results.
     private static final int NUM_DETECTIONS = 10;
     // Float model
     private static final float IMAGE_MEAN = 128.0f;
     private static final float IMAGE_STD = 128.0f;
-    // Number of threads in the java app
-    private static final int NUM_THREADS = 4;
-    private boolean isModelQuantized;
-    // Config values.
-    private int inputSize;
-    // Pre-allocated buffers.
-    private Vector<String> labels = new Vector<String>();
-    private int[] intValues;
     // outputLocations: array of shape [Batchsize, NUM_DETECTIONS,4]
     // contains the location of detected boxes
     private float[][][] outputLocations;
@@ -62,35 +55,7 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
     // contains the number of detected boxes
     private float[] numDetections;
 
-    private ByteBuffer imgData;
-
-    private Interpreter tfLite;
-
-    private String phase;
-
-    private TFLiteObjectDetectionAPIModel() {}
-
-    /** Memory-map the model file in Assets. */
-    public static MappedByteBuffer loadModelFile(AssetManager assets, String modelFilename)
-            throws IOException {
-        AssetFileDescriptor fileDescriptor = assets.openFd(modelFilename);
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declaredLength = fileDescriptor.getDeclaredLength();
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
-    }
-
-    /**
-     * Initializes a native TensorFlow session for classifying images.
-     *
-     * @param assetManager The asset manager to be used to load assets.
-     * @param modelFilename The filepath of the model GraphDef protocol buffer.
-     * @param labelFilename The filepath of label file for classes.
-     * @param inputSize The size of image input
-     * @param isQuantized Boolean representing model is quantized or not
-     */
-    public static Classifier create(
+    public TFLiteObjectDetectionAPIModel(
             final AssetManager assetManager,
             final String modelFilename,
             final String labelFilename,
@@ -98,55 +63,11 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
             final boolean isQuantized,
             final String phase)
             throws IOException {
-        final TFLiteObjectDetectionAPIModel d = new TFLiteObjectDetectionAPIModel();
-
-        InputStream labelsInput = null;
-        String actualFilename = labelFilename.split("file:///android_asset/")[1];
-        labelsInput = assetManager.open(actualFilename);
-        BufferedReader br = null;
-        br = new BufferedReader(new InputStreamReader(labelsInput));
-        String line;
-        while ((line = br.readLine()) != null) {
-            Log.w(TAG, line);
-            d.labels.add(line);
-        }
-        br.close();
-
-        d.inputSize = inputSize;
-
-        try {
-            d.tfLite = new Interpreter(loadModelFile(assetManager, modelFilename));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        d.isModelQuantized = isQuantized;
-        // Pre-allocate buffers.
-        int numBytesPerChannel;
-        if (isQuantized) {
-            numBytesPerChannel = 1; // Quantized
-        } else {
-            numBytesPerChannel = 4; // Floating point
-        }
-        d.imgData = ByteBuffer.allocateDirect(1 * d.inputSize * d.inputSize * 3 * numBytesPerChannel);
-        d.imgData.order(ByteOrder.nativeOrder());
-        d.intValues = new int[d.inputSize * d.inputSize];
-
-        d.tfLite.setNumThreads(NUM_THREADS);
-        d.outputLocations = new float[1][NUM_DETECTIONS][4];
-        d.outputClasses = new float[1][NUM_DETECTIONS];
-        d.outputScores = new float[1][NUM_DETECTIONS];
-        d.numDetections = new float[1];
-        d.phase = phase;
-        return d;
+        super(assetManager, modelFilename, labelFilename, inputSize, isQuantized, phase);
     }
 
     @Override
-    public List<Recognition> recognizeImage(final Bitmap bitmap) {
-        // Log this method so that it can be analyzed with systrace.
-        Trace.beginSection("recognizeImage");
-
-        Trace.beginSection("preprocessBitmap");
+    protected void preprocessBitmap(Bitmap bitmap) {
         // Preprocess the image data from 0-255 int to normalized float based
         // on the provided parameters.
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -167,31 +88,26 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
                 }
             }
         }
-        Trace.endSection(); // preprocessBitmap
+    }
 
-        // Copy the input data into TensorFlow.
-        Trace.beginSection("feed");
+    @Override
+    protected Map<Integer, Object> getOutputMap() {
         outputLocations = new float[1][NUM_DETECTIONS][4];
         outputClasses = new float[1][NUM_DETECTIONS];
         outputScores = new float[1][NUM_DETECTIONS];
         numDetections = new float[1];
 
-        Object[] inputArray = {imgData};
         Map<Integer, Object> outputMap = new HashMap<>();
         outputMap.put(0, outputLocations);
         outputMap.put(1, outputClasses);
         outputMap.put(2, outputScores);
         outputMap.put(3, numDetections);
-        Trace.endSection();
+        return outputMap;
+    }
 
-        // Run the inference call.
-        Trace.beginSection("run " + phase);
-        tfLite.runForMultipleInputsOutputs(inputArray, outputMap);
-        Trace.endSection();
-
-        // Show the best detections.
-        // after scaling them back to the input size.
-        final ArrayList<Recognition> recognitions = new ArrayList<>(NUM_DETECTIONS);
+    @Override
+    protected List<Recognition> getRecognitions() {
+        final List<Recognition> recognitions = new ArrayList<>(NUM_DETECTIONS);
         for (int i = 0; i < NUM_DETECTIONS; ++i) {
             final RectF detection =
                     new RectF(
@@ -213,12 +129,7 @@ public class TFLiteObjectDetectionAPIModel implements Classifier {
                                 detection));
             }
         }
-        Trace.endSection(); // "recognizeImage"
         return recognitions;
-    }
-
-    private boolean inRange(float number, float max, float min) {
-        return number < max && number >= min;
     }
 
     @Override
