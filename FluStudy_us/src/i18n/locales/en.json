@@ -547,7 +547,7 @@
     "desc": "{{desc}}",
     "descManual": "Your test strip photo was captured successfully.",
     "descScanned": "Your test strip was scanned successfully.",
-    "diagnosis": "[Demo Mode only] Your test result is {{ testResult }}."
+    "diagnosis": "Your test result is {{ testResult }}."
   },
   "PackUpTest": {
     "title": "Clean up first test",

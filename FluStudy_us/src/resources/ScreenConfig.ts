@@ -121,7 +121,7 @@ export const Screens: ScreenConfig[] = [
       {
         tag: ContinueButton,
         props: {
-          next: "HowDoesTestWork",
+          next: "TestStripSurvey2",
           textStyle: { color: LINK_COLOR_FOR_DARK },
         },
       },
@@ -958,7 +958,6 @@ export const Screens: ScreenConfig[] = [
       {
         tag: ScreenText,
         props: {
-          demoOnly: true,
           label: "diagnosis",
           textVariablesFn: getRdtResult,
         },
