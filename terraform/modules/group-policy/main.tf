@@ -923,6 +923,10 @@ data "aws_iam_user" "lessw" {
 
 }
 
+data "aws_iam_user" "mathewsb" {
+  user_name = "mathewsb"
+}
+
 data "aws_iam_user" "mmarucheck" {
   user_name = "mmarucheck"
 }
@@ -962,6 +966,7 @@ resource "aws_iam_group_membership" "administrators" {
     "akr",
     "billy",
     "jenny",
+    "mathewsb",
     "mmarucheck",
     "philip",
     "ram",
@@ -980,6 +985,7 @@ resource "aws_iam_group_membership" "committers" {
     "jay",
     "jenny",
     "lessw",
+    "mathewsb",
     "mmarucheck",
     "philip",
     "ram",
@@ -1020,6 +1026,7 @@ resource "aws_iam_group_membership" "infrastructurers" {
     "akr",
     "billy",
     "jenny",
+    "mathewsb",
     "mmarucheck",
     "ram",
     "sam",
