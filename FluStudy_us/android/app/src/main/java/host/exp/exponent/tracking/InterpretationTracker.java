@@ -37,8 +37,20 @@ public class InterpretationTracker {
         canvas.setBitmap(rdtResult.testArea);
         drawLabel(drawResults, result, Color.RED);
 
-        Log.d(TAG, "Interpretation result: " +  getLabel(result));
+        Log.d(TAG, "Result: " +  getLabel(result));
 
+        if (!result.getTitle().equals("invalid")) {
+            interpretationResult.control = true;
+            if (result.getTitle().equals("Both") || result.getTitle().equals("Flu-A")) {
+                interpretationResult.testA = true;
+            }
+            if (result.getTitle().equals("Both") || result.getTitle().equals("Flu-B")) {
+                interpretationResult.testB = true;
+            }
+        }
+
+        Log.d(TAG, "Interpretation results\n");
+        Log.d(TAG, interpretationResult.toString());
         return interpretationResult;
     }
 

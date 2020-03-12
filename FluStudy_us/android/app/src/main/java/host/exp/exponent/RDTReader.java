@@ -117,6 +117,9 @@ public class RDTReader extends LinearLayout implements DetectorView.DetectorList
         writeRDTResultArgs(interpretationResult.rdtResult, event);
         writeIntermediateResults(interpretationResult.rdtResult, interpretationResult.recognition,
                 event);
+        event.putBoolean("control", interpretationResult.control);
+        event.putBoolean("testA", interpretationResult.testA);
+        event.putBoolean("testB", interpretationResult.testB);
         event.putString("imageUri", interpretationResult.imageUri);
         event.putString("resultWindowImageUri", interpretationResult.resultWindowImageUri);
         event.putString("failureReason", "Interpreted");

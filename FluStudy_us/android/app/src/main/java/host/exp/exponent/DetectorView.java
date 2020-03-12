@@ -682,11 +682,17 @@ public class DetectorView extends LinearLayout implements
 
     public static class InterpretationResult {
         public final RDTTracker.RDTStillFrameResult rdtResult;
-
+        public boolean control;
+        public boolean testA;
+        public boolean testB;
         public String imageUri;
         public String resultWindowImageUri;
 
         public final Classifier.Recognition recognition;
+
+        public String toString() {
+            return "control: " + control + ", testA: " + testA + ", testB: " + testB;
+        }
 
         public InterpretationResult(RDTTracker.RDTStillFrameResult rdtResult,
                                     Classifier.Recognition recognition) {
