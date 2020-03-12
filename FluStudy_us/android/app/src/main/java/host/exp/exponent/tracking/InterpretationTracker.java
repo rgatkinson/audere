@@ -39,7 +39,11 @@ public class InterpretationTracker {
 
         Log.d(TAG, "Result: " +  getLabel(result));
 
-        if (!result.getTitle().equals("invalid")) {
+        // reset flags to deal with the case of capturing one strip and back capturing another strip
+        interpretationResult.control = false;
+        interpretationResult.testA = false;
+        interpretationResult.testB = false;
+        if (!result.getTitle().equals("Invalid")) {
             interpretationResult.control = true;
             if (result.getTitle().equals("Both") || result.getTitle().equals("Flu-A")) {
                 interpretationResult.testA = true;
