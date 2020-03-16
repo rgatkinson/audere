@@ -45,29 +45,22 @@ public class TFLiteClassificationAPIModel extends TFLiteBaseModel {
         // on the provided parameters.
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
-        // tflite classifcation model converted from pytorch uses channel first format
-        imgData.rewind();
         // precomputed channel offsets
         int nBytes = isModelQuantized ? 1 : 4;
         int[] channelOffsets = {0, inputSize * inputSize * nBytes, 2 * inputSize * inputSize*nBytes};
-        for (int i = 0; i < inputSize; ++i) {
-            int rowOffset = i * inputSize * nBytes;
+        for (int i = 0, pixel = 0; i < inputSize; ++i) {
             for (int j = 0; j < inputSize; ++j) {
-                int pixelValue = intValues[i * inputSize + j];
-                int rowColOffset = rowOffset + j * nBytes;
-                int bits = 16;
-                for (int k = 0; k<3; k++) {
-                    byte colorByte = (byte) ((pixelValue >> bits) & 0xFF);
-                    bits -= 8;
-
+                int rowColOffset = pixel * nBytes;
+                int pixelValue = intValues[pixel++];
+                for (int k = 0, bits=16; k<3; k++, bits-=8) {
+                    // tflite classifcation model converted from pytorch uses channel first format
                     int offset = channelOffsets[k] + rowColOffset;
                     if (isModelQuantized) {
                         // quantized model
-                        imgData.put(offset, colorByte);
+                        imgData.put(offset, (byte) ((pixelValue >> bits) & 0xFF));
                     } else {
-                        // float model
-                        // first convert [0, 255] to [0., 1.], then normalized by ImageNet MEAN and STD
-                        imgData.putFloat(offset, (colorByte / 255.0f- IMAGENET_MEAN[k]) / IMAGENET_STD[k]);
+                        // float model: convert [0, 255] to [0., 1.], then normalized by ImageNet MEAN and STD
+                        imgData.putFloat(offset, (((pixelValue >> bits) & 0xFF) / 255.0f- IMAGENET_MEAN[k]) / IMAGENET_STD[k]);
                     }
                 }
             }

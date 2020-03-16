@@ -73,9 +73,9 @@ public class TFLiteObjectDetectionAPIModel extends TFLiteBaseModel {
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 
         imgData.rewind();
-        for (int i = 0; i < inputSize; ++i) {
+        for (int i = 0, pixel = 0; i < inputSize; ++i) {
             for (int j = 0; j < inputSize; ++j) {
-                int pixelValue = intValues[i * inputSize + j];
+                int pixelValue = intValues[pixel++];
                 if (isModelQuantized) {
                     // Quantized model
                     imgData.put((byte) ((pixelValue >> 16) & 0xFF));
